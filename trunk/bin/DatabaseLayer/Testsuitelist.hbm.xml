@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Testsuitelist" table="testsuitelist" catalog="Framework">
+        <id name="testSuiteListId" type="int">
+            <column name="TestSuiteList_Id" />
+            <generator class="assigned" />
+        </id>
+        <property name="testSuiteListDescription" type="string">
+            <column name="TestSuiteListDescription" length="200" />
+        </property>
+    </class>
+</hibernate-mapping>

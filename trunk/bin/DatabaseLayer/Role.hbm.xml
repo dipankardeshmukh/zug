@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Role" table="role" catalog="Framework">
+        <id name="roleId" type="int">
+            <column name="Role_Id" />
+            <generator class="assigned" />
+        </id>
+        <property name="roleName" type="string">
+            <column name="Role_Name" length="100" not-null="true" />
+        </property>
+        <property name="description" type="string">
+            <column name="Description" length="1000" />
+        </property>
+        <set name="topologies" inverse="true" lazy="true" table="topology" fetch="select">
+            <key>
+                <column name="Role_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Topology" />
+        </set>
+        <set name="roleattributeses" inverse="true" lazy="true" table="roleattributes" fetch="select">
+            <key>
+                <column name="Role_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Roleattributes" />
+        </set>
+        <set name="testcycletopologysets" inverse="true" lazy="true" table="testcycletopologyset" fetch="select">
+            <key>
+                <column name="Role_id" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testcycletopologyset" />
+        </set>
+        <set name="testsuites" inverse="true" lazy="true" table="testsuite" fetch="select">
+            <key>
+                <column name="Role_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testsuite" />
+        </set>
+    </class>
+</hibernate-mapping>

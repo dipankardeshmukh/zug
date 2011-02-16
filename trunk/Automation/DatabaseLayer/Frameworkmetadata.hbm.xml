@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Frameworkmetadata" table="frameworkmetadata" catalog="Framework">
+        <id name="frameworkMetaDataId" type="int">
+            <column name="frameworkMetaData_ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" length="50" />
+        </property>
+        <property name="value" type="string">
+            <column name="value" length="50" />
+        </property>
+    </class>
+</hibernate-mapping>

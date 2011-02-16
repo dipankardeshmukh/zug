@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 19, 2009 10:00:43 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Testcasetag" table="testcasetag">
+        <id name="testCaseTagId" type="java.lang.Integer">
+            <column name="TestCaseTag_Id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="testcase" class="DatabaseLayer.Testcase" fetch="select">
+            <column name="TestCase_id" not-null="true" />
+        </many-to-one>
+        <property name="attribute" type="string">
+            <column name="Attribute" length="45" not-null="true" />
+        </property>
+        <property name="value" type="string">
+            <column name="Value" length="45" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
