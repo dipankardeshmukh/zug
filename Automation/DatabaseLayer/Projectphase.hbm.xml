@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Projectphase" table="projectphase" catalog="Framework">
+        <id name="projectPhaseId" type="int">
+            <column name="ProjectPhase_Id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="releases" class="DatabaseLayer.Releases" fetch="select">
+            <column name="Release_Id" not-null="true" />
+        </many-to-one>
+        <property name="sprintName" type="string">
+            <column name="Sprint_Name" length="100" />
+        </property>
+        <property name="startDate" type="timestamp">
+            <column name="Start_Date" length="19" />
+        </property>
+        <property name="endDate" type="timestamp">
+            <column name="End_Date" length="19" />
+        </property>
+        <set name="testplans" inverse="true" lazy="true" table="testplan" fetch="select">
+            <key>
+                <column name="ProjectPhase_ID" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testplan" />
+        </set>
+        <set name="builds" inverse="true" lazy="true" table="build" fetch="select">
+            <key>
+                <column name="ProjectPhase_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Build" />
+        </set>
+    </class>
+</hibernate-mapping>

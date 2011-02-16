@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Testcase" table="testcase" catalog="Framework">
+        <id name="testCaseId" type="int">
+            <column name="TestCase_Id" />
+            <generator class="increment"/>
+        </id>
+        <many-to-one name="testsuite" class="DatabaseLayer.Testsuite" fetch="select">
+            <column name="TestSuite_Id" not-null="true" />
+        </many-to-one>
+        <property name="testCaseIdentifier" type="string">
+            <column name="TestCase_Identifier" length="50" not-null="true" />
+        </property>
+        <property name="description" type="string">
+            <column name="Description" />
+        </property>
+        <property name="creationDate" type="timestamp">
+            <column name="Creation_Date" length="19" />
+        </property>
+        <property name="modificationDate" type="timestamp">
+            <column name="Modification_Date" length="19" />
+        </property>
+        <property name="testSteps" type="string">
+            <column name="Test_Steps" length="1023" />
+        </property>
+        <property name="verifySteps" type="string">
+            <column name="Verify_Steps" length="1023" />
+        </property>
+        <set name="testcasevariablevalues" inverse="true" lazy="true" table="testcasevariablevalue" fetch="select">
+            <key>
+                <column name="TestCase_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testcasevariablevalue" />
+        </set>
+        <set name="testexecutiondetailses" inverse="true" lazy="true" table="testexecutiondetails" fetch="select">
+            <key>
+                <column name="TestCase_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testexecutiondetails" />
+        </set>
+        <set name="testcasetorequirementsxrefs" inverse="true" lazy="true" table="testcasetorequirementsxref" fetch="select">
+            <key>
+                <column name="TestCase_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testcasetorequirementsxref" />
+        </set>
+        <set name="testcaseignorelists" inverse="true" lazy="true" table="testcaseignorelist" fetch="select">
+            <key>
+                <column name="testcase_id" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testcaseignorelist" />
+        </set>
+    </class>
+</hibernate-mapping>

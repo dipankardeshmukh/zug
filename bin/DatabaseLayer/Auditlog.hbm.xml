@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Auditlog" table="auditlog" catalog="Framework">
+        <id name="auditLogId" type="int">
+            <column name="AuditLog_Id" />
+            <generator class="assigned" />
+        </id>
+        <property name="entryDateTime" type="timestamp">
+            <column name="EntryDateTime" length="19" not-null="true" />
+        </property>
+        <property name="userName" type="string">
+            <column name="UserName" length="45" not-null="true" />
+        </property>
+        <property name="tableName" type="string">
+            <column name="TableName" length="45" not-null="true" />
+        </property>
+        <property name="operationType" type="string">
+            <column name="OperationType" length="45" not-null="true" />
+        </property>
+        <property name="logEntry" type="string">
+            <column name="LogEntry" length="1000" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

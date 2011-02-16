@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Testcycletopologyset" table="testcycletopologyset" catalog="Framework">
+        <id name="testCycleTopologySetId" type="int">
+            <column name="TestCycleTopologySet_Id" />
+            <generator class="increment" />
+        </id>
+        <many-to-one name="topology" class="DatabaseLayer.Topology" fetch="select">
+            <column name="Topology_Id" />
+        </many-to-one>
+        <many-to-one name="role" class="DatabaseLayer.Role" fetch="select">
+            <column name="Role_id" />
+        </many-to-one>
+        <many-to-one name="testcycle" class="DatabaseLayer.Testcycle" fetch="select">
+            <column name="TestCycle_Id" />
+        </many-to-one>
+        <many-to-one name="machinecatalog" class="DatabaseLayer.Machinecatalog" fetch="select">
+            <column name="MachineCatalog_Id" />
+        </many-to-one>
+        <property name="buildNo" type="string">
+            <column name="Build_No" length="50" />
+        </property>
+        <many-to-one name="topologyset"
+        	class="DatabaseLayer.Topologyset" fetch="select">
+        	<column name="TopologySet_Id"></column>
+        </many-to-one>
+        <set name="testexecutiondetailses" inverse="true" lazy="true" table="testexecutiondetails" fetch="select">
+            <key>
+                <column name="TestCycleTopologySet_Id" not-null="true" />
+            </key>
+            <one-to-many class="DatabaseLayer.Testexecutiondetails" />
+        </set>
+    </class>
+</hibernate-mapping>

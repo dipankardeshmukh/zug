@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Testcycledetail" table="testcycledetail" catalog="Framework">
+        <id name="testCycleDetailId" type="int">
+            <column name="TestCycleDetail_Id" />
+             <generator class="increment"/>
+        </id>
+        <many-to-one name="testcycle" class="DatabaseLayer.Testcycle" fetch="select">
+            <column name="Testcycle_Id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="topologyset" class="DatabaseLayer.Topologyset" fetch="select">
+            <column name="Topologyset_Id" not-null="true" />
+        </many-to-one>
+        <property name="roleName" type="string">
+            <column name="Role_Name" length="100" not-null="true" />
+        </property>
+        <property name="buildNo" type="string">
+            <column name="Build_No" length="50" />
+        </property>
+    </class>
+</hibernate-mapping>
