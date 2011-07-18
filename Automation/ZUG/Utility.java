@@ -85,9 +85,10 @@ public class Utility {
 		for(int i=start;i<end;i++)
 		{
 			stringToReturn.append(strArray[i]);
+			if(i!=strArray.length-1)//not putting any delimeter after the last string
 			stringToReturn.append(delimeter);
 		}
-		for(int i=end;i<strArray.length - 1;i++)
+		for(int i=end;i<strArray.length;i++)//previously it was length-1 now its not
 		{
 			stringToReturn.append(strArray[i]);
 		}
@@ -117,7 +118,10 @@ public class Utility {
 					else
 						try{
 							if(!files[i].delete())
-								System.out.println("Could not delete file : "+files[i].getAbsolutePath());							
+								System.out.println("Could not delete file : "+files[i].getAbsolutePath());
+							
+							// print attributes
+							
 						}
 						catch (Exception e){
 							e.printStackTrace();

@@ -306,5 +306,3 @@ public class ContextVar {
 		 }		
 	}
 }
-
-

@@ -65,5 +65,64 @@ public class CartesianProduct{
 	    return tuples;
 	}
 
+	public static <T> List<Tuple<T>> indexedProduct (ArrayList<ArrayList<T>> sets) {
+		List<Tuple<T>> tuples = new ArrayList<Tuple<T>>();
+		
+	    if(sets.size() == 0)
+	    	return null;
+		
+	    if (sets.size() == 1) {
+	        ArrayList<T> set = sets.get(0);
+	        for (T t : set) {
+	            Tuple<T> tuple = new Tuple<T>();
+	            tuple.add(t);    
+	            tuples.add(tuple);
+	        }
+	    } else {
+	        ArrayList<T> set = sets.remove(0);
+	        List<Tuple<T>> subTuples = indexedProduct(sets);
+	        if(set.size()!=1 && subTuples.size()!=1)
+	        {
+	        	for (int i=0;i<subTuples.size();i++)
+		        {
+		        	Tuple<T> tuple = new Tuple<T>();
+		        	tuple.add(set.get(i));
+		        	tuple.addAll(subTuples.get(i));
+		            tuples.add(tuple);
+		        }
+	        }
+	        else if(set.size()==1 && subTuples.size()!=1)
+	        {
+	        	for(int i=0;i<subTuples.size();i++)
+	        	{
+	        		Tuple<T> tuple = new Tuple<T>();
+	        		tuple.add(set.get(0));
+	        		tuple.addAll(subTuples.get(i));
+	        		tuples.add(tuple);
+	        	}
+	        }
+	        else if(set.size()!=1 && subTuples.size()==1)
+	        {
+	        	for(int i=0;i<set.size();i++)
+	        	{
+	        		Tuple<T> tuple = new Tuple<T>();
+	        		tuple.add(set.get(i));
+	        		tuple.addAll(subTuples.get(0));
+	        		tuples.add(tuple);
+	        	}
+	        }
+	        else
+	        {
+	        	Tuple<T> tuple = new Tuple<T>();
+        		tuple.add(set.get(0));
+        		tuple.addAll(subTuples.get(0));
+        		tuples.add(tuple);
+	        }
+	    }
+
+	    return tuples;
+
+	}
+
 
 }

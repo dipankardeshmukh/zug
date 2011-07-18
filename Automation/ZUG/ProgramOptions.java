@@ -6,6 +6,7 @@
  */
 package ZUG;
 
+import java.io.File;
 import java.util.Hashtable;
 
 import jline.ConsoleReader;
@@ -16,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
 public class ProgramOptions {
 
 	private Hashtable<String, String> _opts;
-
+	protected static String currentPath,workingDirectory;
 	/*
 	 * Creates a new instance.
 	 * 
@@ -37,6 +38,7 @@ public class ProgramOptions {
 	 * @return ProgramOptions Object
 	 * @throws Exception On occurrence of any error.
 	 */
+	
 	public static ProgramOptions parse(String[] args) throws Exception {
 		
 		Hashtable<String, String> ht = new Hashtable<String, String>();		
@@ -75,11 +77,20 @@ public class ProgramOptions {
 					// this block is for name=value options with equal sign like -Count=12
 					nv[0] = opt.substring(1, indexOfEqual).toLowerCase();
 					nv[1] = opt.substring(indexOfEqual + 1);
+				
+				if(opt.contains("pwd"))
+				{
+					workingDirectory=opt.substring(indexOfEqual+1);
+					//System.out.println("Working D\t"+workingDirectory);
+				}
+				
+					
 				}
 			}
-			else if (indexOfDash == -1 || indexOfDash != 0 )
+			else if (indexOfDash == -1 || indexOfDash != 0)
 			{
 				// this block is for option without Dash '-' . for inputfile
+				
 				if(ht.containsKey("inputfile"))
 				{
 					Log.Error("ProgramOptions/parse: Error : Repeated input file.");
@@ -90,10 +101,26 @@ public class ProgramOptions {
 
 				}
 				nv[0] = "inputfile";
+				if(opt.contains(":"))  //Checks for the Absolute path of the input file
 				nv[1] = opt;
+				else
+				{
+					for(String str:args) //Chekching the whole input arguments again in a for loop
+					{
+						int indexofEq=str.indexOf("=");
+						if(str.contains("pwd")) //Checking if it contains any -pwd= switch or not
+						{currentPath=str.substring(indexofEq+1);	
+							//System.out.println("This the Pats\t"+currentPath);
+					nv[1]=currentPath.replaceAll("\\\\", "/")+"/"+opt; //Replacing the Current working Directory path provided by the batch file
+						}
+					}
+				//System.out.println("The Path \t"+nv[1]);
+					Log.Debug("Command Line Path Showing the Current Directory:\t"+nv[1]);
+				}
 			}
 			ht.put(nv[0], nv[1].trim().replaceAll("\"", "").replaceAll("'", "").trim());
 		}
+//System.out.println("The File Path\t"+ht.get("inputfile")+"\n"+"The Total Hast Table\n"+ht);
 		return new ProgramOptions(ht);
 	}
 

@@ -1,18 +1,18 @@
 Manifest-Version: 1.0
-Class-Path: lib\antlr-2.7.6.jar lib\antlr.jar lib\asm-attrs.jar lib\asm.jar 
+Class-Path: . lib\antlr-2.7.6.jar lib\antlr.jar lib\asm-attrs.jar lib\asm.jar 
  lib\cglib-2.1.3.jar lib\commons-beanutils-1.8.0.jar lib\commons-beanutils.jar 
- lib\commons-collections-2.1.1.jar lib\commons-collections.jar lib\commons-dbcp.jar
+ lib\commons-collections-2.1.1.jar lib\commons-collections.jar lib\commons-dbcp.jar 
  lib\commons-digester-1.8.jar lib\commons-digester.jar lib\commons-fileupload-1.1.1.jar 
- lib\commons-fileupload.jar lib\commons-lang-2.0.jar lib\commons-lang.jar lib\commons-logging-1.0.4.jar
+ lib\commons-fileupload.jar lib\commons-lang-2.0.jar lib\commons-lang.jar lib\commons-logging-1.0.4.jar 
  lib\commons-logging.jar lib\commons-resources.jar lib\commons-validator-1.3.1.jar lib\concurrent-1.3.2.jar 
- lib\connector.jar lib\dom4j-1.6.1.jar lib\hibernate-annotations-3.4.0.GA.jar
+ lib\connector.jar lib\dom4j-1.6.1.jar lib\hibernate-annotations-3.4.0.GA.jar 
  lib\hibernate-commons-annotations-3.1.0.GA.jar lib\hibernate-configuration-3.0.dtd lib\hibernate-mapping-3.0.dtd 
  lib\jakarta-oro.jar lib\JavaRegisrtyWrapper.jar lib\jboss-system.jar lib\jline-0.9.93.jar lib\JSTAF.jar 
  lib\jstl-1.0.6.jar lib\jstl.jar lib\jta.jar lib\log4j-1.2.15.jar lib\mysql-connector-java-3.0.16-ga-bin.jar 
  lib\oro-2.0.8.jar lib\poi-2.5.1-final-20040804.jar lib\servlet.jar lib\sqlite.jar lib\standard.jar 
- lib\struts.jar lib\sqlitejdbc-v056.jar
- lib\Main.jar lib\hibernate3.jar lib\xalan.jar
-Main-Class: matness.Controller
+ lib\struts.jar lib\sqlitejdbc-v056.jar 
+ lib\Main.jar lib\hibernate3.jar lib\xalan.jar 
+Main-Class: ZUG.Controller
 
 Name: javax/servlet/
 Implementation-Vendor: Apache Software Foundation

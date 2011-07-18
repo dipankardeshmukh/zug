@@ -1,0 +1,188 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.automature</groupId>
+    <artifactId>ZUG</artifactId>
+    <packaging>jar</packaging>
+    <version>2.2-SNAPSHOT</version>
+    <name>ZUG from scatch</name>
+    <organization>
+        <name>Automature LLC</name>
+        <url>http://www.automature.com</url>
+    </organization>
+    <url>http://www.automature.com</url>
+    <scm>
+        <connection>scm:svn:http://automature.com:90/svn/zug/branches/V2.2-dev</connection>
+        <developerConnection>scm:svn:http://automature.com:90/svn/zug/branches/V2.2-dev</developerConnection>
+        <url></url>
+    </scm>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <sourceDirectory>export</sourceDirectory>
+        <outputDirectory>target/classes</outputDirectory>
+        <finalName>${project.artifactId}</finalName>
+        <resources>
+          <resource>
+              <directory>${project.build.sourceDirectory}/Automation/DatabaseLayer</directory>
+              <includes><include>*.xml</include></includes>
+              <targetPath>${project.build.outputDirectory}/DatabaseLayer</targetPath>
+              </resource>
+              <resource>
+              <directory>${project.build.sourceDirectory}/Automation</directory>
+              <includes><include>*.xml</include></includes>
+               <targetPath>${project.build.outputDirectory}</targetPath>
+              </resource>
+        </resources>
+        <plugins>
+          <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.4</version>
+                <configuration>
+                    <username>sankha</username> 
+                    <password>sankhaSVN</password>
+                    <excludes>bin/*.*</excludes>
+                    <exportDirectory>${project.build.sourceDirectory}</exportDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>export</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+         
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.sourceDirectory}/MANIFEST.MF</manifestFile>
+                        <manifest>
+                            <main-class>ZUG.Controller</main-class>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                    
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <target>
+
+                      
+                   
+                       <copy todir="./KitInstall/ZUG" >
+                           <fileset dir="export/Deployment Files" /></copy>
+                           <copy file="target/ZUG.jar" todir="./KitInstall/ZUG" />
+                           <zip destfile="Zug.zip" basedir="./KitInstall" />
+                           <delete dir="./KitInstall" />
+                           <copy todir="./NSIS">
+                           <fileset dir="export/NSIS" />
+                           
+                           </copy>
+                           <copy file="Zug.zip" todir="./NSIS" />
+                           <exec executable="cmd">
+                           <arg value="/c" />    
+                           <arg value="makensis.exe" />
+                           <arg value="./NSIS/setup.nsi" />
+                            </exec>
+                           <move file="./NSIS/ZugSetup-2.2.exe" todir="./" />
+                    </target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+     <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.15</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <version>3.2.7.ga</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.4</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>2.5.1-final-20040804</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>jline</groupId>
+      <artifactId>jline</artifactId>
+      <version>0.9.94</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.3.04</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.1</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+</project>
+
