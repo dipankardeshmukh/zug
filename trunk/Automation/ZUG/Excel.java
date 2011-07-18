@@ -7,6 +7,8 @@ package ZUG;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -37,11 +39,12 @@ public class Excel {
 
 	private static String ConfigSheetName 			= "Config";
 	private static String MacroSheetName 			= "Macros";
-	private static String UserSheetName 			= "Users";
+//	private static String UserSheetName 			= "Users";
 	private static String TestCaseSheetName 		= "TestCases";
 	private static String AbstractSheetName 		= "Molecules";
 	private static String PrototypeSheetName 		= "Prototypes";
-
+	private static int counter;
+static XMLWriter xmlfile;
 	// Variable to store total number of Action and Verification Arguments.
 	private int TotalActionArgs = 0;
 	private int TotalVerificationArgs = 0;
@@ -69,7 +72,7 @@ public class Excel {
 
 
 	// A hashtable to store the UserName and its Object contain its credentials from the User Sheet
-	private Hashtable<String,UserData> _userSheetHashTable 		= 	new 	Hashtable<String,UserData>();
+//	private Hashtable<String,UserData> _userSheetHashTable 		= 	new 	Hashtable<String,UserData>();
 
 	// ArrayList to Store the TestCases Object that the Controller needs to Execute.
 	private ArrayList<TestCase> testCases 				= 	new 	ArrayList<TestCase>();
@@ -169,7 +172,14 @@ public class Excel {
 				(String)_configSheetHashTable.get(_configSheetKeys[0]) : null;
 	}
 
+	public String IncludeMolecules()
+	{
+		
+			return _configSheetHashTable.get(_configSheetKeys[10]) != null ?
+					(String)_configSheetHashTable.get(_configSheetKeys[10]) : null;
 
+	
+	}
 
 	/**
 	 * @return the value of Database Host Name
@@ -616,13 +626,13 @@ public class Excel {
 
 			Log.Debug(String.format("Excel/ReadExcel : The Macro Sheet - %s of Excel Sheet %s read successfully.",MacroSheetName,inputFileName));
 
-			Log.Debug(String.format("Excel/ReadExcel : Reading the User Sheet %s",UserSheetName));
+//			Log.Debug(String.format("Excel/ReadExcel : Reading the User Sheet %s",UserSheetName));
 			//system.out.println(String.format("READING User SHEET OF %s",inputFileName));
 
-			ReadUserSheet(_workBook);
-			readHashTable(_userSheetHashTable);
+//			ReadUserSheet(_workBook);
+//			readHashTable(_userSheetHashTable);
 
-			Log.Debug(String.format("Excel/ReadExcel : The User Sheet - %s of Excel Sheet %s read successfully.",UserSheetName,inputFileName));
+//			Log.Debug(String.format("Excel/ReadExcel : The User Sheet - %s of Excel Sheet %s read successfully.",UserSheetName,inputFileName));
 
 			Log.Debug(String.format("Excel/ReadExcel : Reading the Prototypes Sheet %s", PrototypeSheetName));
 			//system.out.println(String.format("READING prototype SHEET OF %s", inputFileName));
@@ -690,6 +700,7 @@ public class Excel {
 		String configSheetName = ConfigSheetName;
 
 		HSSFSheet workSheet=null;
+		xmlfile=new XMLWriter();
 		Log.Debug("Excel/ReadConfigSheet : The worksheet object created");
 
 		Log.Debug(String.format("Excel/ReadConfigSheet : Reading the WorkSheet %s", configSheetName));
@@ -701,11 +712,12 @@ public class Excel {
 			if(workSheet==null)
 				throw new Exception(String.format("Excel/ReadConfigSheet : Could not find the Config Sheet : %s"
 						, configSheetName));
+		
 
 			Log.Debug(String.format("Excel/ReadConfigSheet : Config Worksheet : %s exists and read successfully",configSheetName));
 
 		} catch(Exception e){
-
+			
 			Log.Error(String.format("Excel/ReadConfigSheet : Could not find the Config Sheet : %s Exception Message raised is : %s",configSheetName, e.getMessage()));
 			throw new Exception(String.format("Excel/ReadConfigSheet : Could not find the Config Sheet : %s Exception Message raised is : %s",configSheetName, e.getMessage()));
 		}
@@ -713,9 +725,11 @@ public class Excel {
 		{
 
 			Log.Debug("Excel/ReadConfigSheet : Getting the values from the Config Sheet. Calling GetKeyValuePair....");
+			
 			GetKeyValuePair(workSheet, _configSheetHashTable, "config", null);
 			Log.Debug("Excel/ReadConfigSheet : The values from the Config sheet is read successfully.");
-
+			if(Controller.nyonserver)
+			System.out.println(xmlfile.createXMLFile()); //creates a XML file is Generated for the includes
 		}catch (Exception ex)
 		{
 
@@ -766,7 +780,7 @@ public class Excel {
 			Log.Debug(String.format("Excel/GetKeyValuePair : Getting the key/Value pair from the sheet. Number of rows to read is -> %s", worksheet.getPhysicalNumberOfRows()));
 			/// We now need something to iterate through the cells.
 			Iterator rowIter = worksheet.rowIterator(); 
-
+			
 			while(rowIter.hasNext()){
 
 				HSSFRow myRow = (HSSFRow) rowIter.next();
@@ -789,15 +803,51 @@ public class Excel {
 				{
 					/// If this is a Macros Sheet, then, append the name space for the Macro
 					strKey = AppendNamespace(strKey, nameSpace);
-					strValue = ExpandMacrosValue(strValue);
+					strValue = ExpandMacrosValue(strValue, strKey, nameSpace); //modify strkey and strvalue for indexed MVM
+					// implement indexed MVM evaluation method
 				}
 
 				if (sheetname.equals("config") &&
 						((_configSheetKeys[10].compareTo(strKey) == 0)))
 				{
 					///Don't insert in hash table if sheet is config and key is INCLUDE
-					AddToExternalSheets(strKey, strValue);
-//					System.out.println("->"+strKey+"--->"+strValue);
+					if(Controller.includeFlag)
+					{
+						Log.Debug("No Command Line Executions switch Given\t"+Controller.includeFlag);
+						if(strValue.isEmpty())
+						{
+							System.out.println("THE Value is Empty\t"+strValue);
+							break;
+						}
+						else{
+									if(strValue.contains(":")||strValue.startsWith("\\"))
+						AddToExternalSheets(strKey, strValue);
+						else
+						{String[] includeValues=strValue.split(",");
+						String actualPath="";
+							for(String relativePath:includeValues)
+							{
+								actualPath+=ProgramOptions.workingDirectory+"\\"+relativePath+",";
+							}
+							System.out.println("This the actual Path\t"+actualPath);
+							AddToExternalSheets(strKey,actualPath);
+						}
+					}
+					}
+					else
+					{
+						Log.Debug("Command Line Executions switch Given\t"+Controller.includeFlag);
+						AddToExternalSheets(strKey, Controller.includeMolecules); //Changes the include molecule path specified from the command line argument
+					}
+					//System.out.println("key iserted->"+strKey+"\tvalue given--->"+strValue);
+					//System.out.println("key iserted->"+strKey+"\tvalue given--->"+ProgramOptions.workingDirectory+"\\"+strValue);
+
+					if(Controller.nyonserver)
+					{
+						System.out.println(xmlfile.genarateXML(strValue));
+						
+					}
+					
 				}
 				else
 				{
@@ -806,6 +856,7 @@ public class Excel {
 				
 				
 			}
+			
 
 		}catch (Exception e){
 
@@ -816,8 +867,8 @@ public class Excel {
 	}///GetKeyValuePair
 
 
-	///Function to Expand a Macro for the looping construct
-	public String ExpandMacrosValue(String macroValue) throws Exception//throws Exception
+	///Function to Expand a Macro for the looping construct, also modified for indexed MVM
+	public String ExpandMacrosValue(String macroValue, String macroKey, String nameSpace) throws Exception//throws Exception
 	{
 		try
 		{
@@ -827,14 +878,59 @@ public class Excel {
 			if ((macroValue.startsWith("{")) && (macroValue.endsWith("}")))
 			{
 				Log.Debug(String.format("Excel/ExpandMacrosValue : Macro value %s contains a \"{\" and \"}\"",macroValue));
+				
+				String macroValueTrimmed = Utility.TrimStartEnd(macroValue,'}',0);
+				macroValueTrimmed = Utility.TrimStartEnd(macroValueTrimmed,'{',1);
+				String[] allStringsToExpand = macroValueTrimmed.split(",");
 
+				Log.Debug(String.format("Excel/ExpandMacrosValue : Macro value %s contains a \"{\" and \"}\". Before FOR Loop.",macroValue));
+				int size = allStringsToExpand.length;
+				int[] countOfValues = new int[size]; // variable to store count of Values in Index Macros
+				int count=0; // variable as counter for Macrros
+				for (String tempStringToExpand : allStringsToExpand)
+				{
+					Log.Debug(String.format("Excel/ExpandMacrosValue : Macro value =%s. Working on %s",macroValue, tempStringToExpand));
+
+
+					if (tempStringToExpand.startsWith("$$"))
+					{
+						// TODO statements for indexed MVM
+						// add new strkey name and put value as #value1,value2#
+						String newMacroKey = new String(macroKey + "#" + tempStringToExpand.substring(2));
+						Log.Debug("Excel/ExpandMacrosValue : searching for macroKey "+tempStringToExpand.substring(2)+"in hashtable");
+						String tempMacroToExpand = AppendNamespace(tempStringToExpand, nameSpace);
+						if(_macroSheetHashTable.containsKey(tempMacroToExpand))
+						{
+							Log.Debug("Excel/ExpandMacrosValue : Index Macro key found");
+							String newMacroValue = _macroSheetHashTable.get(tempMacroToExpand);
+							newMacroValue = newMacroValue.replace('{', '#');
+							newMacroValue = newMacroValue.replace('}', '#');
+							countOfValues[count] = newMacroValue.split(",").length;
+							Log.Debug("Excel/ExpandMacrosValue : Comparing indexes of Macros");
+							if(count>0 && countOfValues[count]!=countOfValues[count-1])
+							{
+								Log.Error("Excel/ExpandMacrosValue : Unequal indexes in Indexed MVM. Check MVM - " + macroKey);
+								throw new Exception("Excel/ExpandMacrosValue : Unequal indexes in Indexed MVM. Check MVM - " + macroKey);
+							}
+							Log.Debug("Excel/ExpandMacrosValue : Adding Indexed MVM- Key:"+newMacroKey+" Value:'"+newMacroValue+"'");
+							_macroSheetHashTable.put(newMacroKey, newMacroValue);
+							count++;
+						}
+						else
+						{
+							Log.Error("Excel/ExpandMacrosValue : Indexed Macro could not be found in Macros Table");
+							throw new Exception("Indexed Macros could not be found in Macro Table.");
+						}
+					}
+				}
+				
 				if (macroValue.contains(macroValExpander))
 				{
 					Log.Debug(String.format("Excel/ExpandMacrosValue : Macro value %s contains a \"{\" and \"}\" and it DOES require EXPANSION",macroValue));
 
-					String macroValueTrimmed = Utility.TrimStartEnd(macroValue,'}',1);
+					macroValueTrimmed = Utility.TrimStartEnd(macroValue,'}',1);
 					macroValueTrimmed = Utility.TrimStartEnd(macroValueTrimmed,'{',0);
-					String[] allStringsToExpand = macroValueTrimmed.split(",");
+					allStringsToExpand = macroValueTrimmed.split(",");
 					StringBuilder expandedMacroString = new StringBuilder("{");
 
 					Log.Debug(String.format("Excel/ExpandMacrosValue : Macro value %s contains a \"{\" and \"}\". Before FOR Loop.",macroValue));
@@ -842,6 +938,7 @@ public class Excel {
 					for (String tempStringToExpand : allStringsToExpand)
 					{
 						Log.Debug(String.format("Excel/ExpandMacrosValue : Macro value =%s. Working on %s",macroValue, tempStringToExpand));
+						
 						if (tempStringToExpand.contains(macroValExpander))
 						{
 							Log.Debug(String.format("Excel/ExpandMacrosValue : Calling ExpandValue .... Working on %s",tempStringToExpand));
@@ -1251,12 +1348,13 @@ public class Excel {
 
 	//This function will add name of external sheets to an list of string
 
-	private void AddToExternalSheets(String key, String value)
+	protected void AddToExternalSheets(String key, String value)
 	{
 		if (_configSheetKeys[10].compareTo(key) == 0)
 		{
 			Log.Debug("\nExternal key : " + key);
 			Log.Debug("\nExternal value : " + value);
+			System.out.println("The Value of Include file is... \t"+value);
 			//If key is INCLUDE
 			String[] qualifiedPaths = value.split(",");
 			Log.Debug("\nPath length : "+qualifiedPaths.length);
@@ -1266,6 +1364,7 @@ public class Excel {
 				if (new File(qualifiedPaths[i]).exists())
 				{
 					Log.Debug("\nExternal sheets : " + qualifiedPaths[i]);
+					System.out.println("\nExternal sheets : " + qualifiedPaths[i]);
 					_externalSheets.add(qualifiedPaths[i]);
 				}
 			}
@@ -1274,7 +1373,7 @@ public class Excel {
 
 
 	/// Function to read the User sheet
-
+/*
 	private void ReadUserSheet(HSSFWorkbook workBook) throws Exception{
 
 		String userSheetName = UserSheetName;
@@ -1322,12 +1421,12 @@ public class Excel {
 		Log.Debug("Excel/ReadUserSheet : End of the Function with UserSheetName as " + userSheetName);
 
 	}//ReadUserSheet
-
+*/
 
 	/// Function will retrieve the user information from the sheet. Here we have assumed that the 1st Column is the 
 	/// name of the User and the Second Column is the 
 	/// Password associated with the User. The third column is the Domain of the User.
-
+/*
 	private void GetUserFromUserSheet(HSSFSheet worksheet, Hashtable<String,UserData> hashTable)throws Exception
 	{
 		try
@@ -1429,7 +1528,7 @@ public class Excel {
 		}
 	}///GetUserFromUserSheet
 
-
+*/
 	/// Function to read the Prototypes sheet
 
 	public void ReadPrototypesSheet(HSSFWorkbook workBook, String nameSpace) throws Exception
@@ -2084,12 +2183,12 @@ public class Excel {
 					Log.Debug("Excel/ReadVerificationSection : Row["+index+"] Actual Value of  user from Macro sheet is = "+user );
 				}
 
-				if (_userSheetHashTable.get(user) != null)
+/*				if (_userSheetHashTable.get(user) != null)
 				{
 					Log.Debug("Excel/ReadVerificationSection : Row["+index+"] User Credentials and Information for User "+user+" exists in the User Sheet");
 					userObj = (UserData)_userSheetHashTable.get(user);
 				}
-				col = worksheet.getRow(index).getCell((short)testcaseIndex);
+*/				col = worksheet.getRow(index).getCell((short)testcaseIndex);
 				if(col!=null)
 					testCaseID = GetCellValueAsString(col);
 
@@ -2394,7 +2493,10 @@ public class Excel {
 		{
 			String[] tempStringToReturn = new String[2];
 			tempStringToReturn[0] = stringToReturn[0];
-			tempStringToReturn[1] = Utility.join("=", stringToReturn, 1, stringToReturn.length - 1);
+			String [] tempStringToJoin=new String[stringToReturn.length-1];//Separately putting the string in another array of strings for joining
+			for(int i=1;i<stringToReturn.length;i++)
+			tempStringToJoin[i-1]=stringToReturn[i];//getting the computed string for joining
+			tempStringToReturn[1] = Utility.join("=", tempStringToJoin, 0, tempStringToJoin.length);//string is joined with the delimeters needed also the join method is changed
 
 			return tempStringToReturn;
 		}
@@ -2472,12 +2574,12 @@ public class Excel {
 				Log.Debug("\n"+String.format("Excel/ReadTestCase : Row[%d] Actual Value of  user from Macro sheet is = %s ", index, testCase.user));
 			}
 
-			if (_userSheetHashTable.get(testCase.user) != null)
+/*			if (_userSheetHashTable.get(testCase.user) != null)
 			{
 				Log.Debug("\n"+String.format("Excel/ReadTestCase : Row[%d] User Credentials and Information for User %s exists in the User Sheet", index, testCase.user));
 				testCase.userObj = (UserData)_userSheetHashTable.get(testCase.user) ;
 			}
-			Log.Debug("Excel/ReadTestCase : End of the Function with Row Index = " + index + " and  Index of testCaseIndex column as : " + testCaseIndex);
+*/			Log.Debug("Excel/ReadTestCase : End of the Function with Row Index = " + index + " and  Index of testCaseIndex column as : " + testCaseIndex);
 		}
 		catch(Exception e)
 		{
@@ -2536,7 +2638,7 @@ public class Excel {
 			}
 			else
 			{	
-				String user=null;
+/*				String user=null;
 				col =worksheet.getRow(index).getCell(((short)(getKey(labelIndex,"user"))));
 
 				if(col==null)
@@ -2555,7 +2657,7 @@ public class Excel {
 					Log.Debug("\n"+String.format("Excel/ReadActionSection : Row[%d] User Credentials and Information for User %s exists in the User Sheet", index, user));
 					userObj = (UserData)_userSheetHashTable.get(user);
 				}
-
+*/
 				col =worksheet.getRow(index).getCell((short)(testcaseIndex));
 
 				if(col==null)
@@ -2733,7 +2835,7 @@ public class Excel {
 
 				col=worksheet.getRow(index).getCell((short)testCaseIndex);
 				if(col==null)
-					throw new Exception(String.format("Excel/GetActionVerificationMap: Not able to read the value for testcase column in cell : Row/Col(%d/%d",index,testCaseIndex));
+					throw new Exception(String.format("Excel/GetActionVerificationMap: Not able to read the value for testcase column in cell : Row/Col(%d/%d)",index,testCaseIndex));
 
 				String valueInTestCaseColumn = GetCellValueAsString(col);
 

@@ -60,6 +60,7 @@ public class ZipUtility {
 				int i = cpFileInputStream.read(b, 0, (int)cpFile.length());
  
 				ZipEntry cpZipEntry = new ZipEntry(strZipEntryName);
+				cpFileInputStream.close();
 				cpZipOutputStream.putNextEntry(cpZipEntry );
  
 				cpZipOutputStream.write(b, 0, (int)cpFile.length());
