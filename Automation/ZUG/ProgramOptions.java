@@ -118,6 +118,53 @@ public class ProgramOptions {
 					Log.Debug("Command Line Path Showing the Current Directory:\t"+nv[1]);
 				}
 			}
+			if(opt.contains("-$")||opt.contains("-$$"))
+			{
+				Controller.macroentry=true;
+				//controller.message("Macro Command Line Arguments\t"+macroentry);
+				String macro,macrokey="$",macrovalue,namespaces="";
+					macro=opt.replace("-$","");
+				//macro=macro.replace("$", "");
+				String fileArr[]=null;
+				fileArr=ht.get("inputfile").split("\\\\");
+				
+				for(String filename:fileArr)
+				{
+					
+					if(filename.endsWith(".xls"))
+					{
+						
+						filename=filename.replaceAll(".xls","");
+						namespaces=filename.toLowerCase();
+						//System.out.println("Namespace "+namespaces);
+						Log.Debug(String.format("The Namespace is Created  %s",namespaces));
+					//macrokey+=filename.toLowerCase();
+					}
+					
+				}
+				
+				//controller.message("Macro Value is\t"+macro);
+				String temp[]=null;
+				temp=macro.split("=");
+				if(temp.length==2)
+				{
+			    macrokey+=temp[0];
+				macrovalue=temp[1];
+				//controller.message("The MacroKey is "+macrokey+" The MacroValue is "+macrovalue);
+				//macrocommandlineinputs.put(macrokey, macrovalue);
+				Excel ee=new Excel();
+				macrokey=ee.AppendNamespace(macrokey, namespaces);
+				macrovalue=ee.ExpandMacrosValue(macrovalue, macrokey, namespaces);
+				//ht.put(macrokey, macrovalue);
+				//Creating the command line Macro hashmap 
+				Controller.macrocommandlineinputs.put(macrokey,macrovalue);
+				}
+				else
+				{
+					//controller.message(macro+"-->The Value Assigned contains more than one =");
+					Log.Error(macro+"->The Value Assigned Contains More Than One '=' ");
+				}
+			}
 			ht.put(nv[0], nv[1].trim().replaceAll("\"", "").replaceAll("'", "").trim());
 		}
 //System.out.println("The File Path\t"+ht.get("inputfile")+"\n"+"The Total Hast Table\n"+ht);
