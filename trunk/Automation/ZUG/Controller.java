@@ -87,15 +87,9 @@ public class Controller extends Thread {
 	private static double repeatDurationLong = 0;
 
 	// Change this Number every time the Harness is Released.
-<<<<<<< .mine
-<<<<<<< .mine
+
 	private static String Version = "ZUG Premium 2.2.1." + "20110819" + ".034";
-=======
-	private static String Version = "ZUG Premium 2.2.1" + "20110808" + ".031";
-=======
-	private static String Version = "ZUG Premium 2.1.2." + "20110607" + ".028";
->>>>>>> .r93
->>>>>>> .r93
+
 
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
@@ -4631,11 +4625,9 @@ public class Controller extends Thread {
 
 		try {
 			pr.command(commandparam);
-<<<<<<< .mine
-			// message("The List"+commandparam);
-=======
 
->>>>>>> .r93
+			// message("The List"+commandparam);
+
 			if (StringUtils.isNotBlank(workingDirectory)) {
 				pr.directory(new File(workingDirectory));
 				Log.Debug(String
@@ -5476,14 +5468,12 @@ public class Controller extends Thread {
 
 		// Harness Specific ContextVariable to store TestCycle ID
 		ContextVar.setContextVar("ZUG_TCYCID", testCycleId);
-<<<<<<< .mine
+
 		// Harness Specific ContextVariable to store TestExecutionDetail ID
 		ContextVar.setContextVar("ZUG_TSEXDID",
 				testCycle.test_execution_detail_id);
 		message("Test Execution Id Writing Done\t"
 				+ testCycle.test_execution_detail_id);
-=======
->>>>>>> .r93
 
 		Log.Debug("Controller/SaveTestCaseResultEveryTime : End of the Function");
 	}
