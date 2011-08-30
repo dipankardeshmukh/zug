@@ -1,5 +1,5 @@
 /***
- * Controller.java
+,. * Controller.java
  *    This is the Controller class which executes the Test Cases for the Automation 
  */
 
@@ -87,9 +87,7 @@ public class Controller extends Thread {
 	private static double repeatDurationLong = 0;
 
 	// Change this Number every time the Harness is Released.
-
-	private static String Version = "ZUG Premium 2.2.1." + "20110819" + ".034";
-
+	private static String Version = "ZUG Premium 2.2.1." + "20110819" + ".033";
 
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
@@ -1993,7 +1991,8 @@ public class Controller extends Thread {
 	 * This will log the primitive log that is sent to the Harness
 	 */
 	private void LogPrimitiveMessage(String levelAndMessage) {
-		String level = levelAndMessage.substring(0,
+	if(levelAndMessage.length()!=0)
+{	String level = levelAndMessage.substring(0,
 				levelAndMessage.indexOf(","));
 		String message = levelAndMessage
 				.substring(levelAndMessage.indexOf(",") + 1);
@@ -2015,6 +2014,15 @@ public class Controller extends Thread {
 		} else
 			Log.Error("Invalid Log Level Received from the Primitive ->  LogLevel as "
 					+ level + " and Log Message as : " + message);
+}
+else
+{
+	Log.Error("Invalid Log Message-->No such Message for-- \""+levelAndMessage+ "\"--In Primitive");
+	message("Try Fixing Atom Log message Definations");
+	message("----------------------------Ending Automation---------------------------");
+	System.exit(1);
+}
+	
 	}
 
 	/***
@@ -3528,18 +3536,7 @@ public class Controller extends Thread {
 					+ action.actionName + " for TestCaseID  : " + testCaseID);
 
 			if (action.actionName.startsWith("@")) {
-<<<<<<< .mine
 
-=======
-				//Part changed by Suddha
-				//In this part it is coming with .class
-				if(action.actionName.endsWith("class")||action.actionName.endsWith("CLASS")){
-					//Here .class is removed.
-					st = action.actionName.split("\\.");
-					action.actionName=st[0];
-					
-				}
->>>>>>> .r93
 				Log.Debug("Controller/RunAction : Running Command "
 						+ action.actionName + " for TestCase ID as : "
 						+ testCaseID);
@@ -4114,10 +4111,7 @@ public class Controller extends Thread {
 
 			String protoTypeName = Excel.AppendNamespace(command,
 					action.nameSpace);
-<<<<<<< .mine
 
-=======
->>>>>>> .r93
 			if (prototypeHashTable.get(protoTypeName) != null) {
 				// check Action is In-Process primitive.
 				Prototype prototype = (Prototype) prototypeHashTable
@@ -4132,10 +4126,7 @@ public class Controller extends Thread {
 					ExecuteCommand(command, arguments.toString(),
 							scriptLocation, user, action.parentTestCaseID,
 							action.step);
-<<<<<<< .mine
 
-=======
->>>>>>> .r93
 				}
 			} else {
 				// To support old input sheet where Prototype sheet is not
@@ -4450,17 +4441,11 @@ public class Controller extends Thread {
 						command, arguments, workingDirectoryList,
 						parentTestCaseId));
 		String actualCommand = command;
-<<<<<<< .mine
 
-=======
->>>>>>> .r93
 		Log.Debug("Controller/ExecuteCommand: Calling Controller/FindWorkingDirectory()");
 		String workingDirectory = FindWorkingDirectory(command,
 				workingDirectoryList);
-<<<<<<< .mine
 
-=======
->>>>>>> .r93
 		if (debugMode == true) {
 
 			if (StringUtils.isBlank(workingDirectory)) {
@@ -4495,7 +4480,6 @@ public class Controller extends Thread {
 		workingDirectory = Utility.TrimStartEnd(workingDirectory, '/', 1);
 		workingDirectory = Utility.TrimStartEnd(workingDirectory, '\\', 1);
 		actualCommand = new File(workingDirectory, command).getCanonicalPath();
-<<<<<<< .mine
 
 		// Part changed by Suddha and Modified by Sankho
 		// In this part it is coming with .class
@@ -4521,10 +4505,6 @@ public class Controller extends Thread {
 			FileName = actualCommand;
 		}
 
-=======
-
-		String FileName = actualCommand;
->>>>>>> .r93
 		String Arguments = arguments;
 		ProcessBuilder pr = new ProcessBuilder();
 		String commandValue[];
@@ -4557,17 +4537,11 @@ public class Controller extends Thread {
 					Log.Debug("controller/ExecuteCommand: Adding Command parameters - "
 							+ cmd);
 					commandparam.add(cmd);
-<<<<<<< .mine
 
-=======
->>>>>>> .r93
 				}
-<<<<<<< .mine
 				/*
 				 * if(Flags) { commandparam.add("-classpath C:\\MyTests "); }
 				 */
-=======
->>>>>>> .r93
 			}
 		}
 
@@ -4625,9 +4599,7 @@ public class Controller extends Thread {
 
 		try {
 			pr.command(commandparam);
-
 			// message("The List"+commandparam);
-
 			if (StringUtils.isNotBlank(workingDirectory)) {
 				pr.directory(new File(workingDirectory));
 				Log.Debug(String
@@ -5468,7 +5440,6 @@ public class Controller extends Thread {
 
 		// Harness Specific ContextVariable to store TestCycle ID
 		ContextVar.setContextVar("ZUG_TCYCID", testCycleId);
-
 		// Harness Specific ContextVariable to store TestExecutionDetail ID
 		ContextVar.setContextVar("ZUG_TSEXDID",
 				testCycle.test_execution_detail_id);
@@ -5619,36 +5590,55 @@ public class Controller extends Thread {
 
 			try {
 
+				//Server Socket initialization with iPORT=8245
 				sock = new ServerSocket(iPORT);
 				if (sock != null)
-					Log.Debug("Socket created successfully!!!!!!!");
+					Log.Debug("Socket created successfully!!!!!!! ->  "+sock);
+				//Setting it Reusable for keep on running if the thread waits for 2mls 
 				sock.setReuseAddress(true);
 
 				Log.Debug("Controller/ListenToPrimitive : Server Socket Created on port "
 						+ Integer.toString(iPORT));
 				while (true) {
 
+
 					conn = sock.accept();
 					Log.Debug("Controller/ListenToPrimitive : Client Connected....");
 
 					Log.Debug("Controller/ListenToPrimitive : Creating input stream object in order to read from socket.");
-					inStream = conn.getInputStream();
 
+					inStream = conn.getInputStream();
+					
+					
 					// inDataStream = new DataInputStream ( inStream );
+					
 					inDataStream = new BufferedReader(new InputStreamReader(
 							inStream));
+					
+					
 					Log.Debug("Controller/ListenToPrimitive : Creating input stream object in order to read from socket...Successful");
 					Log.Debug("Controller/ListenToPrimitive : Reading Data from Socket. Sent by Client.");
-
+				
 					while ((ParamFromClient = inDataStream.readLine()) != null) {
 
 						Log.Debug("Controller/ListenToPrimitive : Data from client is - "
 								+ ParamFromClient);
+						//message("The Length of The param is\t"+ParamFromClient.length());
+						
+							//if(ParamFromClient.length()!=0) //Checking for if the Content is null or not.
 						LogPrimitiveMessage(ParamFromClient);
-
+							//else 
+								//Log.Error("Controller/ListenToPrimitive :ParamFromClient length is zero");
+								//message("This is the Log Param->"+ParamFromClient);						
+							
+					
 					}
 				}
+					
+				
 			} catch (Exception e) {
+				Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"+e.getMessage());
+				System.exit(1);
 			} finally {
 				try {
 					conn.close();
@@ -5658,8 +5648,9 @@ public class Controller extends Thread {
 							+ e.getMessage());
 					e.printStackTrace();
 				}
+			
 			}
-		} finally {
+			} finally {
 			try {
 				conn.close();
 				sock.close();
