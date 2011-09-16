@@ -15,7 +15,8 @@ import logs.Log;
 import org.apache.commons.lang.StringUtils;
 
 public class ProgramOptions {
-
+	
+public static String filelocation=null;
 	private Hashtable<String, String> _opts;
 	protected static String currentPath,workingDirectory;
 	/*
@@ -102,7 +103,19 @@ public class ProgramOptions {
 				}
 				nv[0] = "inputfile";
 				if(opt.contains(":"))  //Checks for the Absolute path of the input file
-				nv[1] = opt;
+				{
+					filelocation="";
+					nv[1] = opt;
+					String tempStrings[]=opt.split("\\\\");
+					for(String divs:tempStrings)
+					{
+						if(!divs.contains(".xls"))
+						filelocation+=divs+"\\";
+					
+					}
+					
+					
+				}
 				else
 				{
 					for(String str:args) //Chekching the whole input arguments again in a for loop
@@ -126,8 +139,10 @@ public class ProgramOptions {
 					macro=opt.replace("-$","");
 				//macro=macro.replace("$", "");
 				String fileArr[]=null;
-				fileArr=ht.get("inputfile").split("\\\\");
+				String tempPath=ht.get("inputfile").replaceAll("\\\\","/");
+			
 				
+					fileArr=tempPath.split("/");
 				for(String filename:fileArr)
 				{
 					
@@ -158,6 +173,7 @@ public class ProgramOptions {
 				//ht.put(macrokey, macrovalue);
 				//Creating the command line Macro hashmap 
 				Controller.macrocommandlineinputs.put(macrokey,macrovalue);
+				
 				}
 				else
 				{

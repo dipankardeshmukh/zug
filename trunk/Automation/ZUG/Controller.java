@@ -38,6 +38,8 @@ import logs.Log;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.util.StringUtil;
 
+import antlr.debug.NewLineEvent;
+
 import com.sun.org.apache.xpath.internal.compiler.OpCodes;
 
 import DatabaseLayer.Testplan;
@@ -87,7 +89,7 @@ public class Controller extends Thread {
 	private static double repeatDurationLong = 0;
 
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 2.2.2." + "20110829" + ".038";
+	private static String Version = "ZUG Premium 2.2.1." + "20110819" + ".033";
 
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
@@ -2151,8 +2153,35 @@ else
 		Log.Debug("Controller/InitializeVariables :Start of Function");
 
 		if (StringUtils.isEmpty(scriptLocation))
-			scriptLocation = readExcel.ScriptLocation() + ";"
-					+ opts.workingDirectory; // appends the current directory
+			
+			{
+			scriptLocation = readExcel.ScriptLocation() + ";"+ opts.workingDirectory; // appends the current directory
+			String[] spliArr=scriptLocation.split(";");
+			String newLocation="";
+			for(String spits:spliArr)
+			{
+				String[] temp0=spits.split("\\\\");
+				if(!temp0[0].contains(":"))
+				{
+					if(opts.filelocation==null)
+					{
+					temp0[0]=opts.workingDirectory;	
+					newLocation=temp0[0]+"\\"+spits;
+					}
+					else
+					{
+						temp0[0]=opts.filelocation;
+						newLocation=temp0[0]+spits;
+					}
+						
+				}
+			
+			}
+			
+			scriptLocation=scriptLocation+";"+newLocation;
+			//message("Notun Location\t"+scriptLocation);
+			Log.Debug("Controller::The Updated ScriptLocation\t"+scriptLocation);
+			}
 												// from where the Zug is invoked
 
 		if (StringUtils.isEmpty(includeMolecules))
