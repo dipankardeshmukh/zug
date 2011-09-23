@@ -69,6 +69,7 @@ public class Excel {
 
 	// A hashtable to store the Values(Name/Value pair) from the Macro Sheet
 	private Hashtable<String, String> _macroSheetHashTable = new Hashtable<String, String>();
+	public static Hashtable<String, String> _indexedMacroTable=new Hashtable<String,String>();
 
 	// A hashtable to store the UserName and its Object contain its credentials
 	// from the User Sheet
@@ -193,6 +194,7 @@ public class Excel {
 			}
 		} catch (IOException e) {
 		}
+		
 		return dbHostName;
 	}
 
@@ -1013,13 +1015,16 @@ public class Excel {
 								+ "in hashtable");
 						String tempMacroToExpand = AppendNamespace(
 								tempStringToExpand, nameSpace);
+					
 						if (_macroSheetHashTable.containsKey(tempMacroToExpand)) {
 							Log.Debug("Excel/ExpandMacrosValue : Index Macro key found");
 							String newMacroValue = _macroSheetHashTable
 									.get(tempMacroToExpand);
+							
 							newMacroValue = newMacroValue.replace('{', '#');
 							newMacroValue = newMacroValue.replace('}', '#');
 							countOfValues[count] = newMacroValue.split(",").length;
+						
 							Log.Debug("Excel/ExpandMacrosValue : Comparing indexes of Macros");
 							if (count > 0
 									&& countOfValues[count] != countOfValues[count - 1]) {
@@ -1036,7 +1041,10 @@ public class Excel {
 									+ "'");
 							_macroSheetHashTable
 									.put(newMacroKey, newMacroValue);
+							String indexMacroKey[]=newMacroKey.split("\\.");
+							_indexedMacroTable.put(indexMacroKey[1].toLowerCase(),newMacroValue);
 							count++;
+							
 						} else {
 							Log.Error("Excel/ExpandMacrosValue : Indexed Macro could not be found in Macros Table");
 							throw new Exception(
@@ -1044,6 +1052,7 @@ public class Excel {
 						}
 					}
 				}
+				//System.out.println("Checking\t"+_indexedMacroTable);
 
 				if (macroValue.contains(macroValExpander)) {
 					Log.Debug(String
