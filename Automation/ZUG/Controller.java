@@ -50,7 +50,8 @@ public class Controller extends Thread {
 	private String versionMessage = StringUtils.EMPTY;
 
 	Excel readExcel;
-
+RestClient sendReport;
+public static String reporting_server_add;
 	private static String baseTestCaseID = StringUtils.EMPTY;
 	private int initializationTime = 0;
 	private int executionTime = 0;
@@ -68,6 +69,7 @@ public class Controller extends Thread {
 	public static boolean nyonserver = false; // Flag which checks whether its
 												// needed to generate the XML
 												// file or not.
+	public static boolean davosreporting=false; //Flag for Saving the Test Execution Details through Davos Reporting
 	public static boolean macroentry=false; //Flag to set a Command Line Macro Value
 	public static boolean includeFlag = true; // A new Flag which checks whether
 												// the inlcude switch is enabled
@@ -89,7 +91,7 @@ public class Controller extends Thread {
 	private static double repeatDurationLong = 0;
 
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 2.2.1." + "20110819" + ".033";
+	private static String Version = "ZUG Premium 2.3." + "20110921" + ".039";
 
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
@@ -1419,6 +1421,7 @@ public class Controller extends Thread {
 
 				String tempVal = GetTheActualValue((String) (action.actionArguments
 						.get(i)));
+				//message("cheks to Macro exp\t"+tempVal);
 				if ((tempVal.startsWith("#")) && (tempVal.endsWith("#"))) {
 					String val = Utility.TrimStartEnd(tempVal, '#', 1);
 					val = Utility.TrimStartEnd(val, '#', 0);
@@ -1880,6 +1883,14 @@ public class Controller extends Thread {
 					+ tempValue);
 		}
 		// First Check in the Context Variable
+		else if(entireValue.contains("$$")&entireValue.contains("#"))
+		{
+			entireValue=Utility.TrimStartEnd(entireValue,'$', 1);
+			
+			tempValue=Excel._indexedMacroTable.get(entireValue.toLowerCase());
+			//message("This is a Indexed\t"+tempValue);
+			
+		}
 		else
 			tempValue = entireValue;
 
@@ -5305,6 +5316,40 @@ else
 		}
 	}
 
+	private void davosReporting(String hostServer,String message)
+	{
+		
+			sendReport=new RestClient();
+            boolean helpflag=false;
+			if(hostServer.contains(":"))
+			{
+				String tempSplit[]=null;
+				tempSplit=hostServer.split(":");
+				if(tempSplit.length==3)
+				{
+					hostServer=hostServer;
+				}
+				else if(tempSplit.length==2)
+				{
+					hostServer=hostServer+":4567";
+				}
+				else
+				{
+					hostServer="http://www.automature.com:4567/help";
+					helpflag=true;
+					Log.Error("Controller/DavosReporting::Reporting Server url is Incorrect");
+				}
+			}
+			message("Connecting To->"+hostServer);
+			if(helpflag)
+				message(sendReport.sendRequest(hostServer, "GET",""));
+			else
+			message(sendReport.sendRequest(hostServer,"POST",message));
+		}
+
+	
+	
+	
 	/*
 	 * Function to save the Test Case to the Result Database in the Test Case
 	 * table.
@@ -5314,11 +5359,12 @@ else
 	 * @param testCaseDesc Description of the TestCase - to be stored to the
 	 * Result Database
 	 */
+	
 	private void SaveTestCase(String testCaseID, String testCaseDesc)
 			throws Exception {
 		Log.Debug("Controller/SaveTestCase : Start of Function with TestCase ID as : "
 				+ testCaseID + " and Description as : " + testCaseDesc);
-		BusinessLayer.TestCaseData testCaseData = new BusinessLayer.TestCaseData();
+		/* BusinessLayer.TestCaseData testCaseData = new BusinessLayer.TestCaseData();
 
 		testCaseData.set_testCaseIdentifier(testCaseID);
 		testCaseData.set_description(testCaseDesc);
@@ -5332,12 +5378,12 @@ else
 			for (BusinessLayer.Variable var : allValues) {
 				testCaseData.get_variableList().add(var);
 			}
-		}
+		}*/
 		Log.Debug(String
 				.format("Controller/SaveTestCase : Saving Test Case Identifier '%s' with testSuiteName as '%s'. and Description '%s'",
 						testCaseID, testSuitName, testCaseDesc));
 
-		BusinessLayer.TestCase testCase = new BusinessLayer.TestCase();
+		/* BusinessLayer.TestCase testCase = new BusinessLayer.TestCase();
 		try {
 			testCase.Save(testCaseData);
 		} catch (Exception e) {
@@ -5347,7 +5393,7 @@ else
 					"Controller/SaveTestCase :Exception while saving testCaseData :"
 							+ e.getMessage());
 		}
-
+*/
 		Log.Debug(String
 				.format("Controller/SaveTestCase : SUCCESSFULLY SAVED Test Case Identifier '%s' with testSuiteName as '%s'. and Description '%s'",
 						testCaseID, testSuitName, testCaseDesc));
@@ -5936,6 +5982,25 @@ else
 
 				// At any cost save the TestCase ID to the result Database.
 
+				
+					// If the testCase is not an Init or Cleanup Step then only
+					// Save the TestCase to the Result Database.
+					
+					if(!(baseTestCaseID.compareToIgnoreCase("cleanup")==0||baseTestCaseID.compareToIgnoreCase("init")==0))
+					{
+						Log.Debug(String
+								.format("Controller/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result Database.",
+										test.testCaseID,
+										test.testCaseDescription));
+						
+						SaveTestCase(test.testCaseID, test.testCaseDescription);
+						Log.Debug(String
+								.format("Controller/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Database.",
+										test.testCaseID,
+										test.testCaseDescription));
+						
+					}
+				
 				if (dbReporting == true) {
 					// If the testCase is not an Init or Cleanup Step then only
 					// Save the TestCase to the Result Database.
@@ -5945,7 +6010,7 @@ else
 								.format("Controller/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result Database.",
 										test.testCaseID,
 										test.testCaseDescription));
-						SaveTestCase(test.testCaseID, test.testCaseDescription);
+						//SaveTestCase(test.testCaseID, test.testCaseDescription);
 
 						Log.Debug(String
 								.format("Controller/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Database.",
@@ -6593,6 +6658,11 @@ else
 					controller.message("This is the Nyon-Server executions\t"
 							+ nyonserver);
 				}
+				if(arg.equalsIgnoreCase("-davos"))
+				{
+					davosreporting = true;
+					controller.message("Davos Web Service Reporting Commenced");
+				}
 				
 			}
 		}
@@ -6723,7 +6793,12 @@ else
 			Log.Debug("Controller/Main : Initializing the Controller Variables after reading the Excel sheet. Calling controller.InitializeVariables");
 			controller.InitializeVariables(controller.readExcel);
 			Log.Debug("Controller/Main : Initialized the Controller Variables after reading the Excel sheet.");
+reporting_server_add=controller.readExcel.DBHostName();
 
+if(Controller.davosreporting==true)
+{
+	controller.davosReporting(reporting_server_add,"testcaseid=");
+}
 			if (Controller.dbReporting == true) {
 				// XMLUtility utility = new XMLUtility();
 				Log.Debug("Controller/InitializeVariables : Getting the TopologySet");
