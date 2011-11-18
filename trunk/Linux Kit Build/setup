@@ -1,0 +1,66 @@
+#!/bin/bash
+#Automation - It contains command to install the ZUG 
+#Author:Sankha Sil
+# ©Copyright 2009 Automature Inc.. All Rights Reserved.
+
+#checking Java Compatibility
+if which java>/dev/null 2>&1; then
+java -version
+else
+echo "Please Install Java First"
+exit 0
+fi
+echo "--------------------------------------------------------------"
+#Variable Initialization
+ZUG_SHARED_LIB="/usr/local/lib"
+#Sets the Path for Zug in environment
+echo 'export ZUG_HOME=/usr/lib/automature/zug' >> $HOME/.bashrc
+export ZUG_HOME=/usr/lib/automature/zug
+mkdir $ZUG_HOME -p
+mkdir $ZUG_SHARED_LIB -p
+#Copying neccessary Files
+
+mv libzugapi.so.1.0 $ZUG_SHARED_LIB
+ln -s $ZUG_SHARED_LIB/libzugapi.so.1.0 $ZUG_SHARED_LIB/libzugapi.so
+ln -s $ZUG_SHARED_LIB/libzugapi.so.1.0 $ZUG_SHARED_LIB/libzugapi.so.1
+chmod 777 $ZUG_SHARED_LIB/libzugapi.so
+cp -r lib $ZUG_HOME
+echo "Zug Lib extraction Done"
+cp -r LogConfig $ZUG_HOME
+echo "Log4j extraction Done"
+cp -r log $ZUG_HOME
+#Permitting files with full Permission for executing ZUG 
+chmod 777 $ZUG_HOME/log/Debug.txt
+chmod 777 $ZUG_HOME/log/Result.txt
+chmod 777 $ZUG_HOME/log/Primitives.txt
+chmod 777 $ZUG_HOME/log/PrimitiveResults.txt
+chmod 777 $ZUG_HOME/log/Error.txt
+chmod 777 "$HOME/ZUG Logs/sqlite.db3"
+echo "log extraction Done"
+cp ZUG.jar $ZUG_HOME
+echo "Zug.jar extraction Done"
+cp ZugINI.xml $ZUG_HOME
+echo "ZugINI.xml extraction Done"
+cp -r Examples $ZUG_HOME
+echo "Examples extraction Done"
+mv uninstallZug $ZUG_HOME
+echo "-----------------------------------------------------------------------"
+
+
+echo "ZUG file extraction Done"
+echo "-----------------------------------------------------------------------"
+#gets the jvm Location
+JVM_LOCATION=`ls /usr/lib/jvm`
+#echo $JVM_LOCATION
+for f in $JVM_LOCATION
+do
+if [ -d /usr/lib/jvm/$f/jre/lib/ext ]; then
+cp $ZUG_HOME/lib/sqlitejdbc-v056.jar /usr/lib/jvm/$f/jre/lib/ext
+echo "sqlitejdbc-v056.jar Copy Done in /usr/lib/jvm/$f/jre/lib/ext"
+fi
+done
+
+#Copying Runzug and to directory and making the link to /usr/bin
+mv runzug $ZUG_HOME
+ln -s $ZUG_HOME/runzug /usr/bin/runzug
+chmod 775 /usr/bin/runzug

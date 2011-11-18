@@ -1,0 +1,25 @@
+#!/bin/bash
+#Automation - It contains command to run Zug.jar - The Automation Framework.
+#Author:Sankha Sil
+# ©Copyright 2009 Automature Inc.. All Rights Reserved.
+
+#setting the fileformat for this script
+:set fileformat=unix
+#Clears the Terminal Window
+clear
+#Get the present working directory
+pwd="-pwd=$PWD"
+#checking if zug is installed
+if [ -d $ZUG_HOME ]; then
+#Starting to call the main Zug.jar
+echo Automation Started
+echo --------------------------------------------------------------------------------
+cd $ZUG_HOME
+#echo  "The Zug install directory "$ZUG_HOME
+java -jar ZUG.jar $@ $pwd
+
+echo --------------------------------------------------------------------------------
+echo Automation Finished.
+else
+echo "ZUG_HOME is not set. Please install Zug properly"
+fi
