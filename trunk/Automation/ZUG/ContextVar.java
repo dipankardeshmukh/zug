@@ -15,7 +15,7 @@ public class ContextVar {
     private static final String _tableName = "ContextVariable";
     
     //private static final String _dbPath = System.getenv("APPDATA") + "/Biel Logs";  
-    private static final String _dbPath = System.getenv("APPDATA") + "/ZUG Logs";
+    private static final String _dbPath =System.getenv(ZUG.Controller.LOG_DIR)+"/ZUG Logs";
     private static String justForLock = "";
 	
 	private static final ContextVar INSTANCE = new ContextVar();
@@ -135,7 +135,7 @@ public class ContextVar {
      }
 	 public static String getContextVar(String name) throws Exception
      {
-		 Log.Debug("getContextVar: Start of Function with with name as : " + name );
+		 Log.Debug("getContextVar: Start of Function with name as : " + name );
 		 Connection conn = null;
 		 try
 		 {
@@ -180,6 +180,55 @@ public class ContextVar {
 			 if(conn != null)
 				 conn.close();              
               Log.Debug("ContextVar/getContextVar: Connection is closed. End of Function ");     
+		 }
+     }
+          public static String getContextVarName(String value) throws Exception
+     {
+		 Log.Debug("getContextVarName: Start of Function with value as : " + value );
+		 Connection conn = null;
+		 try
+		 {
+			  Class.forName("org.sqlite.JDBC");
+              conn = DriverManager.getConnection("jdbc:sqlite:" + _dbPath + "/" + _dbName);
+
+              Log.Debug("getContextVar: Connection Opened .");
+
+              int parentPId = (int)Controller.harnessPIDValue;
+              Log.Debug("getContextVar: Parent ID = " + parentPId);
+
+
+              Statement stat = conn.createStatement();
+              Log.Debug("getContextVar: Firing Command = " + "Select Name From " + _tableName + " Where ProcessId=" + Quotedstring( Integer.toString(parentPId) ) + " And " +
+                      "Value=" + Quotedstring(value) + "");
+
+              ResultSet rs =  stat.executeQuery("Select Name From " + _tableName + " Where ProcessId=" + Quotedstring( Integer.toString(parentPId)) + " And " +
+                      "Value=" + Quotedstring(value) + "");
+
+              String name = null;
+              if (rs.next()) {
+                  name = rs.getString("Name");
+               }
+              rs.close();
+
+              conn.close();
+              Log.Debug("getContextVar: Executed Command = " + "Select Name From " + _tableName + " Where ProcessId=" + Quotedstring( Integer.toString(parentPId) ) + " And " +
+                      "Value=" + Quotedstring(name) + "" + " and Name returned is : " + name);
+
+
+              return name;
+
+		 }
+		 catch(Exception ex)
+		 {
+             Log.Error("ContextVar/getContextVar: Exception is : " + ex.getMessage() + ex.getStackTrace());
+             throw new Exception("ContextVar/getContextVar: Exception is : " + ex.getMessage() + ex.getStackTrace());
+		 }
+		 finally
+		 {
+			 Log.Debug("ContextVar/getContextVar: Connection is getting closed ");
+			 if(conn != null)
+				 conn.close();
+              Log.Debug("ContextVar/getContextVar: Connection is closed. End of Function ");
 		 }
      }
 	
