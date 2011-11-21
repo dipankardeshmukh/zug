@@ -26,7 +26,7 @@ public class ExtensionInterpreterSupport{
 	Boolean optionPrecedence; // This flag is set when option preceds the script filename
 	private static ArrayList<ExtensionInterpreterSupport> readConfigFile() throws Exception
 	{
-		String Pathlist = new String(System.getenv("Path"));
+		String Pathlist = new String(System.getenv(Controller.PATH_CHECK));
 		ArrayList<ExtensionInterpreterSupport> extensionList = new ArrayList<ExtensionInterpreterSupport>();
 		String filename = "ZugINI.xml";
 		Document document=null;
@@ -62,8 +62,8 @@ public class ExtensionInterpreterSupport{
 	public static Hashtable<String,String> ReadFileExtension()
 	{
 		try{
-			String Path = new String(System.getenv("PATH"));
-			String[] PathList = Path.split(";");
+			String Path = new String(System.getenv(Controller.PATH_CHECK));
+			String[] PathList = Path.split(Controller.SEPARATOR);//changes from ";"
 			Hashtable<String,String> fileExtensionSupport =	new Hashtable<String,String>();
 			String iniFileName = "Zug.ini";
 			File iniFile=new File(iniFileName);
@@ -127,10 +127,10 @@ public class ExtensionInterpreterSupport{
 	public static  Hashtable<String,String[]> ReadFileExtensionXML() throws Exception
 	{
 		
-		String Path = new String(System.getenv("PATH"));
-		String[] PathList = Path.split(";");
+		String Path = new String(System.getenv(Controller.PATH_CHECK));
+		String[] PathList = Path.split(Controller.SEPARATOR);//Changed from ";"
 		Log.Debug("Environment variable Path + " + Path);
-		String filename="ZugINI.XML";
+		String filename="ZugINI.xml";
 		File file = new File(filename);
 		Document document;
 		Hashtable<String,String[]> fileExtensionSupport =	new Hashtable<String,String[]>();
@@ -155,6 +155,7 @@ public class ExtensionInterpreterSupport{
 			String interpreterName = extensionConfig.interpreterCommand.toLowerCase();
 			String interpreterOption = extensionConfig.InterpreterOption.toLowerCase();
 			String interpreterPath = extensionConfig.interpreterPath.toLowerCase();
+                        //System.out.println("the path is\t"+interpreterName);
 			Log.Debug("ExtensionInterpreterSupport/ReadFileExtension :: Values of language interpreter configurations "
 					+ " extension name " + extensionName + " interpreter name " + interpreterName 
 					+ " interpreter option " + interpreterOption + " interpreter path " + interpreterPath);
@@ -217,6 +218,7 @@ public class ExtensionInterpreterSupport{
 						String[] interpreterList = {interpreterPath+interpreterName+"\"",interpreterOption};
 						Log.Debug("ExtensionInterpreterSupport/ReadFileExtensionXML :: Interpreter Command = " + interpreterList[0]);
 						Log.Debug("ExtensionInterpreterSupport/ReadFileExtensionXML :: Option = " + interpreterList[1]);
+                                                
 						fileExtensionSupport.put(extensionName, interpreterList);
 					}
 					else 
@@ -224,6 +226,7 @@ public class ExtensionInterpreterSupport{
 						String[] interpreterList = {interpreterPath+"\\"+interpreterName+"\"",interpreterOption};
 						Log.Debug("ExtensionInterpreterSupport/ReadFileExtensionXML :: Interpreter Command = " + interpreterList[0]);
 						Log.Debug("ExtensionInterpreterSupport/ReadFileExtensionXML :: Option = " + interpreterList[1]);
+                                                
 						fileExtensionSupport.put(extensionName, interpreterList);					
 					}
 				}
@@ -236,9 +239,10 @@ public class ExtensionInterpreterSupport{
 				}
 				else 
 				{
-					String[] interpreterList = {interpreterPath+"\\"+interpreterName, interpreterOption};
+					String[] interpreterList = {interpreterPath+"/"+interpreterName, interpreterOption};// "\\" changed to "/"l
 					Log.Debug("ExtensionInterpreterSupport/ReadFileExtensionXML :: Interpreter Command = " + interpreterList[0]);
 					Log.Debug("ExtensionInterpreterSupport/ReadFileExtensionXML :: Option = " + interpreterList[1]);
+                                        //System.out.println("Paths\t"+interpreterList[0]);
 					fileExtensionSupport.put(extensionName, interpreterList);					
 				}
 			}

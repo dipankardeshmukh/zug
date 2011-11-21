@@ -102,8 +102,10 @@ public static String filelocation=null;
 
 				}
 				nv[0] = "inputfile";
-				if(opt.contains(":"))  //Checks for the Absolute path of the input file
+				if(opt.contains(":")||opt.startsWith("/"))  //Checks for the Absolute path of the input file
 				{
+                                   
+
 					filelocation="";
 					nv[1] = opt;
 					String tempStrings[]=opt.split("\\\\");
