@@ -4,6 +4,7 @@
  */
 package ZUG;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import java.lang.reflect.Method;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -33,8 +34,6 @@ class WebDriverMap {
 
     //String to Containing the WindowHandle
     protected static String WindowHandle;
-
-    
     protected WebDriver getWebDriverObject(String window_handle) throws Exception {
         //System.out.println("getWebDriverObject"+window_handle);
         Set keyset1= wdriver_children.keySet();
@@ -49,13 +48,12 @@ class WebDriverMap {
 
                 if(reqOb.getClass().getName().equalsIgnoreCase("org.openqa.selenium.firefox.FirefoxDriver"))
                 {
-                   braces_handle="{"+window_handle+"}";
-
+                    braces_handle="{"+window_handle+"}";
                 }
- else
+                else
                 {
-                braces_handle=window_handle;
- }
+                    braces_handle=window_handle;
+                }
             return (wdrivermap.get(window_handle).switchTo().window(braces_handle));
         }
         else{
@@ -85,6 +83,7 @@ class WebDriverMap {
                     }            
                 }
             if (found_obj){
+                Log.Primitive("ZUG/WebDriverMap.Child Window Handle found");
                 //System.out.println("getWebDriverObject::object Found in secondary list  :"+window_handle);
               
                 return (reqdobj);
@@ -122,6 +121,7 @@ class WebDriverMap {
                 if(!objArr.contains(new_handle)){
                     //System.out.println("Set in array");
                     objArr.add(new_handle);
+                    Log.Primitive("ZUG/WebDriverMap.Handle added to list- Window Handle : new_handle");
                 }
             }
         }
@@ -158,6 +158,7 @@ class WebDriverMap {
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, firefoxdriver);
             wdriver_children.put(WindowHandle, new ArrayList<String>());
+            Log.Primitive("ZUG/WebDriverMap.Firefox Browser");
             Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
         } else if (browser.equalsIgnoreCase("chrome")) {
             //Initiating WebDriver Object
@@ -170,6 +171,7 @@ class WebDriverMap {
             wdrivermap.put(WindowHandle, chromedriver);
             wdriver_children.put(WindowHandle, null);
             Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
+            Log.Primitive("ZUG/WebDriverMap.Chrome Browser");
         } else if (browser.equalsIgnoreCase("ie")) {
             //Initiating WebDriver Object
             WebDriver iedriver = new InternetExplorerDriver();
@@ -186,10 +188,11 @@ class WebDriverMap {
             wdrivermap.put(WindowHandle, iedriver);
             wdriver_children.put(WindowHandle, null);
             Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
+            Log.Primitive("ZUG/WebDriverMap.IE Browser");
         } else if (browser.equalsIgnoreCase("htmlunit")) {
            
             //Initiating WebDriver Object
-            WebDriver htmlunitdriver = new HtmlUnitDriver();
+            WebDriver htmlunitdriver = new HtmlUnitDriver(true);
               
             Log.Debug("ZUG/WebDriverMap::Browser Less Automation");
 
@@ -201,9 +204,11 @@ class WebDriverMap {
             wdriver_children.put(WindowHandle, null);
 
             Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
+            Log.Primitive("ZUG/WebDriverMap.html unit");
         } else {
             // printMessage("Browser not found");
             Log.Error("ZUG/WebDriverMap::Browser Not Found");
+            Log.Primitive("ZUG/WebDriverMap::Browser Not Found");
             throw new Exception();
 
         }
@@ -284,6 +289,7 @@ break;
            if(method_found_flag==false)
             {
                  Log.Error("ZUG/BultInWebDriver:: Atom Not Found-" + inputs);
+                 Log.Primitive("ZUG/WebDriverMap::Atom Not Found" + inputs);
 throw new AtomNotFoundException();
             }
 
@@ -311,9 +317,16 @@ throw new AtomNotFoundException();
 
     public void goToUrl(String window_handle, String url) {
         //Url checking
+        WebDriver window_object=null;
+        try {
+            window_object= getWebDriverObject(window_handle);
+        } catch (Exception e) {
+            Log.Primitive("ZUG/BuiltInWebDriver.goToUrl-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Error("ZUG/BuiltInWebDriver.goToUrl-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+        }
         try {
             //System.out.println("Inside gotoURL");
-            getWebDriverObject(window_handle).get(url);
+            window_object.get(url);
 
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.goToUrl::URL not found. URL=" + url + " Exception->" + e.getLocalizedMessage());
@@ -338,8 +351,8 @@ throw new AtomNotFoundException();
             //Set ing the Text in the specified element
             textelement.sendKeys(value);
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element);
-            Log.Error("ZUG/BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element);
+            Log.Primitive("ZUG/BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element +" Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element+ " Exception->" + e.getLocalizedMessage());
             throw e;
         }
     }
@@ -351,6 +364,7 @@ throw new AtomNotFoundException();
             window_object= getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.setTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Error("ZUG/BuiltInWebDriver.setTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
         try {
@@ -359,7 +373,8 @@ throw new AtomNotFoundException();
             //Set ing the Text in the specified element
             textelement.sendKeys(value);
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.setTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + element);
+            Log.Primitive("ZUG/BuiltInWebDriver.setTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.setTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + element+ " Exception->" + e.getLocalizedMessage());
 
             throw e;
         }
@@ -381,8 +396,8 @@ throw new AtomNotFoundException();
 //Button clicked
             btnelement.click();
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element);
-            Log.Error("ZUG/BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element);
+            Log.Primitive("ZUG/BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element+ " Exception->" + e.getLocalizedMessage());
             throw e;
         }
     }
@@ -394,7 +409,7 @@ throw new AtomNotFoundException();
            window_object= getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.clickButtonById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.clickButtonById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
 
@@ -403,8 +418,8 @@ throw new AtomNotFoundException();
 //Button clicked
             btnelement.click();
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.clickButtonById-Cannot find button with the given button identifier or invalid button Identifier. Button Identifier = " + element);
-
+            Log.Primitive("ZUG/BuiltInWebDriver.clickButtonById-Cannot find button with the given button identifier or invalid button Identifier. Button Identifier = " + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.clickButtonById-Cannot find button with the given button identifier or invalid button Identifier. Button Identifier = " + element+ " Exception->" + e.getLocalizedMessage());
             throw e;
         }
     }
@@ -416,7 +431,7 @@ throw new AtomNotFoundException();
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.clickButtonByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.clickButtonByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
 
@@ -425,25 +440,32 @@ throw new AtomNotFoundException();
 //Button clicked
             btnelement.click();
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.clickButtonByClassName-Cannot find button with the given button class name or invalid button class anme. Button Class Name = " + element);
-
+            Log.Primitive("ZUG/BuiltInWebDriver.clickButtonByClassName-Cannot find button with the given button class name or invalid button class anme. Button Class Name = " + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.clickButtonByClassName-Cannot find button with the given button class name or invalid button class anme. Button Class Name = " + element+ " Exception->" + e.getLocalizedMessage());
             throw e;
         }
     }
 
     public void closeBrowser(String window_handle) throws Exception {
         //Switching To the Window
-        WebDriver window_object;
+        WebDriver window_object=null;
         try {
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.closeBrowser-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.closeBrowser-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
 
         //Closing Driver
-        window_object.quit();
+       try {
+           window_object.quit();
+       }
+        catch (Exception e) {
+            Log.Primitive("ZUG/BuiltInWebDriver.closeBrowser-Cannot close browser "+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.closeBrowser-Cannot close browse"+ " Exception->" + e.getLocalizedMessage());
+            throw e;
+        }
     }
 
     public void setMultipleTextById(String window_handle, String elements, String values) throws Exception {
@@ -453,7 +475,7 @@ throw new AtomNotFoundException();
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.setMultipleTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.setMultipleTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
 
@@ -461,6 +483,8 @@ throw new AtomNotFoundException();
         String[] arrValues = values.split(":");
         if (arrElements.length != arrValues.length) {
             Log.Primitive("ZUG/BuiltInWebDriver.setMultipleTextById-Unequal number of elements and values present in the list");
+            Log.Error("ZUG/BuiltInWebDriver.setMultipleTextById-Unequal number of elements and values present in the list");
+            throw new Exception();
         }
         for (int i = 0; i < arrElements.length; i++) {
             try {
@@ -468,7 +492,8 @@ throw new AtomNotFoundException();
                 //Set ing the Text in the specified element
                 textelement.sendKeys(arrValues[i]);
             } catch (Exception e) {
-                Log.Primitive("ZUG/BuiltInWebDriver.setMultipleTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + arrElements[i]);
+                Log.Primitive("ZUG/BuiltInWebDriver.setMultipleTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + arrElements[i]+ " Exception->" + e.getLocalizedMessage());
+                Log.Error("ZUG/BuiltInWebDriver.setMultipleTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + arrElements[i]+ " Exception->" + e.getLocalizedMessage());
                 throw e;
             }
         }
@@ -498,8 +523,8 @@ throw new AtomNotFoundException();
                 //Set ing the Text in the specified element
                 textelement.sendKeys(arrValues[i]);
             } catch (Exception e) {
-                Log.Primitive("ZUG/BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]);
-                Log.Error("ZUG/BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]);
+                Log.Primitive("ZUG/BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]+ " Exception->" + e.getLocalizedMessage());
+                Log.Error("ZUG/BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]+ " Exception->" + e.getLocalizedMessage());
                 throw e;
             }
         }
@@ -539,8 +564,8 @@ throw new AtomNotFoundException();
                 //Set ing the Text in the specified element
                 textelement.sendKeys(arrValues[i]);
             } catch (Exception e) {
-                Log.Primitive("ZUG/BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]);
-                Log.Error("ZUG/BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]);
+                Log.Primitive("ZUG/BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]+ " Exception->" + e.getLocalizedMessage());
+                Log.Error("ZUG/BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i]+ " Exception->" + e.getLocalizedMessage());
                 throw e;
             }
         }
@@ -548,15 +573,17 @@ throw new AtomNotFoundException();
 
     
     public void AcceptPopup(String window_handle, String TimeOutSeconds) throws Exception {
-        
         boolean PopupNotFound=true;
         Alert alert = null ;
         Integer SecondsElapsed=0;
         Integer TimeOutSecondsInt=Integer.parseInt(TimeOutSeconds);
-        while(PopupNotFound && SecondsElapsed <  TimeOutSecondsInt ){
+        int i=0;
+        while(PopupNotFound){  // && SecondsElapsed <  TimeOutSecondsInt
             try {
+                System.out.println("Found\t"+i++);
 
                 alert = getWebDriverObject(window_handle).switchTo().alert();
+                System.out.println("Found\t"+alert.getText());
                 PopupNotFound=false;
 
             } catch (Exception e) {
@@ -572,23 +599,41 @@ throw new AtomNotFoundException();
             alert.accept();
         }
         else{
-            Log.PrimitiveErrors("ZUG/BuiltInWebDriver.AcceptPopup Error Popup not found within timeout");
+            Log.Primitive("ZUG/BuiltInWebDriver.AcceptPopup Error Popup not found within timeout");
+            Log.Error("ZUG/BuiltInWebDriver.AcceptPopup Error Popup not found within timeout");
             throw new WebDriverException();
         }
     }
 
-        public void getTextInPopup(String window_handle, String ContextVariable_return_popupText) throws Exception {
+        public void getTextInPopup(String window_handle, String TimeOutSeconds, String ContextVariable_return_popupText) throws Exception {
         //Switching To the Window
-            WebDriver window_object;
-        try {
-            window_object=getWebDriverObject(window_handle);
-            Alert alert = window_object.switchTo().alert();
-           // System.out.println("getTextInPopup   :  "+alert.getText());
-            ContextVar.alterContextVar(ContextVariable_return_popupText, alert.getText());
-        } catch (WebDriverException e) {
-            Log.PrimitiveErrors("ZUG/BuiltInWebDriver.clickAcceptButtonInPopUp Error");
-            throw e;
+                boolean PopupNotFound=true;
+        Alert alert = null ;
+        Integer SecondsElapsed=0;
+        Integer TimeOutSecondsInt=Integer.parseInt(TimeOutSeconds);
+        while(PopupNotFound && SecondsElapsed <  TimeOutSecondsInt ){
+            try {
 
+                alert = getWebDriverObject(window_handle).switchTo().alert();
+
+                PopupNotFound=false;
+
+            } catch (Exception e) {
+
+                SecondsElapsed++;
+                Thread.sleep(1000);
+                continue;
+
+            }
+
+        }
+        if(!PopupNotFound){
+            ContextVar.alterContextVar(ContextVariable_return_popupText, alert.getText());
+        }
+        else{
+            Log.Primitive("ZUG/BuiltInWebDriver.getTextInPopup:: Popup not found within timeout");
+            Log.Error("ZUG/BuiltInWebDriver.getTextInPopup:: Popup not found within timeout");
+            throw new WebDriverException();
         }
     }
 
@@ -617,7 +662,8 @@ throw new AtomNotFoundException();
             alert.dismiss();
         }
         else{
-            Log.PrimitiveErrors("ZUG/BuiltInWebDriver.DeclinePopup. Error Popup not found within timeout");
+            Log.Primitive("ZUG/BuiltInWebDriver.DeclinePopup. Error Popup not found within timeout");
+            Log.Error("ZUG/BuiltInWebDriver.DeclinePopup. Error Popup not found within timeout");
             throw new WebDriverException();
         }
    }
@@ -630,6 +676,7 @@ throw new AtomNotFoundException();
 
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Error("ZUG/BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
         try {
@@ -662,10 +709,12 @@ throw new AtomNotFoundException();
             }
             if (flag) {
                 Log.Primitive("ZUG/BuiltInWebDriver.matchTextByClassName-Cannot find required text in the given element. Class Name = " + class_name);
+                Log.Error("ZUG/BuiltInWebDriver.matchTextByClassName-Cannot find required text in the given element. Class Name = " + class_name);
                 throw new Exception();
             }
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name);
+            Log.Error("ZUG/BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name);
             throw e;
         }
     }
@@ -677,6 +726,7 @@ throw new AtomNotFoundException();
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.selectFromDropDownByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Error("ZUG/BuiltInWebDriver.selectFromDropDownByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
 
             throw e;
         }
@@ -688,7 +738,8 @@ throw new AtomNotFoundException();
             // System.out.println("Page title is: " + dd.selectByVisibleText(value));
             select_element.selectByVisibleText(value);
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.selectFromDropDownByName-Cannot find dropdown with the given dropdown name. DropDown Name=" + element);
+            Log.Primitive("ZUG/BuiltInWebDriver.selectFromDropDownByName-Cannot find dropdown with the given dropdown name. DropDown Name=" + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.selectFromDropDownByName-Cannot find dropdown with the given dropdown name. DropDown Name=" + element+ " Exception->" + e.getLocalizedMessage());
             throw e;
         }
     }
@@ -701,6 +752,7 @@ throw new AtomNotFoundException();
         }
         catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Error("ZUG/BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
         // printMessage("Switching to Handle=-" + contextvariable);
@@ -710,7 +762,8 @@ throw new AtomNotFoundException();
             //Set ing the Text in the specified element
             textelement.sendKeys(value);
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.fileUpload-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element);
+            Log.Primitive("ZUG/BuiltInWebDriver.fileUpload-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
     }
@@ -722,7 +775,7 @@ throw new AtomNotFoundException();
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.clickLinkByText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.clickLinkByText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
 
@@ -731,8 +784,8 @@ throw new AtomNotFoundException();
 //Button clicked
             linkelement.click();
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.clickLinkByText-Cannot find link with the given text or invalid link text. Link Text = " + element);
-
+            Log.Primitive("ZUG/BuiltInWebDriver.clickLinkByText-Cannot find link with the given text or invalid link text. Link Text = " + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.clickLinkByText-Cannot find link with the given text or invalid link text. Link Text = " + element+ " Exception->" + e.getLocalizedMessage());
             throw e;
         }
     }
@@ -744,7 +797,7 @@ throw new AtomNotFoundException();
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.clickLinkByImageTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.clickLinkByImageTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
         Boolean found_img=false;
@@ -765,8 +818,8 @@ throw new AtomNotFoundException();
                 }
             //linkelement.click();
         } catch (Exception e) {
-            Log.Primitive("ZUG/BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element);
-            Log.Error("ZUG/BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element);
+            Log.Primitive("ZUG/BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element+ " Exception->" + e.getLocalizedMessage());
+            Log.Error("ZUG/BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element+ " Exception->" + e.getLocalizedMessage());
             throw e;
         }
     }
@@ -817,6 +870,7 @@ throw new AtomNotFoundException();
         }
         if (!find_table) {
             Log.Primitive("ZUG/BuiltInWebDriver.getTableColumnNrByColumnName-Cannot find table with the given identifier or invalid table identifier. Table ID " + table_id);
+            Log.Error("ZUG/BuiltInWebDriver.getTableColumnNrByColumnName-Cannot find table with the given identifier or invalid table identifier. Table ID " + table_id);
             throw new Exception();
         }
         //System.out.println("Column Nr" + col_nr);
@@ -830,7 +884,7 @@ throw new AtomNotFoundException();
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
         //System.out.println("moving");
@@ -858,6 +912,7 @@ throw new AtomNotFoundException();
                 }
                 if (!found_column) {
                     Log.Primitive("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find column name in the first row of the table. Column Name " + column_name);
+                    Log.Error("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find column name in the first row of the table. Column Name " + column_name);
                     throw new Exception("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find column name in the first row of the table. Column Name " + column_name);
                 }
                 Integer row_no = 0;
@@ -885,6 +940,7 @@ throw new AtomNotFoundException();
                 }
                 if (!found_cell) {
                     Log.Primitive("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find cell with the given text. Text " + textual_Content);
+                    Log.Error("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find cell with the given text. Text " + textual_Content);
                     throw new Exception("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find cell with the given text. Text " + textual_Content);
                 }
 
@@ -896,6 +952,7 @@ throw new AtomNotFoundException();
         }
         if (!find_table) {
             Log.Primitive("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find table with the given identifier or invalid table identifier. Table ID " + table_id);
+            Log.Error("ZUG/BuiltInWebDriver.getTableRowNrByColumnNameAndText-Cannot find table with the given identifier or invalid table identifier. Table ID " + table_id);
             throw new Exception();
         }
 
@@ -909,7 +966,7 @@ throw new AtomNotFoundException();
             window_object=getWebDriverObject(window_handle);
         } catch (Exception e) {
             Log.Primitive("ZUG/BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Error("ZUG/BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
             throw e;
         }
         //System.out.println("moving");
@@ -1036,6 +1093,7 @@ throw new AtomNotFoundException();
             }
         if (!find_table) {
             Log.Primitive("ZUG/BuiltInWebDriver.getRowCountInTable-Cannot find table with the given identifier or invalid table identifier. Table ID " + table_id);
+            Log.Error("ZUG/BuiltInWebDriver.getRowCountInTable-Cannot find table with the given identifier or invalid table identifier. Table ID " + table_id);
             throw new Exception();
         }
 
