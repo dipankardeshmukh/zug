@@ -3213,7 +3213,7 @@ public class Controller extends Thread {
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
                 }
-            }else  if(verification.verificationName.contains("webdriver"))
+            }else  if(verification.verificationName.toLowerCase().contains("webdriver"))
             {
                 try
                 {
@@ -5931,7 +5931,7 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
                             // If the action Steps contain an "i" and there is a
                             // cleanup step for it then remove that from the
                             // stack.
-                          -
+                           
                             if (action.step.endsWith("i")
                                     && (stepsKeys.containsKey(action.step.substring(0,
                                     action.step.length() - 1)
