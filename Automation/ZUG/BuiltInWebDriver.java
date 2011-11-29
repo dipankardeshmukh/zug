@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import logs.Log;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -132,77 +133,83 @@ class WebDriverMap {
 
         if (browser.equalsIgnoreCase("firefox")) {
             //Initiating WebDriver Object
-            WebDriver firefoxdriver = new FirefoxDriver();
-            //printMessage("Firefox is the Browser");
-            Log.Debug("ZUG/WebDriverMap::Firefox is the Browser");
-            WindowHandle = firefoxdriver.getWindowHandle();
-            //System.out.println("Original "+WindowHandle);
+            WebDriver firefoxdriver=null;
+            try{
+                firefoxdriver = new FirefoxDriver();
+            }
+            catch(Exception e){                
+                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating FirefoxDriver object. Exception:: "+ e.getMessage());
+                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating FirefoxDriver object. Exception:: "+ e.getMessage());
+            }            
+            WindowHandle = firefoxdriver.getWindowHandle();            
             if (WindowHandle.startsWith("{") && WindowHandle.endsWith("}")) {
-                WindowHandle = WindowHandle.substring(1, WindowHandle.length() - 1);
-                //System.out.println("Changed"+WindowHandle);
+                WindowHandle = WindowHandle.substring(1, WindowHandle.length() - 1);                
             }
             ContextVar.setContextVar(contextvariable, WindowHandle);
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, firefoxdriver);
             wdriver_children.put(WindowHandle, new ArrayList<String>());
             Log.Primitive("ZUG/WebDriverMap.Firefox Browser");
-            Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
+            
         } else if (browser.equalsIgnoreCase("chrome")) {
             //Initiating WebDriver Object
-            System.getProperty("webdriver.chrome.driver","/home/automature/Downloads/chromedriver");
-            WebDriver chromedriver = new ChromeDriver();
-            // printMessage("chrome is the Browser");
-            Log.Debug("ZUG/WebDriverMap::Chrome is the Browser");
+            WebDriver chromedriver=null;
+            try{
+                System.setProperty("webdriver.chrome.driver", "/home/automature/Downloads/chromedriver");                
+                chromedriver = new ChromeDriver();                
+            }
+            catch(Exception e){                
+                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating ChromeDriver object. Exception:: "+ e.getMessage());
+                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating ChromeDriver object. Exception:: "+ e.getMessage());
+            }            
             WindowHandle = chromedriver.getWindowHandle();
             ContextVar.setContextVar(contextvariable, WindowHandle);
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, chromedriver);
-            wdriver_children.put(WindowHandle, null);
-            Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
+            wdriver_children.put(WindowHandle, null);            
             Log.Primitive("ZUG/WebDriverMap.Chrome Browser");
         } else if (browser.equalsIgnoreCase("ie")) {
             //Initiating WebDriver Object
-            WebDriver iedriver = new InternetExplorerDriver();
-            // printMessage("ie is the Browser");
-            Log.Debug("ZUG/WebDriverMap::Internet Explorer is the Browser");
+            WebDriver iedriver=null;
+            try{
+                iedriver = new InternetExplorerDriver();
+            }
+                catch(Exception e){                                
+                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating IEDriver object. Exception:: "+ e.getMessage());
+                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating IEDriver object. Exception:: "+ e.getStackTrace());
+            }// printMessage("ie is the Browser");           
             WindowHandle = iedriver.getWindowHandle();
             if (WindowHandle.startsWith("{") && WindowHandle.endsWith("}")) {
-                WindowHandle = WindowHandle.substring(1, WindowHandle.length() - 1);
-                // System.out.println("Changed"+WindowHandle);
+                WindowHandle = WindowHandle.substring(1, WindowHandle.length() - 1);                
             }
             ContextVar.setContextVar(contextvariable, WindowHandle);
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, iedriver);
             wdriver_children.put(WindowHandle, null);
-            Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
             Log.Primitive("ZUG/WebDriverMap.IE Browser");
         } else if (browser.equalsIgnoreCase("htmlunit")) {
-
             //Initiating WebDriver Object
-            HtmlUnitDriver htmlunitdriver = new HtmlUnitDriver(true);
-            htmlunitdriver.setJavascriptEnabled(true);
-            WebClient hh = new WebClient();
-
-
-            Log.Debug("ZUG/WebDriverMap::Browser Less Automation");
-
+            HtmlUnitDriver htmlunitdriver=null;
+            try{
+                htmlunitdriver = new HtmlUnitDriver(true);
+                htmlunitdriver.setJavascriptEnabled(true);
+                WebClient hh = new WebClient();
+            }
+            catch(Exception e){                               
+                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating HtmlUnitDriver object. Exception:: "+ e.getMessage());
+                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating HtmlUnitDriver object. Exception:: "+ e.getMessage());
+            }
             WindowHandle = htmlunitdriver.getWindowHandle();
-
             ContextVar.setContextVar(contextvariable, WindowHandle);
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, htmlunitdriver);
-            wdriver_children.put(WindowHandle, null);
-
-            Log.Debug("ZUG/WebDriverMap::Sqltie entry Done");
+            wdriver_children.put(WindowHandle, null);            
             Log.Primitive("ZUG/WebDriverMap.html unit");
-        } else {
-            // printMessage("Browser not found");
+        } else {            
             Log.Error("ZUG/WebDriverMap::Browser Not Found");
             Log.Primitive("ZUG/WebDriverMap::Browser Not Found");
             throw new Exception();
-
         }
-
     }
 
     /*
@@ -217,7 +224,7 @@ class WebDriverMap {
 
             return contextvariablevalue;
         } catch (Exception er) {
-            return er.getLocalizedMessage();
+            return er.getMessage();
         }
     }
     /*
@@ -233,7 +240,7 @@ class WebDriverMap {
 
             return contextvariablename;
         } catch (Exception er) {
-            return er.getLocalizedMessage();
+            return er.getMessage();
         }
     }
     /*
@@ -256,7 +263,7 @@ public class BuiltInWebDriver extends WebDriverMap {
 
     private boolean method_found_flag;
 
-    public void BuiltInWebDriverMethod(String method_name, ArrayList<String> inputs) throws Exception {
+    public synchronized void BuiltInWebDriverMethod(String method_name, ArrayList<String> inputs) throws Exception {
         try {
             //String method_name = inputs.get(0);
             //printMessage("The Method name-"+method_name);
@@ -283,7 +290,7 @@ public class BuiltInWebDriver extends WebDriverMap {
             }
 
         } catch (Exception r) {
-            Log.Error("ZUG/WebDriverMap:: Error Occured-" + method_name + inputs);
+            Log.Error("ZUG/WebDriverMap:: Error Occured-" + method_name + inputs + "Exception:: "+r.getMessage());
             throw r;
         }
 
@@ -303,7 +310,7 @@ public class BuiltInWebDriver extends WebDriverMap {
      * @param browser name,url,context variable
      */
 
-    public void goToUrl(String window_handle, String url) {
+    public synchronized void goToUrl(String window_handle, String url) {
         //Url checking
         WebDriver window_object = null;
         try {
@@ -324,7 +331,7 @@ public class BuiltInWebDriver extends WebDriverMap {
 
     }
 
-    public void setTextByName(String window_handle, String element, String value) throws Exception {
+    public synchronized void setTextByName(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -345,7 +352,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public void setTextById(String window_handle, String element, String value) throws Exception {
+    public synchronized void setTextById(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -368,7 +375,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public void clickButtonByName(String window_handle, String element) throws Exception {
+    public synchronized void clickButtonByName(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -384,13 +391,13 @@ public class BuiltInWebDriver extends WebDriverMap {
 //Button clicked
             btnelement.click();
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + " Exception->" + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + " Exception->" + e.getMessage());
             throw e;
         }
     }
 
-    public void clickButtonById(String window_handle, String element) throws Exception {
+    public synchronized void clickButtonById(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -412,7 +419,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public void clickButtonByClassName(String window_handle, String element) throws Exception {
+    public synchronized void clickButtonByClassName(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -434,7 +441,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public void closeBrowser(String window_handle) throws Exception {
+    public synchronized void closeBrowser(String window_handle) throws Exception {
         //Switching To the Window
         WebDriver window_object = null;
         try {
@@ -455,7 +462,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public void setMultipleTextById(String window_handle, String elements, String values) throws Exception {
+    public synchronized void setMultipleTextById(String window_handle, String elements, String values) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -486,7 +493,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public void setMultipleTextByName(String window_handle, String elements, String values) throws Exception {
+    public synchronized void setMultipleTextByName(String window_handle, String elements, String values) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -517,7 +524,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public void setMultipleFieldTypesByName(String window_handle, String elements, String values) throws Exception {
+    public synchronized void setMultipleFieldTypesByName(String window_handle, String elements, String values) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -559,6 +566,9 @@ public class BuiltInWebDriver extends WebDriverMap {
     }
 
     public void acceptPopup(String window_handle, String TimeOutSeconds) throws Exception {
+        
+        //((JavascriptExecutor) getWebDriverObject(window_handle)).executeScript("window.confirm = function(msg){returntrue;};");
+
         boolean PopupNotFound = true;
         Alert alert = null;
         Integer SecondsElapsed = 0;
@@ -566,21 +576,20 @@ public class BuiltInWebDriver extends WebDriverMap {
         int i = 0;
         while (PopupNotFound && SecondsElapsed < TimeOutSecondsInt) {
             try {
-
-
+                //System.out.println("Inside Accept Popup1");
                 alert = getWebDriverObject(window_handle).switchTo().alert();
-
+               // System.out.println("Inside Accept Popup2");
                 PopupNotFound = false;
                 alert.accept();
             }catch(UnsupportedOperationException uop)
-            {
+             {
                 if(getWebDriverObject(window_handle).getClass().getName().equalsIgnoreCase("org.openqa.selenium.htmlunit.HtmlUnitDriver"))
                 PopupNotFound=false;
                 else
                 {
                    Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
-            Log.Error("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
-            throw new WebDriverException("BuiltInWebDriver.acceptPopup:: Popup not Supported "+uop.getMessage());
+                   Log.Error("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
+                   throw new WebDriverException("BuiltInWebDriver.acceptPopup:: Popup not Supported "+uop.getMessage());
                 }
                 
             }
@@ -589,7 +598,9 @@ public class BuiltInWebDriver extends WebDriverMap {
                 
                 SecondsElapsed++;
                 Thread.sleep(1000);
+                 //System.out.println("My exception:: "+e.getMessage());
                 continue;
+
 
             }
             catch(Exception x)
@@ -739,7 +750,7 @@ alert.dismiss();
         }
     }
 
-    public void selectFromDropDownByName(String window_handle, String element, String value) throws Exception {
+    public synchronized void selectFromDropDownByName(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -764,7 +775,7 @@ alert.dismiss();
         }
     }
 
-    public void fileUpload(String window_handle, String element, String value) throws Exception {
+    public synchronized void fileUpload(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -787,7 +798,7 @@ alert.dismiss();
         }
     }
 
-    public void clickLinkByText(String window_handle, String element) throws Exception {
+    public synchronized void clickLinkByText(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -809,7 +820,7 @@ alert.dismiss();
         }
     }
 
-    public void clickLinkByImageTitle(String window_handle, String element) throws Exception {
+    public synchronized void clickLinkByImageTitle(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -842,7 +853,7 @@ alert.dismiss();
         }
     }
 
-    public void getTableColumnNrByColumnName(String window_handle, String table_id, String column_name, String contextVar_colm_nr) throws Exception {
+    public synchronized void getTableColumnNrByColumnName(String window_handle, String table_id, String column_name, String contextVar_colm_nr) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -894,7 +905,7 @@ alert.dismiss();
         //System.out.println("Column Nr" + col_nr);
     }
 
-    public void getTableRowNrByColumnNameAndText(String window_handle, String table_id, String column_name, String textual_Content, String contextVar_row_nr) throws Exception {
+    public synchronized void getTableRowNrByColumnNameAndText(String window_handle, String table_id, String column_name, String textual_Content, String contextVar_row_nr) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -976,7 +987,7 @@ alert.dismiss();
 
     }
 
-    public void clickLinkInTableByRowColumnAndLinkIndex(String window_handle, String table_id, String row_no, String column_no, String link_index) throws Exception {
+    public synchronized void clickLinkInTableByRowColumnAndLinkIndex(String window_handle, String table_id, String row_no, String column_no, String link_index) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1069,7 +1080,7 @@ alert.dismiss();
 
     }
 
-    public void getRowCountInTable(String window_handle, String table_id, String contextVar_row_count) throws Exception {
+    public synchronized void getRowCountInTable(String window_handle, String table_id, String contextVar_row_count) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1114,7 +1125,7 @@ alert.dismiss();
 
     }
 
-    public void matchRowValuesInTable(String window_handle, String table_id, String column_names, String values, String row_nr) throws Exception {
+    public synchronized void matchRowValuesInTable(String window_handle, String table_id, String column_names, String values, String row_nr) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
