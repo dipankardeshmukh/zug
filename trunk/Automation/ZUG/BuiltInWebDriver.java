@@ -72,7 +72,7 @@ class WebDriverMap {
                     try {
                         reqdobj.switchTo().window(window_handle);
                     } catch (Exception e) {
-                        throw new Exception("Cannot attach handle to the Window.");
+                        throw new Exception("Cannot attach handle to the Window. Exception:: " + e.getMessage());
                     }
                     found_obj = true;
                     break;
@@ -84,7 +84,7 @@ class WebDriverMap {
 
                 return (reqdobj);
             } else {
-                Log.Primitive("ZUG/WebDriverMap.Window Handle not found in list- Window Handle : " + window_handle);
+                Log.Primitive("ZUG/WebDriverMap.Window Handle not found in list- Window Handle : " + window_handle );
                 Log.Error("ZUG/WebDriverMap.Window Handle not found in list- Window Handle : " + window_handle);
                 throw new Exception();
             }
@@ -113,13 +113,13 @@ class WebDriverMap {
                     if (!objArr.contains(new_handle)) {
                         //System.out.println("Set in array");
                         objArr.add(new_handle);
-                        Log.Primitive("ZUG/WebDriverMap.Handle added to list- Window Handle : new_handle");
+                        Log.Primitive("WebDriverMap.Handle added to list- Window Handle : new_handle");
                     }
                 }
             }
         } catch (Exception e) {
-            //System.out.println(e.getMessage());
-            //System.out.println("Problm in putWindowHandle");
+            Log.Primitive("WebDriverMap.Problem adding new element in Hash list : " + key_handle+".  Exception:: " + e.getMessage());
+            Log.Error("WebDriverMap.Problem adding new element in Hash list : " + key_handle + ".  Exception:: " + e.getMessage());
             throw e;
         }
         if (!found_key) {
@@ -138,8 +138,8 @@ class WebDriverMap {
                 firefoxdriver = new FirefoxDriver();
             }
             catch(Exception e){                
-                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating FirefoxDriver object. Exception:: "+ e.getMessage());
-                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating FirefoxDriver object. Exception:: "+ e.getMessage());
+                Log.Primitive("WebDriverMap.initialize-Exception while creating FirefoxDriver object. Exception:: "+ e.getMessage());
+                Log.Error("WebDriverMap.initialize-Exception while creating FirefoxDriver object. Exception:: "+ e.getMessage());
             }            
             WindowHandle = firefoxdriver.getWindowHandle();            
             if (WindowHandle.startsWith("{") && WindowHandle.endsWith("}")) {
@@ -149,7 +149,7 @@ class WebDriverMap {
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, firefoxdriver);
             wdriver_children.put(WindowHandle, new ArrayList<String>());
-            Log.Primitive("ZUG/WebDriverMap.Firefox Browser");
+            Log.Primitive("WebDriverMap.Firefox Browser");
             
         } else if (browser.equalsIgnoreCase("chrome")) {
             //Initiating WebDriver Object
@@ -159,15 +159,15 @@ class WebDriverMap {
                 chromedriver = new ChromeDriver();                
             }
             catch(Exception e){                
-                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating ChromeDriver object. Exception:: "+ e.getMessage());
-                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating ChromeDriver object. Exception:: "+ e.getMessage());
+                Log.Primitive("WebDriverMap.initialize-Exception while creating ChromeDriver object. Exception:: "+ e.getMessage());
+                Log.Error("WebDriverMap.initialize-Exception while creating ChromeDriver object. Exception:: "+ e.getMessage());
             }            
             WindowHandle = chromedriver.getWindowHandle();
             ContextVar.setContextVar(contextvariable, WindowHandle);
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, chromedriver);
             wdriver_children.put(WindowHandle, null);            
-            Log.Primitive("ZUG/WebDriverMap.Chrome Browser");
+            Log.Primitive("WebDriverMap.Chrome Browser");
         } else if (browser.equalsIgnoreCase("ie")) {
             //Initiating WebDriver Object
             WebDriver iedriver=null;
@@ -175,8 +175,8 @@ class WebDriverMap {
                 iedriver = new InternetExplorerDriver();
             }
                 catch(Exception e){                                
-                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating IEDriver object. Exception:: "+ e.getMessage());
-                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating IEDriver object. Exception:: "+ e.getStackTrace());
+                Log.Primitive("WebDriverMap.initialize-Exception while creating IEDriver object. Exception:: "+ e.getMessage());
+                Log.Error("WebDriverMap.initialize-Exception while creating IEDriver object. Exception:: "+ e.getMessage());
             }// printMessage("ie is the Browser");           
             WindowHandle = iedriver.getWindowHandle();
             if (WindowHandle.startsWith("{") && WindowHandle.endsWith("}")) {
@@ -186,7 +186,7 @@ class WebDriverMap {
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, iedriver);
             wdriver_children.put(WindowHandle, null);
-            Log.Primitive("ZUG/WebDriverMap.IE Browser");
+            Log.Primitive("WebDriverMap.IE Browser");
         } else if (browser.equalsIgnoreCase("htmlunit")) {
             //Initiating WebDriver Object
             HtmlUnitDriver htmlunitdriver=null;
@@ -196,18 +196,18 @@ class WebDriverMap {
                 WebClient hh = new WebClient();
             }
             catch(Exception e){                               
-                Log.Primitive("ZUG/WebDriverMap.initialize-Exception while creating HtmlUnitDriver object. Exception:: "+ e.getMessage());
-                Log.Error("ZUG/WebDriverMap.initialize-Exception while creating HtmlUnitDriver object. Exception:: "+ e.getMessage());
+                Log.Primitive("WebDriverMap.initialize-Exception while creating HtmlUnitDriver object. Exception:: "+ e.getMessage());
+                Log.Error("WebDriverMap.initialize-Exception while creating HtmlUnitDriver object. Exception:: "+ e.getMessage());
             }
             WindowHandle = htmlunitdriver.getWindowHandle();
             ContextVar.setContextVar(contextvariable, WindowHandle);
             //putting the Webdriver object in HashMap with ContextVariable
             wdrivermap.put(WindowHandle, htmlunitdriver);
             wdriver_children.put(WindowHandle, null);            
-            Log.Primitive("ZUG/WebDriverMap.html unit");
+            Log.Primitive("WebDriverMap.html unit");
         } else {            
-            Log.Error("ZUG/WebDriverMap::Browser Not Found");
-            Log.Primitive("ZUG/WebDriverMap::Browser Not Found");
+            Log.Error("WebDriverMap::Browser Not Found");
+            Log.Primitive("WebDriverMap::Browser Not Found");
             throw new Exception();
         }
     }
@@ -284,13 +284,14 @@ public class BuiltInWebDriver extends WebDriverMap {
                 }
             }
             if (method_found_flag == false) {
-                Log.Error("BultInWebDriver:: Atom Not Found-" + inputs);
-                Log.Primitive("WebDriverMap::Atom Not Found" + inputs);
+                Log.Error("WebDriverMap.BuiltInWebDriverMethod- Atom Not Found-" + inputs);
+                Log.Primitive("WebDriverMap.BuiltInWebDriverMethod- Atom Not Found" + inputs);
                 throw new AtomNotFoundException();
             }
 
         } catch (Exception r) {
-            Log.Error("ZUG/WebDriverMap:: Error Occured-" + method_name + inputs + "Exception:: "+r.getMessage());
+            Log.Error("WebDriverMap.BuiltInWebDriverMethod- Error Occured-" + method_name + inputs + ". Exception:: "+r.getMessage());
+            Log.Primitive("WebDriverMap.BuiltInWebDriverMethod- Error Occured-" + method_name + inputs + ". Exception:: "+r.getMessage());
             throw r;
         }
 
@@ -316,16 +317,16 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.goToUrl-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.goToUrl-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.goToUrl-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: "+e.getMessage());
+            Log.Error("BuiltInWebDriver.goToUrl-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle +". Exception:: "+e.getMessage());
         }
         try {
             //System.out.println("Inside gotoURL");
             window_object.get(url);
 
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.goToUrl::URL not found. URL=" + url + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.goToUrl::URL not found. URL=" + url + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.goToUrl-URL not found. URL=" + url + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.goToUrl-URL not found. URL=" + url + ". Exception:: " + e.getMessage());
         }
 
 
@@ -337,8 +338,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.setTextByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.setTextByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.setTextByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.setTextByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
         try {
@@ -346,8 +347,8 @@ public class BuiltInWebDriver extends WebDriverMap {
             //Set ing the Text in the specified element
             textelement.sendKeys(value);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.setTextByName-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element + ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -358,8 +359,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.setTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.setTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.setTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.setTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
         try {
@@ -368,8 +369,8 @@ public class BuiltInWebDriver extends WebDriverMap {
             //Set ing the Text in the specified element
             textelement.sendKeys(value);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.setTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.setTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.setTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.setTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + element + ". Exception:: " + e.getMessage());
 
             throw e;
         }
@@ -381,8 +382,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickButtonByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.clickButtonByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.clickButtonByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickButtonByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
 
@@ -391,8 +392,8 @@ public class BuiltInWebDriver extends WebDriverMap {
 //Button clicked
             btnelement.click();
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + " Exception->" + e.getMessage());
-            Log.Error("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + " Exception->" + e.getMessage());
+            Log.Primitive("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickButtonByName-Cannot find button with the given button name or invalid button name. Button Name = " + element + ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -403,8 +404,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickButtonById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.clickButtonById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.clickButtonById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickButtonById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
 
@@ -413,8 +414,8 @@ public class BuiltInWebDriver extends WebDriverMap {
 //Button clicked
             btnelement.click();
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickButtonById-Cannot find button with the given button identifier or invalid button Identifier. Button Identifier = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.clickButtonById-Cannot find button with the given button identifier or invalid button Identifier. Button Identifier = " + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.clickButtonById-Cannot find button with the given button identifier or invalid button Identifier. Button Identifier = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickButtonById-Cannot find button with the given button identifier or invalid button Identifier. Button Identifier = " + element + ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -425,8 +426,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickButtonByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.clickButtonByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.clickButtonByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickButtonByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
 
@@ -435,8 +436,8 @@ public class BuiltInWebDriver extends WebDriverMap {
 //Button clicked
             btnelement.click();
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickButtonByClassName-Cannot find button with the given button class name or invalid button class anme. Button Class Name = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.clickButtonByClassName-Cannot find button with the given button class name or invalid button class anme. Button Class Name = " + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.clickButtonByClassName-Cannot find button with the given button class name or invalid button class anme. Button Class Name = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickButtonByClassName-Cannot find button with the given button class name or invalid button class anme. Button Class Name = " + element + ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -447,8 +448,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.closeBrowser-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.closeBrowser-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.closeBrowser-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.closeBrowser-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
 
@@ -456,8 +457,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object.quit();
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.closeBrowser-Cannot close browser " + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.closeBrowser-Cannot close browse" + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.closeBrowser-Cannot close browser " + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.closeBrowser-Cannot close browse" + ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -468,8 +469,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.setMultipleTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.setMultipleTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.setMultipleTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.setMultipleTextById-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
 
@@ -486,8 +487,8 @@ public class BuiltInWebDriver extends WebDriverMap {
                 //Set ing the Text in the specified element
                 textelement.sendKeys(arrValues[i]);
             } catch (Exception e) {
-                Log.Primitive("BuiltInWebDriver.setMultipleTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + arrElements[i] + " Exception->" + e.getLocalizedMessage());
-                Log.Error("BuiltInWebDriver.setMultipleTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + arrElements[i] + " Exception->" + e.getLocalizedMessage());
+                Log.Primitive("BuiltInWebDriver.setMultipleTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + arrElements[i] + ". Exception:: " + e.getMessage());
+                Log.Error("BuiltInWebDriver.setMultipleTextById-Cannot find text field with the given test field identifier or invalid text field identifier. Test Field identifier = " + arrElements[i] + ". Exception:: " + e.getMessage());
                 throw e;
             }
         }
@@ -499,8 +500,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.setMultipleTextByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-
+            Log.Primitive("BuiltInWebDriver.setMultipleTextByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.setMultipleTextByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
         //System.out.println("Hello");
@@ -517,8 +518,8 @@ public class BuiltInWebDriver extends WebDriverMap {
                 //Set ing the Text in the specified element
                 textelement.sendKeys(arrValues[i]);
             } catch (Exception e) {
-                Log.Primitive("BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + " Exception->" + e.getLocalizedMessage());
-                Log.Error("BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + " Exception->" + e.getLocalizedMessage());
+                Log.Primitive("BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + ". Exception:: " + e.getMessage());
+                Log.Error("BuiltInWebDriver.setMultipleTextByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + ". Exception:: " + e.getMessage());
                 throw e;
             }
         }
@@ -530,8 +531,8 @@ public class BuiltInWebDriver extends WebDriverMap {
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
 
@@ -558,11 +559,58 @@ public class BuiltInWebDriver extends WebDriverMap {
                 //Set ing the Text in the specified element
                 textelement.sendKeys(arrValues[i]);
             } catch (Exception e) {
-                Log.Primitive("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + " Exception->" + e.getLocalizedMessage());
-                Log.Error("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + " Exception->" + e.getLocalizedMessage());
+                Log.Primitive("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + ". Exception:: " + e.getMessage());
+                Log.Error("BuiltInWebDriver.setMultipleFieldTypesByName-Cannot find text field with the given test field name or invalid text field name. Test Field Name = " + arrElements[i] + ". Exception:: " + e.getMessage());
                 throw e;
             }
         }
+    }
+
+        public void acceptPopup(String window_handle) throws Exception {
+
+        //((JavascriptExecutor) getWebDriverObject(window_handle)).executeScript("window.confirm = function(msg){returntrue;};");
+
+        boolean PopupNotFound = true;
+        Alert alert = null;
+        Integer SecondsElapsed = 0;
+        Integer TimeOutSecondsInt = 30;
+        int i = 0;
+        while (PopupNotFound && SecondsElapsed < TimeOutSecondsInt) {
+            try {
+                //System.out.println("Inside Accept Popup1");
+                alert = getWebDriverObject(window_handle).switchTo().alert();
+               // System.out.println("Inside Accept Popup2");
+                PopupNotFound = false;
+                alert.accept();
+            }catch(UnsupportedOperationException uop)
+             {
+                if(getWebDriverObject(window_handle).getClass().getName().equalsIgnoreCase("org.openqa.selenium.htmlunit.HtmlUnitDriver"))
+                PopupNotFound=false;
+                else
+                {
+                   Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not Supported"+ ". Exception:: " + uop.getMessage());
+                   Log.Error("BuiltInWebDriver.acceptPopup:: Popup not Supported"+ ". Exception:: " + uop.getMessage());
+                   throw new WebDriverException("BuiltInWebDriver.acceptPopup:: Popup not Supported "+uop.getMessage());
+                }
+
+            }
+
+            catch (NoAlertPresentException e) {
+
+                SecondsElapsed++;
+                Thread.sleep(1000);
+                 //System.out.println("My exception:: "+e.getMessage());
+                continue;
+            }
+            catch(Exception x)
+            {
+                Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not found within timeout"+ ". Exception:: " + x.getMessage());
+                Log.Error("BuiltInWebDriver.acceptPopup:: Popup not found within timeout"+ ". Exception:: " + x.getMessage());
+                throw new WebDriverException("BuiltInWebDriver.acceptPopup:"+x.getMessage());
+            }
+
+        }
+
     }
 
     public void acceptPopup(String window_handle, String TimeOutSeconds) throws Exception {
@@ -587,8 +635,8 @@ public class BuiltInWebDriver extends WebDriverMap {
                 PopupNotFound=false;
                 else
                 {
-                   Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
-                   Log.Error("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
+                   Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not Supported"+ ". Exception:: " + uop.getMessage());
+                   Log.Error("BuiltInWebDriver.acceptPopup:: Popup not Supported"+ ". Exception:: " + uop.getMessage());
                    throw new WebDriverException("BuiltInWebDriver.acceptPopup:: Popup not Supported "+uop.getMessage());
                 }
                 
@@ -600,22 +648,62 @@ public class BuiltInWebDriver extends WebDriverMap {
                 Thread.sleep(1000);
                  //System.out.println("My exception:: "+e.getMessage());
                 continue;
-
-
             }
             catch(Exception x)
             {
-
-               Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not found within timeout--"+x.getMessage());
-            Log.Error("BuiltInWebDriver.acceptPopup:: Popup not found within timeout--"+x.getMessage());
-            throw new WebDriverException("BuiltInWebDriver.acceptPopup:"+x.getMessage());
+                Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not found within timeout"+ ". Exception:: " + x.getMessage());
+                Log.Error("BuiltInWebDriver.acceptPopup:: Popup not found within timeout"+ ". Exception:: " + x.getMessage());
+                throw new WebDriverException("BuiltInWebDriver.acceptPopup:"+x.getMessage());
             }
 
         }
         
     }
 
-    public void getTextInPopup(String window_handle, String TimeOutSeconds, String ContextVariable_return_popupText) throws Exception {
+        public void getTextInPopup(String window_handle, String ContextVariable_return_popupText) throws Exception {
+        //Switching To the Window
+        boolean PopupNotFound = true;
+        Alert alert = null;
+        Integer SecondsElapsed = 0;
+        Integer TimeOutSecondsInt = 30;
+        while (PopupNotFound && SecondsElapsed < TimeOutSecondsInt) {
+            try {
+
+                alert = getWebDriverObject(window_handle).switchTo().alert();
+
+                PopupNotFound = false;
+        ContextVar.alterContextVar(ContextVariable_return_popupText, alert.getText());
+            }catch(UnsupportedOperationException uop)
+            {
+                 if(getWebDriverObject(window_handle).getClass().getName().equalsIgnoreCase("org.openqa.selenium.htmlunit.HtmlUnitDriver"))
+                PopupNotFound=false;
+                else
+                {
+                   Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
+            Log.Error("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
+            throw new WebDriverException("BuiltInWebDriver.acceptPopup:: Popup not Supported "+uop.getMessage());
+                }
+            }
+
+            catch (NoAlertPresentException noal) {
+
+
+                SecondsElapsed++;
+                Thread.sleep(1000);
+                continue;
+            }
+            catch(Exception ex)
+            {
+                Log.Primitive("BuiltInWebDriver.getTextInPopup:: Popup not found within timeout"+ ". Exception:: " + ex.getMessage());
+            Log.Error("BuiltInWebDriver.getTextInPopup:: Popup not found within timeout"+ ". Exception:: " + ex.getMessage());
+
+                throw new WebDriverException("BuiltInWebDriver.getTextInPopup  "+ex.getMessage());
+        }
+
+        }
+    }
+
+    public void getTextInPopup(String window_handle, String ContextVariable_return_popupText, String TimeOutSeconds) throws Exception {
         //Switching To the Window
         boolean PopupNotFound = true;
         Alert alert = null;
@@ -646,16 +734,54 @@ public class BuiltInWebDriver extends WebDriverMap {
                 SecondsElapsed++;
                 Thread.sleep(1000);
                 continue;
-
             }
             catch(Exception ex)
             {
-                Log.Primitive("BuiltInWebDriver.getTextInPopup:: Popup not found within timeout--"+ex.getMessage());
-            Log.Error("BuiltInWebDriver.getTextInPopup:: Popup not found within timeout--"+ex.getMessage());
+                Log.Primitive("BuiltInWebDriver.getTextInPopup:: Popup not found within timeout"+ ". Exception:: " + ex.getMessage());
+            Log.Error("BuiltInWebDriver.getTextInPopup:: Popup not found within timeout"+ ". Exception:: " + ex.getMessage());
 
                 throw new WebDriverException("BuiltInWebDriver.getTextInPopup  "+ex.getMessage());
         }
             
+        }
+    }
+
+        public void declinePopup(String window_handle) throws Exception {
+        //Switching To the Window
+        boolean PopupNotFound = true;
+        Alert alert = null;
+        Integer SecondsElapsed = 0;
+        Integer TimeOutSecondsInt = 30;
+        while (PopupNotFound && SecondsElapsed < TimeOutSecondsInt) {
+            try {
+
+                alert = getWebDriverObject(window_handle).switchTo().alert();
+                PopupNotFound = false;
+alert.dismiss();
+            } catch (UnsupportedOperationException uop) {
+
+  if(getWebDriverObject(window_handle).getClass().getName().equalsIgnoreCase("org.openqa.selenium.htmlunit.HtmlUnitDriver"))
+                PopupNotFound=false;
+                else
+                {
+                   Log.Primitive("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
+            Log.Error("BuiltInWebDriver.acceptPopup:: Popup not Supported--"+uop.getMessage());
+            throw new WebDriverException("BuiltInWebDriver.acceptPopup:: Popup not Supported "+uop.getMessage());
+                }
+            }
+            catch(NoAlertPresentException noAl)
+            {
+                SecondsElapsed++;
+                Thread.sleep(1000);
+                continue;
+        }
+            catch(Exception e)
+            {
+
+                Log.Primitive("BuiltInWebDriver.declinePopup. Error Popup not found within timeout"+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.declinePopup. Error Popup not found within timeout"+ ". Exception:: " + e.getMessage());
+            throw new WebDriverException("BuiltInWebDriver.declinePopup "+e.getMessage());
+            }
         }
     }
 
@@ -687,44 +813,41 @@ alert.dismiss();
                 SecondsElapsed++;
                 Thread.sleep(1000);
                 continue;
-
         }
             catch(Exception e)
             {
 
-                Log.Primitive("BuiltInWebDriver.declinePopup. Error Popup not found within timeout--"+e.getMessage());
-            Log.Error("BuiltInWebDriver.declinePopup. Error Popup not found within timeout--"+e.getMessage());
+                Log.Primitive("BuiltInWebDriver.declinePopup. Error Popup not found within timeout"+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.declinePopup. Error Popup not found within timeout"+ ". Exception:: " + e.getMessage());
             throw new WebDriverException("BuiltInWebDriver.declinePopup "+e.getMessage());
             }
         }
     }
 
-    public void matchTextByClassName(String window_handle, String class_name, String text, String itterate) throws Exception {
+        public void matchTextByClassName(String window_handle, String class_name, String text) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
             window_object = getWebDriverObject(window_handle);
 
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
         try {
-
-            //System.out.println("hello");
             boolean flag = true;
-            //while(flag)
-            // System.out.println("String value"+val);
-            int value = Integer.parseInt(itterate);
-            //System.out.println("Int value"+value);
+
+
+            int value = 30;
+
             for (int i = 0; i < value; i++) {
                 List<WebElement> elementList = window_object.findElements(By.className(class_name));
-                //System.out.println(i);
+
                 Iterator<WebElement> WebelementIterated = elementList.iterator();
                 while (WebelementIterated.hasNext()) {
                     String elementname = WebelementIterated.next().getText();
-                    //System.out.println(elementname);
+
                     if (elementname.equalsIgnoreCase(text)) {
                         flag = false;
                         break;
@@ -736,7 +859,7 @@ alert.dismiss();
                     break;
                 }
                 window_object.navigate().refresh();
-                //printMessage(getWebDriverObject(window_handle).getWindowHandle());
+
             }
             if (flag) {
                 Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find required text in the given element. Class Name = " + class_name);
@@ -744,8 +867,57 @@ alert.dismiss();
                 throw new Exception();
             }
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name);
-            Log.Error("BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name);
+            Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name+ ". Exception:: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void matchTextByClassName(String window_handle, String class_name, String text, String itterate) throws Exception {
+        //Switching To the Window
+        WebDriver window_object;
+        try {
+            window_object = getWebDriverObject(window_handle);
+
+        } catch (Exception e) {
+            Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.matchTextByClassName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            throw e;
+        }
+        try {
+            boolean flag = true;
+            
+            
+            int value = Integer.parseInt(itterate);
+            
+            for (int i = 0; i < value; i++) {
+                List<WebElement> elementList = window_object.findElements(By.className(class_name));
+                
+                Iterator<WebElement> WebelementIterated = elementList.iterator();
+                while (WebelementIterated.hasNext()) {
+                    String elementname = WebelementIterated.next().getText();
+                    
+                    if (elementname.equalsIgnoreCase(text)) {
+                        flag = false;
+                        break;
+                    }
+
+                }
+
+                if (!flag) {
+                    break;
+                }
+                window_object.navigate().refresh();
+                
+            }
+            if (flag) {
+                Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find required text in the given element. Class Name = " + class_name);
+                Log.Error("BuiltInWebDriver.matchTextByClassName-Cannot find required text in the given element. Class Name = " + class_name);
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            Log.Primitive("BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.matchTextByClassName-Cannot find element with the given class name o invalid class name. Class Name = " + class_name+ ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -756,8 +928,8 @@ alert.dismiss();
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.selectFromDropDownByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.selectFromDropDownByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.selectFromDropDownByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.selectFromDropDownByName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
 
             throw e;
         }
@@ -769,8 +941,8 @@ alert.dismiss();
             // System.out.println("Page title is: " + dd.selectByVisibleText(value));
             select_element.selectByVisibleText(value);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.selectFromDropDownByName-Cannot find dropdown with the given dropdown name. DropDown Name=" + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.selectFromDropDownByName-Cannot find dropdown with the given dropdown name. DropDown Name=" + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.selectFromDropDownByName-Cannot find dropdown with the given dropdown name. DropDown Name=" + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.selectFromDropDownByName-Cannot find dropdown with the given dropdown name. DropDown Name=" + element + ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -781,8 +953,8 @@ alert.dismiss();
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
         // printMessage("Switching to Handle=-" + contextvariable);
@@ -792,8 +964,8 @@ alert.dismiss();
             //Set ing the Text in the specified element
             textelement.sendKeys(value);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.fileUpload-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.fileUpload-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.fileUpload-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.fileUpload-Cannot find text field with the given name or invalid text field name. Test Field Name = " + element + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -804,8 +976,8 @@ alert.dismiss();
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickLinkByText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.clickLinkByText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.clickLinkByText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickLinkByText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
 
@@ -814,8 +986,8 @@ alert.dismiss();
 //Button clicked
             linkelement.click();
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickLinkByText-Cannot find link with the given text or invalid link text. Link Text = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.clickLinkByText-Cannot find link with the given text or invalid link text. Link Text = " + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.clickLinkByText-Cannot find link with the given text or invalid link text. Link Text = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickLinkByText-Cannot find link with the given text or invalid link text. Link Text = " + element +  ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -826,8 +998,8 @@ alert.dismiss();
         try {
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickLinkByImageTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.clickLinkByImageTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.clickLinkByImageTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickLinkByImageTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
         Boolean found_img = false;
@@ -847,8 +1019,8 @@ alert.dismiss();
             }
             //linkelement.click();
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element + " Exception->" + e.getLocalizedMessage());
-            Log.Error("BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element + " Exception->" + e.getLocalizedMessage());
+            Log.Primitive("BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickLinkByImageTitle-Cannot find link with the given text or invalid link text. Link Text = " + element + ". Exception:: " + e.getMessage());
             throw e;
         }
     }
@@ -861,8 +1033,8 @@ alert.dismiss();
             window_object = getWebDriverObject(window_handle);
             //  System.out.println("Found");
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.getTableColumnNrByColumnName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.getTableColumnNrByColumnName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.getTableColumnNrByColumnName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.getTableColumnNrByColumnName-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
             throw e;
         }
         List<WebElement> resultsTable = (List<WebElement>) window_object.findElements(By.tagName("table"));
@@ -994,8 +1166,8 @@ alert.dismiss();
 
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
         //System.out.println("moving");
@@ -1013,8 +1185,8 @@ alert.dismiss();
                 try {
                     cell = table.findElement(By.xpath("//tbody/tr[" + row_no + "]/td[" + column_no + "]"));
                 } catch (WebDriverException e) {
-                    Log.Primitive("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find cell with this row number and column number in the table. Row Number: " + row_no + " Column number: " + column_no);
-                    Log.Error("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find cell with this row number and column number in the table. Row Number: " + row_no + " Column number: " + column_no);
+                    Log.Primitive("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find cell with this row number and column number in the table. Row Number: " + row_no + " Column number: " + column_no+ ". Exception:: " + e.getMessage());
+                    Log.Error("BuiltInWebDriver.clickLinkInTableByRowColumnAndLinkIndex-Cannot find cell with this row number and column number in the table. Row Number: " + row_no + " Column number: " + column_no+ ". Exception:: " + e.getMessage());
                 }
                 try {
                     link = cell.findElements(By.tagName("img")).get(Integer.parseInt(link_index));
@@ -1041,8 +1213,8 @@ alert.dismiss();
 
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.findBrowserWithTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.findBrowserWithTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.findBrowserWithTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.findBrowserWithTitle-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
         }
         Set window_handle_list = window_object.getWindowHandles();
         //wdrivermap.get(browser_handle).getTitle();
@@ -1072,7 +1244,7 @@ alert.dismiss();
         }
         if (!found_window) {
             Log.Primitive("BuiltInWebDriver.findBrowserWithTitle-Cannot find new window with the given title. Handle = Window Title :" + title);
-            Log.Error("BuiltInWebDriver.findBrowserWithTitle-Cannot find new browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Error("BuiltInWebDriver.findBrowserWithTitle-Cannot find new window with the given title. Handle = Window Title :" + title);
             throw new Exception();
         }
 
@@ -1087,8 +1259,8 @@ alert.dismiss();
 
             window_object = getWebDriverObject(window_handle);
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.getRowCountInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.getRowCountInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.getRowCountInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.getRowCountInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
         //System.out.println("moving");
@@ -1133,8 +1305,8 @@ alert.dismiss();
             window_object = getWebDriverObject(window_handle);
             //  System.out.println("Found");
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.MatchRowValuesInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.MatchRowValuesInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.MatchRowValuesInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.MatchRowValuesInTable-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
         String[] column_name_arr = column_names.split(":");
@@ -1204,8 +1376,8 @@ alert.dismiss();
             window_object = getWebDriverObject(window_handle);
             //  System.out.println("Found");
         } catch (Exception e) {
-            Log.Primitive("BuiltInWebDriver.FindDivText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
-            Log.Error("BuiltInWebDriver.FindDivText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle);
+            Log.Primitive("BuiltInWebDriver.FindDivText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.FindDivText-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle+ ". Exception:: " + e.getMessage());
             throw e;
         }
         int time_out = Integer.parseInt(timeout);
