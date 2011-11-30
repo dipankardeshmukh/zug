@@ -577,9 +577,9 @@ public class BuiltInWebDriver extends WebDriverMap {
         int i = 0;
         while (PopupNotFound && SecondsElapsed < TimeOutSecondsInt) {
             try {
-                //System.out.println("Inside Accept Popup1");
+                
                 alert = getWebDriverObject(window_handle).switchTo().alert();
-               // System.out.println("Inside Accept Popup2");
+             
                 PopupNotFound = false;
                 alert.accept();
             }catch(UnsupportedOperationException uop)
@@ -599,7 +599,13 @@ public class BuiltInWebDriver extends WebDriverMap {
 
                 SecondsElapsed++;
                 Thread.sleep(1000);
-                 //System.out.println("My exception:: "+e.getMessage());
+                 
+                continue;
+            }
+              catch (ClassCastException e) {
+                SecondsElapsed++;
+                Thread.sleep(1000);
+             
                 continue;
             }
             catch(Exception x)
@@ -613,7 +619,7 @@ public class BuiltInWebDriver extends WebDriverMap {
 
     }
 
-    public void acceptPopup(String window_handle, String TimeOutSeconds) throws Exception {
+    public void acceptPopupWithTimeOut(String window_handle, String TimeOutSeconds) throws Exception {
         
         //((JavascriptExecutor) getWebDriverObject(window_handle)).executeScript("window.confirm = function(msg){returntrue;};");
 
@@ -624,9 +630,9 @@ public class BuiltInWebDriver extends WebDriverMap {
         int i = 0;
         while (PopupNotFound && SecondsElapsed < TimeOutSecondsInt) {
             try {
-                //System.out.println("Inside Accept Popup1");
+             
                 alert = getWebDriverObject(window_handle).switchTo().alert();
-               // System.out.println("Inside Accept Popup2");
+             
                 PopupNotFound = false;
                 alert.accept();
             }catch(UnsupportedOperationException uop)
@@ -646,7 +652,13 @@ public class BuiltInWebDriver extends WebDriverMap {
                 
                 SecondsElapsed++;
                 Thread.sleep(1000);
-                 //System.out.println("My exception:: "+e.getMessage());
+             
+                continue;
+            }
+              catch (ClassCastException e) {
+                SecondsElapsed++;
+                Thread.sleep(1000);
+             
                 continue;
             }
             catch(Exception x)
@@ -692,6 +704,12 @@ public class BuiltInWebDriver extends WebDriverMap {
                 Thread.sleep(1000);
                 continue;
             }
+              catch (ClassCastException e) {
+                SecondsElapsed++;
+                Thread.sleep(1000);
+             
+                continue;
+            }
             catch(Exception ex)
             {
                 Log.Primitive("BuiltInWebDriver.getTextInPopup:: Popup not found within timeout"+ ". Exception:: " + ex.getMessage());
@@ -731,6 +749,11 @@ public class BuiltInWebDriver extends WebDriverMap {
             catch (NoAlertPresentException noal) {
 
 
+                SecondsElapsed++;
+                Thread.sleep(1000);
+                continue;
+            }
+              catch (ClassCastException e) {
                 SecondsElapsed++;
                 Thread.sleep(1000);
                 continue;
@@ -775,6 +798,11 @@ alert.dismiss();
                 Thread.sleep(1000);
                 continue;
         }
+          catch (ClassCastException e) {
+                SecondsElapsed++;
+                Thread.sleep(1000);
+                continue;
+            }
             catch(Exception e)
             {
 
@@ -814,6 +842,11 @@ alert.dismiss();
                 Thread.sleep(1000);
                 continue;
         }
+          catch (ClassCastException e) {
+                SecondsElapsed++;
+                Thread.sleep(1000);
+                continue;
+            }
             catch(Exception e)
             {
 
