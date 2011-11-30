@@ -5785,7 +5785,7 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
                         Log.Debug(String.format("Controller/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result Database.",
                                 test.testCaseID,
                                 test.testCaseDescription));
-                        //SaveTestCase(test.testCaseID, test.testCaseDescription);
+                        SaveTestCase(test.testCaseID, test.testCaseDescription);
 
                         Log.Debug(String.format("Controller/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Database.",
                                 test.testCaseID,
