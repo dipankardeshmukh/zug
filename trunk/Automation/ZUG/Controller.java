@@ -83,7 +83,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 2.3.2." + "20111128" + ".043";
+    private static String Version = "ZUG Premium 2.3.3." + "20111201" + ".044";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -3252,6 +3252,48 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
                                 verification.sheetName, e.getMessage()));
                 }
             }
+            else if(action.actionName.trim().toLowerCase().contains("string"))
+            {
+                 try {
+                    String method[] = action.actionName.trim().split("\\.");
+
+StringOperations str_atom=new StringOperations();
+
+
+                    for (int i = 0; i < action.actionArguments.size(); i++) {
+                        if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
+
+                            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
+
+                            String context_value = ContextVar.getContextVar(actionargs);
+                            action.actionArguments.set(i, context_value);
+
+
+                        }
+
+                    }
+                     message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
+
+                     str_atom.StringOperationsMethod(method[1],action.actionArguments);
+
+                    message(String.format(
+                                "\n[%s] Action %s SUCCESSFULLY Executed",
+                                action.stackTrace.toUpperCase(),
+                                action.actionName.toUpperCase()));
+                    RunVerification(action, threadID);
+                    Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));
+                }catch(Exception e)
+                 {
+                      throw new Exception(
+                            String.format(
+                            "\n\nException Happened while executing Action %s which is located "
+                            + "at Line %s of Sheet %s. Exception is %s",
+                            action.actionName, action.lineNumber,
+                            action.sheetName, e.toString()));
+                }
+
+
+            }
             else {
                 if (debugMode == true) {
                     StringBuilder arguments = new StringBuilder();
@@ -3754,6 +3796,8 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
                             String opt = NormalizeVariable(
                                     (String) action.actionArguments.get(i),
                                     threadID);
+                            if(opt.startsWith("%")&&opt.endsWith("%"))
+                            opt=ContextVar.getContextVar(opt.replaceAll("%",""));
                             int idx = opt.indexOf('=');
                             if (idx == -1) {
                                 continue;
@@ -3842,20 +3886,7 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
                     RunVerification(action, threadID);
                     Log.Debug(String.format("Controller/RunAction :Successfully Webdriver called with %s..", action.actionName));
                 } catch (Exception e) {
-//                     if (StringUtils.isBlank(errorMessageDuringTestCaseExecution.get(action.parentTestCaseID))) {
-//                errorMessageDuringTestCaseExecution.put(
-//                        action.parentTestCaseID,
-//                        ((String)action.parentTestCaseID)
-//                        + "\n\t"
-//                        + e.getMessage());
-//                }
-//                     if (StringUtils.isBlank(errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))) {
-//                errorMessageDuringMoleculeCaseExecution.put(
-//                        action.stackTrace,
-//                        ((String) action.stackTrace)
-//                        + "\n\t"
-//                        + e.getMessage());
-//            }
+
                     throw new Exception(
                             String.format(
                             "\n\nException Happened while executing Action %s which is located "
@@ -3865,7 +3896,49 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
 
 
                 }
-            } else {
+            }else if(action.actionName.trim().toLowerCase().contains("string"))
+            {
+                 try {
+                    String method[] = action.actionName.trim().split("\\.");
+
+StringOperations str_atom=new StringOperations();
+                    
+
+                    for (int i = 0; i < action.actionArguments.size(); i++) {
+                        if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
+
+                            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
+                           
+                            String context_value = ContextVar.getContextVar(actionargs);
+                            action.actionArguments.set(i, context_value);
+
+
+                        }
+
+                    }
+                     message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
+                     
+                     str_atom.StringOperationsMethod(method[1],action.actionArguments);
+                     
+                    message(String.format(
+                                "\n[%s] Action %s SUCCESSFULLY Executed",
+                                action.stackTrace.toUpperCase(),
+                                action.actionName.toUpperCase()));
+                    RunVerification(action, threadID);
+                    Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));  
+                }catch(Exception e)
+                 {
+                      throw new Exception(
+                            String.format(
+                            "\n\nException Happened while executing Action %s which is located "
+                            + "at Line %s of Sheet %s. Exception is %s",
+                            action.actionName, action.lineNumber,
+                            action.sheetName, e.toString()));
+                }
+                   
+                
+            }
+            else {
 
                 if (debugMode == true) {
                     StringBuilder arguments = new StringBuilder();
