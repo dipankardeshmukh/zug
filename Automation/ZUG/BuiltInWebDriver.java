@@ -1440,7 +1440,90 @@ alert.dismiss();
         }
 
     }
+    public void getTagAttributeValueByTagValue(String window_handle, String tag_name,String tag_value, String attribute_name, String ContextVarName)throws Exception{
+
+        //Switching To the Window
+        WebDriver window_object;
+        try {
+            window_object = getWebDriverObject(window_handle);
+        } catch (Exception e) {
+            Log.Primitive("BuiltInWebDriver.getTagAttributeValueByTagValue-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.getTagAttributeValueByTagValue-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            throw e;
+        }
+        Boolean found_tag = false;
+        try {
+            List<WebElement> tags = window_object.findElements(By.tagName(tag_name.trim()));
+            for (WebElement tag : tags) {
+                
+                if (tag.getText().trim().equalsIgnoreCase(tag_value)) {
+                    //Setting Context var with the tag value of the attribute
+                    
+                    ContextVar.setContextVar(ContextVarName, tag.getAttribute(attribute_name));
+                    found_tag = true;
+                    break;
+                }
+            }
+            if (!found_tag) {
+                Log.Primitive("BuiltInWebDriver.getTagAttributeValueByTagValue-Cannot find Tag with value. Value=" +tag_value );
+                Log.Error("BuiltInWebDriver.getTagAttributeValueByTagValue-Cannot find Tag with value. Value=" + tag_value);
+                throw new Exception();
+            }
+            //linkelement.click();
+        } catch (Exception e) {
+            Log.Primitive("BuiltInWebDriver.getTagAttributeValueByTagValue-Cannot find tag with the given text or invalid tag text. Tag Text = " + tag_name + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.getTagAttributeValueByTagValue-Cannot find tag with the given text or invalid tag text. Tag Text = " + tag_name + ". Exception:: " + e.getMessage()+". Cause Class is:: "+e.getClass());
+            throw e;
+        }
+
+    }
+
+        public void clickLinkByTagValueAndAttributeNameAndValue(String window_handle, String tag_value, String attribute_name, String attribute_value)throws Exception{
+
+        //Switching To the Window
+        WebDriver window_object;
+        try {
+            window_object = getWebDriverObject(window_handle);
+        } catch (Exception e) {
+            Log.Primitive("BuiltInWebDriver.clickLinkByTagValueAndAttributeNameAndValue-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickLinkByTagValueAndAttributeNameAndValue-Cannot find browser with the given handle or invalid handle. Handle = " + window_handle + ". Exception:: " + e.getMessage());
+            throw e;
+        }
+        Boolean found_tag = false;
+        try {
+            List<WebElement> atags = window_object.findElements(By.tagName("a"));
+
+            for (WebElement tag : atags) {
+                
+                if (tag.getText().equalsIgnoreCase(tag_value)) {
+                    //Setting Context var with the tag value of the attribute
+                    
+                    if(tag.getAttribute(attribute_name).equalsIgnoreCase(attribute_value)){
+                        tag.click();
+                        found_tag = true;
+                        break;
+                    }
+                }
+            }
+            if (!found_tag) {
+                Log.Primitive("BuiltInWebDriver.clickLinkByTagValueAndAttributeNameAndValue-Cannot find Tag with value. Value=" +tag_value );
+                Log.Error("BuiltInWebDriver.clickLinkByTagValueAndAttributeNameAndValue-Cannot find Tag with value. Value=" + tag_value);
+                throw new Exception();
+            }
+            //linkelement.click();
+        } catch (Exception e) {
+            Log.Primitive("BuiltInWebDriver.clickLinkByTagValueAndAttributeNameAndValue-Cannot find tag with the given text or invalid tag text. Exception:: " + e.getMessage());
+            Log.Error("BuiltInWebDriver.clickLinkByTagValueAndAttributeNameAndValue-Cannot find tag with the given text or invalid tag text. Exception:: " + e.getMessage());
+            throw e;
+        }
+
+    }
+
+
+    
+
 }
+
 
 class AtomNotFoundException extends Exception {
 
