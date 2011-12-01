@@ -813,7 +813,7 @@ alert.dismiss();
         }
     }
 
-    public void declinePopup(String window_handle, String TimeOutSeconds) throws Exception {
+    public void declinePopupWithTimeOut(String window_handle, String TimeOutSeconds) throws Exception {
         //Switching To the Window
         boolean PopupNotFound = true;
         Alert alert = null;
