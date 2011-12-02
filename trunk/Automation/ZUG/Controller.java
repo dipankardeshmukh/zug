@@ -58,7 +58,7 @@ public class Controller extends Thread {
     ProgramOptions opts = null;
     private static boolean verbose = true;
     private static boolean debugMode = true;
-    private static boolean dbReporting = true;
+    public static boolean dbReporting = true;
     private static boolean compileMode = false;
     private static boolean verificationSwitching = true;
     private static boolean doCleanupOnTimeout = false;
