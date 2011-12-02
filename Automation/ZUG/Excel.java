@@ -181,8 +181,10 @@ public class Excel {
 			if (_configSheetHashTable.get(_configSheetKeys[1]) != null)
 				dbHostName = (String) _configSheetHashTable
 						.get(_configSheetKeys[1]);
-
-			up: while (true) {
+      if(Controller.dbReporting)
+			
+      {
+      up: while (true) {
 				if (StringUtils.isBlank(dbHostName)) {
 					dbHostName = reader.readLine("\nEnter the DBHostName : ");
 					continue up;
@@ -191,6 +193,7 @@ public class Excel {
 							dbHostName.trim());
 					break up;
 				}
+			}
 			}
 		} catch (IOException e) {
 		}
