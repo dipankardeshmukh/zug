@@ -16,9 +16,11 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import logs.Log;
@@ -32,14 +34,17 @@ import org.openqa.selenium.support.ui.Select;
 // @author Sankho
 class WebDriverMap {
 
-    protected static HashMap<String, WebDriver> wdrivermap = new HashMap<String, WebDriver>();
-    protected static HashMap<String, ArrayList<String>> wdriver_children = new HashMap<String, ArrayList<String>>();
+    protected static Map<String,WebDriver>wdrivermap= Collections.synchronizedMap(new HashMap<String, WebDriver>());
+    protected static Map<String,ArrayList<String>>wdriver_children= Collections.synchronizedMap(new HashMap<String, ArrayList<String>>());
+    
+    //protected static HashMap<String, WebDriver> wdrivermap = new HashMap<String, WebDriver>();
+    //protected static HashMap<String, ArrayList<String>> wdriver_children = new HashMap<String, ArrayList<String>>();
     //String to Containing the WindowHandle
-    protected static String WindowHandle;
+    
 
-    protected WebDriver getWebDriverObject(String window_handle) throws Exception {
+    protected synchronized WebDriver getWebDriverObject(String window_handle) throws Exception {
         //System.out.println("getWebDriverObject"+window_handle);
-        Set keyset1 = wdriver_children.keySet();
+        //Set keyset1 = wdriver_children.keySet();
         String braces_handle = "";
         //System.out.println("getWebDriverObject::original list  :"+keyset1);
         //System.out.println("getWebDriverObject::original handle  :"+window_handle);
@@ -47,14 +52,14 @@ class WebDriverMap {
             //System.out.println("getWebDriverObject::object Found in original list  :"+window_handle);
             WebDriver reqOb = null;
             reqOb = wdrivermap.get(window_handle);
-            // System.out.println("Name of the Class->"+reqOb.getClass().getName());
-
             if (reqOb.getClass().getName().equalsIgnoreCase("org.openqa.selenium.firefox.FirefoxDriver")) {
                 braces_handle = "{" + window_handle + "}";
-            } else {
+            }
+            else {
                 braces_handle = window_handle;
             }
-            return (wdrivermap.get(window_handle).switchTo().window(braces_handle));
+            //return (wdrivermap.get(window_handle).switchTo().window(braces_handle));
+            return (reqOb.switchTo().window(braces_handle));
         } else {
             Set keyset = wdriver_children.keySet();
             Boolean found_obj = false;
@@ -78,6 +83,8 @@ class WebDriverMap {
                     break;
                 }
             }
+
+
             if (found_obj) {
                 Log.Primitive("ZUG/WebDriverMap.Child Window Handle found");
                 //System.out.println("getWebDriverObject::object Found in secondary list  :"+window_handle);
@@ -89,9 +96,11 @@ class WebDriverMap {
                 throw new Exception();
             }
         }
+
+        
     }
 
-    public void putWindowHandle(String key_handle, String new_handle) throws Exception {
+    public synchronized void putWindowHandle(String key_handle, String new_handle) throws Exception {
 
         if (new_handle.startsWith("{") && new_handle.endsWith("}")) {
             new_handle = new_handle.substring(1, new_handle.length() - 1);
@@ -129,8 +138,8 @@ class WebDriverMap {
         }
     }
 
-    public void initialize(String contextvariable, String browser) throws Exception {
-
+    public synchronized void initialize(String contextvariable, String browser) throws Exception {
+        String WindowHandle;
         if (browser.equalsIgnoreCase("firefox")) {
             //Initiating WebDriver Object
             WebDriver firefoxdriver=null;
@@ -192,7 +201,7 @@ class WebDriverMap {
             HtmlUnitDriver htmlunitdriver=null;
             try{
                 htmlunitdriver = new HtmlUnitDriver(true);
-                htmlunitdriver.setJavascriptEnabled(true);
+                htmlunitdriver.setJavascriptEnabled(false);
                 WebClient hh = new WebClient();
             }
             catch(Exception e){                               
@@ -263,7 +272,7 @@ public class BuiltInWebDriver extends WebDriverMap {
 
     private boolean method_found_flag;
 
-    public synchronized void BuiltInWebDriverMethod(String method_name, ArrayList<String> inputs) throws Exception {
+    public void BuiltInWebDriverMethod(String method_name, ArrayList<String> inputs) throws Exception {
         try {
             //String method_name = inputs.get(0);
             //printMessage("The Method name-"+method_name);
@@ -311,7 +320,7 @@ public class BuiltInWebDriver extends WebDriverMap {
      * @param browser name,url,context variable
      */
 
-    public synchronized void goToUrl(String window_handle, String url) {
+    public void goToUrl(String window_handle, String url) {
         //Url checking
         WebDriver window_object = null;
         try {
@@ -332,7 +341,7 @@ public class BuiltInWebDriver extends WebDriverMap {
 
     }
 
-    public synchronized void setTextByName(String window_handle, String element, String value) throws Exception {
+    public void setTextByName(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -353,7 +362,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void setTextById(String window_handle, String element, String value) throws Exception {
+    public void setTextById(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -376,7 +385,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void clickButtonByName(String window_handle, String element) throws Exception {
+    public void clickButtonByName(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -398,7 +407,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void clickButtonById(String window_handle, String element) throws Exception {
+    public void clickButtonById(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -420,7 +429,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void clickButtonByClassName(String window_handle, String element) throws Exception {
+    public void clickButtonByClassName(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -442,7 +451,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void closeBrowser(String window_handle) throws Exception {
+    public void closeBrowser(String window_handle) throws Exception {
         //Switching To the Window
         WebDriver window_object = null;
         try {
@@ -463,7 +472,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void setMultipleTextById(String window_handle, String elements, String values) throws Exception {
+    public void setMultipleTextById(String window_handle, String elements, String values) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -494,7 +503,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void setMultipleTextByName(String window_handle, String elements, String values) throws Exception {
+    public void setMultipleTextByName(String window_handle, String elements, String values) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -525,7 +534,7 @@ public class BuiltInWebDriver extends WebDriverMap {
         }
     }
 
-    public synchronized void setMultipleFieldTypesByName(String window_handle, String elements, String values) throws Exception {
+    public void setMultipleFieldTypesByName(String window_handle, String elements, String values) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -955,7 +964,7 @@ alert.dismiss();
         }
     }
 
-    public synchronized void selectFromDropDownByName(String window_handle, String element, String value) throws Exception {
+    public void selectFromDropDownByName(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -980,7 +989,7 @@ alert.dismiss();
         }
     }
 
-    public synchronized void fileUpload(String window_handle, String element, String value) throws Exception {
+    public void fileUpload(String window_handle, String element, String value) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1003,7 +1012,7 @@ alert.dismiss();
         }
     }
 
-    public synchronized void clickLinkByText(String window_handle, String element) throws Exception {
+    public void clickLinkByText(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1025,7 +1034,7 @@ alert.dismiss();
         }
     }
 
-    public synchronized void clickLinkByImageTitle(String window_handle, String element) throws Exception {
+    public void clickLinkByImageTitle(String window_handle, String element) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1058,7 +1067,7 @@ alert.dismiss();
         }
     }
 
-    public synchronized void getTableColumnNrByColumnName(String window_handle, String table_id, String column_name, String contextVar_colm_nr) throws Exception {
+    public void getTableColumnNrByColumnName(String window_handle, String table_id, String column_name, String contextVar_colm_nr) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1110,7 +1119,7 @@ alert.dismiss();
         //System.out.println("Column Nr" + col_nr);
     }
 
-    public synchronized void getTableRowNrByColumnNameAndText(String window_handle, String table_id, String column_name, String textual_Content, String contextVar_row_nr) throws Exception {
+    public void getTableRowNrByColumnNameAndText(String window_handle, String table_id, String column_name, String textual_Content, String contextVar_row_nr) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1192,7 +1201,7 @@ alert.dismiss();
 
     }
 
-    public synchronized void clickLinkInTableByRowColumnAndLinkIndex(String window_handle, String table_id, String row_no, String column_no, String link_index) throws Exception {
+    public void clickLinkInTableByRowColumnAndLinkIndex(String window_handle, String table_id, String row_no, String column_no, String link_index) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1285,7 +1294,7 @@ alert.dismiss();
 
     }
 
-    public synchronized void getRowCountInTable(String window_handle, String table_id, String contextVar_row_count) throws Exception {
+    public void getRowCountInTable(String window_handle, String table_id, String contextVar_row_count) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1330,7 +1339,7 @@ alert.dismiss();
 
     }
 
-    public synchronized void matchRowValuesInTable(String window_handle, String table_id, String column_names, String values, String row_nr) throws Exception {
+    public void matchRowValuesInTable(String window_handle, String table_id, String column_names, String values, String row_nr) throws Exception {
         //Switching To the Window
         WebDriver window_object;
         try {
@@ -1418,9 +1427,10 @@ alert.dismiss();
         int i = 0;
         boolean found_text = false;
         while (i < time_out && !found_text) {
+
             List<WebElement> div_elements = window_object.findElements(By.className(class_name));
             for (WebElement div : div_elements) {
-
+//System.out.println("act val ::" + div.getText().trim()+ "  req:: "+ req_text.trim());
                 if (div.getText().trim().equalsIgnoreCase((req_text.trim()))) {
                     found_text = true;
                     break;
@@ -1428,6 +1438,7 @@ alert.dismiss();
             }
             if (!found_text) {
                 window_object.navigate().refresh();
+                //System.out.println("Reload ::" + i);
             } else {
                 break;
             }
