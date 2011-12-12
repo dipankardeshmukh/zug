@@ -83,7 +83,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 2.3.3." + "20111201" + ".044";
+    private static String Version = "ZUG Premium 2.3.3." + "20111201" + ".045";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -134,6 +134,12 @@ public class Controller extends Thread {
     public static String PATH_CHECK = "";
     public static String LOG_DIR = "",ZIP_DIR="";
     public static boolean OS_FLAG;
+    //Initiating AtomInvoker
+    //public static AtomInvoker invokeAtoms=null;
+    public static HashMap<String,AtomInvoker> invokeAtoms=new HashMap<String, AtomInvoker>();
+    private static String builtin_atom_package_name="";
+//    public static AtomInvoker invokeAtoms_stringoperations=null;
+//    private static String builtin_atom_package_name_stringoperations="";
     /*
      * Constructor that initializes the program options.
      */
@@ -3213,15 +3219,13 @@ public class Controller extends Thread {
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
                 }
-            }else  if(verification.verificationName.toLowerCase().contains("webdriver"))
+            }else  if(verification.verificationName.toLowerCase().contains("browseroperations"))
             {
                 try
                 {
 //Spliting the for method name
                     String method[] = verification.verificationName.trim().split("\\.");
 
-//creating webdriver instance
-                    BuiltInWebDriver web_atom = new BuiltInWebDriver();
 //checking all the arguments for % occurance
                     for (int i = 0; i < verification.verificationArguments.size(); i++) {
                         if (verification.verificationArguments.get(i).startsWith("%") && verification.verificationArguments.get(i).endsWith("%")) {
@@ -3236,9 +3240,16 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
                         }
 
                     }
+              //Checking and calling dynamic class atoms
+ if(!builtin_atom_package_name.equalsIgnoreCase("browseroperations"))
+{
+   builtin_atom_package_name="BrowserOperations";
+//    invokeAtoms=new AtomInvoker(builtin_atom_package_name);
+  invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+//
+}
+invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.verificationArguments);
                     message(String.format("Controller/RunAction :Successfully Webdriver called with %s with values %s ", verification.verificationName, verification.verificationArguments));
-  web_atom.BuiltInWebDriverMethod(method[1], verification.verificationArguments);
-                   
                     Log.Debug(String.format("Controller/RunAction :Successfully Webdriver called with %s..", verification.verificationName));
                 }
                 catch(Exception e)
@@ -3257,7 +3268,7 @@ Log.Debug(String.format("Controller/RunVerification context variable value %s se
                  try {
                     String method[] = action.actionName.trim().split("\\.");
 
-StringOperations str_atom=new StringOperations();
+//StringOperations str_atom=new StringOperations();
 
 
                     for (int i = 0; i < action.actionArguments.size(); i++) {
@@ -3273,8 +3284,15 @@ StringOperations str_atom=new StringOperations();
 
                     }
                      message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-
-                     str_atom.StringOperationsMethod(method[1],action.actionArguments);
+if(!builtin_atom_package_name.equalsIgnoreCase("stringoperations"))
+{
+   builtin_atom_package_name="StringOperations";
+//    invokeAtoms=new AtomInvoker(builtin_atom_package_name);
+invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+//
+}
+invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.verificationArguments);
+                     //str_atom.StringOperationsMethod(method[1],action.actionArguments);
 
                     message(String.format(
                                 "\n[%s] Action %s SUCCESSFULLY Executed",
@@ -3439,6 +3457,7 @@ StringOperations str_atom=new StringOperations();
      * @param action
      *            Action to be executed.
      */
+    
     private void RunAction(Object act) {
         System.out.println(Utility.dateAsString());
         Action action = (Action) act;
@@ -3846,12 +3865,13 @@ StringOperations str_atom=new StringOperations();
                             action.stackTrace.toUpperCase(),
                             action.actionName.toUpperCase()));
                 }
-            } else if (action.actionName.trim().toLowerCase().contains("webdriver")) {
+            } else if (action.actionName.trim().toLowerCase().contains("browseroperations")) {
                 try {//message("Webdriver ");
+                    
                     String method[] = action.actionName.trim().split("\\.");
 
 
-                    BuiltInWebDriver web_atom = new BuiltInWebDriver();
+                   
 
                     for (int i = 0; i < action.actionArguments.size(); i++) {
                         if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
@@ -3867,6 +3887,15 @@ StringOperations str_atom=new StringOperations();
 
                     }
                     message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
+if(!builtin_atom_package_name.equalsIgnoreCase("browseroperations"))
+{
+    builtin_atom_package_name="BrowserOperations";
+    //invokeAtoms =new AtomInvoker(builtin_atom_package_name);
+    invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+
+}
+                  
+invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.actionArguments);
 
 //                if(cont_var.startsWith("%")&&cont_var.endsWith("%"))
 //                {
@@ -3878,7 +3907,7 @@ StringOperations str_atom=new StringOperations();
 //                    //message("THeArray List changed"+action.actionArguments.get(0));
 //                }
 ////message("THeArray List"+action.actionArguments);
-                    web_atom.BuiltInWebDriverMethod(method[1], action.actionArguments);
+                    //web_atom.BuiltInWebDriverMethod(method[1], action.actionArguments);
                     message(String.format(
                                 "\n[%s] Action %s SUCCESSFULLY Executed",
                                 action.stackTrace.toUpperCase(),
@@ -3901,7 +3930,7 @@ StringOperations str_atom=new StringOperations();
                  try {
                     String method[] = action.actionName.trim().split("\\.");
 
-StringOperations str_atom=new StringOperations();
+//StringOperations str_atom=new StringOperations();
                     
 
                     for (int i = 0; i < action.actionArguments.size(); i++) {
@@ -3918,8 +3947,17 @@ StringOperations str_atom=new StringOperations();
                     }
                      message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
                      
-                     str_atom.StringOperationsMethod(method[1],action.actionArguments);
-                     
+                     //str_atom.StringOperationsMethod(method[1],action.actionArguments);
+                    if(!builtin_atom_package_name.equalsIgnoreCase("stringoperations"))
+{
+
+    builtin_atom_package_name="StringOperations";
+    //invokeAtoms =new AtomInvoker(builtin_atom_package_name);
+    invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+
+}
+invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.actionArguments);
+ 
                     message(String.format(
                                 "\n[%s] Action %s SUCCESSFULLY Executed",
                                 action.stackTrace.toUpperCase(),
@@ -6457,6 +6495,7 @@ StringOperations str_atom=new StringOperations();
      * @param args
      *            -Command line parameters for harness.
      */
+
     public static void main(String[] args) throws InterruptedException,
             Exception {
 //Checking for Which Operating System is Used.
@@ -6485,6 +6524,25 @@ StringOperations str_atom=new StringOperations();
         final Controller controller = new Controller();
         // controller.LoggedInUser();
         //geting the process id of the program
+
+
+//Checking for jar file entry in ZugINI.xml
+  if(new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue().length>0)
+        {
+      int c=0;
+      for(String package_names:new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue())
+      {
+          AtomInvoker ai=new AtomInvoker(package_names);
+          invokeAtoms.put(package_names,ai);
+          }
+   
+           // invokeAtoms.loadJarFile(new ExtensionInterpreterSupport().readExternalJarFilePath().get(0));
+        }
+ else
+  {
+            controller.message("Controller/Main No external Jar defination found in ZugINI.xml with proper Attribute defination for Tag");
+ }
+
         Controller.harnessPIDValue = Integer.parseInt((java.lang.management.ManagementFactory.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
 
         // First Validate the Command Line Arguments
@@ -6535,11 +6593,6 @@ StringOperations str_atom=new StringOperations();
                     controller.message("Message : " + e.getMessage() + "\n");
                     System.exit(1);
                 }
-                //}
-//                else
-//  {
-//               //TODO Linux License Code
-//                }
 
                 controller.PrintVersionInformation();
                 return;
@@ -6579,11 +6632,6 @@ StringOperations str_atom=new StringOperations();
                     controller.message("Message : " + e.getMessage() + "\n");
                     System.exit(1);
                 }
-                //}
-//                else
-//  {
-//               //TODO Linux License Code
-//                }
 
 
         fileExtensionSupport = ExtensionInterpreterSupport.ReadFileExtensionXML();
