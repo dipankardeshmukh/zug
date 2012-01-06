@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "ZUG"
-!define PRODUCT_VERSION "2.2"
+!define PRODUCT_VERSION "3.0"
 !define PRODUCT_PUBLISHER "Automature, Inc."
 !define PRODUCT_WEB_SITE "http://www.automature.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
@@ -16,8 +16,8 @@ SetCompressor lzma
 !include "ZipDLL.nsh"
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "automature logo small.ico"
-!define MUI_UNICON "automature logo small.ico"
+!define MUI_ICON "Zug.ico"
+!define MUI_UNICON "Zug.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -42,7 +42,7 @@ SetCompressor lzma
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "ZugSetup-2.2.exe"
+OutFile "ZugSetup-3.0.exe"
 InstallDir "$PROGRAMFILES\Automature"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -65,7 +65,7 @@ Section "MainSection" SEC01
   SetOverwrite on
   File "ZUG.zip"
   !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
-  ExecWait '"$INSTDIR\ZUG\Setup.cmd" "$R2\lib\ext\"'
+  ExecWait '"$INSTDIR\ZUG\Setup.cmd" "$R2"'
  AccessControl::GrantOnFile \
   "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
   Delete "$TEMP\ZUG.zip"

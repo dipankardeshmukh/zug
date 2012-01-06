@@ -1,0 +1,21 @@
+#!/bin/sh
+#Automation - It contains command to Uninstall the ZUG 
+#Author:Sankha Sil
+# ©Copyright 2009 Automature Inc.. All Rights Reserved.
+
+#Initialization of Variables
+
+ZUG_EXE_LINK="/usr/bin/runzug"
+ZUG_SHARED="/usr/local/lib"
+ZUG_HOME="/usr/lib/automature/zug"
+#Delete runzug link
+sudo rm $ZUG_EXE_LINK
+echo "runzug link is removed"
+#Delete Zug folder
+sudo rm -R $ZUG_HOME
+echo "Zug folder is removed"
+#Delete Zug Shared file
+sudo rm $ZUG_SHARED/libzugapi.so.1.0
+sudo rm $ZUG_SHARED/libzugapi.so.1
+sudo rm $ZUG_SHARED/libzugapi.so
+echo "Zug shared object removed"

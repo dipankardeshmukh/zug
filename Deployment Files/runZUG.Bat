@@ -1,5 +1,5 @@
 :: Automation - It contains command to run ZUG - The Automation Framework.
-:: Author : Gurpreet Anand and Modified By Chayan
+:: Author : Gurpreet Anand
 :: © Copyright 2009 Automature Inc.. All Rights Reserved.
 
 
