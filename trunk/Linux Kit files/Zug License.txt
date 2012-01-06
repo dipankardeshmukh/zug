@@ -1,0 +1,77 @@
+The software included in this product contains copyrighted software that is licensed under the GPLv3. A copy of that license is included in this document on page X. You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product and/or spare parts there for, which will be no earlier than yyyy-mm-dd, on our website at:
+
+http://www.automature.com/sources/productname/
+
+
+My SQL:
+
+The licensing agreement for MySql can be found at the following location:
+
+http://mysql.com/about/legal/licensing/oem/
+
+The source code for the product is located at:
+
+http://www.mysql.com/downloads/
+
+
+Twiki and Plugins
+
+The licensing agreement for Twiki can be found at the following location:
+
+http://twiki.org/cgi-bin/view/Codev/DownloadTWiki
+
+The source code for the product is located at:
+
+http://twiki.org/cgi-bin/view/Codev/DownloadTWiki
+
+
+Hibernate
+
+The licensing agreement for Hibernate can be found at the following location:
+
+http://www.hibernate.org/license
+
+The source code for the product is located at:
+
+http://www.hibernate.org/downloads.html
+
+Apache
+
+Copyright 2011 Automature Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+
+you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+See the License for the specific language governing permissions and limitations under the License.
+
+Java
+
+Licensing agreement can be found at:
+
+http://java.com/en/download/license/1.6.0_14_license.jsp
+
+
+Ruby
+
+Licensing agreement can be found at:
+
+http://www.ruby-lang.org/en/about/license.txt
+
+The source code for the software can be downloaded at:
+
+http://www.ruby-lang.org/en/downloads/
+
+
+Watir
+
+Watir is an Open Source tool. The licensing agreement can be found at:
+
+http://www.opensource.org/docs/definition.php
+

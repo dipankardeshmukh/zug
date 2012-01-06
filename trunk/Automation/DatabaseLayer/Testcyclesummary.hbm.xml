@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 2, 2009 5:59:33 PM by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="DatabaseLayer.Testcyclesummary" table="testcyclesummary" catalog="Framework">
+        <id name="testCycleSummaryId" type="int">
+            <column name="TestCycleSummary_Id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="testcycle" class="DatabaseLayer.Testcycle" fetch="select">
+            <column name="TestCycle_Id" />
+        </many-to-one>
+        <many-to-one name="testsuite" class="DatabaseLayer.Testsuite" fetch="select">
+            <column name="TestSuite_Id" />
+        </many-to-one>
+        <many-to-one name="topologyset" class="DatabaseLayer.Topologyset" fetch="select">
+            <column name="TopologySet_Id" />
+        </many-to-one>
+        <property name="testCaseExecuted" type="java.lang.Integer">
+            <column name="TestCaseExecuted" />
+        </property>
+        <property name="testCaseFailed" type="java.lang.Integer">
+            <column name="TestCaseFailed" />
+        </property>
+        <property name="testCaseTotal" type="java.lang.Integer">
+            <column name="TestCaseTotal" />
+        </property>
+        <property name="testPlanName" type="string">
+            <column name="TestPlan_Name" length="50" />
+        </property>
+        <property name="status" type="string">
+            <column name="Status" length="50" />
+        </property>
+    </class>
+</hibernate-mapping>

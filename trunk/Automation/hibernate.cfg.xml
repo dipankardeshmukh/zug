@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.password">twikionly</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/Framework</property>
+        <property name="hibernate.connection.username">twiki</property>
+        <!-- property name="hibernate.dialect" org.hibernate.dialect.MySQLDialect -->
+
+		<property name="connection.pool_size">1</property>
+		<!-- SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.HSQLDialect</property>
+		<!-- Enable Hibernate's automatic session context management -->
+		<property name="current_session_context_class">thread</property>
+		<!-- Disable the second-level cache -->
+		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<!-- Echo all executed SQL to stdout -->
+		<property name="show_sql">false</property>
+        
+	<mapping resource="DatabaseLayer/Topology.hbm.xml" />
+	<mapping resource="DatabaseLayer/Build.hbm.xml" />
+	<mapping resource="DatabaseLayer/TestsuiteTestsuitelistXref.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testplan.hbm.xml" />
+	<mapping resource="DatabaseLayer/Topologyattributes.hbm.xml" ></mapping>
+	<mapping resource="DatabaseLayer/Bugs.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcasetorequirementsxref.hbm.xml" />
+	<mapping resource="DatabaseLayer/Projectphase.hbm.xml" />
+	<mapping resource="DatabaseLayer/Topologyset.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcycletopologyset.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testsuitevariables.hbm.xml" />
+	<mapping resource="DatabaseLayer/Requirements.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcycledetail.hbm.xml" />
+	<mapping resource="DatabaseLayer/Machinecatalog.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcase.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcaseignorelist.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testsuite.hbm.xml" />
+	<mapping resource="DatabaseLayer/Applicationlist.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testsuitelist.hbm.xml" />
+	<mapping resource="DatabaseLayer/TagList.hbm.xml" />
+	<mapping resource="DatabaseLayer/Roleattributes.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testexecutiondetails.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcycle.hbm.xml" />
+	<mapping resource="DatabaseLayer/Auditlog.hbm.xml" />
+	<mapping resource="DatabaseLayer/Topologysetlist.hbm.xml" />
+	<mapping resource="DatabaseLayer/Releases.hbm.xml" />
+	<mapping resource="DatabaseLayer/Role.hbm.xml" />
+	<mapping resource="DatabaseLayer/Product.hbm.xml" />
+	<mapping resource="DatabaseLayer/Variablevalues.hbm.xml" />
+	<mapping resource="DatabaseLayer/Application.hbm.xml" />
+	<mapping resource="DatabaseLayer/TestcaseSuitetag.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcasevariablevalue.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testsuitevariableset.hbm.xml" />
+	<mapping resource="DatabaseLayer/Frameworkmetadata.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testplantemplate.hbm.xml" />
+	<mapping resource="DatabaseLayer/Testcyclesummary.hbm.xml" />
+	<mapping resource="DatabaseLayer/TopologyTopologysetXref.hbm.xml" />
+	<mapping resource="DatabaseLayer/TopologysetTopologysetlistXref.hbm.xml" />
+	<mapping resource="DatabaseLayer/Features.hbm.xml" />
+        
+    </session-factory>
+</hibernate-configuration>
