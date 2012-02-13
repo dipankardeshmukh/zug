@@ -902,11 +902,15 @@ if(!_configSheetHashTable.isEmpty())
                       ScriptLocationPathList+=Path+";";
 
                     } else {
+                  if(Path.isEmpty())
+                 continue;
+                 else{
                               String actualPath="";
                           actualPath += ProgramOptions.workingDirectory
                                     + Controller.SLASH+ Path + ";";
                          ScriptLocationPathList+=actualPath;
-                        }
+                    }
+                }
 
                         //forDebug("readNestMolecle:: The nested molecule list "+includePathList);
             }
@@ -979,13 +983,17 @@ if(!_configSheetHashTable.isEmpty())
                       includePathList+=Path+",";
 
                     } else {
+                 if(Path.isEmpty())
+                 continue;
+                 else{
                               String actualPath="";
                           actualPath += ProgramOptions.workingDirectory
                                     + Controller.SLASH+ Path + ",";
                           includePathList+=actualPath;
-                        }
+                    }
+                }
 
-                        //forDebug("readNestMolecle:: The nested molecule list "+includePathList);
+                        //forDebug("readNestedMolecle:: The nested molecule list "+includePathList);
             }
                           
 
@@ -1072,15 +1080,17 @@ return includePathList;
                                     inlcudelist += Path + ",";
                                     //AddToExternalSheets(strKey, strValue);
                                 } else {
-
+ if(Path.isEmpty())
+                 continue;
+                 else{
                                     String actualPath = "";
-                                    {
+                                    
                                         actualPath += ProgramOptions.workingDirectory
                                                 + Controller.SLASH + Path + ",";
-                                    }
+                                    
                                     //System.out.println("This the actual Path\t" actualPath);
                                     inlcudelist += actualPath;
-                                    //AddToExternalSheets(strKey, actualPath);
+                                    }    //AddToExternalSheets(strKey, actualPath);
                                 }
                             }
                             //forDebug("GetKeyValuePair:: The full path ---> " + inlcudelist);
