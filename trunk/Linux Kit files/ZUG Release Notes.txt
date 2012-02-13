@@ -1,5 +1,9 @@
 ZUG Release Notes.
 
+The Following has been Introduced in *V3.1*
+ * Nested include file support Chur.
+ * Nested Scriptlocation file support Chur.
+
 The Following has been Introduced in *V3.0*
  * External jar file support for calling Builtin Atom calling. 
  * Organised Exception Handling and calling the builtin Atoms through chur sheet <packagename>.<atomname>
