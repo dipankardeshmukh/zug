@@ -59,7 +59,7 @@ public class AtomInvoker {
 break;
     }
 // else{
-//            throw new Exception(builtinpackagename+" not Matching with xml defination ");
+//            throw new Exception(builtinpackagename+" not Matching with xml definition ");
 //
 //
 // }
@@ -181,7 +181,7 @@ break;
             if(method_found_flag==false)
             {
                 Log.Error("ZUG/AtomInvoker::dispatch method not present in class");
-                throw new Exception("Zuoz Class Defination Inappropriate");
+                throw new Exception("Zuoz Class Definition Inappropriate");
             }
 
         } catch (InvocationTargetException ex) {
