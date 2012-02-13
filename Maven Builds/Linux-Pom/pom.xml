@@ -13,8 +13,8 @@
     </organization>
     <url>http://www.automature.com</url>
     <scm>
-        <connection>scm:svn:http://automature.com:90/svn/zug/branches/V3.0-dev</connection>
-        <developerConnection>scm:svn:http://automature.com:90/svn/zug/branches/V3.0-dev</developerConnection>
+        <connection>scm:svn:http://automature.com:90/svn/zug/branches/V3.1-dev</connection>
+        <developerConnection>scm:svn:http://automature.com:90/svn/zug/branches/V3.1-dev</developerConnection>
         <url></url>
     </scm>
     <properties>
@@ -122,7 +122,7 @@
                            <exec failonerror="true" executable="/bin/sh" >
 
                              <arg value="-c" />
-                              <arg value="sudo sh $MAKESELF_HOME/makeself.sh ./KitInstall/ZUG ZUG_INSTALLER-3.0 Extracting.. ./installZug"/>
+                              <arg value="sudo sh $MAKESELF_HOME/makeself.sh ./KitInstall/ZUG ZUG_INSTALLER-3.1 Extracting.. ./installZug"/>
                                </exec>
                         
                     </target>
