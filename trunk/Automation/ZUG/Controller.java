@@ -83,7 +83,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 3.0." + "20120105" + ".050";
+    private static String Version = "ZUG Premium 3.1." + "20120214" + ".051";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1302,7 +1302,7 @@ public class Controller extends Thread {
     private TestCase[] ExpandTestCase(TestCase test, boolean fromTestCaseSheet) {
         Log.Debug("Controller/ExpandTestCase: Start of function with TestCase ID is "
                 + test.testCaseID);
-
+ //message("Coming to This step 1\t"+test.actions.get(0).actionName );
         ArrayList<ArrayList<String>> allActionVerificationArgs = new ArrayList<ArrayList<String>>();
         Action[] allActions = new Action[test.actions.size()];
         test.actions.toArray(allActions);
@@ -1314,6 +1314,7 @@ public class Controller extends Thread {
 
         for (int j = 0; j < allActions.length; j++) {
             Action action = allActions[j];
+            //message("Coming to This step 2\t"+action.actionName);
             Log.Debug("Controller/ExpandTestCase: Working on Action  : "
                     + action.actionName);
             for (int i = 0; i < action.actionArguments.size(); ++i) {
@@ -1343,7 +1344,7 @@ public class Controller extends Thread {
                 }
 
             }
-
+//message("This is step 2a\t"+test.actions.get(0).actionName);
             Verification[] verifications = new Verification[action.verification.size()];
             action.verification.toArray(verifications);
             Log.Debug("Controller/ExpandTestCase: Number of verifications are : "
@@ -1388,11 +1389,13 @@ public class Controller extends Thread {
                 }
             }
         }
-
+//message("This is step 2b\t"+test.actions.get(0).actionName);
         List<Tuple<String>> resultAfterIndexed = CartesianProduct.indexedProduct(allActionVerificationArgs);// .get(0),
+       // message("This is step 2b-1\t"+test.actions.get(0).actionName);
         // allActionVerificationArgs.get(1));
         List<Tuple<String>> result = new ArrayList<Tuple<String>>();
         for (Tuple<String> tempResult : resultAfterIndexed) {
+          //  message("This is step 2b-2\t"+test.actions.get(0).actionName);
             allActionVerificationArgs = new ArrayList<ArrayList<String>>();
             ArrayList<String> tempResultList = new ArrayList<String>();
             Object[] actualValue = tempResult.ToArray();
@@ -1400,6 +1403,7 @@ public class Controller extends Thread {
                 tempResultList.add((String) actualValue[q]);
             }
             count1 = -1;
+          
             for (String tempVal : tempResultList) {
 
                 count1++;
@@ -1424,7 +1428,7 @@ public class Controller extends Thread {
             result.addAll(CartesianProduct.cartesianProduct(allActionVerificationArgs));
 
         }
-
+//message("This is step 2c\t"+test.actions.get(0).actionName);
         /*
          * for (int j=0;j<allActions.length;j++) { Action action=allActions[j];
          * Log.Debug("Controller/ExpandTestCase: Working on Action  : " +
@@ -1485,7 +1489,9 @@ public class Controller extends Thread {
          * );//.get(0), allActionVerificationArgs.get(1));
          */
         ArrayList<TestCase> tempTestCases = new ArrayList<TestCase>();
+        //message("This is step 3\t"+test.actions.get(0).actionName);
         if (result != null) {
+            //message("This is step 3a\t"+test.actions.get(0).actionName);
             int size = result.size();
             Object[] tempResult = result.toArray();
             // Object [] tempResult = allActionVerificationArgs.toArray();
@@ -1516,7 +1522,7 @@ public class Controller extends Thread {
 
                 tempTestCase.user = test.user;
                 tempTestCase.userObj = test.userObj;
-
+//message("This is step 3b\t"+test.actions.get(0).actionName);
                 ArrayList<String> tempCollection = new ArrayList<String>();
                 Object[] actualValue = subList.ToArray();
                 for (int q = 0; q < actualValue.length; ++q) {
@@ -1540,6 +1546,7 @@ public class Controller extends Thread {
 
                 for (int j = 0; j < actions.length; ++j) {
                     Action action = actions[j];
+                    
                     for (int i = 0; i < action.actionArguments.size(); ++i) {
                         if (multiValuedVariablePosition.containsKey(count)) {
                             tempTestCase.testCaseID += "_"
@@ -1682,7 +1689,7 @@ public class Controller extends Thread {
                 tempTestCases.add(tempTestCase);
             }
         }
-
+//message("Step 4"+test.actions.get(0).actionName);
         if (tempTestCases.size() == 0) {
             Log.Debug("Controller/ExpandTestCase: Returning only 1 testcase after Expansion. End of function with TestCase ID is "
                     + test.testCaseID);
@@ -1912,7 +1919,7 @@ public class Controller extends Thread {
             }
         } else {
             Log.Error("Invalid Log Message-->No such Message for-- \"" + levelAndMessage + "\"--In Primitive");
-            message("Try Fixing Atom Log message Definations");
+            message("Try Fixing Atom Log message Definitions");
             message("----------------------------Ending Automation---------------------------");
             ////System.exit(1);
         }
@@ -2069,8 +2076,11 @@ public class Controller extends Thread {
         // Add the Include Sheet to NameSpace
         if (includeMolecules != null && includeMolecules != StringUtils.EMPTY) {
             includeFlag = false;
-            // System.out.println("Its Coming Here\t"+includeFlag);
-            readExcel.AddToExternalSheets("Include", includeMolecules); // if
+             //System.out.println("Its Coming Here\t"+includeFlag+"\t"+"The External Sheet list:: "+includeMolecules);
+
+            readExcel.AddToExternalSheets("Include", includeMolecules);
+
+            // if
             // the
             // include
             // switch
@@ -2789,7 +2799,7 @@ public class Controller extends Thread {
         // Harness Specific ContextVariable to store BaseTestCase ID
         ContextVar.setContextVar("ZUG_BASETCID", test1.testCaseID);
         baseTestCaseID = test1.testCaseID;
-
+//message("+++++++++++For Debugging++++++++++\t"+test1.actions.get(0).actionName+"\t"+test1.testCaseID); //Its remain same as molecule name is coming to this portion
         // Added Context Variable basically to get the User Information
         if (test1.userObj != null) {
             // Harness Specific ContextVariable to store UserName
@@ -2824,7 +2834,8 @@ public class Controller extends Thread {
 
         ArrayList<Thread> ThreadPool = new ArrayList<Thread>();
         for (TestCase test : expandedTestCases) {
-            final TestCase test2 = test;
+             
+              final TestCase test2 = test;
             // RunExpandedTestCase(test);
             // Start a new thread and run the expanded test case on it
             if (test1.concurrentExecutionOnExpansion == true) {
@@ -2850,12 +2861,14 @@ public class Controller extends Thread {
             } else {
                 if (StringUtils.isNotBlank(test.threadID)) {
                     threadIdForTestCases.put(test.stackTrace, test.threadID);
+                   
                 } else // Assigning the Parent Test Case Thread.
                 {
                     threadIdForTestCases.put(test.stackTrace, StringUtils.EMPTY);
                 }
 
                 RunExpandedTestCase(test);
+                 
             }
         }
         // Wait for all the Threads i.e. expanded test cases to finish.
@@ -3529,6 +3542,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
         String testCaseID = action.testCaseID;
         String[] st;
         try {
+         //message("the action details--\n"+action.actionName+"\n"+action.testCaseID+"\n"+action.actionArguments);
             UserData user = action.userObj;
             String threadID = (String) threadIdForTestCases.get(action.stackTrace);
             Log.Debug("Controller/RunAction : Start of function with TestCaseID as : "
