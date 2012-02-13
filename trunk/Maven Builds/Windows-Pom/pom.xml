@@ -13,8 +13,8 @@
     </organization>
     <url>http://www.automature.com</url>
     <scm>
-        <connection>scm:svn:http://automature.com:90/svn/zug/branches/V3.0-dev</connection>
-        <developerConnection>scm:svn:http://automature.com:90/svn/zug/branches/V3.0-dev</developerConnection>
+        <connection>scm:svn:http://automature.com:90/svn/zug/branches/V3.1-dev</connection>
+        <developerConnection>scm:svn:http://automature.com:90/svn/zug/branches/V3.1-dev</developerConnection>
         <url></url>
     </scm>
     <properties>
@@ -120,7 +120,7 @@
                            <arg value="makensis.exe" />
                            <arg value="./NSIS/setup.nsi" />
                             </exec>
-                           <move file="./NSIS/ZugSetup-3.0.exe" todir="./" />
+                           <move file="./NSIS/ZugSetup-3.1.exe" todir="./" />
                         
                     </target>
                 </configuration>
