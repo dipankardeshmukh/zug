@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "ZUG"
-!define PRODUCT_VERSION "3.0"
+!define PRODUCT_VERSION "3.1"
 !define PRODUCT_PUBLISHER "Automature, Inc."
 !define PRODUCT_WEB_SITE "http://www.automature.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
@@ -42,7 +42,7 @@ SetCompressor lzma
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "ZugSetup-3.0.exe"
+OutFile "ZugSetup-3.1.exe"
 InstallDir "$PROGRAMFILES\Automature"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
