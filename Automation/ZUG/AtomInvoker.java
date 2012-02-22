@@ -124,7 +124,7 @@ break;
             loader = new JarFileClassLoader(EXTERNAL_PACKAGE_NAME, file_urls.toArray(new URL[file_urls.size()]));
          
         } catch (Exception ex) {
-            Log.Error("Error in Interpreting ZugINI.xml " + libDir + "::JarFile not loaded from directory" + ex.getMessage());
+            Log.Error("Error in Interpreting ZugINI.xml " + libDir + "::JarFile not loaded from directory " + ex.getMessage());
         }
     }
     /*
