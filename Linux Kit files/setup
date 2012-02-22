@@ -1,7 +1,7 @@
-﻿#!/bin/bash
+#!/bin/bash
 #Automation - It contains command to install the ZUG 
 #Author:Sankha Sil
-# ©Copyright 2009 Automature Inc.. All Rights Reserved.
+# �Copyright 2009 Automature Inc.. All Rights Reserved.
 
 #checking Java Compatibility
 if which java>/dev/null 2>&1; then
@@ -35,7 +35,7 @@ chmod 777 $ZUG_HOME/log/Result.txt
 chmod 777 $ZUG_HOME/log/Atoms.txt
 chmod 777 $ZUG_HOME/log/AtomResults.txt
 chmod 777 $ZUG_HOME/log/Error.txt
-chmod 777 "$HOME/ZUG Logs/sqlite.db3"
+#chmod 777 "$HOME/ZUG Logs/sqlite.db3"
 echo "log extraction Done"
 cp ZUG.jar $ZUG_HOME
 echo "Zug.jar extraction Done"
@@ -64,3 +64,4 @@ done
 mv runzug $ZUG_HOME
 ln -s $ZUG_HOME/runzug /usr/bin/runzug
 chmod 775 /usr/bin/runzug
+echo "Please exit this current terminal and check the installation of ZUG by runzug command."
