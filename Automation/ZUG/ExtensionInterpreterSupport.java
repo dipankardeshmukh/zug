@@ -16,16 +16,22 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import logs.Log;
+import org.w3c.dom.NamedNodeMap;
 
 public class ExtensionInterpreterSupport {
 
+    //Atom Extention Support
     String extension;
     String interpreterPath;
     String interpreterCommand;
     String InterpreterOption;
+    //External Builtin Support
     String jarfilepath;
     String jarpackage;
     String classname;
+    //Configuration Support
+    String machine_memorysize;
+    String mvm_cardinality;
     Boolean optionPrecedence; // This flag is set when option preceds the script filename
 
     private static ArrayList<ExtensionInterpreterSupport> readConfigFile() throws Exception {
@@ -253,29 +259,28 @@ public class ExtensionInterpreterSupport {
 
         for (int i = 0; i < locationList.getLength(); i++) {
             Element pathElement = (Element) locationList.item(i);
-            if(pathElement.getAttribute("name").equalsIgnoreCase(attributeValue))
-            {
+            if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)) {
                 Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
-            jarinterpreter.jarfilepath = path_node.getTextContent();
+                jarinterpreter.jarfilepath = path_node.getTextContent();
 
-            forJar.add(jarinterpreter.jarfilepath);
-            Node jar_package_arch = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "jar-package");
-            jarinterpreter.jarpackage = jar_package_arch.getTextContent();
-            forJar.add(jarinterpreter.jarpackage);
-            Node class_name = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "class-name");
-            jarinterpreter.classname = class_name.getTextContent();
-            forJar.add(jarinterpreter.classname);
-builtinpackagemap.put(pathElement.getAttribute("name"), forJar);
+                forJar.add(jarinterpreter.jarfilepath);
+                Node jar_package_arch = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "jar-package");
+                jarinterpreter.jarpackage = jar_package_arch.getTextContent();
+                forJar.add(jarinterpreter.jarpackage);
+                Node class_name = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "class-name");
+                jarinterpreter.classname = class_name.getTextContent();
+                forJar.add(jarinterpreter.classname);
+                builtinpackagemap.put(pathElement.getAttribute("name"), forJar);
 //System.out.println("HASHMAP\t"+builtinpackagemap);
-break;
-        }
+                break;
+            }
             forJar.clear();
         }
 
         return builtinpackagemap;
     }
 
-    public String[] reteriveXmlTagAttributeValue() throws Exception {
+    public String[] reteriveXmlTagAttributeValue(String tagarchitechture, String attributeName) throws Exception {
         String filename = "ZugINI.xml";
         File file = new File(filename);
         Document document;
@@ -288,14 +293,61 @@ break;
             throw fileLoadException;
         }
         ExtensionInterpreterSupport jarinterpreter = new ExtensionInterpreterSupport();
-        NodeList locationList = org.apache.xpath.XPathAPI.selectNodeList(document, "//root//builtinpackages//builtinpackage");
+        NodeList locationList = org.apache.xpath.XPathAPI.selectNodeList(document, tagarchitechture);
         String attributevalue[] = new String[locationList.getLength()];
         for (int i = 0; i < locationList.getLength(); i++) {
             Element pathElement = (Element) locationList.item(i);
 
-            attributevalue[i] = pathElement.getAttribute("name");
+            attributevalue[i] = pathElement.getAttribute(attributeName);
 
         }
         return attributevalue;
+    }
+    /*Reads a Configuration for Cartesian Product memorysize and mvm cardinality
+     *
+     * @param atrributeValue
+     *                      as String
+     * returns a HashMap with specific configuration.
+     */
+
+    public HashMap<String, ArrayList<String>> readConfigurationForCartestisanProduct(String attributeValue) throws Exception {
+
+
+        String Path = new String(System.getenv(Controller.PATH_CHECK));
+        String[] PathList = Path.split(Controller.SEPARATOR);//Changed from ";"
+        Log.Debug("Environment variable Path + " + Path);
+        String filename = "ZugINI.xml";
+        File file = new File(filename);
+        Document document;
+        try {
+            document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
+            document.getDocumentElement().normalize();
+        } catch (Exception fileLoadException) {
+            Log.Debug("XMLPrimitive/readConfigurationForCartestisanProduct(): Failed to load the xml file " + filename);
+//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
+            throw fileLoadException;
+        }
+        ExtensionInterpreterSupport configurationInterpreter = new ExtensionInterpreterSupport();
+        NodeList locationList = org.apache.xpath.XPathAPI.selectNodeList(document, "//root//configurations//mvm-configuration");
+        ArrayList<String> config_list = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> configurationMap = new HashMap<String, ArrayList<String>>();
+
+
+        for (int i = 0; i < locationList.getLength(); i++) {
+            Element pathElement = (Element) locationList.item(i);
+            if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)) {
+                Node memory_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "jvm-max-memorysize");
+                configurationInterpreter.machine_memorysize = memory_node.getTextContent();
+                config_list.add(configurationInterpreter.machine_memorysize);
+                Node mvm_cardinality_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "mvm-cardinality");
+                configurationInterpreter.mvm_cardinality = mvm_cardinality_node.getTextContent();
+                config_list.add(configurationInterpreter.mvm_cardinality);
+                configurationMap.put(pathElement.getAttribute("name").toLowerCase(), config_list);
+                break;
+            }
+            config_list.clear();
+        }
+       // Log.Error("THE MAP " + configurationMap);
+        return configurationMap;
     }
 }

@@ -42,6 +42,7 @@ import antlr.debug.NewLineEvent;
 import com.sun.org.apache.xpath.internal.compiler.OpCodes;
 
 import DatabaseLayer.Testplan;
+import com.sun.org.omg.CORBA.ExcDescriptionSeqHelper;
 
 public class Controller extends Thread {
     // Variables for checking Program options
@@ -83,7 +84,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 3.1." + "20120214" + ".051";
+    private static String Version = "ZUG Premium 3.2." + "20120305" + ".053";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -92,7 +93,7 @@ public class Controller extends Thread {
     boolean initWorkedFine = true;
     private static String manualTestCaseID = StringUtils.EMPTY;
     private Hashtable<String, ExecutedTestCase> executedTestCaseData = new Hashtable<String, ExecutedTestCase>();
-    //Hashtable to store the name key value pair of the Command line macro entry
+    //Hashmap to store the name key value pair of the Command line macro entry
     public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
     // Hashtable to store the Abstract TestCase Name as KEY and the TestCase
     // Object as Value.
@@ -128,16 +129,20 @@ public class Controller extends Thread {
     public static String TOPOSET = null;
     // private String TPID = null;
     private String TESTSUITEID = null;
+    //System Variable Initializations
     public static String OS_NAME = "";
     public static String SLASH = "";
     public static String SEPARATOR = "";
     public static String PATH_CHECK = "";
-    public static String LOG_DIR = "",ZIP_DIR="";
+    public static String LOG_DIR = "", ZIP_DIR = "";
     public static boolean OS_FLAG;
+    public static String mvmconfiguration = "4GB";
     //Initiating AtomInvoker
+    public static final String external_jar_xml_tag_path = "//root//builtinpackages//builtinpackage";
+    public static final String external_jar_xml_tag_attribute_name = "name";
     //public static AtomInvoker invokeAtoms=null;
-    public static HashMap<String,AtomInvoker> invokeAtoms=new HashMap<String, AtomInvoker>();
-    private static String builtin_atom_package_name="";
+    public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
+    private static String builtin_atom_package_name = "";
 //    public static AtomInvoker invokeAtoms_stringoperations=null;
 //    private static String builtin_atom_package_name_stringoperations="";
     /*
@@ -947,6 +952,7 @@ public class Controller extends Thread {
                     + action.actionName);
 
             ArrayList<String> tempActionArguments = new ArrayList<String>();
+
             for (int i = 0; i < action.actionArguments.size(); ++i) {
                 Log.Debug("Controller/RunAbstractTestCase: Working on Action Argument : "
                         + i + " for action : " + action.actionName);
@@ -954,6 +960,13 @@ public class Controller extends Thread {
                 Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
                         + "] = " + actionVal + " for action : "
                         + action.actionName);
+                //message("Controller/RunActionAbstractTestCase---\t The Namespace: "+test.nameSpace+"\t The Testcase: "+test.testCaseID+"\t The Test Arguments: "+action.actionArguments);
+//message("The ArrayList   "+Excel._forTestcaseMolecule.get(action.testCaseID));
+                // message("To get the arraylist --"+abstractTestCase.get(Excel.AppendNamespace(action.sheetName, action.actionName)).moleculeArgDefn);
+
+                ////TODO: Molecule Desing,
+                ////if(actionVal.toLowerCase().)
+
                 if (actionVal.toLowerCase().contains("$input_arg")
                         || actionVal.toLowerCase().contains("$$input_arg")) {
                     boolean isThisAContextVar = false;
@@ -966,7 +979,11 @@ public class Controller extends Thread {
                         Log.Debug("Controller/RunAbstractTestCase:  actionVal["
                                 + i + "] = " + actionVal
                                 + " contains an = sign ");
+
+
+
                         String[] splitActionVal = Excel.SplitOnFirstEquals(actionVal);
+
 
                         String tempActionVal = splitActionVal[1];
 
@@ -1059,6 +1076,73 @@ public class Controller extends Thread {
                                     + action.actionName);
                         }
                     }
+                } //Checking For any new defined molecule exists or not.
+                else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#")) {
+                    String key = null, value = null;
+
+                    boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
+                    //message("Runabstract:: Actionss--"+actionVal);
+                    //Checking for the arguments if they are consistent
+                    if (isParameterPassingConsistent(argumentValues)) {
+
+
+                        if (actionVal.contains("=")) {
+                            key = Excel.SplitOnFirstEquals(actionVal)[0];
+                            value = Excel.SplitOnFirstEquals(actionVal)[1];
+                            isKeyEnabled = true;
+                        } else {
+                            value = actionVal.toLowerCase();
+                        }
+                        //message("RUNABSTRACT::-1 Key value- "+key);
+                        if (value.startsWith("%") && value.endsWith("%")) {
+                            value = value.replaceAll("%", "");
+                            isThisAContextVar = true;
+                        }
+                        value = value.replaceAll("#", "");
+                        // message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
+                        if (argumentValues.get(0).contains("=")) {
+                            for (String molecule_arg : argumentValues) {
+                                String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
+                                //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
+                                if (temp_value_split[0].equalsIgnoreCase(value)) {
+                                    if (isKeyEnabled) {
+                                        if (isThisAContextVar) {
+                                            actionVal = key + "=%" + temp_value_split[1] + "%";
+                                        } else {
+                                            actionVal = key + "=" + temp_value_split[1];
+                                        }
+                                    } else {
+                                        if (isThisAContextVar) {
+                                            actionVal = "%" + temp_value_split[1] + "%";
+                                        } else {
+                                            actionVal = temp_value_split[1];
+                                        }
+
+                                    }
+
+//message("RUNABSTRACT:: step forloop "+actionVal);
+                                    foundFormalArg = true;
+                                    break;
+
+                                }
+                            }
+                            if (!foundFormalArg) {
+                                throw new Exception("Formal Argument Not found");
+                            }
+                        } else {
+                            if (isThisAContextVar) {
+                                actionVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value)) + "%";
+                            } else {
+                                actionVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value));
+                            }
+                        }
+
+
+
+                    } else {
+                        throw new Exception("Argument Passing Not Consistent:Either use named argument passing or positional argument passing. ");
+                    }
+                    //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value)+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
                 }
                 try {
 
@@ -1066,6 +1150,7 @@ public class Controller extends Thread {
                         actionVal = readExcel.FindInMacroAndEnvTableForSingleVector(
                                 actionVal, action.nameSpace);
                     }
+
 
                     Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
                             + "] = " + actionVal
@@ -1243,6 +1328,72 @@ public class Controller extends Thread {
 
                             }
                         }
+                    } else if (verificationVal.toLowerCase().startsWith("#") || verificationVal.toLowerCase().startsWith("%#") || verificationVal.toLowerCase().contains("=#")) {
+                        String key = null, value = null;
+
+                        boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
+                        //message("Runabstract:: Actionss--"+actionVal);
+                        //Checking for the arguments if they are consistent
+                        if (isParameterPassingConsistent(argumentValues)) {
+
+
+                            if (verificationVal.contains("=")) {
+                                key = Excel.SplitOnFirstEquals(verificationVal)[0];
+                                value = Excel.SplitOnFirstEquals(verificationVal)[1];
+                                isKeyEnabled = true;
+                            } else {
+                                value = verificationVal.toLowerCase();
+                            }
+                            //message("RUNABSTRACT::-1 Key value- "+key);
+                            if (value.startsWith("%") && value.endsWith("%")) {
+                                value = value.replaceAll("%", "");
+                                isThisAContextVar = true;
+                            }
+                            value = value.replaceAll("#", "");
+                            // message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
+                            if (argumentValues.get(0).contains("=")) {
+                                for (String molecule_arg : argumentValues) {
+                                    String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
+                                    //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
+                                    if (temp_value_split[0].equalsIgnoreCase(value)) {
+                                        if (isKeyEnabled) {
+                                            if (isThisAContextVar) {
+                                                verificationVal = key + "=%" + temp_value_split[1] + "%";
+                                            } else {
+                                                verificationVal = key + "=" + temp_value_split[1];
+                                            }
+                                        } else {
+                                            if (isThisAContextVar) {
+                                                verificationVal = "%" + temp_value_split[1] + "%";
+                                            } else {
+                                                verificationVal = temp_value_split[1];
+                                            }
+
+                                        }
+
+//message("RUNABSTRACT:: step forloop "+actionVal);
+                                        foundFormalArg = true;
+                                        break;
+
+                                    }
+                                }
+                                if (!foundFormalArg) {
+                                    throw new Exception("Formal Argument Not found");
+                                }
+                            } else {
+                                if (isThisAContextVar) {
+                                    verificationVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value)) + "%";
+                                } else {
+                                    verificationVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value));
+                                }
+                            }
+
+
+
+                        } else {
+                            throw new Exception("Argument Passing Not Consistent:Either use named argument passing or positional argument passing. ");
+                        }
+                        //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value)+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
                     }
                     try {
                         if (verification.verificationArguments.get(i).toString().toLowerCase().contains("$$input_arg")) {
@@ -1299,10 +1450,10 @@ public class Controller extends Thread {
      * @return All the Expanded TestCases
      */
     @SuppressWarnings("unchecked")
-    private TestCase[] ExpandTestCase(TestCase test, boolean fromTestCaseSheet) {
+    private TestCase[] ExpandTestCase(TestCase test, boolean fromTestCaseSheet) throws Exception {
         Log.Debug("Controller/ExpandTestCase: Start of function with TestCase ID is "
                 + test.testCaseID);
- //message("Coming to This step 1\t"+test.actions.get(0).actionName );
+
         ArrayList<ArrayList<String>> allActionVerificationArgs = new ArrayList<ArrayList<String>>();
         Action[] allActions = new Action[test.actions.size()];
         test.actions.toArray(allActions);
@@ -1314,7 +1465,6 @@ public class Controller extends Thread {
 
         for (int j = 0; j < allActions.length; j++) {
             Action action = allActions[j];
-            //message("Coming to This step 2\t"+action.actionName);
             Log.Debug("Controller/ExpandTestCase: Working on Action  : "
                     + action.actionName);
             for (int i = 0; i < action.actionArguments.size(); ++i) {
@@ -1344,7 +1494,7 @@ public class Controller extends Thread {
                 }
 
             }
-//message("This is step 2a\t"+test.actions.get(0).actionName);
+
             Verification[] verifications = new Verification[action.verification.size()];
             action.verification.toArray(verifications);
             Log.Debug("Controller/ExpandTestCase: Number of verifications are : "
@@ -1389,13 +1539,11 @@ public class Controller extends Thread {
                 }
             }
         }
-//message("This is step 2b\t"+test.actions.get(0).actionName);
+
         List<Tuple<String>> resultAfterIndexed = CartesianProduct.indexedProduct(allActionVerificationArgs);// .get(0),
-       // message("This is step 2b-1\t"+test.actions.get(0).actionName);
         // allActionVerificationArgs.get(1));
         List<Tuple<String>> result = new ArrayList<Tuple<String>>();
         for (Tuple<String> tempResult : resultAfterIndexed) {
-          //  message("This is step 2b-2\t"+test.actions.get(0).actionName);
             allActionVerificationArgs = new ArrayList<ArrayList<String>>();
             ArrayList<String> tempResultList = new ArrayList<String>();
             Object[] actualValue = tempResult.ToArray();
@@ -1403,7 +1551,6 @@ public class Controller extends Thread {
                 tempResultList.add((String) actualValue[q]);
             }
             count1 = -1;
-          
             for (String tempVal : tempResultList) {
 
                 count1++;
@@ -1425,10 +1572,16 @@ public class Controller extends Thread {
                 }
 
             }
-            result.addAll(CartesianProduct.cartesianProduct(allActionVerificationArgs));
+            try {
+                result.addAll(CartesianProduct.cartesianProduct(allActionVerificationArgs));
+            } catch (OutOfMemoryError oe) {
+                Runtime runtime = Runtime.getRuntime();
+                Log.Error("Cartesian Product Limit Exceeded Size. The Size exceeded to [" + Utility.getMaxJVMMemorySize(runtime) + " MB] for The Test Case " + test.testCaseID + " with Exception " + oe.getMessage());
+                throw new Exception("Cartesian Product Limit Exceeded Size. The Size exceeded to [" + Utility.getMaxJVMMemorySize(runtime) + " MB] for The Test Case " + test.testCaseID + " with Exception " + oe.getMessage(), oe);
+            }
 
         }
-//message("This is step 2c\t"+test.actions.get(0).actionName);
+
         /*
          * for (int j=0;j<allActions.length;j++) { Action action=allActions[j];
          * Log.Debug("Controller/ExpandTestCase: Working on Action  : " +
@@ -1489,9 +1642,7 @@ public class Controller extends Thread {
          * );//.get(0), allActionVerificationArgs.get(1));
          */
         ArrayList<TestCase> tempTestCases = new ArrayList<TestCase>();
-        //message("This is step 3\t"+test.actions.get(0).actionName);
         if (result != null) {
-            //message("This is step 3a\t"+test.actions.get(0).actionName);
             int size = result.size();
             Object[] tempResult = result.toArray();
             // Object [] tempResult = allActionVerificationArgs.toArray();
@@ -1522,7 +1673,7 @@ public class Controller extends Thread {
 
                 tempTestCase.user = test.user;
                 tempTestCase.userObj = test.userObj;
-//message("This is step 3b\t"+test.actions.get(0).actionName);
+
                 ArrayList<String> tempCollection = new ArrayList<String>();
                 Object[] actualValue = subList.ToArray();
                 for (int q = 0; q < actualValue.length; ++q) {
@@ -1546,7 +1697,6 @@ public class Controller extends Thread {
 
                 for (int j = 0; j < actions.length; ++j) {
                     Action action = actions[j];
-                    
                     for (int i = 0; i < action.actionArguments.size(); ++i) {
                         if (multiValuedVariablePosition.containsKey(count)) {
                             tempTestCase.testCaseID += "_"
@@ -1689,7 +1839,7 @@ public class Controller extends Thread {
                 tempTestCases.add(tempTestCase);
             }
         }
-//message("Step 4"+test.actions.get(0).actionName);
+
         if (tempTestCases.size() == 0) {
             Log.Debug("Controller/ExpandTestCase: Returning only 1 testcase after Expansion. End of function with TestCase ID is "
                     + test.testCaseID);
@@ -2076,11 +2226,8 @@ public class Controller extends Thread {
         // Add the Include Sheet to NameSpace
         if (includeMolecules != null && includeMolecules != StringUtils.EMPTY) {
             includeFlag = false;
-             //System.out.println("Its Coming Here\t"+includeFlag+"\t"+"The External Sheet list:: "+includeMolecules);
-
-            readExcel.AddToExternalSheets("Include", includeMolecules);
-
-            // if
+            // System.out.println("Its Coming Here\t"+includeFlag);
+            readExcel.AddToExternalSheets("Include", includeMolecules); // if
             // the
             // include
             // switch
@@ -2799,7 +2946,7 @@ public class Controller extends Thread {
         // Harness Specific ContextVariable to store BaseTestCase ID
         ContextVar.setContextVar("ZUG_BASETCID", test1.testCaseID);
         baseTestCaseID = test1.testCaseID;
-//message("+++++++++++For Debugging++++++++++\t"+test1.actions.get(0).actionName+"\t"+test1.testCaseID); //Its remain same as molecule name is coming to this portion
+
         // Added Context Variable basically to get the User Information
         if (test1.userObj != null) {
             // Harness Specific ContextVariable to store UserName
@@ -2834,8 +2981,7 @@ public class Controller extends Thread {
 
         ArrayList<Thread> ThreadPool = new ArrayList<Thread>();
         for (TestCase test : expandedTestCases) {
-             
-              final TestCase test2 = test;
+            final TestCase test2 = test;
             // RunExpandedTestCase(test);
             // Start a new thread and run the expanded test case on it
             if (test1.concurrentExecutionOnExpansion == true) {
@@ -2861,14 +3007,12 @@ public class Controller extends Thread {
             } else {
                 if (StringUtils.isNotBlank(test.threadID)) {
                     threadIdForTestCases.put(test.stackTrace, test.threadID);
-                   
                 } else // Assigning the Parent Test Case Thread.
                 {
                     threadIdForTestCases.put(test.stackTrace, StringUtils.EMPTY);
                 }
 
                 RunExpandedTestCase(test);
-                 
             }
         }
         // Wait for all the Threads i.e. expanded test cases to finish.
@@ -2980,10 +3124,10 @@ public class Controller extends Thread {
                     } catch (Exception ex) {
                         throw new Exception(
                                 String.format(
-                                "Exception Happened while executing Verification %s which is located at Line %s of Sheet %s. Exception Message is %s",
-                                verification.verificationName,
+                                "Exception in Verification %s (%s:%s). Exception: %s",
+                                verification.verificationName, verification.sheetName,
                                 verification.lineNumber + 1,
-                                verification.sheetName, ex.getMessage()));
+                                ex.getMessage()));
                     }
                 } else {
                     message(String.format("\n[%s] Verification %s Executed With NO Arguments ",
@@ -3009,10 +3153,10 @@ public class Controller extends Thread {
                     } catch (Exception ex) {
                         throw new Exception(
                                 String.format(
-                                "Exception Happened while executing Verification %s which is located at Line %s of Sheet %s. Exception Message is %s",
-                                verification.verificationName,
+                                "Exception in Verification %s (%s:%s). Exception: %s",
+                                verification.verificationName, verification.sheetName,
                                 verification.lineNumber + 1,
-                                verification.sheetName, ex.getMessage()));
+                                ex.getMessage()));
                     }
                 } else {
                     message(String.format("\n[%s] Verification %s Executed With NO Arguments ",
@@ -3233,155 +3377,66 @@ public class Controller extends Thread {
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
                 }
-            }
-            /*
-             else  if(verification.verificationName.toLowerCase().contains("browseroperations"))
-            {
-                try
-                {
-//Spliting the for method name
-                    String method[] = verification.verificationName.trim().split("\\.");
-
-//checking all the arguments for % occurance
+            } else if (verification.verificationName.trim().startsWith("#define_arg")) {
+                message(String.format("[%s] Molecule Definition Action %s with values %s Cannot be Defined in Verification Action", verification.stackTrace.toUpperCase(), verification.verificationName, verification.verificationArguments));
+            } else if (verification.verificationName.trim().contains(".") && !verification.verificationName.trim().startsWith("&") && !verification.verificationName.trim().startsWith("@")) {
+                try {
+                    boolean PkgstructureFound = false;
+                    String package_struct[] = verification.verificationName.trim().split("\\.");
                     for (int i = 0; i < verification.verificationArguments.size(); i++) {
-                        if (verification.verificationArguments.get(i).startsWith("%") && verification.verificationArguments.get(i).endsWith("%")) {
+                        if (!verification.verificationArguments.get(i).isEmpty()) {
+                            if (verification.verificationArguments.get(i).startsWith("$$%") && verification.verificationArguments.get(i).endsWith("%"))
+                                {
+                                    String verification_arg = StringUtils.removeStart(verification.verificationArguments.get(i),"$$");
+                            verification.verificationArguments.set(i, getActualDefnValue(verification_arg));
+                                }
+                                else{
 
-//replacing them with ""
-                            String verificationargs = verification.verificationArguments.get(i).replaceAll("%", "");
-//picking out the database value
-                            String context_value = ContextVar.getContextVar(verificationargs);
-                            verification.verificationArguments.set(i, context_value);
-Log.Debug(String.format("Controller/RunVerification context variable value %s set", context_value));
-
+                            verification.verificationArguments.set(i, getActualDefnValue(verification.verificationArguments.get(i)));
+                            }
                         }
-
-                    }
-              //Checking and calling dynamic class atoms
- if(!builtin_atom_package_name.equalsIgnoreCase("browseroperations"))
-{
-   builtin_atom_package_name="BrowserOperations";
-//    invokeAtoms=new AtomInvoker(builtin_atom_package_name);
-  invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+                        
+//                        if (verification.verificationArguments.get(i).startsWith("%") && verification.verificationArguments.get(i).endsWith("%")) {
 //
-}
-invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.verificationArguments);
-                    message(String.format("Controller/RunAction :Successfully Webdriver called with %s with values %s ", verification.verificationName, verification.verificationArguments));
-                    Log.Debug(String.format("Controller/RunAction :Successfully Webdriver called with %s..", verification.verificationName));
-                }
-                catch(Exception e)
-                {
-                    throw new Exception(
-                                String.format(
-                                "Exception Happened while executing Verification %s which is located at Line %s of Sheet %s."
-                                + " Exception is %s",
-                                verification.verificationName,
-                                verification.lineNumber + 1,
-                                verification.sheetName, e.getMessage()));
-                }
-            }
-            else if(action.actionName.trim().toLowerCase().contains("string"))
-            {
-                 try {
-                    String method[] = action.actionName.trim().split("\\.");
-
-//StringOperations str_atom=new StringOperations();
-
-
-                    for (int i = 0; i < action.actionArguments.size(); i++) {
-                        if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
-
-                            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
-
-                            String context_value = ContextVar.getContextVar(actionargs);
-                            action.actionArguments.set(i, context_value);
-
-
-                        }
-
-                    }
-                     message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-if(!builtin_atom_package_name.equalsIgnoreCase("stringoperations"))
-{
-   builtin_atom_package_name="StringOperations";
-//    invokeAtoms=new AtomInvoker(builtin_atom_package_name);
-invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+//                            String actionargs = verification.verificationArguments.get(i).replaceAll("%", "");
 //
-}
-invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.verificationArguments);
-                     //str_atom.StringOperationsMethod(method[1],action.actionArguments);
+//                            String context_value = ContextVar.getContextVar(actionargs);
+//                            verification.verificationArguments.set(i, context_value);
+//
+//
+//                        }
 
-                    message(String.format(
-                                "\n[%s] Action %s SUCCESSFULLY Executed",
-                                action.stackTrace.toUpperCase(),
-                                action.actionName.toUpperCase()));
-                    RunVerification(action, threadID);
-                    Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));
-                }catch(Exception e)
-                 {
-                      throw new Exception(
-                            String.format(
-                            "\n\nException Happened while executing Action %s which is located "
-                            + "at Line %s of Sheet %s. Exception is %s",
-                            action.actionName, action.lineNumber,
-                            action.sheetName, e.toString()));
-                }
-
-
-            }
-             */
-             else if(verification.verificationName.trim().contains(".")&&!verification.verificationName.trim().startsWith("&")&&!verification.verificationName.trim().startsWith("@"))
-            {
-                try
- {
-                    boolean PkgstructureFound=false;
-     String package_struct[]=verification.verificationName.trim().split("\\.");
-      for (int i = 0; i < verification.verificationArguments.size(); i++) {
-                        if (verification.verificationArguments.get(i).startsWith("%") && verification.verificationArguments.get(i).endsWith("%")) {
-
-                            String actionargs = verification.verificationArguments.get(i).replaceAll("%", "");
-
-                            String context_value = ContextVar.getContextVar(actionargs);
-                            verification.verificationArguments.set(i, context_value);
-
+                    }
+                    message(String.format("[%s] Execution Started Action %s with values %s ", verification.stackTrace.toUpperCase(), verification.verificationName, verification.verificationArguments));
+                    for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
+                        if (pkg_name.equalsIgnoreCase(package_struct[0])) {
+                            if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
+                                builtin_atom_package_name = pkg_name;
+                                invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+                            }
+                            invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), verification.verificationArguments);
+                            PkgstructureFound = true;
+                            break;
 
                         }
 
                     }
-                     message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-                   for(String pkg_name:new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue())
-                   {
-                       if(pkg_name.equalsIgnoreCase(package_struct[0]))
-                       {
-                           if(!builtin_atom_package_name.equalsIgnoreCase(pkg_name))
-                           {
-                               builtin_atom_package_name=pkg_name;
-                               invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-                           }
-                           invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(),verification.verificationArguments);
-                           PkgstructureFound=true;
-                           break;
-
-                       }
-
-                   }
-                   if(PkgstructureFound == false)
-                   {
+                    if (PkgstructureFound == false) {
                         throw new Exception(
-                            String.format(
-                            "\n\nException Happened while executing Action %s which is located "
-                            + "at Line %s of Sheet %s.\n Package Structure Not Match with ZugINI.xml defination",
-                            verification.verificationName, verification.lineNumber,
-                            verification.sheetName, package_struct[0]));
-                   }
-                   message(String.format(
-                                "\n[%s] Action %s SUCCESSFULLY Executed",
-                                verification.stackTrace.toUpperCase(),
-                                verification.verificationName.toUpperCase()));
+                                String.format(
+                                "\n\nException Happened while executing Action %s which is located "
+                                + "at Line %s of Sheet %s.\n Package Structure Not Match with ZugINI.xml defination",
+                                verification.verificationName, verification.lineNumber,
+                                verification.sheetName, package_struct[0]));
+                    }
+                    message(String.format(
+                            "\n[%s] Action %s SUCCESSFULLY Executed",
+                            verification.stackTrace.toUpperCase(),
+                            verification.verificationName.toUpperCase()));
 
                     Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", verification.verificationName));
-                }catch(Exception e)
-                 {
-                      throw new Exception(
+                } catch (Exception e) {
+                    throw new Exception(
                             String.format(
                             "\n\nException Happened while executing Action %s which is located "
                             + "at Line %s of Sheet %s.\n Exception is %s",
@@ -3389,8 +3444,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                             verification.sheetName, e.toString()));
                 }
 
- }
-            else {
+            } else {
                 if (debugMode == true) {
                     StringBuilder arguments = new StringBuilder();
                     Log.Debug("Controller/RunVerification : Number of Arguments are : "
@@ -3528,6 +3582,57 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
     }
 
     /***
+     * Function to check the consistancy of the arguments.
+     *
+     * @param arguments
+     *            arguments as ArrayList<String>
+     * @return boolean
+     *            true or false
+     */
+    private boolean isParameterPassingConsistent(ArrayList<String> arguments) {
+        boolean equalsPresent = true, equalsNotPresent = true;
+        //Looping to get every arguments from the arraylist
+        for (String args : arguments) {
+            //Checking every argument if it contains any = or not
+            if (args.contains("=")) {
+                //Putting the proposition logic Boolean AND operation
+                equalsPresent = true && equalsPresent;
+                equalsNotPresent = false && equalsNotPresent;
+
+            } else {
+                equalsNotPresent = true && equalsNotPresent;
+                equalsPresent = false && equalsPresent;
+            }
+
+        }
+        //Boolean OR Operation
+        return equalsPresent || equalsNotPresent;
+    }
+
+    /***
+     * Function to run a particular action of a testcase.
+     *
+     * @param realValue
+     *            realValue as String
+     * @return tunedValue
+     *            String return tuned and edited.
+     */
+    private String getActualDefnValue(String realValue) throws Exception {
+        final String HASH = "#", PERCENT = "%", BLANK = "";
+        String tunedValue = "";
+        if (realValue.startsWith(PERCENT) && realValue.endsWith(PERCENT)) {
+            realValue = realValue.replaceAll(PERCENT, BLANK);
+            tunedValue = ContextVar.getContextVar(getActualDefnValue(realValue));//Recurrsion
+
+        } else {
+            tunedValue = realValue;
+        }
+
+
+        return tunedValue;
+    }
+
+    /***
      * Function to run a particular action of a testcase.
      *
      * @param testCaseID
@@ -3535,14 +3640,12 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
      * @param action
      *            Action to be executed.
      */
-    
     private void RunAction(Object act) {
         System.out.println(Utility.dateAsString());
         Action action = (Action) act;
         String testCaseID = action.testCaseID;
         String[] st;
         try {
-         //message("the action details--\n"+action.actionName+"\n"+action.testCaseID+"\n"+action.actionArguments);
             UserData user = action.userObj;
             String threadID = (String) threadIdForTestCases.get(action.stackTrace);
             Log.Debug("Controller/RunAction : Start of function with TestCaseID as : "
@@ -3559,7 +3662,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
 
                 Log.Debug(String.format("Controller/RunAction : Calling ExecuteActionCommand for action %s....",
                         action.actionName));
-              
+
                 ExecuteActionCommand(action, user, threadID);
                 Log.Debug(String.format("Controller/RunAction : SUCCESSFULLY Executed ExecuteActionCommand for action %s",
                         action.actionName));
@@ -3585,6 +3688,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                         Log.Debug("Controller/RunAction: Working on Action  Argument : "
                                 + i);
                         String actionVal = action.actionArguments.get(i).toString();
+
                         Log.Debug("Controller/RunAction: Working on Action  Argument : "
                                 + i
                                 + " With  actionVal : "
@@ -3603,6 +3707,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                     Log.Debug(String.format("Controller/RunAction: Calling  RunAbstractTestCase for Abstract TestCase ID as : %s and action.parentTestCaseID = %s .",
                             abstractTestCaseName,
                             action.parentTestCaseID));
+
                     RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,
                             action.nameSpace)), tempList,
                             action.parentTestCaseID, action.stackTrace);
@@ -3655,10 +3760,10 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                     } catch (Exception ex) {
                         throw new Exception(
                                 String.format(
-                                "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
-                                action.actionName,
+                                "\n\nException in Action %s (%s :%s). Exception Message is %s",
+                                action.actionName, action.sheetName,
                                 action.lineNumber + 1,
-                                action.sheetName, ex.getMessage()));
+                                ex.getMessage()));
                     }
                 } else {
                     message(String.format(
@@ -3692,10 +3797,10 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                     } catch (Exception ex) {
                         throw new Exception(
                                 String.format(
-                                "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
-                                action.actionName,
+                                "\n\nException in Action %s (%s:%s). Exception Message is %s",
+                                action.actionName, action.sheetName,
                                 action.lineNumber + 1,
-                                action.sheetName, ex.getMessage()));
+                                ex.getMessage()));
                     }
                 } else {
                     message(String.format(
@@ -3757,9 +3862,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                 } catch (Exception ex) {
                     throw new Exception(
                             String.format(
-                            "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
-                            action.actionName, action.lineNumber + 1,
-                            action.sheetName, ex.getMessage()));
+                            "\n\nException in Action %s (%s : %s). Exception Message is %s",
+                            action.actionName, action.sheetName, action.lineNumber + 1,
+                            ex.getMessage()));
                 }
             } else if (action.actionName.trim().compareToIgnoreCase(
                     "gettagvalue") == 0) {
@@ -3815,9 +3920,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                 } catch (Exception ex) {
                     throw new Exception(
                             String.format(
-                            "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
-                            action.actionName, action.lineNumber + 1,
-                            action.sheetName, ex.getMessage()));
+                            "\n\nException in Action %s (%s:%s) . Exception Message is %s",
+                            action.actionName, action.sheetName, action.lineNumber + 1,
+                            ex.getMessage()));
                 }
             } else if (action.actionName.trim().compareToIgnoreCase(
                     "getattributeortaglist") == 0) {
@@ -3884,9 +3989,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                 } catch (Exception ex) {
                     throw new Exception(
                             String.format(
-                            "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
-                            action.actionName, action.lineNumber + 1,
-                            action.sheetName, ex.getMessage()));
+                            "\n\nException in Action %s (%s:%s) . Exception Message is %s",
+                            action.actionName, action.sheetName, action.lineNumber + 1,
+                            ex.getMessage()));
                 }
             } else if (action.actionName.trim().compareToIgnoreCase(
                     "appendtocontextvar") == 0) {
@@ -3900,8 +4005,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                             String opt = NormalizeVariable(
                                     (String) action.actionArguments.get(i),
                                     threadID);
-                            if(opt.startsWith("%")&&opt.endsWith("%"))
-                            opt=ContextVar.getContextVar(opt.replaceAll("%",""));
+                            if (opt.startsWith("%") && opt.endsWith("%")) {
+                                opt = ContextVar.getContextVar(opt.replaceAll("%", ""));
+                            }
                             int idx = opt.indexOf('=');
                             if (idx == -1) {
                                 continue;
@@ -3940,193 +4046,84 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.
                     } catch (Exception e) {
                         throw new Exception(
                                 String.format(
-                                "\n\nException Happened while executing Action %s which is located "
-                                + "at Line %s of Sheet %s. Exception is %s",
-                                action.actionName, action.lineNumber,
-                                action.sheetName, e.toString()));
+                                "\n\nException in Action %s (%s:%s) . Exception is %s",
+                                action.actionName, action.sheetName, action.lineNumber,
+                                e.toString()));
                     }
                 } else {
                     message(String.format("\n[%s] Action %s Executed With less than two Arguments",
                             action.stackTrace.toUpperCase(),
                             action.actionName.toUpperCase()));
                 }
-            }
-            /*else if (action.actionName.trim().toLowerCase().contains("browseroperations")) {
-                try {//message("Webdriver ");
-                    
-                    String method[] = action.actionName.trim().split("\\.");
-
-
-                   
-
-                    for (int i = 0; i < action.actionArguments.size(); i++) {
-                        if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
-
-
-                            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
-
-                            String context_value = ContextVar.getContextVar(actionargs);
-                            action.actionArguments.set(i, context_value);
-
-
-                        }
-
-                    }
-                    message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-if(!builtin_atom_package_name.equalsIgnoreCase("browseroperations"))
-{
-    builtin_atom_package_name="BrowserOperations";
-    //invokeAtoms =new AtomInvoker(builtin_atom_package_name);
-    invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-
-}
-                  
-invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.actionArguments);
-
-//                if(cont_var.startsWith("%")&&cont_var.endsWith("%"))
-//                {
-//
-//                    cont_var=cont_var.replace("%","");
-//
-//                    action.actionArguments.set(0,cont_var);
-//
-//                    //message("THeArray List changed"+action.actionArguments.get(0));
-//                }
-////message("THeArray List"+action.actionArguments);
-                    //web_atom.BuiltInWebDriverMethod(method[1], action.actionArguments);
-                    message(String.format(
-                                "\n[%s] Action %s SUCCESSFULLY Executed",
-                                action.stackTrace.toUpperCase(),
-                                action.actionName.toUpperCase()));
-                    RunVerification(action, threadID);
-                    Log.Debug(String.format("Controller/RunAction :Successfully Webdriver called with %s..", action.actionName));
-                } catch (Exception e) {
-
-                    throw new Exception(
-                            String.format(
-                            "\n\nException Happened while executing Action %s which is located "
-                            + "at Line %s of Sheet %s. Exception is %s",
-                            action.actionName, action.lineNumber,
-                            action.sheetName, e.toString()));
-
-
-                }
-            }else if(action.actionName.trim().toLowerCase().contains("string"))
+            } else if (action.actionName.toLowerCase().contains("#define"))//had to put it before the previous check.
             {
-                 try {
-                    String method[] = action.actionName.trim().split("\\.");
-
-//StringOperations str_atom=new StringOperations();
-                    
-
+                // message(String.format("[%s] Molecule defined %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
+            } else if (action.actionName.trim().contains("\\.") || !action.actionName.startsWith("&") || !action.actionName.toLowerCase().contains("define")) {
+                try {
+                    boolean PkgstructureFound = false;
+                    String package_struct[] = action.actionName.trim().split("\\.");
                     for (int i = 0; i < action.actionArguments.size(); i++) {
-                        if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
 
-                            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
-                           
-                            String context_value = ContextVar.getContextVar(actionargs);
-                            action.actionArguments.set(i, context_value);
+                        if (!action.actionArguments.get(i).isEmpty()) {
+                            //message("The Arguments comes "+action.actionArguments.get(i));
+                            if (action.actionArguments.get(i).startsWith("$$%") && action.actionArguments.get(i).endsWith("%")) {
+                            String action_arg =StringUtils.removeStart(action.actionArguments.get(i),"$$");
+                            action.actionArguments.set(i, getActualDefnValue(action_arg));
+                            //message("The acrion arg "+action_arg+" the change is "+getActualDefnValue(action_arg));
+                        }else{
+                            action.actionArguments.set(i, getActualDefnValue(action.actionArguments.get(i)));
+                            }
+                        }  
+//          if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
+//
+//                            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
+//
+//                            String context_value = ContextVar.getContextVar(actionargs);
+//                            action.actionArguments.set(i, context_value);
+//
+//
+//                        }
 
+
+
+                    }
+                    message(String.format("[%s] Execution Started Action %s with values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
+                    for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
+                        if (pkg_name.equalsIgnoreCase(package_struct[0])) {
+                            if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
+                                builtin_atom_package_name = pkg_name;
+                                invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+                            }
+                            invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), action.actionArguments);
+                            PkgstructureFound = true;
+                            break;
 
                         }
 
                     }
-                     message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-                     
-                     //str_atom.StringOperationsMethod(method[1],action.actionArguments);
-                    if(!builtin_atom_package_name.equalsIgnoreCase("stringoperations"))
-{
-
-    builtin_atom_package_name="StringOperations";
-    //invokeAtoms =new AtomInvoker(builtin_atom_package_name);
-    invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-
-}
-invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.actionArguments);
- 
-                    message(String.format(
-                                "\n[%s] Action %s SUCCESSFULLY Executed",
-                                action.stackTrace.toUpperCase(),
-                                action.actionName.toUpperCase()));
-                    RunVerification(action, threadID);
-                    Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));  
-                }catch(Exception e)
-                 {
-                      throw new Exception(
-                            String.format(
-                            "\n\nException Happened while executing Action %s which is located "
-                            + "at Line %s of Sheet %s. Exception is %s",
-                            action.actionName, action.lineNumber,
-                            action.sheetName, e.toString()));
-                }
-                   
-                
-           
-           
-            }*/
-            
- else if(action.actionName.trim().contains("\\.")||!action.actionName.startsWith("&"))
-            {
-                try
- {
-                    boolean PkgstructureFound=false;
-     String package_struct[]=action.actionName.trim().split("\\.");
-      for (int i = 0; i < action.actionArguments.size(); i++) {
-                        if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
-
-                            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
-
-                            String context_value = ContextVar.getContextVar(actionargs);
-                            action.actionArguments.set(i, context_value);
-
-
-                        }
-
-                    }
-                     message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-                   for(String pkg_name:new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue())
-                   {
-                       if(pkg_name.equalsIgnoreCase(package_struct[0]))
-                       {
-                           if(!builtin_atom_package_name.equalsIgnoreCase(pkg_name))
-                           {
-                               builtin_atom_package_name=pkg_name;
-                               invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-                           }
-                           invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(),action.actionArguments);
-                           PkgstructureFound=true;
-                           break;
-
-                       }
-                    
-                   }
-                   if(PkgstructureFound == false)
-                   {
+                    if (PkgstructureFound == false) {
+                        //message("why here??  "+action.actionName);
                         throw new Exception(
-                            String.format(
-                            "\n\nException Happened while executing Action %s which is located "
-                            + "at Line %s of Sheet %s.\n Package Structure Not Match with ZugINI.xml defination",
-                            action.actionName, action.lineNumber,
-                            action.sheetName, package_struct[0]));
-                   }
-                   message(String.format(
-                                "\n[%s] Action %s SUCCESSFULLY Executed",
-                                action.stackTrace.toUpperCase(),
-                                action.actionName.toUpperCase()));
+                                String.format(
+                                "\n\nException in Action %s ( %s:%s) .\n Package Structure Not Match with ZugINI.xml definition",
+                                action.actionName, action.sheetName, action.lineNumber,
+                                package_struct[0]));
+                    }
+                    message(String.format(
+                            "\n[%s] Action %s SUCCESSFULLY Executed",
+                            action.stackTrace.toUpperCase(),
+                            action.actionName.toUpperCase()));
                     RunVerification(action, threadID);
                     Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));
-                }catch(Exception e)
-                 {
-                      throw new Exception(
+                } catch (Exception e) {
+                    throw new Exception(
                             String.format(
-                            "\n\nException Happened while executing Action %s which is located "
-                            + "at Line %s of Sheet %s.\n Exception is %s",
-                            action.actionName, action.lineNumber,
-                            action.sheetName, e.toString()));
+                            "\n\nException in Action %s (%s:%s) .\n Exception is %s",
+                            action.actionName, action.sheetName, action.lineNumber,
+                            e.toString()));
                 }
 
- }
-            else {
+            } else {
 
                 if (debugMode == true) {
                     StringBuilder arguments = new StringBuilder();
@@ -4181,16 +4178,16 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
             Log.Debug("Controller/RunAction : End of function with TestCaseID as : "
                     + testCaseID);
         } catch (Exception ex) {
-           
+
 
             if (StringUtils.isBlank(errorMessageDuringTestCaseExecution.get(action.parentTestCaseID))) {
                 errorMessageDuringTestCaseExecution.put(
                         action.parentTestCaseID,
-                        ((String)errorMessageDuringTestCaseExecution.get(action.parentTestCaseID))
+                        ((String) errorMessageDuringTestCaseExecution.get(action.parentTestCaseID))
                         + "\n\t"
                         + ex.getMessage());
             }
-             
+
             if (StringUtils.isBlank(errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))) {
                 errorMessageDuringMoleculeCaseExecution.put(
                         action.stackTrace,
@@ -4198,7 +4195,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                         + "\n\t"
                         + ex.getMessage());
             }
-              
+
             // throw new Exception(ex.getMessage());
         }
 
@@ -4285,9 +4282,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
         } catch (Exception ex) {
             throw new Exception(
                     String.format(
-                    "\tException Happened while executing Action %s which is located at Line %s of Sheet %s.\n\t%s",
-                    action.actionName, action.lineNumber + 1,
-                    action.sheetName, ex.getMessage()));
+                    "\tException in Atom %s (%s.xls: %s :%s).\n\tFootPrint:\n\t%s",
+                    action.actionName, action.nameSpace, action.sheetName, action.lineNumber + 1,
+                    ex.getMessage()));
         }
     }
 
@@ -4363,7 +4360,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                         process.exitValue()));
             }
         } catch (Exception ex) {
-            String error = String.format("Controller/ExecuteDefaultCommand : Exception raised while running Command DefaultAction.exe. Exception Message is : %s ",
+            String error = String.format("Controller/ExecuteDefaultCommand : Exception in Command DefaultAction.exe. Exception Message is : %s ",
                     ex.getMessage() + ex.getCause()
                     + ex.getStackTrace() + ex.toString());
             // Log.Error(error);
@@ -4872,7 +4869,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                         process.exitValue(), errorPrimitiveMessage));
             }
         } catch (Exception ex) {
-            String error = String.format("Exception raised while running Command %s.\n\tException Message is : %s",
+            String error = String.format("Exception in Command %s.\n\tException Message is :\n\tFoot Print:\n %s",
                     command, ex.getMessage());
             // Log.Error(error);
             throw new Exception(error);
@@ -5201,9 +5198,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                 ((Thread) ThreadPool.get(t)).join();
             }
         } catch (Exception ex) {
-            Log.ErrorInLog("Controller/RunExpandedTestCaseForMolecule: Exception while running test case "
+            Log.ErrorInLog("Controller/RunExpandedTestCaseForMolecule: Exception in "
                     + test.testCaseID + "." + ex.getMessage());
-            errorDuringTestCaseExecution += "Controller/RunExpandedTestCaseForMolecule: Exception while running test case "
+            errorDuringTestCaseExecution += "Controller/RunExpandedTestCaseForMolecule: Exception in "
                     + test.testCaseID + "." + ex.getMessage();
         } finally {
             boolean cleanupActionStarted = false;
@@ -5288,9 +5285,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                     + " for TestCase ID : "
                                     + test.testCaseID);
                         } catch (Exception ex) {
-                            Log.ErrorInLog("Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception while running test case "
+                            Log.ErrorInLog("Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception in "
                                     + test.testCaseID + "." + ex.getMessage());
-                            errorDuringTestCaseExecution += "Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception while running test case "
+                            errorDuringTestCaseExecution += "Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception in "
                                     + test.testCaseID + "." + ex.getMessage();
                         }
                     } else if (action.step.endsWith("c")
@@ -5342,9 +5339,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                     + " for TestCase ID : "
                                     + test.testCaseID);
                         } catch (Exception ex) {
-                            Log.ErrorInLog(String.format("Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception while running test case %s.%s",
+                            Log.ErrorInLog(String.format("Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception in %s.%s",
                                     test.testCaseID, ex.getMessage()));
-                            errorDuringTestCaseExecution += String.format("Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception while running test case %s.%s",
+                            errorDuringTestCaseExecution += String.format("Controller/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception in %s.%s",
                                     test.testCaseID, ex.getMessage());
                         }
                     }
@@ -5364,7 +5361,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
         }
 
         if (StringUtils.isNotBlank(errorDuringTestCaseExecution)) {
-            Log.Debug("Controller/RunExpandedTestCaseForMolecule: There were exception raised while running TestCase = "
+            Log.Debug("Controller/RunExpandedTestCaseForMolecule: There were exception in TestCase = "
                     + test.testCaseID
                     + " with Exception message as : "
                     + errorDuringTestCaseExecution);
@@ -5425,28 +5422,27 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
         testCaseData.set_testSuiteName(testSuitName);
         testCaseData.set_testSuiteId(testSuiteId);
         testCaseData.set_creationDate(Utility.dateNow());
-        List<BusinessLayer.Variable> allValues = (List<BusinessLayer.Variable>) TestCaseVariableValue
-        .get(testCaseID);
+        List<BusinessLayer.Variable> allValues = (List<BusinessLayer.Variable>) TestCaseVariableValue.get(testCaseID);
 
         if (allValues != null) {
-        for (BusinessLayer.Variable var : allValues) {
-        testCaseData.get_variableList().add(var);
-        }
+            for (BusinessLayer.Variable var : allValues) {
+                testCaseData.get_variableList().add(var);
+            }
         }
         Log.Debug(String.format("Controller/SaveTestCase : Saving Test Case Identifier '%s' with testSuiteName as '%s'. and Description '%s'",
                 testCaseID, testSuitName, testCaseDesc));
 
-      BusinessLayer.TestCase testCase = new BusinessLayer.TestCase();
+        BusinessLayer.TestCase testCase = new BusinessLayer.TestCase();
         try {
-        testCase.Save(testCaseData);
+            testCase.Save(testCaseData);
         } catch (Exception e) {
-        String.format("Controller/SaveTestCase :Exception while saving testCaseData :"
-        + e.getMessage());
-        throw new Exception(
-        "Controller/SaveTestCase :Exception while saving testCaseData :"
-        + e.getMessage());
+            String.format("Controller/SaveTestCase :Exception while saving testCaseData :"
+                    + e.getMessage());
+            throw new Exception(
+                    "Controller/SaveTestCase :Exception while saving testCaseData :"
+                    + e.getMessage());
         }
-         
+
         Log.Debug(String.format("Controller/SaveTestCase : SUCCESSFULLY SAVED Test Case Identifier '%s' with testSuiteName as '%s'. and Description '%s'",
                 testCaseID, testSuitName, testCaseDesc));
 
@@ -5736,28 +5732,29 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                     Log.Debug("Controller/ListenToPrimitive : Creating input stream object in order to read from socket...Successful");
                     Log.Debug("Controller/ListenToPrimitive : Reading Data from Socket. Sent by Client.");
 
-                    try{
-                    while ((ParamFromClient = inDataStream.readLine()) != null) {
+                    try {
+                        while ((ParamFromClient = inDataStream.readLine()) != null) {
 
-                        Log.Debug("Controller/ListenToPrimitive : Data from client is - "
-                                + ParamFromClient);
-                        //message("The Length of The param is\t"+ParamFromClient.length());
+                            Log.Debug("Controller/ListenToPrimitive : Data from client is - "
+                                    + ParamFromClient);
+                            //message("The Length of The param is\t"+ParamFromClient.length());
 
-                        if(ParamFromClient.length()!=0) //Checking for if the Content is null or not.
-                        LogPrimitiveMessage(ParamFromClient);
-                        //else
-                        //Log.Error("Controller/ListenToPrimitive :ParamFromClient length is zero");
-                        //message("This is the Log Param->"+ParamFromClient);
-                        
-                        }
-                    } catch (StringIndexOutOfBoundsException se)
-                    {
-                            continue;
+                            if (ParamFromClient.length() != 0) //Checking for if the Content is null or not.
+                            {
+                                LogPrimitiveMessage(ParamFromClient);
+                            }
+                            //else
+                            //Log.Error("Controller/ListenToPrimitive :ParamFromClient length is zero");
+                            //message("This is the Log Param->"+ParamFromClient);
 
                         }
+                    } catch (StringIndexOutOfBoundsException se) {
+                        continue;
 
                     }
-                
+
+                }
+
 
 
             } catch (Exception e) {
@@ -5967,13 +5964,13 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
 
             if (productArchivePath.list().length != 0) {
                 String zipProductLocation = System.getenv(ZIP_DIR)
-                       +SLASH+ "Product_" + exactDateTime + ".zip";
+                        + SLASH + "Product_" + exactDateTime + ".zip";
                 new ZipUtility().zip(productArchive, zipProductLocation);
                 if (Utility.deleteDirectory(new File(productArchive))) {
                     productArchivePath.mkdirs();
                 }
                 Utility.copyFile(zipProductLocation, productArchive
-                        +SLASH+ "Product_" + exactDateTime + ".zip");
+                        + SLASH + "Product_" + exactDateTime + ".zip");
                 Utility.deleteDirectory(new File(zipProductLocation));
             }
 
@@ -6123,7 +6120,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                 + " is an Initialization Action. A cleanup exist for this action ..so pusing this to the STACK");
                         actionsForCleanup.push(action.step.substring(0,
                                 action.step.length() - 1));
-                       
+
                     }
 
                     // If this is a Cleanup action then break and run the
@@ -6136,7 +6133,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                 + action.step
                                 + " is an Cleanup Action/STEP. so breaking and moving to cleanup");
                         count--;
-                      
+
                         break;
                     }
 
@@ -6199,7 +6196,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                             // If the action Steps contain an "i" and there is a
                             // cleanup step for it then remove that from the
                             // stack.
-                           
+
                             if (action.step.endsWith("i")
                                     && (stepsKeys.containsKey(action.step.substring(0,
                                     action.step.length() - 1)
@@ -6259,20 +6256,20 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                 }
 
                 if (StringUtils.isNotBlank(((String) errorMessageDuringTestCaseExecution.get(test.parentTestCaseID)))) {
-                    Log.ErrorInLog(String.format("Controller/RunExpandedTestCase: Exception while running test case %s.%s",
+                    Log.ErrorInLog(String.format("Controller/RunExpandedTestCase: Exception in %s.%s",
                             test.testCaseID,
                             (String) errorMessageDuringTestCaseExecution.get(test.parentTestCaseID)));
                     errorDuringTestCaseExecution = String.format(
-                            "Exception while running test case %s.%s",
+                            "Exception in %s.%s",
                             test.testCaseID,
                             (String) errorMessageDuringTestCaseExecution.get(test.parentTestCaseID));
                 }
 
             } catch (Exception ex) {
-                Log.ErrorInLog(String.format("Controller/RunExpandedTestCase: Exception while running test case %s.%s",
+                Log.ErrorInLog(String.format("Controller/RunExpandedTestCase: Exception in %s.%s",
                         test.testCaseID, ex.toString()));
                 errorDuringTestCaseExecution += String.format(
-                        "Exception while running test case %s.%s",
+                        "Exception in %s.%s",
                         test.testCaseID, ex.getMessage());
             } finally {
                 boolean cleanupActionStarted = false;
@@ -6298,7 +6295,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                         // then ignore it
                         // if (_testPlanStopper.WaitOne(1, false) &&
                         // !doCleanupOnTimeout)
-                       //message("The counts for Cleanup\t"+i);
+                        //message("The counts for Cleanup\t"+i);
 //                        if (!_testPlanStopper && doCleanupOnTimeout) {
 //                            break;
 //                        }
@@ -6373,7 +6370,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                                         true);
                                             }
                                         }
-                                       
+
                                     }
 
                                     // Lastly wait for the Threads running to
@@ -6409,9 +6406,9 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                         + " for TestCase ID : "
                                         + test.testCaseID);
                             } catch (Exception e) {
-                                Log.ErrorInLog(String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception while running test case %s.%s",
+                                Log.ErrorInLog(String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception in %s.%s",
                                         test.testCaseID, e.getMessage()));
-                                errorDuringTestCaseExecution += String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception while running test case %s.%s",
+                                errorDuringTestCaseExecution += String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception in %s.%s",
                                         test.testCaseID, e.getMessage());
                             }
                         } else if (action.step.endsWith("c")
@@ -6421,7 +6418,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                     + action.actionName
                                     + " Initialization is not Done. So Skipping it for TestCase ID : "
                                     + test.testCaseID);
-                         
+
                             continue;
                         } else if ((action.step.endsWith("c")
                                 && actionsForCleanup.contains(action.step.substring(0,
@@ -6432,7 +6429,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                 action.step.length() - 1)) && doCleanupOnTimeout)) {
                             // This marks the start for one Cleanup Action.
                             cleanupActionStarted = true;
-                           
+
                             try {
                                 Log.Debug("Controller/RunExpandedTestCase - Finally/Cleanup:  Calling RunAction for Action : "
                                         + action.actionName
@@ -6512,10 +6509,10 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                                         + " for TestCase ID : "
                                         + test.testCaseID);
                             } catch (Exception exp) {
-                                Log.ErrorInLog(String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception while running test case %s.%s",
+                                Log.ErrorInLog(String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception in %s.%s",
                                         test.testCaseID,
                                         exp.getMessage()));
-                                errorDuringTestCaseExecution += String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception while running test case %s.%s",
+                                errorDuringTestCaseExecution += String.format("Controller/RunExpandedTestCase - Finally/Cleanup: Exception in %s.%s",
                                         test.testCaseID,
                                         exp.getMessage());
                             }
@@ -6539,7 +6536,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                     for (int t = 0; t < ThreadPool.size(); ++t) {
                         ((Thread) ThreadPool.get(t)).join();
                     }
- //message("The total teststepperput\t"+_testStepStopper);
+                    //message("The total teststepperput\t"+_testStepStopper);
                     message("\n******************** Cleanup Action Finished For TestCase : "
                             + test.stackTrace + ". ***************************");
                 }
@@ -6652,7 +6649,6 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
      * @param args
      *            -Command line parameters for harness.
      */
-
     public static void main(String[] args) throws InterruptedException,
             Exception {
 //Checking for Which Operating System is Used.
@@ -6663,7 +6659,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
             SLASH = "\\";
             LOG_DIR = "APPDATA";
             OS_FLAG = true;
-            ZIP_DIR="TEMP";
+            ZIP_DIR = "TEMP";
 
         } else if (OS_NAME.equalsIgnoreCase("linux")) {
             PATH_CHECK = "PATH";
@@ -6671,7 +6667,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
             SLASH = "/";
             LOG_DIR = "HOME";
             OS_FLAG = false;
-            ZIP_DIR="HOME";
+            ZIP_DIR = "HOME";
 
         } else {
             Log.Error("Controller:: Not Supporting Operating System\t" + OS_NAME);
@@ -6684,21 +6680,17 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
 
 
 //Checking for jar file entry in ZugINI.xml
-  if(new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue().length>0)
-        {
-      int c=0;
-      for(String package_names:new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue())
-      {
-          AtomInvoker ai=new AtomInvoker(package_names);
-          invokeAtoms.put(package_names,ai);
-          }
-   
-           // invokeAtoms.loadJarFile(new ExtensionInterpreterSupport().readExternalJarFilePath().get(0));
+        if (new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name).length > 0) {
+            int c = 0;
+            for (String package_names : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
+                AtomInvoker ai = new AtomInvoker(package_names);
+                invokeAtoms.put(package_names, ai);
+            }
+
+            // invokeAtoms.loadJarFile(new ExtensionInterpreterSupport().readExternalJarFilePath().get(0));
+        } else {
+            controller.message("Controller/Main No external Jar defination found in ZugINI.xml with proper Attribute defination for Tag");
         }
- else
-  {
-            controller.message("External Builtin Zuoz Library not found. Please refer to the README.TXT for more information");
- }
 
         Controller.harnessPIDValue = Integer.parseInt((java.lang.management.ManagementFactory.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
 
@@ -6710,10 +6702,10 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                     nyonserver = true;
                     controller.message("This is the Nyon-Server executions\t"
                             + nyonserver);
-                }
-                if (arg.equalsIgnoreCase("-davos")) {
-                    davosreporting = true;
-                    controller.message("Davos Web Service Reporting Commenced");
+                } else if (arg.toLowerCase().contains("-mvmconfiguration=")) {
+                    String mvmconfig_arr[] = arg.split("=");
+                    mvmconfiguration = mvmconfig_arr[1].toLowerCase();
+                    controller.message("MVM Configuration is set to " + mvmconfiguration);
                 }
 
             }
@@ -6771,24 +6763,24 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
         }
 
 //              if(OS_FLAG)  {
-                try {
-                    Licensing.LicenseValidator licenseValid = new Licensing.LicenseValidator();
-                    if (licenseValid.matchMac() == false) {
-                        controller.message("Controller/Main: Please get a valid license for your machine");
-                        System.exit(1);
-                    }
-                    if (licenseValid.isDateValid() == false) {
-                        controller.message("Controller/Main: The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
-                        System.exit(1);
-                    }
-                    controller.message("Zug is Valid "
-                            + licenseValid.userInfo.companyName);
+        try {
+            Licensing.LicenseValidator licenseValid = new Licensing.LicenseValidator();
+            if (licenseValid.matchMac() == false) {
+                controller.message("Controller/Main: Please get a valid license for your machine");
+                System.exit(1);
+            }
+            if (licenseValid.isDateValid() == false) {
+                controller.message("Controller/Main: The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
+                System.exit(1);
+            }
+            controller.message("Zug is Valid "
+                    + licenseValid.userInfo.companyName);
 
-                } catch (Exception e) {
-                    controller.message("Controller/main : Failed to validate your License copy");
-                    controller.message("Message : " + e.getMessage() + "\n");
-                    System.exit(1);
-                }
+        } catch (Exception e) {
+            controller.message("Controller/main : Failed to validate your License copy");
+            controller.message("Message : " + e.getMessage() + "\n");
+            System.exit(1);
+        }
 
 
         fileExtensionSupport = ExtensionInterpreterSupport.ReadFileExtensionXML();
@@ -6859,7 +6851,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                     controller.DoHarnessCleanup();
                     return;
                 }
-               
+
 
                 // If the Validation is successful. ... then its the turn of the
                 // Test Plan and Test Cases to be Inserted to the Database.
@@ -6869,7 +6861,7 @@ invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.action
                     controller.DoHarnessCleanup();
                     return;
                 }
- controller.message("Connection to the Database is successful.\n ");
+                controller.message("Connection to the Database is successful.\n ");
                 // First task is to insert the test suite to the Database.
                 controller.SaveTestSuite();
             }

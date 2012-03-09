@@ -10,6 +10,8 @@ package ZUG;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 ///****************** The Following Set of Classes are used for reading the 
 ///****************** Excel Input File ******************************/
@@ -113,6 +115,7 @@ class TestCase
     public String stackTrace 		= null;
 
     public String testCaseID 		= null;
+
     public String testCaseDescription = null;
 
     public String user 				= null;
@@ -130,6 +133,9 @@ class TestCase
     
     //This is the thread ID of the Test Case or the parent Process
     public String threadID = null;
+//    //Molecule argument Definition
+  public ArrayList<String> _testcasemoleculeArgDefn=new ArrayList<String>();
+   //public HashMap<String,String>_testcasemoleculekeyvalueDefn=new HashMap<String, String>();
  }	
 
   
@@ -173,6 +179,9 @@ class Action
     public Boolean isComment = false;
 
     public UserData userObj;
+    //Molecule argument Definition
+    public ArrayList<String> _actionmoleculeArgDefn=new ArrayList<String>();
+    //public HashMap<String,String>_actionmoleculekeyvalueDefn=new HashMap<String, String>();
   }
 
 /**\

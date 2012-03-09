@@ -11,9 +11,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import com.sun.management.OperatingSystemMXBean;
+import sun.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
 
 import logs.Log;
 
@@ -22,6 +25,8 @@ public class Utility {
 
 	public static final String DATE_FORMAT_NOW = "yyyyMMdd-HHmmss";
 	public static final String DATE_FORMAT_NOW_1 = "yyyy:MM:dd-HH:mm:ss";
+        public static final int MB=1024*1024;
+        static OperatingSystemMXBean os;
 
 	/**
 	 * gets the current date time in specific format......
@@ -329,4 +334,65 @@ public class Utility {
 		}
 		return;
 	}
+
+
+     /***
+     * Function to check the Memory usage and show the Maximum Memory used
+     *
+     * @param runtime
+     *              Runtime class object
+     * @return the Maximum memory of as String
+     */
+        public static String getMaxJVMMemorySize(Runtime runtime)
+    {
+                    Double result=new Double(runtime.maxMemory()/MB);
+                    return result.toString();
+
+
+        }
+           /***
+     * Function to check the Memory usage and show the Total Memory used
+     *
+     * @param runtime
+     *              Runtime class object
+     * @return the Maximum memory of as String
+     */
+        public static String getTotalMemory(Runtime runtime)
+    {
+            
+           os = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+           
+                 Double result= new Double( os.getTotalPhysicalMemorySize()/MB);
+                 return result.toString();
+
+        }
+              /***
+     * Function to check the Memory usage and show the Used Memory used
+     *
+     * @param runtime
+     *              Runtime class object
+     * @return the Maximum memory of as String
+     */
+        public static String getUsedJVMMemory(Runtime runtime)
+    {
+
+                 Double result= new Double((runtime.totalMemory()-runtime.freeMemory())/MB);
+                 return result.toString();
+
+        }
+         /*** Function to check the Memory usage and show the Used Memory used
+     *
+     * @param runtime
+     *              Runtime class object
+     * @return the Maximum memory of as String
+     */
+        public static String getFreeJVMMemory(Runtime runtime)
+    {
+                 Double result= new Double(runtime.freeMemory()/MB);
+                 return result.toString();
+
+        }
+
+   
+
 }
