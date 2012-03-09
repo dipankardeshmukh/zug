@@ -43,7 +43,7 @@ public class AtomInvoker {
     public AtomInvoker(String builtinpackagename) throws Exception {
 
         
-    for(String pkg_name:jarInterpreter.reteriveXmlTagAttributeValue())
+    for(String pkg_name:jarInterpreter.reteriveXmlTagAttributeValue(Controller.external_jar_xml_tag_path,Controller.external_jar_xml_tag_attribute_name))
     {
        // debugMessage("AtomInvoker--"+pkg_name);
         if (builtinpackagename.equalsIgnoreCase(pkg_name)) {
