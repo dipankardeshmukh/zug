@@ -1,8 +1,14 @@
 ZUG Release Notes.
 
-The Following has been Introduced in *V3.1*
- * Nested include file support Chur.
- * Nested Scriptlocation file support Chur.
+The Following has been Introduced in *V4.0*
+ * Hibernate data base reporting removed, ZUG now reports the result through Davos Web service. 
+ * Bugs fixed. #372,#282,#342,#345,#339,#338,#325,#254
+ * MVM context variable introduced.
+ * Named Argumet introduced. 
+Known Issues:
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+
 
 The Following has been Introduced in *V3.0*
  * External jar file support for calling Builtin Atom calling. 

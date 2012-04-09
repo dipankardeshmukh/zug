@@ -3,7 +3,7 @@
 	<language name="Ruby">
 		<extension>rb</extension>
 		<interpreter>ruby</interpreter>
-		<path></path>
+		<path>C:\Ruby193\bin</path>
 		<option></option>
 	</language>
 	<language name="Executable">
@@ -22,7 +22,7 @@
 		<extension>py</extension>
 		<interpreter>python.exe</interpreter>
 		<option></option>
-		<path></path>
+		<path>"C:\Program Files(x86)\Python\bin\"</path>
 	</language>
 	<language name="Visual Basic Script">
 		<extension>vbs</extension>
@@ -34,13 +34,13 @@
 		<extension>jar</extension>
 		<interpreter>zug.exe</interpreter>
 		<option>-jar</option>
-		<path></path>
+		<path>C:\ZUG</path>
 	</language>
 	<language name="java class">
 		<extension>class</extension>
 		<interpreter>zug.exe</interpreter>
 		<option></option>
-		<path></path>
+		<path>C:\ZUG</path>
 	</language>
 	<language name="Batch File">
 		<extension>bat</extension>
@@ -48,13 +48,21 @@
 		<option>start /c</option>
 		<path></path>
 	</language>
-	</languages>
+	</languages>      
+	<configurations>
+              <mvm-configuration jvm-max-memorysize="853">4000</mvm-configuration>
+              <mvm-configuration jvm-max-memorysize="455">3000</mvm-configuration>
+               <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
+               <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
+              </configurations>
+
 	<builtinpackages>
+	
 	  <builtinpackage name="">
 	      <file-path></file-path>
 	      <jar-package></jar-package>
 	      <class-name></class-name>
 	</builtinpackage>
-	  </builtinpackages>
-
+		  </builtinpackages>
+ 
 </root>
