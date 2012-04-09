@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "ZUG"
-!define PRODUCT_VERSION "3.1"
+!define PRODUCT_VERSION "4.0"
 !define PRODUCT_PUBLISHER "Automature, Inc."
 !define PRODUCT_WEB_SITE "http://www.automature.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
@@ -11,8 +11,19 @@
 
 SetCompressor lzma
 
+XPStyle on
+
+var /global JavaSOURCE
+var /global JavaBROWSESOURCE
+var /global JavaSOURCETEXT
+
+Var Java_SOURCE_TEXT
+var dialog
+
+
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
+!include nsDialogs.nsh
 !include "ZipDLL.nsh"
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -24,6 +35,8 @@ SetCompressor lzma
 ; License page
 !insertmacro MUI_PAGE_LICENSE "ZugEULA.txt"
 ; Directory page
+;Java Directory Page
+Page custom JavaPage JavaPageLeave
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -42,7 +55,7 @@ SetCompressor lzma
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "ZugSetup-3.1.exe"
+OutFile "ZugSetup-4.0.exe"
 InstallDir "$PROGRAMFILES\Automature"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -54,9 +67,49 @@ Function .onInit
   quit
   ReadRegStr $R1 HKLM "Software\JavaSoft\Java Runtime Environment" "CurrentVersion"
   ReadRegStr $R2 HKLM "Software\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
-  IfFileExists $R2\lib\ext\dnsns.jar +3 0
-  MessageBox MB_OK "You do not have JRE installed in your machine.Please install and then run ZugSetup"
-  quit
+FunctionEnd
+
+
+
+
+
+Function JavaPage
+  !insertmacro MUI_HEADER_TEXT "Java Install Directory" "Choose Install Location of Java in your machine."
+	#Create Dialog and quit if error
+	nsDialogs::Create 1018
+	Pop $Dialog
+	${If} $Dialog == error
+		Abort
+	${EndIf}
+	${NSD_CreateLabel} 0 10 100% 12u "Java Runtime Environment Path:*"
+	${NSD_CreateText} 0 30 70% 12u "$R2"
+	pop $JavaSOURCETEXT
+	${NSD_CreateBrowseButton} 320 30 20% 12u "Browse"
+	pop $JavaBROWSESOURCE
+  ${NSD_CreateLabel} 0 140 100% 18u "* If you do not have Java installed in your machine, then please install JRE 1.6 or above first and run the installer again."
+	${NSD_OnClick} $JavaBROWSESOURCE JavaBrowsesource
+  nsDialogs::Show
+FunctionEnd
+
+
+Function JavaBrowsesource
+nsDialogs::SelectFolderDialog "Select Source Folder" "c:\"
+pop $JavaSOURCE
+${If} $JavaSOURCE == 'error'
+   StrCpy $JavaSOURCE ""
+${EndIf}
+${NSD_SetText} $JavaSOURCETEXT $JavaSOURCE
+FunctionEnd
+
+Function JavaPageLeave
+${NSD_GetText} $JavaSOURCETEXT $Java_SOURCE_TEXT
+${If} $Java_SOURCE_TEXT == ""
+MessageBox MB_OK "Java installation directory missing. Please choose proper installation directory."
+abort
+${EndIf}
+IfFileExists $Java_SOURCE_TEXT\bin\java.exe +3 0
+MessageBox MB_OK "Wrong Java installation directory. Please choose proper installation directory."
+abort
 FunctionEnd
 
 
@@ -65,9 +118,10 @@ Section "MainSection" SEC01
   SetOverwrite on
   File "ZUG.zip"
   !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
-  ExecWait '"$INSTDIR\ZUG\Setup.cmd" "$R2"'
- AccessControl::GrantOnFile \
+  ExecWait '"$INSTDIR\ZUG\Setup.cmd" "$R2\lib\ext\"'
+  AccessControl::GrantOnFile \
   "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
+  CopyFiles `$R2\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
   Delete "$TEMP\ZUG.zip"
 SectionEnd
 
