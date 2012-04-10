@@ -49,7 +49,7 @@
 		<path></path>
 	</language>
 	</languages>
-	                    </inprocesspackages>
+	                    <inprocesspackages>
 	        <inprocesspackage name="">
 	      <file-path></file-path>
 	      <jar-package></jar-package>
