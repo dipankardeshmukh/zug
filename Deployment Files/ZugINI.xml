@@ -3,7 +3,7 @@
 	<language name="Ruby">
 		<extension>rb</extension>
 		<interpreter>ruby</interpreter>
-		<path>C:\Ruby193\bin</path>
+		<path>C:\Ruby\bin</path>
 		<option></option>
 	</language>
 	<language name="Executable">
@@ -48,21 +48,20 @@
 		<option>start /c</option>
 		<path></path>
 	</language>
-	</languages>      
-	<configurations>
+	</languages>
+	        <inprocesspackage name="">
+	      <file-path></file-path>
+	      <jar-package></jar-package>
+	      <class-name></class-name>
+	</inprocesspackage>
+	
+              
+              <configurations>
               <mvm-configuration jvm-max-memorysize="853">4000</mvm-configuration>
               <mvm-configuration jvm-max-memorysize="455">3000</mvm-configuration>
                <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
                <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
               </configurations>
+              
 
-	<builtinpackages>
-	
-	  <builtinpackage name="">
-	      <file-path></file-path>
-	      <jar-package></jar-package>
-	      <class-name></class-name>
-	</builtinpackage>
-		  </builtinpackages>
- 
 </root>
