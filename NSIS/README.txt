@@ -27,24 +27,24 @@ Make sure that your system meets the minimum requirements to run Zug installer:
              
 New Feature:
 Zug3.0 version now can call the external java jar files as builtin atoms through chur spreadsheet. To make it happen the ZugINI.xml parsing is need. Inside the Zug installation directory the ZugINI.xml file can be edited to by putting the values in the tags of 
-<builtinpackages>
-	  <builtinpackage name="">
+<inprocesspackages>
+	  <inprocesspackage name="">
 	      <file-path></file-path>
 	      <jar-package></jar-package>
 	      <class-name></class-name>
-	</builtinpackage>
-</builtinpackages>
+	</inprocesspackage>
+</inprocesspackages>
 if no value is written then it will show a warning message while running the ZUG automation.
 this xml configuration is in ZUG installation folder. ZugINI.xml
 
 Example:
-<builtinpackages>
-	  <builtinpackage name="Zbrowser">
-	      <file-path>C:\Programfiles\Automature\ZUOZ\Builtins</file-path>
-	      <jar-package>com.automature.zuoz.builtins.zbrowser</jar-package>
+<inprocesspackages>
+	  <inprocesspackage name="Zbrowser">
+	      <file-path>C:\Programfiles\Automature\ZUOZ\Inprocess</file-path>
+	      <jar-package>com.automature.zuoz.inprocess.zbrowser</jar-package>
 	      <class-name>BrowserOperations</class-name>
-	</builtinpackage>             
-             
+	</inprocesspackage>             
+</inprocesspackages>
              
              
              
@@ -54,20 +54,19 @@ Zug Dependencies:
   
   • To work with In-process atoms in Chur. ZugINI.xml must be configured. The xml tags.
       
-      <builtinpackage name="">
+      <inprocesspackage name="">
 	      <file-path></file-path>
 	      <jar-package></jar-package>
 	      <class-name></class-name>
-	    </builtinpackage>
+	    </inprocesspackage>
 	
-	under root//builtinpackages tag. In the builtinpackage attribute 'name', provide the namespace with which the In-process atoms will be called.
+	under root//inprocesspackages tag. In the builtinpackage attribute 'name', provide the namespace with which the In-process atoms will be called.
   
   file-path: The direcrtoty path(fully qualified) of the jar file and the lib files necessary for it.
   jar-package: The package architecture of the class file where the in process atoms are written as methods.
   class-name: The class name of the java class file where the methods are defined for automation. In Chur they are called atoms with the namespaces.
-  
-   " [Warning] External Builtin Package tag in ZugINI.xml not defined. " If this warning shown in console. Please remove the blank tags <builtinpackage name="">, only
-   remove if only if you installed Zuoz3.0 or above after Zug installation other wise you ignore this message, It will run the testcases containg external atoms.
+
+ remove if only if you installed Zuoz3.0 or above after Zug installation other wise you ignore this message, It will run the testcases containg external atoms.
    
   •  sqlitejdbc-v056.jar file needed to be copied to current JRE lib/ext folder as it is installed. like - C:\Program Files (x86)\Java\jre6\lib\ext
      Now the installer copies this file to the specific location. If due to any permission reason it fails please copy it manually.

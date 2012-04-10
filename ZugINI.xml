@@ -49,12 +49,13 @@
 		<path></path>
 	</language>
 	</languages>
+	                    </inprocesspackages>
 	        <inprocesspackage name="">
 	      <file-path></file-path>
 	      <jar-package></jar-package>
 	      <class-name></class-name>
 	</inprocesspackage>
-	
+	</inprocesspackages>
               
               <configurations>
               <mvm-configuration jvm-max-memorysize="853">4000</mvm-configuration>
