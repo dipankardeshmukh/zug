@@ -81,7 +81,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 4.0." + "20120405" + ".060";
+    private static String Version = "ZUG Premium 4.0." + "20120410" + ".061";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -137,7 +137,7 @@ public class Controller extends Thread {
     public static String mvmconfiguration = "512MB";
     //Initiating AtomInvoker
     //public static AtomInvoker invokeAtoms=null;  
-    public static final String external_jar_xml_tag_path = "//root//builtinpackages//builtinpackage";
+    public static final String external_jar_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
     public static final String external_jar_xml_tag_attribute_name = "name";
     public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
     private static String builtin_atom_package_name = "";
@@ -1656,13 +1656,24 @@ public class Controller extends Thread {
                     count1++;
 /// message("cheks to Macro action args exp\t" + action.actionArguments.get(i));
                     String tempVal = GetTheActualValue((String) (action.actionArguments.get(i)));
-                    if ((action.actionActualArguments.get(i).startsWith("$$") || action.actionActualArguments.get(i).startsWith("##")) && action.actionActualArguments.size() == action.actionArguments.size()) {
+                    if (action.actionActualArguments.size() == action.actionArguments.size()) {
                         //put in a hashmap
                         //key=tempval value=actlArg
-                        tempVal = tempVal + "~";
+                        if(action.actionActualArguments.get(i).startsWith("$$") || action.actionActualArguments.get(i).startsWith("##")) 
+                        {
+                            tempVal = tempVal + "~";
+                        }
+                        else if(action.actionActualArguments.get(i).contains("="))
+                        {
+                              String[] split_actual_arg = Excel.SplitOnFirstEquals(action.actionActualArguments.get(i));
+                              if (split_actual_arg[1].startsWith("$$")||split_actual_arg[1].startsWith("##")) {
+                                  tempVal=tempVal+"~";
+                              }
+                        }
+                        
+                        }
                         //mvm_vector_map.put( tempVal,action.actionActualArguments.get(i).trim());
                         //message("THE vector map only action" + tempVal);
-                    }
                     //message("cheks to Macro exp\t" + tempVal);
 
                     if (tempVal == null) {
@@ -1723,14 +1734,23 @@ public class Controller extends Thread {
                         count1++;
 
                         String tempVal2 = GetTheActualValue((String) (verification.verificationArguments.get(l)));
-                        if ((verification.verificationActualArguments.get(l).startsWith("$$") || verification.verificationActualArguments.get(l).startsWith("##")) && verification.verificationActualArguments.size() == verification.verificationArguments.size())  {
-                            //put in a hashmap
-                            //key=tempval2 value=verfactlarg
+                        if (verification.verificationActualArguments.size() == verification.verificationArguments.size()) {
+                        //put in a hashmap
+                        //key=tempval value=actlArg
+                        if(verification.verificationActualArguments.get(l).startsWith("$$") || verification.verificationActualArguments.get(l).startsWith("##")) 
+                        {
                             tempVal2 = tempVal2 + "~";
-                            //mvm_vector_map.put(tempVal2,verification.verificationActualArguments.get(l).trim());
-                            //message("THE vector map only verification " + tempVal2);
                         }
-                        if (tempVal2 == null) {
+                        else if(verification.verificationActualArguments.get(l).contains("="))
+                        {
+                              String[] split_actual_arg = Excel.SplitOnFirstEquals(verification.verificationActualArguments.get(l));
+                              if (split_actual_arg[1].startsWith("$$")||split_actual_arg[1].startsWith("##")) {
+                                  tempVal2=tempVal2+"~";
+                              }
+                        }
+                        
+                        } 
+                        if(tempVal2 == null) {
                             Log.Error("Controller/ExpandedTestCase : Variable -> " + verification.verificationArguments.get(l) + " Value -> " + tempVal2 + " NullValueException \n In TesrCaseId: " + verification.testCaseID);
                             throw new Exception("Controller/ExpandedTestCase : Variable -> " + verification.verificationArguments.get(l) + " Value -> " + tempVal2 + " NullValueException \n In TesrCaseId: " + verification.testCaseID);
                         }
