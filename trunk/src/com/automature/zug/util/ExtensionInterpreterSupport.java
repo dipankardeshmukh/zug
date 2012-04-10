@@ -260,7 +260,7 @@ public class ExtensionInterpreterSupport {
             throw fileLoadException;
         }
         ExtensionInterpreterSupport jarinterpreter = new ExtensionInterpreterSupport();
-        NodeList locationList = org.apache.xpath.XPathAPI.selectNodeList(document, "//root//builtinpackages//builtinpackage");
+        NodeList locationList = org.apache.xpath.XPathAPI.selectNodeList(document,Controller.external_jar_xml_tag_path);
         ArrayList<String> forJar = new ArrayList<String>();
         HashMap<String, ArrayList<String>> builtinpackagemap = new HashMap<String, ArrayList<String>>();
 
