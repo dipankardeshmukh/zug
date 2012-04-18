@@ -81,7 +81,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 4.0." + "20120410" + ".061";
+    private static String Version = "ZUG Premium 4.1." + "20120417" + ".062";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1144,7 +1144,7 @@ public class Controller extends Thread {
                 } //Checking For any new defined molecule exists or not.
                 else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#") || actionVal.toLowerCase().contains("=##")) {
                     String key = null, value = null;
-
+//TODO the work for INDEXD MACROOO checking fails the code.
                     boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
                     //message("Runabstract:: Actionss--"+actionVal);
                     //Checking for the arguments if they are consistent
@@ -1164,11 +1164,11 @@ public class Controller extends Thread {
                             isThisAContextVar = true;
                         }
                         value = value.replaceAll("#", "");
-                        // message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
+                        //message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
                         if (argumentValues.get(0).contains("=")) {
                             for (String molecule_arg : argumentValues) {
                                 String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
-                                //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
+                               //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
                                 if (temp_value_split[0].equalsIgnoreCase(value)) {
                                     if (isKeyEnabled) {
                                         if (isThisAContextVar) {
@@ -1185,7 +1185,8 @@ public class Controller extends Thread {
 
                                     }
 
-//message("RUNABSTRACT:: step forloop "+actionVal);
+//message("RUNABSTRACT:: step forloop "+actionVal);  
+
                                     foundFormalArg = true;
                                     break;
 
@@ -1627,8 +1628,9 @@ public class Controller extends Thread {
     @SuppressWarnings("unchecked")
     private TestCase[] ExpandTestCase(TestCase test, boolean fromTestCaseSheet) throws Exception {
         Log.Debug("Controller/ExpandTestCase: Start of function with TestCase ID is "
-                + test.testCaseID);
+                + test.testCaseID); 
 
+        
         //HashMap<String, String> mvm_vector_map = new HashMap<String, String>();
         //message("THE testcase coming1a " + test.testCaseID);
 
@@ -1641,26 +1643,28 @@ public class Controller extends Thread {
 //message("THE testcase coming 1c " + test.testCaseID);
         int count1 = -1;
         Hashtable<Integer, String> multiValuedVariablePosition = new Hashtable<Integer, String>();
-
+  
         for (int j = 0; j < allActions.length; j++) {
             //message("THE testcase coming 1d " + test.testCaseID);
             Action action = allActions[j];
             Log.Debug("Controller/ExpandTestCase: Working on Action  : "
                     + action.actionName);
             ////TODO put checking if testcase have no actio argument then at least print any message or put the exception
-            //message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
+           //message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
             if (action.actionArguments.size() > 0) {
                 for (int i = 0; i < action.actionArguments.size(); ++i) {
+                    
                     ///In case of Molecule the actual value is not coming ? why?
                     //message("THE testcase coming 1e " + test.testCaseID + " Every Values " + action.actionArguments.get(i) + " Action Actual Arguments " + action.actionActualArguments);
                     count1++;
-/// message("cheks to Macro action args exp\t" + action.actionArguments.get(i));
+ //message("cheks to Macro action args exp\t" + action.actionArguments.get(i));
                     String tempVal = GetTheActualValue((String) (action.actionArguments.get(i)));
                     if (action.actionActualArguments.size() == action.actionArguments.size()) {
                         //put in a hashmap
                         //key=tempval value=actlArg
                         if(action.actionActualArguments.get(i).startsWith("$$") || action.actionActualArguments.get(i).startsWith("##")) 
                         {
+                            
                             tempVal = tempVal + "~";
                         }
                         else if(action.actionActualArguments.get(i).contains("="))
@@ -1671,16 +1675,19 @@ public class Controller extends Thread {
                               }
                         }
                         
+                        
                         }
                         //mvm_vector_map.put( tempVal,action.actionActualArguments.get(i).trim());
-                        //message("THE vector map only action" + tempVal);
+                        //message("THE vector map only action " + tempVal);
                     //message("cheks to Macro exp\t" + tempVal);
 
                     if (tempVal == null) {
                         Log.Error("Controller/ExpandedTestCase : Variable -> " + action.actionArguments.get(i) + " Value -> " + tempVal + " NullValueException \n In TesrCaseId: " + action.testCaseID);
                         throw new Exception("Controller/ExpandedTestCase : Variable -> " + action.actionArguments.get(i) + " Value -> " + tempVal + " NullValueException \n In TesrCaseId: " + action.testCaseID);
                     }
-                    if ((tempVal.startsWith("#")) && (tempVal.endsWith("#"))) {
+                    if ((tempVal.startsWith("~")) && (tempVal.endsWith("~"))) {
+                        tempVal=tempVal.replaceAll("~","");
+                        //tempVal=tempVal.replaceAll("~","");
                         String val = Utility.TrimStartEnd(tempVal, '#', 1);
                         val = Utility.TrimStartEnd(val, '#', 0);
                         val = Utility.TrimStartEnd(val, '#', 0);
@@ -1710,7 +1717,9 @@ public class Controller extends Thread {
 //                }
                 }
             } else {
+                //message("No Arguments : Molecule called then "+action.actionName);
                 allActionVerificationArgs.add(new ArrayList<String>(Arrays.asList(new String[]{" Some value"})));
+                
             }
 
             Verification[] verifications = new Verification[action.verification.size()];
@@ -1754,7 +1763,8 @@ public class Controller extends Thread {
                             Log.Error("Controller/ExpandedTestCase : Variable -> " + verification.verificationArguments.get(l) + " Value -> " + tempVal2 + " NullValueException \n In TesrCaseId: " + verification.testCaseID);
                             throw new Exception("Controller/ExpandedTestCase : Variable -> " + verification.verificationArguments.get(l) + " Value -> " + tempVal2 + " NullValueException \n In TesrCaseId: " + verification.testCaseID);
                         }
-                        if (tempVal2.startsWith("#") && tempVal2.endsWith("#")) {
+                        if (tempVal2.startsWith("~#") && tempVal2.endsWith("#~")) {
+                            tempVal2=tempVal2.replaceAll("~", "");
                             String val = Utility.TrimStartEnd(tempVal2, '#', 1);
                             val = Utility.TrimStartEnd(val, '#', 0);
                             val = Utility.TrimStartEnd(val, '#', 1);
@@ -2742,8 +2752,8 @@ public class Controller extends Thread {
         Log.Debug("Controller/RunTestCaseForMain : Start of function");
         TestCase[] testcases = (TestCase[]) act;
 
-        System.out.println("\n*** Number of TestCase to Execute is "
-                + testcases.length + "***\n ");
+        //System.out.println("\n*** Number of TestCase to Execute is "+ testcases.length + "***\n ");
+        System.out.println("\n*** Number of TestCase in Chur Sheet "+ testcases.length + " ***\n ");
         System.out.println("\n*** Start Executing the testcases ***\n ");
 
         // Harness Specific ContextVariable to store AH_TPSTARTTIME = Timestamp
@@ -2764,7 +2774,7 @@ public class Controller extends Thread {
             HiPerfTimer testPlanStartTime = new HiPerfTimer();
 
             testPlanStartTime.Start();
-
+boolean testcasenotfound=false;
             for (TestCase test : testcases) {
                 // If this is a cleanup Step, then dont run it now, that should
                 // be handled at the end.
@@ -2781,9 +2791,15 @@ public class Controller extends Thread {
 
                 if (test.testCaseID.compareToIgnoreCase("init") != 0) {
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
-                        if (!manualTestCaseID.contains(test.testCaseID.trim())) {
-                            continue;
+                        //if (!manualTestCaseID.contains(test.testCaseID.trim())) {
+                            if (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())) {
+                                testcasenotfound=true;
+                              continue;
                         }
+                            else
+                            {
+                                testcasenotfound=false;
+                            }
                     }
                 }
 
@@ -2837,7 +2853,8 @@ public class Controller extends Thread {
                     }
                 }
             }
-
+                if(testcasenotfound)
+                            message(manualTestCaseID+" The testcase is not Present in Chur Sheet");
             testPlanStartTime.Stop();
 
             repeatDurationLong -= testPlanStartTime.Duration();
@@ -2992,7 +3009,7 @@ public class Controller extends Thread {
                 Log.TurnOFFDebugLogs = true;
                 message("Repeat Count is on   " + isLongevityOn);
             }
-
+ boolean testcasenotpresent=false;
             for (TestCase test : testcases) {
                 // If this is a cleanup Step, then dont run it now, that should
                 // be handled at the end.
@@ -3006,13 +3023,22 @@ public class Controller extends Thread {
                 // If TestCaseId is specified in the command prompt, then make
                 // sure, that
                 // the current executing test case is also specified.
+               
                 if (test.testCaseID.compareToIgnoreCase("init") != 0) {
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
-                        if (!manualTestCaseID.contains(test.testCaseID.trim())) {
+                        //if (!manualTestCaseID.contains(test.testCaseID.trim())) {
+                        if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
+                            testcasenotpresent=true;
                             continue;
+                            }
+                        else
+                        {
+                            testcasenotpresent=false;
                         }
+                        
                     }
                 }
+                
 
                 if ((initWorkedFine == true)
                         || (initWorkedFine == false && (test.testCaseID.compareToIgnoreCase("cleanup") == 0))) {
@@ -3065,6 +3091,8 @@ public class Controller extends Thread {
                     }
                 }
             }
+            if(testcasenotpresent)
+                message(manualTestCaseID+" The testcase is not Present in Chur Sheet");
             repeatCount--;
 
             // Make sure we run all the test cases, till the RepeatCount is
