@@ -1343,8 +1343,14 @@ else
                             Log.Debug("Excel/ExpandMacrosValue : Index Macro key found");
                             String newMacroValue = _macroSheetHashTable.get(tempMacroToExpand);
 
-                            newMacroValue = newMacroValue.replace('{', '#');
-                            newMacroValue = newMacroValue.replace('}', '#');
+                            //newMacroValue = newMacroValue.replace("{", "~#");
+                            //newMacroValue = newMacroValue.replace("}", "#~");
+                            //Change from 
+                            newMacroValue = newMacroValue.replace('{', '~');
+                            newMacroValue = newMacroValue.replace('}', '~');
+                            //newMacroValue = newMacroValue.replace('{', '#');
+                            //newMacroValue = newMacroValue.replace('}', '#');
+                            //newMacroValue="~"+newMacroValue+"~";
                             //System.out.println("The new Macro Value after putting indexs "+newMacroValue);
                             countOfValues[count] = newMacroValue.split(",").length;
 
