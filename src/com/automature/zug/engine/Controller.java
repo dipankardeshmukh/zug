@@ -567,6 +567,7 @@ public class Controller extends Thread {
             if ((manualTestCaseID = opts.getString("testcaseID", null)) == null) {
                 Log.Debug("Controller/GetOptions: ManualTestCase ID is not specified.");
                 manualTestCaseID = StringUtils.EMPTY;
+                message("No specific testcase is invoked\n All testcases will be executed.");
             } else {
                 Log.Debug("Controller/GetOptions: ManualTestCase ID specified by user is = "
                         + manualTestCaseID);
@@ -1193,7 +1194,7 @@ public class Controller extends Thread {
                                 }
                             }
                             if (!foundFormalArg) {
-                                throw new Exception("Formal Argument Not found");
+                                throw new Exception("Formal Argument Not found for Action: "+action.actionName+" In sheet: "+action.sheetName+" where testcase: "+action.testCaseID);
                             }
                         } else {
                             if (isThisAContextVar) {
@@ -2791,8 +2792,8 @@ boolean testcasenotfound=false;
 
                 if (test.testCaseID.compareToIgnoreCase("init") != 0) {
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
-                        //if (!manualTestCaseID.contains(test.testCaseID.trim())) {
-                            if (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())) {
+                        if (!manualTestCaseID.contains(test.testCaseID.trim())) {
+                            //if (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())) {
                                 testcasenotfound=true;
                               continue;
                         }
@@ -3017,7 +3018,7 @@ boolean testcasenotfound=false;
                 // execute the test case.
                 if (test.actions.size() <= 0
                         || (test.testCaseID.compareToIgnoreCase("cleanup") == 0)) {
-                    continue;
+                    continue; 
                 }
 
                 // If TestCaseId is specified in the command prompt, then make
@@ -3026,9 +3027,10 @@ boolean testcasenotfound=false;
                
                 if (test.testCaseID.compareToIgnoreCase("init") != 0) {
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
-                        //if (!manualTestCaseID.contains(test.testCaseID.trim())) {
-                        if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
+                        if (!manualTestCaseID.contains(test.testCaseID.trim())) {
+                        //if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
                             testcasenotpresent=true;
+                            
                             continue;
                             }
                         else
