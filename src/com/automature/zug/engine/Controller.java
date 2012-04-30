@@ -81,7 +81,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 4.1." + "20120417" + ".062";
+    private static String Version = "ZUG Premium 4.1." + "20120426" + ".063";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -567,7 +567,7 @@ public class Controller extends Thread {
             if ((manualTestCaseID = opts.getString("testcaseID", null)) == null) {
                 Log.Debug("Controller/GetOptions: ManualTestCase ID is not specified.");
                 manualTestCaseID = StringUtils.EMPTY;
-                message("No specific testcase is invoked\n All testcases will be executed.");
+                //message("No specific testcase is invoked\n All testcases will be executed.");
             } else {
                 Log.Debug("Controller/GetOptions: ManualTestCase ID specified by user is = "
                         + manualTestCaseID);
@@ -936,6 +936,7 @@ public class Controller extends Thread {
      * @return tunedValue
      *            String return tuned and edited.
      */
+    @Deprecated
     private String getActualDefnValue(String realValue) throws Exception {
         final String HASH = "#", PERCENT = "%", BLANK = "";
         String tunedValue = "";
@@ -2049,7 +2050,10 @@ public class Controller extends Thread {
                     tempAction.step = action.step;
                     tempAction.lineNumber = action.lineNumber;
                     tempAction.sheetName = action.sheetName;
-
+                    tempAction.actionActualArguments=action.actionActualArguments;
+                    tempAction.actionProperty=action.actionProperty;
+                    tempAction.actionDescription=action.actionDescription;
+                    tempAction.isNegative=action.isNegative;
                     for (int i = 0; i < action.actionArguments.size(); ++i) {
                         tempAction.actionArguments.add(GetActualCombination(
                                 (String) action.actionArguments.get(i),
@@ -2360,7 +2364,7 @@ public class Controller extends Thread {
         Log.Debug("Controller/ValidateDatabaseEntries : Start of function");
         try {
             //message("The Seesion Id  "+sessionid);
-            message("Pulse Session ID " + davosclient.heartBeat(sessionid));
+           davosclient.heartBeat(sessionid);
         } catch (DavosExecutionException e) {
             e.printStackTrace();
         }
@@ -2560,10 +2564,11 @@ public class Controller extends Thread {
 
         if (dbReporting) {
             dBHostName = readExcel.DBHostName();
+            //message("The DBHOST NAME "+dBHostName);
             Log.Debug("Controller/InitializeVariables : DBHostName = "
                     + dBHostName);
-            dBName = readExcel.DBName();
-            Log.Debug("Controller/InitializeVariables : dBName = " + dBName);
+            //dBName = readExcel.DBName();
+            //Log.Debug("Controller/InitializeVariables : dBName = " + dBName);
             dbUserName = readExcel.DBUserName();
             Log.Debug("Controller/InitializeVariables : dbUserName = "
                     + dbUserName);
@@ -2636,6 +2641,7 @@ public class Controller extends Thread {
      * Function to save the Test Suite to the Result Database.
      */
 ///TODO:this method is not used now.
+    @Deprecated
     private void SaveTestSuite() throws Exception, DavosExecutionException {
         Log.Debug("Controller/SaveTestSuite : Start of Function ");
         roleid = davosclient.role_read(readExcel.TestSuitRole());
@@ -2854,8 +2860,8 @@ boolean testcasenotfound=false;
                     }
                 }
             }
-                if(testcasenotfound)
-                            message(manualTestCaseID+" The testcase is not Present in Chur Sheet");
+                //if(testcasenotfound)
+                          //  message(manualTestCaseID+" The testcase is not Present in Chur Sheet");
             testPlanStartTime.Stop();
 
             repeatDurationLong -= testPlanStartTime.Duration();
@@ -4412,7 +4418,36 @@ boolean testcasenotfound=false;
                             action.stackTrace.toUpperCase(),
                             action.actionName.toUpperCase()));
                 }
-            } /*else if (action.actionName.trim().toLowerCase().contains("browseroperations")) {
+            }
+            else if(action.actionName.trim().toLowerCase().contains("print"))
+            {
+                if(action.actionArguments.size()>0)
+                {
+                for(int i=0;i<action.actionArguments.size();i++)
+                {
+                  if (!action.actionArguments.get(i).isEmpty()) {
+
+                            if (action.actionArguments.get(i).startsWith("$$%") && action.actionArguments.get(i).endsWith("%")) {
+                                //message("The values are "+action.actionArguments.get(i));
+                                String action_args = StringUtils.removeStart(action.actionArguments.get(i), "$$");
+                                action.actionArguments.set(i, NormalizeVariable(action_args,threadID));
+                            } else {
+                                action.actionArguments.set(i, NormalizeVariable(action.actionArguments.get(i),threadID));
+                            }
+
+                        }
+                }
+                  message(String.format("[%s] Executed Action %s with values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
+                }
+                else
+                {
+         message(String.format("[%s] Executed Action %s with No Values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));           
+                }
+            }
+                    
+                    
+                    
+                    /*else if (action.actionName.trim().toLowerCase().contains("browseroperations")) {
             try {//message("Webdriver ");
             
             String method[] = action.actionName.trim().split("\\.");
@@ -4544,9 +4579,9 @@ boolean testcasenotfound=false;
                             if (action.actionArguments.get(i).startsWith("$$%") && action.actionArguments.get(i).endsWith("%")) {
                                 //message("The values are "+action.actionArguments.get(i));
                                 String action_args = StringUtils.removeStart(action.actionArguments.get(i), "$$");
-                                action.actionArguments.set(i, getActualDefnValue(action_args));
+                                action.actionArguments.set(i, NormalizeVariable(action_args,threadID));
                             } else {
-                                action.actionArguments.set(i, getActualDefnValue(action.actionArguments.get(i)));
+                                action.actionArguments.set(i, NormalizeVariable(action.actionArguments.get(i),threadID));
                             }
 
                         }
@@ -4559,8 +4594,13 @@ boolean testcasenotfound=false;
                                 builtin_atom_package_name = pkg_name;
                                 invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
                             }
+                            invokeAtoms.get(builtin_atom_package_name).setInprocessAction(action);
                             invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), action.actionArguments);
-                            PkgstructureFound = true;
+                            if(StringUtils.isNotBlank(ContextVar.getContextVar("ZUG_EXCEPTION")))
+                            {
+                                ContextVar.alterContextVar("ZUG_EXCEPTION", NormalizeVariable(ContextVar.getContextVar("ZUG_EXCEPTION"), threadID));
+                            }
+                                PkgstructureFound = true;
                             break;
 
                         }
@@ -5029,6 +5069,7 @@ boolean testcasenotfound=false;
         Log.Debug(String.format("Controller/ExecuteCommand : Start of function with command = %s, Arguments = %s and Working Directory = %s & parentTestCaseID = %s ",
                 command, arguments, workingDirectoryList,
                 parentTestCaseId));
+       
         String actualCommand = command;
 
         Log.Debug("Controller/ExecuteCommand: Calling Controller/FindWorkingDirectory()");
@@ -5231,7 +5272,7 @@ boolean testcasenotfound=false;
 
             // The standard output of the command
             while ((primitiveStreams = stdInput.readLine()) != null) {
-                Log.Debug("Controller/ExecuteCommand : [PrimitiveLog/"
+                Log.Debug("Controller/ExecuteCommand : [AtomLog/"
                         + FileName + "] - " + primitiveStreams);
 //System.out.println("OUTPUT->\t"+primitiveStreams);
             }
@@ -5241,7 +5282,7 @@ boolean testcasenotfound=false;
             // The standard error of the command
 
             while ((primitiveStreams = stdError.readLine()) != null) {
-                Log.Debug("Controller/ExecuteCommand : [PrimitiveLog/"
+                Log.Debug("Controller/ExecuteCommand : [AtomLog/"
                         + FileName + "] - " + primitiveStreams);
                 Log.Error("[PrimitiveLog/" + FileName + "] - "
                         + primitiveStreams);
@@ -5876,7 +5917,7 @@ boolean testcasenotfound=false;
      * Result Database
      */
     String testcaseid = null;
-
+    @Deprecated
     private void SaveTestCase(String testCaseID, String testCaseDesc)
             throws Exception, DavosExecutionException {
         Log.Debug("Controller/SaveTestCase : Start of Function with TestCase ID as : "
@@ -5885,34 +5926,6 @@ boolean testcasenotfound=false;
                 testCaseID, testSuitName, testCaseDesc));
         testCaseID = davosclient.testCase_write(testSuiteId, testCaseID, testCaseDesc, "", "", "", "");
         //  message("SaveTestCase::\ttestCaseDesc "+testCaseDesc+"\tTestCaseId "+testCaseID+"\ttestsuitename "+testSuitName+"\ttestsuiteid "+testSuiteId+"\ttestplanid "+TestPlanId+"\t topologysetid "+topologySetId);
-//        BusinessLayer.TestCaseData testCaseData = new BusinessLayer.TestCaseData();
-//
-//        testCaseData.set_testCaseIdentifier(testCaseID);
-//        testCaseData.set_description(testCaseDesc);
-//        testCaseData.set_testSuiteName(testSuitName);
-//       testCaseData.set_testSuiteId(testSuiteId);
-//        testCaseData.set_creationDate(Utility.dateNow());
-//        List<BusinessLayer.Variable> allValues = (List<BusinessLayer.Variable>) TestCaseVariableValue
-//        .get(testCaseID);
-//
-//        if (allValues != null) {
-//        for (BusinessLayer.Variable var : allValues) {
-//        testCaseData.get_variableList().add(var);
-//        }
-//        }
-
-//
-//      BusinessLayer.TestCase testCase = new BusinessLayer.TestCase();
-//        try {
-//        testCase.Save(testCaseData);
-//        } catch (Exception e) {
-//        String.format("Controller/SaveTestCase :Exception while saving testCaseData :"
-//        + e.getMessage());
-//        throw new Exception(
-//        "Controller/SaveTestCase :Exception while saving testCaseData :"
-//        + e.getMessage());
-//        }
-//
         Log.Debug(String.format("Controller/SaveTestCase : SUCCESSFULLY SAVED Test Case Identifier '%s' with testSuiteName as '%s'. and Description '%s'",
                 testCaseID, testSuitName, testCaseDesc));
 
@@ -5922,7 +5935,7 @@ boolean testcasenotfound=false;
     /***
      * Function to Save the Test Case Result at intermediate steps.
      */
-    String testexecutiondetailid = null, testcycletopologysetid = null;
+    String testexecutiondetailid = null, testcycletopologysetid = null,variables=null;
 
     private void SaveTestCaseResultEveryTime(ExecutedTestCase tData)
             throws Exception, DavosExecutionException {
@@ -5951,26 +5964,24 @@ boolean testcasenotfound=false;
 
 
         if (StringUtils.isNotBlank(testCycleId)) {
-            Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetailId call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
-            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
+            Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetail_write call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
+           
+            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(),tData.testcasedescription , testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
+            //variables=davosclient.variables_write(testCaseResult.get_testCaseId(),"" ,"" );
+           
+            
         } else {
-            //message("TestCycle Writing of "+TestPlanId);
+           
             Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestCycle_Write call using TestPlanID=" + TestPlanId + " TestCycleDescription=TC_" + Utility.dateAsString() + "---TIMESTAMP:: " + Utility.dateNow());
             //Harness specific TestCycle name
             ContextVar.setContextVar("ZUG_TCYCLENAME", "TC_" + Utility.dateAsString());
             testCycleId = davosclient.testCycle_write(TestPlanId, ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "", new Integer(initializationTime).toString(), new Integer(testCaseResult.get_testExecution_Time()).toString());
-//message("TestCycle  "+testCycleId+" name of the testsuite "+testSuitName);
-//message("Pulse generate "+davosclient.heartBeat(sessionid));
-//message(" Comments "+testCaseResult.get_comments());
-//message(testCaseResult.get_testCaseId()+"   "+ testCycleId+"  "+ testCaseResult.get_status()+"   "+ buildNumber+ "  "+"  "+"  "+ testSuitName+" "+topologySetId+"  "+readExcel.TestSuitRole());
-            Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetailId call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
-            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
-//message("The testexecutionid "+testexecutiondetailid);
+            Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetail_write call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
+            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(),tData.testcasedescription, testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
 //testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), testCycleId, testCaseResult.get_status(), testCaseResult.get_buildNo(), new Integer(testCaseResult.get_testExecution_Time()).toString(), testCaseResult.get_performanceExecutionDetailTable().get_performanceExecutionDetailId(), testCaseResult.get_executionDate().toString(), testSuitName,topologySetId);//no performance detail id
         }
-        Log.Debug(String.format("Controller/SaveTestCaseResultEveryTime : TestCaseId = %s TestSuiteId = %s Status = %s and Comments = %s is saved. The TestExecutionID=%s",
+        Log.Debug(String.format("Controller/SaveTestCaseResultEveryTime : TestCaseId = %s Status = %s and Comments = %s is saved. The TestExecutionID=%s",
                 testCaseResult.get_testCaseId(),
-                testCaseResult.get_testSuiteId(),
                 testCaseResult.get_status(),
                 testCaseResult.get_comments(), testexecutiondetailid));
 //        // Harness Specific ContextVariable to store TestCycle ID
@@ -5980,9 +5991,6 @@ boolean testcasenotfound=false;
         //Harness Specific Topologysetid
         ContextVar.setContextVar("ZUG_TOPOSET", "" + topologySetId);
         this.TOPOSET = ContextVar.getContextVar("ZUG_TOPOSET");
-        //message("Test Execution Id \t"+ testexecutiondetailid+"\t The TestCycle is "+testCycleId);
-        //message("the ContextVars are "+ContextVar.getContextVar("ZUG_TSEXDID"));
-//
         Log.Debug("Controller/SaveTestCaseResultEveryTime : End of the Function");
     }
 
@@ -6404,7 +6412,62 @@ boolean testcasenotfound=false;
                     + archiveLogLocation + ": " + e.getMessage());
         }
     }
+     /*
+     * Find the  Variables and Values of TestCase running
+     * @param test as TestCase object
+     * return HashMap
+     */
+    private  HashMap<String,String> findVariablesValueForTestCase(TestCase test)
+    {
+        HashMap<String,String> variablevalueMap=new HashMap<String, String>();
+        //message("The finding variables started "+test.testCaseID);
+        Action test_action_arr[]=new Action[test.actions.size()];
+        test.actions.toArray(test_action_arr);
+        for(int i=0;i<test_action_arr.length;i++)
+        {
+            Action testcase_actions=test_action_arr[i];
+            //message("the varabless are "+testcase_actions.actionArguments+"\n Action Actual Arguments "+testcase_actions.actionActualArguments);
+            
+            if(testcase_actions.actionArguments.size()==testcase_actions.actionActualArguments.size())
+                for(int j=0;j<testcase_actions.actionArguments.size();j++)
+            {
+                String variable_name=testcase_actions.actionActualArguments.get(j);
+                //message("the varabless are "+variable_name);
+                if(variable_name.startsWith("$$"))
+                variablevalueMap.put(variable_name,testcase_actions.actionArguments.get(j));
+                else if(variable_name.contains("="))
+                {
+                    variable_name=Excel.SplitOnFirstEquals(variable_name)[1];
+                    if(variable_name.startsWith("$$"))
+                    {
+                        variablevalueMap.put(variable_name,testcase_actions.actionArguments.get(j));
+                    }
+                }
+            }
+                
+                }
+        
+       Log.Debug("Controller/findVariablesValueForTestCase: The Variable Map "+variablevalueMap );
+        return variablevalueMap;
+    }
+     /*
+     * Saves the Variables and Values of TestCase running
+     * @param test as TestCase object
+     * return HashMap
+     */
 
+    private void saveTestCaseVariables(HashMap<String,String> variablemap,String testcase_id,String testsuite_name) throws DavosExecutionException, InterruptedException
+    {
+        Set<String> variable_key_set=variablemap.keySet();
+        Iterator<String> var_key_iterate=variable_key_set.iterator();
+        
+        while(var_key_iterate.hasNext())
+        {
+            String variable_key=var_key_iterate.next();
+           Log.Debug("Controller/saveTestCaseVariables: The variable key saved "+variable_key+" the value "+variablemap.get(variable_key));
+            davosclient.variables_write(testsuite_name,testcase_id,variable_key ,variablemap.get(variable_key));
+        }
+    }
     /***
      * This will be executed on a separate thread..This will run the expanded
      * test case.
@@ -6438,7 +6501,8 @@ boolean testcasenotfound=false;
             // ZUG Specific ContextVariable to store ZUG_TCSTARTTIME = Timestamp
             // when Test Case execution started
             ContextVar.setContextVar("ZUG_TCSTARTTIME", Utility.dateAsString());
-
+//Method Return Variable names and Values.
+            
             // If the testCase is not an Init or Cleanup Step then only Save the
             // TestCase Result to the Framework Database.
             if (!(baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || baseTestCaseID.compareToIgnoreCase("init") == 0)) {
@@ -6447,9 +6511,11 @@ boolean testcasenotfound=false;
                 tData.timeToExecute = 0;
                 tData.testCaseExecutionComments = StringUtils.EMPTY;
                 tData.testCaseStatus = "running";
+                tData.testcasedescription=test.testCaseDescription;
 
                 executedTestCaseData.put(tData.testCaseID, tData);
-
+//findVariablesValueForTestCase(test);
+//saveVariables(findVariablesValueForTestCase(test),test.testCaseID);
                 // At any cost save the TestCase ID to the result Database.
 
 
@@ -6472,16 +6538,17 @@ boolean testcasenotfound=false;
                     // If the testCase is not an Init or Cleanup Step then only
                     // Save the TestCase to the Result Database.
                     if (!(baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || baseTestCaseID.compareToIgnoreCase("init") == 0)) {
-                        Log.Debug(String.format("Controller/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result Database.",
+                        Log.Debug(String.format("Controller/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result Davos.",
                                 test.testCaseID,
                                 test.testCaseDescription));
                         //SaveTestCase(test.testCaseID, test.testCaseDescription);
 
-                        Log.Debug(String.format("Controller/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Database.",
+                        Log.Debug(String.format("Controller/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Davos.",
                                 test.testCaseID,
                                 test.testCaseDescription));
 
                         SaveTestCaseResultEveryTime(tData);
+                        saveTestCaseVariables(findVariablesValueForTestCase(test),test.testCaseID,testSuitName);
                     } else {
                         Log.Debug(String.format("Controller/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
                                 test.testCaseID));
@@ -7279,10 +7346,7 @@ boolean testcasenotfound=false;
                 // utility.ReadTopologySetInformation(controller.topologySetXMLFile);
                 Log.Debug("Controller/InitializeVariables : Successfully got the TopologySet from the Excel Sheet");
 
-                controller.message("Connecting to the Davos : "
-                        + controller.dBName + " of Host "
-                        + controller.dBHostName + " with User "
-                        + controller.dbUserName);
+               // controller.message("Connecting to the Davos : " + controller.dBName + " of Host "+ controller.dBHostName + " with User "+ controller.dbUserName);
 
                 if (!controller.ConnectToDavos()) {
                     controller.message("\nError Connecting to Result Database. Controller Exiting ");
@@ -7299,7 +7363,7 @@ boolean testcasenotfound=false;
                     controller.DoHarnessCleanup();
                     return;
                 }
-                controller.message("Connection to the Database is successful.\n ");
+                controller.message("Connection to Davos is successful.\n ");
                 // First task is to insert the test suite to the Database.
                 //  controller.SaveTestSuite();
             }
@@ -7328,7 +7392,7 @@ boolean testcasenotfound=false;
                             // TODO update the current threadid
                             controller.RunTestCaseForMain(testcases);
                             if (controller.dbReporting == true) {
-                                controller.message("Connection Alive " + davosclient.heartBeat(sessionid));
+                                davosclient.heartBeat(sessionid);
                             }
                         } catch (DavosExecutionException ex) {
                             String error = "Controller/main : Davos Exception occured during running test cases for main, exception is\n"

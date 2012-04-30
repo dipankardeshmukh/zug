@@ -42,6 +42,7 @@ class ExecutedTestCase
 	public String testCaseID 				= null;
 	public String testCaseStatus 			= null;
 	public String testCaseExecutionComments = null;
+        public String testcasedescription=null;
 	public int timeToExecute 				= 0;
     public Date testCaseCompletetionTime 	= Utility.dateNow();
 
@@ -178,6 +179,13 @@ class Action
 
     /* Is this Action a Comment*/
     public Boolean isComment = false;
+    //Is this Action a Negative
+    public Boolean isNegative=false;
+    //Action Description
+    public String actionDescription=null;
+    //Action Property
+    public String actionProperty=null;
+    
 
     public UserData userObj;
     //Molecule argument Definition
