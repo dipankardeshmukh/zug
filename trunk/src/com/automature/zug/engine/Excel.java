@@ -53,6 +53,7 @@ public class Excel {
     private static String TestCaseSheetName = "TestCases";
     private static String AbstractSheetName = "Molecules";
     private static String PrototypeSheetName = "Prototypes";
+    public static final String NEGATIVE="negative";
     private static int counter;
     static XMLWriter xmlfile;
     // Variable to store total number of Action and Verification Arguments.
@@ -179,7 +180,7 @@ public class Excel {
         String dbHostName = null;
         try {
             ConsoleReader reader = new ConsoleReader();
-
+//System.out.println("The DBKEY "+_configSheetKeys[1]+" Hashtable "+_configSheetHashTable.get("DBHostName"));
             if (_configSheetHashTable.get(_configSheetKeys[1]) != null) {
                 dbHostName = (String) _configSheetHashTable.get(_configSheetKeys[1]);
             }
@@ -208,29 +209,29 @@ public class Excel {
     /**
      * @return the value of Database Name
      */
-    public String DBName() {
-        String dbName = null;
-        try {
-            ConsoleReader reader = new ConsoleReader();
-            if (_configSheetHashTable.get(_configSheetKeys[2]) != null) {
-                dbName = (String) _configSheetHashTable.get(_configSheetKeys[2]);
-            }
-
-            up:
-            while (true) {
-                if (StringUtils.isBlank(dbName)) {
-                    dbName = reader.readLine("\nEnter the DBName : ");
-                    continue up;
-                } else {
-                    _configSheetHashTable.put(_configSheetKeys[2],
-                            dbName.trim());
-                    break up;
-                }
-            }
-        } catch (IOException e) {
-        }
-        return dbName;
-    }
+//    public String DBName() {
+//        String dbName = null;
+//        try {
+//            ConsoleReader reader = new ConsoleReader();
+//            if (_configSheetHashTable.get(_configSheetKeys[2]) != null) {
+//                dbName = (String) _configSheetHashTable.get(_configSheetKeys[2]);
+//            }
+//
+//            up:
+//            while (true) {
+//                if (StringUtils.isBlank(dbName)) {
+//                    dbName = reader.readLine("\nEnter the DBName : ");
+//                    continue up;
+//                } else {
+//                    _configSheetHashTable.put(_configSheetKeys[2],
+//                            dbName.trim());
+//                    break up;
+//                }
+//            }
+//        } catch (IOException e) {
+//        }
+//        return dbName;
+//    }
 
     /**
      * @return the value of Database User Name
@@ -246,7 +247,7 @@ public class Excel {
             up:
             while (true) {
                 if (StringUtils.isBlank(dbUserName)) {
-                    dbUserName = reader.readLine("\nEnter the SQL User to Connect to Database : ");
+                    dbUserName = reader.readLine("\nEnter the User Name to Connect : ");
                     continue up;
                 } else {
                     _configSheetHashTable.put(_configSheetKeys[3],
@@ -274,7 +275,7 @@ public class Excel {
                 if (StringUtils.isBlank(dbUserPassword)) {
                     dbUserPassword = (String) ProgramOptions.promptForPassword("Enter the Password of the User "
                             + (String) _configSheetHashTable.get(_configSheetKeys[2])
-                            + " to connect to the Database.");
+                            + " to connect : ");
                     continue up;
                 } else {
                     _configSheetHashTable.put(_configSheetKeys[4],
@@ -659,6 +660,7 @@ else
      *            states if compile mode or execution mode.
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     public void ReadExcel(String inputFileName,
             boolean verificationSwitchingFlag, boolean compileMode)
             throws Exception {
@@ -954,7 +956,7 @@ else
                 _configSheetHashTable.remove("ScriptLocation");
                 _tableList = _tableList + ";" + _nested_scriptlocation_list;
                 _configSheetHashTable.put("ScriptLocation", _tableList);
-                //forDebug("Excel/ReadConfigSheet::  The added List "+_configSheetHashTable.get("ScriptLocation"));
+                //System.out.println("Excel/ReadConfigSheet::  The added List "+_configSheetHashTable.get("ScriptLocation"));
             }
 ////System.out.println("Excel/ReadConfigSheet : the nested includes " +_externalSheets);
             if (Controller.nyonserver) {
@@ -1272,7 +1274,24 @@ else
                             System.out.println(xmlfile.genarateXML(moleculefile));
                         }
                     }
-                } else {
+                }
+                else if(sheetname.equals("config")&& _configSheetKeys[1].equalsIgnoreCase(strKey))
+                        {
+                            //System.out.println("The Key of Config sheet "+strKey+"vlue "+strValue);
+                            //if(strValue.startsWith("/")||strValue.indexOf("\\\\")>1)
+                            if(new File(strValue).isDirectory()||strValue.contains(";"))
+                             hashTable.put(strKey,"");
+                            else
+                               hashTable.put(strKey, strValue);
+                        }
+                        else if(sheetname.equals("config")&& _configSheetKeys[3].equalsIgnoreCase(strKey))
+                        {
+                            if(new File(strValue).isDirectory()||strValue.contains(";")||strValue.contains(":"))
+                            hashTable.put(strKey,"");
+                            else
+                                 hashTable.put(strKey, strValue);
+                        }
+                else {
                     hashTable.put(strKey, strValue);
                 }
 
@@ -3454,7 +3473,17 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 Log.Debug("Excel/ReadActionSection : End of the Function.");
                 return null;
             }
-
+            if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+            {
+                Log.Debug("Excel/ReadActionSection: Action is Negative ");
+                actionObj.actionProperty=property.toLowerCase();
+            }
+col=worksheet.getRow(index).getCell((getKey(labelIndex, "description")));
+if(col!=null)
+{
+    actionObj.actionDescription=GetCellValueAsString(col);
+    Log.Debug("Excel/ReadActionSection : Action Description "+actionObj.actionDescription);
+}
             col = worksheet.getRow(index).getCell((short) (actionIndex));
             if (col == null) {
                 Log.Debug(String.format("Excel/ReadActionSection :Not able to read the value for action name from cell  at Row/Col(%d/%d)",
