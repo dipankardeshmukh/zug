@@ -190,7 +190,7 @@ public class AtomInvoker {
      * @param action name
      */
     public boolean checkIfNegativeAtom(String inprocess_atom_name)
-    {
+    {      try{
         Action inpr_actn=getInprocessAction();
         String inprocess_action_name=inpr_actn.actionName.split("\\.")[1];
         if(inprocess_atom_name.equalsIgnoreCase(inprocess_action_name))
@@ -206,6 +206,11 @@ public class AtomInvoker {
         {
             Log.Error("AtomInvoker/checkIfNegativeAtom: Atom Dont Match "+inprocess_atom_name);
             return false;
+        }
+        }
+        catch(Exception e)
+        {
+        return false;
         }
     }
     /*
