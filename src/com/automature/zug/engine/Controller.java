@@ -81,7 +81,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 4.1." + "20120426" + ".063";
+    private static String Version = "ZUG Premium 4.1." + "20120501" + ".064";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -819,7 +819,7 @@ public class Controller extends Thread {
 
         if (executedTestCase.length > 0) {
             message("\nFollowing are the Details of the TestCases Result getting added to the "
-                    + dBHostName + "/" + dBName + " Database.");//TODO Change for Davos latest updates
+                    + dBHostName + "/" +" through Davos Web Service.");//TODO Change for Davos latest updates
             message("\nTestCase ID \t Status \t Time Taken(In mili-seconds) \t Comments\n ");
         }
 
@@ -2349,7 +2349,7 @@ public class Controller extends Thread {
             }
         } else {
             Log.Error("Invalid Log Message-->No such Message for-- \"" + levelAndMessage + "\"--In Primitive");
-            message("Try Fixing Atom Log message Definations");
+            message("Try Fixing Atom Log message Definitions");
             message("----------------------------Ending Automation---------------------------");
             ////System.exit(1);
         }
@@ -3840,7 +3840,7 @@ boolean testcasenotfound=false;
                         throw new Exception(
                                 String.format(
                                 "\n\nException Happened while executing Action %s which is located "
-                                + "at Line %s of Sheet %s.\n Package Structure Not Match with ZugINI.xml defination",
+                                + "at Line %s of Sheet %s.\n %s Package architecture is not matching with ZugINI.xml definition",
                                 verification.verificationName, verification.lineNumber,
                                 verification.sheetName, package_struct[0]));
                     }
@@ -3849,7 +3849,7 @@ boolean testcasenotfound=false;
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
 
-                    Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", verification.verificationName));
+                    Log.Debug(String.format("Controller/RunAction :Successfully Action called %s..", verification.verificationName));
                 } catch (Exception e) {
                     throw new Exception(
                             String.format(
@@ -4610,7 +4610,7 @@ boolean testcasenotfound=false;
                         throw new Exception(
                                 String.format(
                                 "\n\nException in Action %s which is located "
-                                + "at Line %s of Sheet %s.\n Package Structure Not Match with ZugINI.xml defination",
+                                + "at Line %s of Sheet %s.\n %s Package architecture is not matching with ZugINI.xml definition ",
                                 action.actionName, action.lineNumber,
                                 action.sheetName, package_struct[0]));
                     }
@@ -4619,7 +4619,7 @@ boolean testcasenotfound=false;
                             action.stackTrace.toUpperCase(),
                             action.actionName.toUpperCase()));
                     RunVerification(action, threadID);
-                    Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));
+                    Log.Debug(String.format("Controller/RunAction :Successfully called action %s ", action.actionName));
                 } catch (Exception e) {
                     throw new Exception(
                             String.format(
@@ -4785,11 +4785,22 @@ boolean testcasenotfound=false;
             Log.Debug(String.format("Controller/ExecuteActionCommand : End of function with command = %s ",
                     action.actionName));
         } catch (Exception ex) {
+         
+            if(action.isNegative||action.actionProperty.equalsIgnoreCase(Excel.NEGATIVE))
+            {
+                ContextVar.setContextVar("ZUG_EXCEPTION",  String.format(
+                    "\tException in Action %s (%s:%s).\n\t%s",
+                    action.actionName, action.sheetName, action.lineNumber + 1,
+                    ex.getMessage()));
+                
+            }
+            else{
             throw new Exception(
                     String.format(
                     "\tException in Action %s (%s:%s).\n\t%s",
                     action.actionName, action.sheetName, action.lineNumber + 1,
                     ex.getMessage()));
+            }
         }
     }
 
@@ -5378,6 +5389,7 @@ boolean testcasenotfound=false;
             String error = String.format("Exception in Command %s.\n\tException Message is :\n\tFoot Print:\n %s",
                     command, ex.getMessage());
             // Log.Error(error);
+            
             throw new Exception(error);
         } finally {
             // Close the process created.
@@ -7193,7 +7205,7 @@ boolean testcasenotfound=false;
 
             // invokeAtoms.loadJarFile(new ExtensionInterpreterSupport().readExternalJarFilePath().get(0));
         } else {
-            controller.message("Controller/Main No external Jar defination found in ZugINI.xml with proper Attribute defination for Tag");
+            controller.message("Controller/Main: No external Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
         }
 
         Controller.harnessPIDValue = Integer.parseInt((java.lang.management.ManagementFactory.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
@@ -7349,7 +7361,7 @@ boolean testcasenotfound=false;
                // controller.message("Connecting to the Davos : " + controller.dBName + " of Host "+ controller.dBHostName + " with User "+ controller.dbUserName);
 
                 if (!controller.ConnectToDavos()) {
-                    controller.message("\nError Connecting to Result Database. Controller Exiting ");
+                    controller.message("\nError Connecting to Davos. Controller Exiting ");
                     controller.DoHarnessCleanup();
                     return;
                 }
@@ -7436,13 +7448,13 @@ boolean testcasenotfound=false;
                     // to Result Data..so doing that now...
                     controller.message("\n\nStoring the TestCase Result to "
                             + controller.dBHostName + "\\" + controller.dBName
-                            + " Database.....");
+                            + " Davos.....");
 
                     controller.SaveTestCaseResult();
                     controller.message("\n\nSUCCESSFULLY Stored the TestCase Result to "
                             + controller.dBHostName
                             + "\\"
-                            + controller.dBName + " Database.....");
+                            + controller.dBName + " Davos.....");
                 }
             } else // / Even if the DB reporting is FALSE, still we should actually
             // show the statistics.
