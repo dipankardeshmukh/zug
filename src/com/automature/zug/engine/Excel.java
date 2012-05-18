@@ -23,6 +23,7 @@ import jline.ConsoleReader;
 import com.automature.zug.util.Log;
 import com.automature.zug.util.XMLWriter;
 import com.automature.zug.engine.Controller;
+import com.automature.zug.exceptions.MoleculeDefinitionException;
 import com.automature.zug.util.ExtensionInterpreterSupport;
 import com.automature.zug.util.Utility;
 import java.lang.management.ManagementFactory;
@@ -663,7 +664,7 @@ else
     @SuppressWarnings("unchecked")
     public void ReadExcel(String inputFileName,
             boolean verificationSwitchingFlag, boolean compileMode)
-            throws Exception {
+            throws Exception, MoleculeDefinitionException {
         FileInputStream inputFile = null;
 
         try {
@@ -784,6 +785,21 @@ else
             ReadMacroSheet(_workBook, mainNameSpace);
             //System.out.println("Before Merge\t"+_macroSheetHashTable);
             //Merging the command line macros with the Excel Macro
+            
+            Set<String> cmdkey=Controller.macrocommandlineinputs.keySet();
+            Iterator<String> cmdkey_iterate=cmdkey.iterator();
+            while(cmdkey_iterate.hasNext())
+            {
+                String cmd_macro_key=cmdkey_iterate.next();
+                String cmd_macro_value=Controller.macrocommandlineinputs.get(cmd_macro_key);
+                if((cmd_macro_value.contains("$$")||cmd_macro_value.contains("$"))&&(cmd_macro_value.startsWith("{")&&cmd_macro_value.endsWith("}")))
+                {
+                    //System.out.println("The macro key "+cmd_macro_key+" The namespace "+mainNameSpace);
+                    String cmd_macro_namespace=Utility.TrimStartEnd(cmd_macro_key.split("\\.")[0], '$',1);
+                   // System.out.println("The macro key "+cmd_macro_key+" The namespace "+cmd_macro_namespace);
+                    cmd_macro_value=ExpandMacrosValue(cmd_macro_value, cmd_macro_key, cmd_macro_namespace);
+                }
+            }
             _macroSheetHashTable.putAll(Controller.macrocommandlineinputs);
             readHashTable(_macroSheetHashTable);
             //System.out.println("EXCEL/READ:: The Cardinality is " + getCardinality(_macroSheetHashTable));
@@ -1312,7 +1328,7 @@ else
     // /Function to Expand a Macro for the looping construct, also modified for
     // indexed MVM
     public String ExpandMacrosValue(String macroValue, String macroKey,
-            String nameSpace) throws Exception// throws Exception
+            String nameSpace) throws Exception
     {
         try {
             
@@ -1357,7 +1373,7 @@ else
                                 + "in hashtable");
                         String tempMacroToExpand = AppendNamespace(
                                 tempStringToExpand, nameSpace);
-
+//System.out.println("The macro hash\n"+_macroSheetHashTable);
                         if (_macroSheetHashTable.containsKey(tempMacroToExpand)) {
                             Log.Debug("Excel/ExpandMacrosValue : Index Macro key found");
                             String newMacroValue = _macroSheetHashTable.get(tempMacroToExpand);
@@ -1734,7 +1750,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
     // / 2. Molecule Sheet
     // / 3. Prototypes Sheet
     // / Provided they are present.
-    private void ReadExternalSheets(String inputFileName) throws Exception {
+    private void ReadExternalSheets(String inputFileName) throws Exception, MoleculeDefinitionException {
 
         File inputFile = null;
         FileInputStream inFile = null;
@@ -2495,7 +2511,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
 
     // / Function to read the Abstract TestCase Sheet
     public void ReadAbstractTestCaseSheet(HSSFWorkbook workBook,
-            String nameSpace) throws Exception {
+            String nameSpace) throws Exception, MoleculeDefinitionException {
         String testCaseSheetName = AbstractSheetName;
         Log.Debug("Excel/ReadAbstractTestCaseSheet : Start of the Function with Abstract TestCaseSheetName as "
                 + testCaseSheetName);
@@ -2549,7 +2565,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
     // function will read the Abstract TestCase sheet and will
     // / populate the values in the DataStructures appropriately.
     private void GetAbstractTestCaseSheetValues(HSSFSheet worksheet,
-            String nameSpace) throws Exception {
+            String nameSpace) throws Exception, MoleculeDefinitionException {
         Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
 
         try {
@@ -2679,6 +2695,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                                 AbstractSheetName, testCase, testCaseIndex,
                                 nameSpace);
                     }
+                   //System.out.println("The Verify bools "+verifyObj.isNegative);
                 } else {
                     if (verifyObj != null && actionObj != null
                             && testCase != null) {
@@ -2686,7 +2703,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                         verifyObj = null;
                     }
                 }
-
+//
                 // / The read the Action
                 String valueInActionColumn = null;
                 col = worksheet.getRow(index).getCell(((short) (actionIndex)));
@@ -2742,10 +2759,12 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     testCase._testcasemoleculeArgDefn.addAll(actionObj._actionmoleculeArgDefn);
 
                 }
-
+//System.out.println("The index of row "+index+" the last row "+worksheet.getLastRowNum());
                 // / Checking the last Row and saving the Abstract
                 // TestCases/Actions/Verification in their proper Datastructures
                 if (index == worksheet.getLastRowNum()) {
+                    //check the index number... or go to readaction method to check
+                    
                     Log.Debug("Excel/GetAbstractTestCaseSheetValues : Read the last Row of the Test Case sheet : "
                             + index);
                     Log.Debug("Excel/GetAbstractTestCaseSheetValues : Saving the Action/ Verification and the TestCase Datastructures: "
@@ -2757,6 +2776,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     }
 
                     if (actionObj != null && testCase != null) {
+                       // System.out.println("The action object "+actionObj.isComment+"\nAction definition "+actionObj._actionmoleculeArgDefn);
                         testCase.actions.add(actionObj);
                         //Implement a method to get the exact object.
 
@@ -2774,7 +2794,12 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
 
 
 
-        } catch (Exception e) {
+        }
+                catch(MoleculeDefinitionException md)
+                {
+                    throw new Exception("Excel/GetAbstractTestCaseSheetValues :Exception occured, exception message is : "+ "\n" + md.getMessage());
+                }
+        catch (Exception e) {
             Log.Error("Excel/GetAbstractTestCaseSheetValues : Exception occured, exception message is : "
                     + "\n" + e.getMessage());
             throw new Exception(
@@ -2824,6 +2849,20 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 Log.Debug("Excel/ReadVerificationSection : Verifcation is a Comment");
                 Log.Debug("Excel/ReadVerificationSection : End of the Function.");
                 return null;
+            }
+                  if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+            {
+                Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
+                
+                verifyObj.isNegative=true;
+                
+            }
+                  if(property!=null&&(property.toLowerCase().contains("neg-verify")||property.toLowerCase().contains("negative-verify")))
+            {
+                Log.Debug("Excel/ReadActionSection: Verification(only) is Negative ");
+                
+                verifyObj.isNegative=true;
+                
             }
             verifyObj.verificationName = GetCellValueAsString(worksheet.getRow(
                     index).getCell((short) (verifyIndex)));
@@ -2896,7 +2935,20 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             }
             Log.Debug("Excel/ReadVerificationSection : Row[" + index
                     + "] test case ID is isComment = " + verifyObj.isComment);
-
+       if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+            {
+                Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
+                
+                verifyObj.isNegative=true;
+                
+            }
+                  if(property!=null&&(property.toLowerCase().contains("neg-verify")||property.toLowerCase().contains("negative-verify")))
+            {
+                Log.Debug("Excel/ReadActionSection: Verification(only) is Negative ");
+                
+                verifyObj.isNegative=true;
+                
+            }
             // Get the Value of the Expected Result here.
 			/*
              * col =
@@ -3211,21 +3263,51 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                             + String.format(
                             "Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , variableToFind = %s ",
                             tempValue));
+//                    boolean macroFound=false;
+//                    while(_keyIterate.hasNext())
+//                     {
+//                         String _keyToSearch=_keyIterate.next();
+//                         if(tempValue.equalsIgnoreCase(_keyToSearch))
+//                         {
+//                             macroFound=true;
+//                                          break;
+//                         }
+//                         else
+//                         {
+//                             macroFound=false;
+//                         }
+//                         
+//                     }
+//                     if(!macroFound)
+//                     {
+//                         Log.Error(String.format("The Macro: %s is not defined.",variableToFind));
+//                     }
                 }
                         //Checking for vector macro
                 else if(tempValue.startsWith("$$"))
                 {
+                    boolean macroFound=false;
                     tempValue=Utility.TrimStartEnd(tempValue, '$',1);
                     tempValue=AppendNamespace(tempValue, nameSpace);
                     tempValue="$"+tempValue;
-                     while(_keyIterate.hasNext())
-                     {
-                         String _keyToSearch=_keyIterate.next();
-                         if(tempValue.equalsIgnoreCase(_keyToSearch))
-                         {
-                                          break;
-                         }
-                     }
+//                     while(_keyIterate.hasNext())
+//                     {
+//                         String _keyToSearch=_keyIterate.next();
+//                         if(tempValue.equalsIgnoreCase(_keyToSearch))
+//                         {
+//                             macroFound=true;
+//                                          break;
+//                         }
+//                         else
+//                         {
+//                             macroFound=false;
+//                         }
+//                         
+//                     }
+//                     if(!macroFound)
+//                     {
+//                         Log.Error(String.format("The Macro: %s is not defined.",variableToFind));
+//                     }
                      tempValue=_macroSheetHashTable.get(tempValue);
                      
                 }
@@ -3244,7 +3326,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             }                    
                     //checking for any vector macro
             else if(variableToFind.startsWith("$$")) {
-                
+                boolean macroFoundFlag=false;
                 tempValue=Utility.TrimStartEnd(tempValue, '$',1);
                 //System.out.println("FindMacro 2a->"+tempValue);
                 tempValue=AppendNamespace(tempValue, nameSpace);
@@ -3256,9 +3338,19 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     //System.out.println("Iteterator -> "+_keyToSearch+" TempValue "+tempValue);
                     if(tempValue.equalsIgnoreCase(_keyToSearch))
                     {          
+                        macroFoundFlag=true;
                 break;
                     }
+                    else
+                    {
+                        macroFoundFlag=false;
+                        //continue;
+                    }
                    
+                }
+                if(!macroFoundFlag)
+                {
+                    Log.Error(String.format("The Macro: %s is not defined ",variableToFind));
                 }
                 tempValue=_macroSheetHashTable.get(tempValue);
                 
@@ -3447,7 +3539,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             Hashtable<Short, String> labelIndex,
             Hashtable<Short, String> _mapHashTable, int index, int actionIndex,
             String sheetName, TestCase testCase, int testcaseIndex,
-            String nameSpace) throws Exception {
+            String nameSpace) throws Exception, MoleculeDefinitionException {
         Log.Debug("Excel/ReadActionSection : Start of the Function with Row Index = "
                 + index
                 + " and  Index of Action column as : "
@@ -3471,19 +3563,37 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 // /Action is a Comment.
                 Log.Debug("Excel/ReadActionSection : Action is a Comment");
                 Log.Debug("Excel/ReadActionSection : End of the Function.");
+                actionObj.isComment=true;
+                HSSFCell actionDefine=worksheet.getRow(index).getCell((short) (actionIndex));
+                //System.out.println("The name "+GetCellValueAsString(actionDefine));
+                if(GetCellValueAsString(actionDefine).toLowerCase().trim().contains("#define_arg"))
+                {
+                    Log.Error("Excel/ReadActionSection : Molecule definition cannot be set to 'comment' or 'rem'");
+                    throw new MoleculeDefinitionException("Excel/ReadActionSection : Molecule definition cannot be set to 'comment' or 'rem'");
+                }
+                
                 return null;
             }
             if(property!=null&&property.toLowerCase().contains(NEGATIVE))
             {
-                Log.Debug("Excel/ReadActionSection: Action is Negative ");
+                Log.Debug("Excel/ReadActionSection: Action(row) is Negative ");
                 actionObj.actionProperty=property.toLowerCase();
+                actionObj.isNegative=true;
+                
             }
-col=worksheet.getRow(index).getCell((getKey(labelIndex, "description")));
-if(col!=null)
-{
-    actionObj.actionDescription=GetCellValueAsString(col);
-    Log.Debug("Excel/ReadActionSection : Action Description "+actionObj.actionDescription);
-}
+         
+                    if(property!=null&&(property.toLowerCase().contains("neg-action")||property.toLowerCase().contains("negative-action")))
+            {
+                Log.Debug("Excel/ReadActionSection: Action(only) is Negative ");
+                
+                actionObj.isActionNegative=true;
+                
+            }
+            col = worksheet.getRow(index).getCell((getKey(labelIndex, "description")));
+            if (col != null) {
+                actionObj.actionDescription = GetCellValueAsString(col);
+                Log.Debug("Excel/ReadActionSection : Action Description " + actionObj.actionDescription);
+            }
             col = worksheet.getRow(index).getCell((short) (actionIndex));
             if (col == null) {
                 Log.Debug(String.format("Excel/ReadActionSection :Not able to read the value for action name from cell  at Row/Col(%d/%d)",
@@ -3560,6 +3670,20 @@ if(col!=null)
             if (property != null
                     && (property.contains("comment") || property.contains("rem"))) {
                 actionObj.isComment = true;
+            }   
+            if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+            {
+                Log.Debug("Excel/ReadActionSection: Action(row) is Negative ");
+                
+                actionObj.isNegative=true;
+                
+            }
+            if(property!=null&&(property.toLowerCase().contains("neg-action")||property.toLowerCase().contains("negative-action")))
+            {
+                Log.Debug("Excel/ReadActionSection: Action(only) is Negative ");
+                
+                actionObj.isActionNegative=true;
+                
             }
 
             Log.Debug("\n"
@@ -3642,6 +3766,7 @@ if(col!=null)
                                 + " = NULL/EMPTY. So not inserting the value to the actionObj.actionArguments Arraylist. ");
                     }
                 }
+                //System.out.println("The action argument "+actionObj.actionArguments);
             }
 
             // / If Compilation is ON THEN Check in more detail...
@@ -3658,7 +3783,7 @@ if(col!=null)
             //Checking fot Molecule sheet and create the definition
             if (sheetName.equalsIgnoreCase(AbstractSheetName) || actionObj.sheetName.equalsIgnoreCase(AbstractSheetName)) {
                 //System.out.println("Testcase id=" + testCase.testCaseID + "\n" + actionObj.actionArguments);
-                //System.out.println("the Action Name=="+actionObj.actionName+"action ID--"+actionObj.testCaseID);
+               // System.out.println("the Action Name=="+actionObj.actionName+" action ID--"+actionObj.testCaseID+" negative "+actionObj.isNegative);
                 if (actionObj.actionName.startsWith("#define")) {
                     for (String var_key : actionObj.actionArguments) {
 
@@ -3667,7 +3792,12 @@ if(col!=null)
                     }
 
                     Log.Debug("Excel/ReadActionSection : Molecule Definition reading done:: " + actionObj._actionmoleculeArgDefn);
+                    
+                     
+                      
+                    
                 }
+                
             }
 
 
@@ -3859,7 +3989,7 @@ if(col!=null)
     // / Function to read the TestCase sheet
     // / <param name="workBook">Object of WorkBook</param>
     public void ReadTestCaseSheet(HSSFWorkbook workBook, String nameSpace)
-            throws Exception {
+            throws Exception, MoleculeDefinitionException {
 
         String testCaseSheetName = TestCaseSheetName;
         Log.Debug("Excel/ReadTestCaseSheet : Start of the Function with TestCaseSheetName as "
@@ -3915,7 +4045,7 @@ if(col!=null)
     // / populate the values in the DataStructures appropriately.
     // / <param name="worksheet"></param>
     private void GetTestCaseSheetValues(HSSFSheet worksheet, String nameSpace)
-            throws Exception {
+            throws Exception, MoleculeDefinitionException {
         Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
         int index = 2;
         try {

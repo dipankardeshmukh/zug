@@ -179,8 +179,11 @@ class Action
 
     /* Is this Action a Comment*/
     public Boolean isComment = false;
-    //Is this Action a Negative
+    //Is this Action(whole row) a Negative
     public Boolean isNegative=false;
+    //Is this Action(only) negative
+        public Boolean isActionNegative=false;
+            
     //Action Description
     public String actionDescription=null;
     //Action Property
@@ -224,6 +227,7 @@ class Verification
 	
 	/* Is this Verification a Comment*/
 	public Boolean isComment 		= false;
-
+        //Is this Verification negative
+public Boolean isNegative=false;
 	public UserData userObj;
 }

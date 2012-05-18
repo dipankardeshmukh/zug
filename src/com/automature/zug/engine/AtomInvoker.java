@@ -42,7 +42,6 @@ public class AtomInvoker {
     /*
      * Constructor
      */
-
     public AtomInvoker(String builtinpackagename) throws Exception {
 
 
@@ -181,7 +180,7 @@ public class AtomInvoker {
             Log.Error("Exception for IllegalAccess of ::" + builtinpackagename + "\nMessage::" + ia.getMessage());
             throw ia;
         } catch (Exception e) {
-            Log.Error("Exception Occured ::" + builtinpackagename + "\nMessage::" + e.getMessage() + "\nException Due to Exception" + e.getClass());
+            Log.Error("Exception Occured ::" + builtinpackagename +" Package is not present "+ "\nException Due to Exception" + e.getClass());
             throw e;
         }
     }
@@ -190,13 +189,17 @@ public class AtomInvoker {
      * @param action name
      */
     public boolean checkIfNegativeAtom(String inprocess_atom_name)
-    {      try{
+    {
+        try{
+           //debugMessage("The Atom "+inprocess_atom_name);
         Action inpr_actn=getInprocessAction();
         String inprocess_action_name=inpr_actn.actionName.split("\\.")[1];
+        //debugMessage("The action Name "+inprocess_action_name);
         if(inprocess_atom_name.equalsIgnoreCase(inprocess_action_name))
         {
-            if(inpr_actn.isNegative||inpr_actn.actionProperty.equalsIgnoreCase(Excel.NEGATIVE))
-            {
+            //debugMessage("The checks "+inpr_actn.isNegative+"The Only Action "+inpr_actn.isActionNegative);
+            if(inpr_actn.isNegative)
+            { 
                 return true;
             }
             else
@@ -204,13 +207,12 @@ public class AtomInvoker {
         }
         else
         {
-            Log.Error("AtomInvoker/checkIfNegativeAtom: Atom Dont Match "+inprocess_atom_name);
+            Log.Debug("AtomInvoker/checkIfNegativeAtom: Atom is not Matching where atom: "+inprocess_atom_name+"\n Or Its is a Verification Atom");
             return false;
         }
-        }
-        catch(Exception e)
+        }catch(Exception e)
         {
-        return false;
+               return false;
         }
     }
     /*
@@ -218,10 +220,12 @@ public class AtomInvoker {
      */
     public void invokeMethod(String method_name, ArrayList<String> inputs) throws InvocationTargetException, IllegalAccessException, Exception {
         try {
+            //debugMessage("**********method name************ "+method_name);
             Object param[] = {method_name, inputs};
             for (Method imethod : external_methods) {
                 if (imethod.getName().equalsIgnoreCase("dispatch")) {
                     imethod.invoke(external_class_object, param);
+                    //debugMessage("method invoked "+param.toString());
                     method_found_flag = true;
                     break;
                 }
@@ -248,19 +252,17 @@ public class AtomInvoker {
             if(checkIfNegativeAtom(method_name))
             {
              ContextVar.setContextVar("ZUG_EXCEPTION",exception_message);
-              Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
+             //debugMessage("Comming to if Clause ");
+              Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message+"\nNote: Executing Negative Test Step.");
             }else
             {
+               //debugMessage("Comming to else Clause ");
             Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
             throw new Exception(exception_message, e);
             }
+
         }
-//        } catch (InvocationTargetException ex) {
-//            Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + ex.getCause().getCause().getMessage()+"\tCause:: "+ex.getCause());
-//throw ex;
-//        } catch (IllegalAccessException ia) {
-//            Log.Error("Exception while accessing the method:: " + method_name + "\nMessage:: " + ia.getCause().getCause().getMessage()+"\tCause:: "+ia.getCause());
-//throw ia;
-//        }
+        
+
     }
 }
