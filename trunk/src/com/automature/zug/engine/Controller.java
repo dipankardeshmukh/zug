@@ -4,6 +4,7 @@
  */
 package com.automature.zug.engine;
 
+import com.automature.zug.exceptions.MoleculeDefinitionException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -81,7 +82,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 4.1." + "20120501" + ".064";
+    private static String Version = "ZUG Premium 4.2." + "20120515" + ".068";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -819,7 +820,7 @@ public class Controller extends Thread {
 
         if (executedTestCase.length > 0) {
             message("\nFollowing are the Details of the TestCases Result getting added to the "
-                    + dBHostName + "/" +" through Davos Web Service.");//TODO Change for Davos latest updates
+                    + dBHostName + "/" + " through Davos Web Service.");//TODO Change for Davos latest updates
             message("\nTestCase ID \t Status \t Time Taken(In mili-seconds) \t Comments\n ");
         }
 
@@ -908,17 +909,24 @@ public class Controller extends Thread {
      * @return boolean
      *            true or false
      */
-    private boolean isParameterPassingConsistent(ArrayList<String> arguments) {
+    private boolean isParameterPassingConsistent(ArrayList<String> arguments,TestCase temp) throws Exception {
         boolean equalsPresent = true, equalsNotPresent = true;
         //Looping to get every arguments from the arraylist
         for (String args : arguments) {
             //Checking every argument if it contains any = or not
+            //message("args are "+args);
             if (args.contains("=")) {
+                
                 //Putting the proposition logic Boolean AND operation
                 equalsPresent = true && equalsPresent;
                 equalsNotPresent = false && equalsNotPresent;
 
             } else {
+               // message("The definitions "+temp._testcasemoleculeArgDefn+"\nLength "+temp._testcasemoleculeArgDefn.size());
+                if(arguments.size()!=temp._testcasemoleculeArgDefn.size())
+                {
+                    throw new Exception("Named Argument size mismatch between pass by value and the definition :\n\tNo of Arguments in Molecule Definition: "+temp._testcasemoleculeArgDefn.size()+"\n\tNo of Arguments Passed to the Molecule: "+arguments.size());
+                }
                 equalsNotPresent = true && equalsNotPresent;
                 equalsPresent = false && equalsPresent;
             }
@@ -1021,6 +1029,8 @@ public class Controller extends Thread {
             tempAction.lineNumber = action.lineNumber;
             tempAction.sheetName = action.sheetName;
             tempAction.actionActualArguments = action.actionActualArguments;
+            tempAction.isNegative=action.isNegative;
+            tempAction.isActionNegative=action.isActionNegative;
 
             Log.Debug("Controller/RunAbstractTestCase: Working on Action "
                     + action.actionName + " with Step Number as  "
@@ -1144,13 +1154,19 @@ public class Controller extends Thread {
                         }
                     }
                 } //Checking For any new defined molecule exists or not.
-                else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#") || actionVal.toLowerCase().contains("=##")) {
+                else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#") || actionVal.toLowerCase().contains("=##")||actionVal.toLowerCase().contains("=%#") ) {
                     String key = null, value = null;
 //TODO the work for INDEXD MACROOO checking fails the code.
-                    boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
-                    //message("Runabstract:: Actionss--"+actionVal);
+                    
+                    boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false,isThisContextVarTypeAtom=false;
+                    if(action.actionName.equalsIgnoreCase("appendtocontextvar")||action.actionName.equalsIgnoreCase("setcontextvar"))
+                    {
+                        isThisContextVarTypeAtom=true;
+                        //message("Action Name "+action.actionName+" The boolean "+isThisAppenToContextVarAtom);
+                    }
+                    //message("The action Name "+action.actionName+" Runabstract:: Actionss--" + actionVal+" Arguments list "+argumentValues);
                     //Checking for the arguments if they are consistent
-                    if (isParameterPassingConsistent(argumentValues)) {
+                    if (isParameterPassingConsistent(argumentValues,test)) {
 
 
                         if (actionVal.contains("=")) {
@@ -1160,20 +1176,26 @@ public class Controller extends Thread {
                         } else {
                             value = actionVal.toLowerCase();
                         }
-                        //message("RUNABSTRACT::-1 Key value- "+key);
+                       //message("RUNABSTRACT::-1 Key value- " + key);
                         if (value.startsWith("%") && value.endsWith("%")) {
                             value = value.replaceAll("%", "");
                             isThisAContextVar = true;
                         }
                         value = value.replaceAll("#", "");
-                        //message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
+                        //message("RUNABSTRACT::1a Key value- " + value + "\targumentss " + argumentValues);
                         if (argumentValues.get(0).contains("=")) {
                             for (String molecule_arg : argumentValues) {
                                 String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
-                               //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
+                               //message("RUNABSTRACT::2 split value- " + temp_value_split[0] + "\tValue " + value);
+                                //message("RUNABSTRACT::2-d" + molecule_arg + " 1->" + temp_value_split.length);
                                 if (temp_value_split[0].equalsIgnoreCase(value)) {
+                                    if (temp_value_split.length<2) {
+                                        throw new Exception("Controller/RunAbstractTestCase: Formal argument value is Empty:: " + temp_value_split[0]);
+                                    }
+                                    //message("RUNABSTRACT::3 " + value + " keyen " + isKeyEnabled);
                                     if (isKeyEnabled) {
                                         if (isThisAContextVar) {
+
                                             actionVal = key + "=%" + temp_value_split[1] + "%";
                                         } else {
                                             actionVal = key + "=" + temp_value_split[1];
@@ -1187,22 +1209,39 @@ public class Controller extends Thread {
 
                                     }
 
-//message("RUNABSTRACT:: step forloop "+actionVal);  
+                                    //message("RUNABSTRACT:: step forloop " + actionVal);
 
                                     foundFormalArg = true;
                                     break;
 
                                 }
+//                                else
+//                                {
+//                               throw new Exception("Formal Argument key-name mismatch or Formal argument value is Empty "+temp_value_split[0]);     
+//                                }
                             }
                             if (!foundFormalArg) {
-                                throw new Exception("Formal Argument Not found for Action: "+action.actionName+" In sheet: "+action.sheetName+" where testcase: "+action.testCaseID);
+                                throw new Exception("Formal Argument Not found for Action: " + action.actionName + " In sheet: " + action.sheetName + " where testcase: " + action.testCaseID);
                             }
                         } else {
-                            if (isThisAContextVar) {
-                                actionVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value)) + "%";
-                            } else {
-                                actionVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value));
+                           //message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
+                            //message("RUNABSTRACT:: "+value+" The index no "+test._testcasemoleculeArgDefn);
+                            if(test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())<0)
+                            {
+                                throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ",value,test._testcasemoleculeArgDefn));
                             }
+                            if (isThisAContextVar) {
+                                
+                                actionVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase().trim())) + "%";
+                            } else {
+                                actionVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase().trim()));
+                            }
+                            if(isKeyEnabled)
+                            {
+                                actionVal=key+"="+actionVal;
+                               //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()))); 
+                            }
+                           
                         }
 
 
@@ -1210,7 +1249,15 @@ public class Controller extends Thread {
                     } else {
                         throw new Exception("Argument Passing Not Consistent:Either use named argument passing or positional argument passing. ");
                     }
-                    //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value)+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
+                   // message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
+//                    if(isThisContextVarTypeAtom)
+//                    {
+//                        actionVal=key+"="+actionVal;
+//                        //message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
+//                    }
+//                    else 
+                    ///TODO Find a better solution
+                  // message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
                 }
                 try {
 
@@ -1225,6 +1272,7 @@ public class Controller extends Thread {
                             + action.actionName);
 
                     tempAction.actionArguments.add(actionVal);
+                    //message("After The Argument List for Molecule "+tempAction.actionArguments);
                 } catch (Exception e) {
                     // Log.Error("Controller/RunAbstractTestCase: "+e.getMessage());
                     throw new Exception("Controller/RunAbstractTestCase: "
@@ -1261,7 +1309,8 @@ public class Controller extends Thread {
                 tempVerification.lineNumber = verification.lineNumber;
                 tempVerification.sheetName = verification.sheetName;
                 tempVerification.verificationActualArguments = verification.verificationActualArguments;
-
+                tempVerification.isNegative=verification.isNegative;
+//message("The Verificationn bool "+tempVerification.isNegative);
                 // Log.Debug("Controller/RunAbstractTestCase: Expected Result = "+verification.verificationName+" fon Verification "+
                 // verification.verificationName);
 
@@ -1396,13 +1445,13 @@ public class Controller extends Thread {
 
                             }
                         }
-                    } else if (verificationVal.toLowerCase().startsWith("#") || verificationVal.toLowerCase().startsWith("%#") || verificationVal.toLowerCase().contains("=#")) {
+                    } else if (verificationVal.toLowerCase().startsWith("#") || verificationVal.toLowerCase().startsWith("%#") || verificationVal.toLowerCase().contains("=#") || verificationVal.toLowerCase().contains("=%#"))   {
                         String key = null, value = null;
 
                         boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
                         //message("Runabstract:: Actionss--"+actionVal);
                         //Checking for the arguments if they are consistent
-                        if (isParameterPassingConsistent(argumentValues)) {
+                        if (isParameterPassingConsistent(argumentValues,test)) {
 
 
                             if (verificationVal.contains("=")) {
@@ -1424,6 +1473,9 @@ public class Controller extends Thread {
                                     String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
                                     //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
                                     if (temp_value_split[0].equalsIgnoreCase(value)) {
+                                        if (temp_value_split.length<2) {
+                                        throw new Exception("Controller/RunAbstractTestCase: Formal argument value is Empty:: " + temp_value_split[0]);
+                                    }
                                         if (isKeyEnabled) {
                                             if (isThisAContextVar) {
                                                 verificationVal = key + "=%" + temp_value_split[1] + "%";
@@ -1436,6 +1488,7 @@ public class Controller extends Thread {
                                             } else {
                                                 verificationVal = temp_value_split[1];
                                             }
+                                           
 
                                         }
 
@@ -1449,11 +1502,19 @@ public class Controller extends Thread {
                                     throw new Exception("Formal Argument Not found");
                                 }
                             } else {
+                                 if(test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())<0)
+                            {
+                                throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ",value,test._testcasemoleculeArgDefn));
+                            }
                                 if (isThisAContextVar) {
-                                    verificationVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value)) + "%";
+                                    verificationVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())) + "%";
                                 } else {
-                                    verificationVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value));
+                                    verificationVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()));
                                 }
+                                 if(isKeyEnabled)
+                                            {
+                                                verificationVal=key+"="+verificationVal;
+                                            }
                             }
 
 
@@ -1501,7 +1562,17 @@ public class Controller extends Thread {
                     + tempTestCase.stackTrace + " is : " + ex.getMessage());
             // throw new Exception("Exception while running Abstract Test Case "
             // + tempTestCase.stackTrace + " is : " + ex.getMessage());
-            throw new Exception(ex.getMessage());
+            //message("Thhe boolean value "+isMoleculeNegative);
+//            if(isMoleculeNegative)
+//            {
+//                ContextVar.setContextVar("ZUG_EXCEPTION", ex.getMessage());
+//                Log.Error("Note: Executing Negative Molecule ");
+//                
+//            }
+//            else
+//            {
+                throw new Exception(ex.getMessage());
+            //}
         } finally {
             message("\n******************** Molecule "
                     + tempTestCase.stackTrace
@@ -1630,9 +1701,9 @@ public class Controller extends Thread {
     @SuppressWarnings("unchecked")
     private TestCase[] ExpandTestCase(TestCase test, boolean fromTestCaseSheet) throws Exception {
         Log.Debug("Controller/ExpandTestCase: Start of function with TestCase ID is "
-                + test.testCaseID); 
+                + test.testCaseID);
 
-        
+
         //HashMap<String, String> mvm_vector_map = new HashMap<String, String>();
         //message("THE testcase coming1a " + test.testCaseID);
 
@@ -1645,42 +1716,40 @@ public class Controller extends Thread {
 //message("THE testcase coming 1c " + test.testCaseID);
         int count1 = -1;
         Hashtable<Integer, String> multiValuedVariablePosition = new Hashtable<Integer, String>();
-  
+
         for (int j = 0; j < allActions.length; j++) {
             //message("THE testcase coming 1d " + test.testCaseID);
             Action action = allActions[j];
             Log.Debug("Controller/ExpandTestCase: Working on Action  : "
                     + action.actionName);
             ////TODO put checking if testcase have no actio argument then at least print any message or put the exception
-           //message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
+            //message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
             if (action.actionArguments.size() > 0) {
                 for (int i = 0; i < action.actionArguments.size(); ++i) {
-                    
+
                     ///In case of Molecule the actual value is not coming ? why?
                     //message("THE testcase coming 1e " + test.testCaseID + " Every Values " + action.actionArguments.get(i) + " Action Actual Arguments " + action.actionActualArguments);
                     count1++;
- //message("cheks to Macro action args exp\t" + action.actionArguments.get(i));
+                    //message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments.get(i));
                     String tempVal = GetTheActualValue((String) (action.actionArguments.get(i)));
+                    //message("Expandtest:/lengths " + action.actionArguments.size()+"\n\t"+action.actionActualArguments.size());
                     if (action.actionActualArguments.size() == action.actionArguments.size()) {
                         //put in a hashmap
                         //key=tempval value=actlArg
-                        if(action.actionActualArguments.get(i).startsWith("$$") || action.actionActualArguments.get(i).startsWith("##")) 
-                        {
-                            
+                        if (action.actionActualArguments.get(i).startsWith("$$") || action.actionActualArguments.get(i).startsWith("##")) {
+
                             tempVal = tempVal + "~";
+                        } else if (action.actionActualArguments.get(i).contains("=")) {
+                            String[] split_actual_arg = Excel.SplitOnFirstEquals(action.actionActualArguments.get(i));
+                            if (split_actual_arg[1].startsWith("$$") || split_actual_arg[1].startsWith("##")) {
+                                tempVal = tempVal + "~";
+                            }
                         }
-                        else if(action.actionActualArguments.get(i).contains("="))
-                        {
-                              String[] split_actual_arg = Excel.SplitOnFirstEquals(action.actionActualArguments.get(i));
-                              if (split_actual_arg[1].startsWith("$$")||split_actual_arg[1].startsWith("##")) {
-                                  tempVal=tempVal+"~";
-                              }
-                        }
-                        
-                        
-                        }
-                        //mvm_vector_map.put( tempVal,action.actionActualArguments.get(i).trim());
-                        //message("THE vector map only action " + tempVal);
+
+
+                    }
+                    //mvm_vector_map.put( tempVal,action.actionActualArguments.get(i).trim());
+                    //message("THE vector map only action " + tempVal);
                     //message("cheks to Macro exp\t" + tempVal);
 
                     if (tempVal == null) {
@@ -1688,7 +1757,7 @@ public class Controller extends Thread {
                         throw new Exception("Controller/ExpandedTestCase : Variable -> " + action.actionArguments.get(i) + " Value -> " + tempVal + " NullValueException \n In TesrCaseId: " + action.testCaseID);
                     }
                     if ((tempVal.startsWith("~")) && (tempVal.endsWith("~"))) {
-                        tempVal=tempVal.replaceAll("~","");
+                        tempVal = tempVal.replaceAll("~", "");
                         //tempVal=tempVal.replaceAll("~","");
                         String val = Utility.TrimStartEnd(tempVal, '#', 1);
                         val = Utility.TrimStartEnd(val, '#', 0);
@@ -1721,7 +1790,7 @@ public class Controller extends Thread {
             } else {
                 //message("No Arguments : Molecule called then "+action.actionName);
                 allActionVerificationArgs.add(new ArrayList<String>(Arrays.asList(new String[]{" Some value"})));
-                
+
             }
 
             Verification[] verifications = new Verification[action.verification.size()];
@@ -1746,27 +1815,24 @@ public class Controller extends Thread {
 
                         String tempVal2 = GetTheActualValue((String) (verification.verificationArguments.get(l)));
                         if (verification.verificationActualArguments.size() == verification.verificationArguments.size()) {
-                        //put in a hashmap
-                        //key=tempval value=actlArg
-                        if(verification.verificationActualArguments.get(l).startsWith("$$") || verification.verificationActualArguments.get(l).startsWith("##")) 
-                        {
-                            tempVal2 = tempVal2 + "~";
+                            //put in a hashmap
+                            //key=tempval value=actlArg
+                            if (verification.verificationActualArguments.get(l).startsWith("$$") || verification.verificationActualArguments.get(l).startsWith("##")) {
+                                tempVal2 = tempVal2 + "~";
+                            } else if (verification.verificationActualArguments.get(l).contains("=")) {
+                                String[] split_actual_arg = Excel.SplitOnFirstEquals(verification.verificationActualArguments.get(l));
+                                if (split_actual_arg[1].startsWith("$$") || split_actual_arg[1].startsWith("##")) {
+                                    tempVal2 = tempVal2 + "~";
+                                }
+                            }
+
                         }
-                        else if(verification.verificationActualArguments.get(l).contains("="))
-                        {
-                              String[] split_actual_arg = Excel.SplitOnFirstEquals(verification.verificationActualArguments.get(l));
-                              if (split_actual_arg[1].startsWith("$$")||split_actual_arg[1].startsWith("##")) {
-                                  tempVal2=tempVal2+"~";
-                              }
-                        }
-                        
-                        } 
-                        if(tempVal2 == null) {
+                        if (tempVal2 == null) {
                             Log.Error("Controller/ExpandedTestCase : Variable -> " + verification.verificationArguments.get(l) + " Value -> " + tempVal2 + " NullValueException \n In TesrCaseId: " + verification.testCaseID);
                             throw new Exception("Controller/ExpandedTestCase : Variable -> " + verification.verificationArguments.get(l) + " Value -> " + tempVal2 + " NullValueException \n In TesrCaseId: " + verification.testCaseID);
                         }
                         if (tempVal2.startsWith("~#") && tempVal2.endsWith("#~")) {
-                            tempVal2=tempVal2.replaceAll("~", "");
+                            tempVal2 = tempVal2.replaceAll("~", "");
                             String val = Utility.TrimStartEnd(tempVal2, '#', 1);
                             val = Utility.TrimStartEnd(val, '#', 0);
                             val = Utility.TrimStartEnd(val, '#', 1);
@@ -2050,10 +2116,11 @@ public class Controller extends Thread {
                     tempAction.step = action.step;
                     tempAction.lineNumber = action.lineNumber;
                     tempAction.sheetName = action.sheetName;
-                    tempAction.actionActualArguments=action.actionActualArguments;
-                    tempAction.actionProperty=action.actionProperty;
-                    tempAction.actionDescription=action.actionDescription;
-                    tempAction.isNegative=action.isNegative;
+                    tempAction.actionActualArguments = action.actionActualArguments;
+                    tempAction.actionProperty = action.actionProperty;
+                    tempAction.actionDescription = action.actionDescription;
+                    tempAction.isNegative = action.isNegative;
+                    tempAction.isActionNegative=action.isActionNegative;
                     for (int i = 0; i < action.actionArguments.size(); ++i) {
                         tempAction.actionArguments.add(GetActualCombination(
                                 (String) action.actionArguments.get(i),
@@ -2087,6 +2154,7 @@ public class Controller extends Thread {
                         tempVerification.isComment = verification.isComment;
                         tempVerification.lineNumber = verification.lineNumber;
                         tempVerification.sheetName = verification.sheetName;
+                        tempVerification.isNegative=verification.isNegative;
 
                         for (int i = 0; i < verification.verificationArguments.size(); ++i) {
 
@@ -2171,6 +2239,7 @@ public class Controller extends Thread {
 
     private String GetTheActualValue(String entireValue) throws Exception {
         String tempValue = StringUtils.EMPTY;
+        //message("enitre value "+entireValue);
         if (entireValue.contains("=")) {
             Log.Debug("Controller/GetTheActualValue : entireValue contains an = sign ");
             String[] splitVariableToFind = Excel.SplitOnFirstEquals(entireValue);
@@ -2192,19 +2261,19 @@ public class Controller extends Thread {
                 tempValue = ContextVar.getContextVar(tempValue);
                 // message("EQUAL contextvariablemvm value"+tempValue);
             } else if (tempValue.startsWith("$$") & tempValue.contains("#")) {
-                //message("This is Indexed = " + tempValue);
+                //message("GetValue:/This is Indexed = " + tempValue);
                 tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
                 tempValue = Excel._indexedMacroTable.get(tempValue.toLowerCase());
-                //message("This is Indexed The Value = " + tempValue);
+                //message("GetValue:/This is Indexed The Value = " + tempValue);
             }
             Log.Debug("Controller/GetTheActualValue : variableToFind = "
                     + tempValue);
         } // First Check in the Indexed  Variable
         else if (entireValue.startsWith("$$") & entireValue.contains("#")) {
             entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
-
+//message("GetValue:/This is a entire Indexed\t" + entireValue);
             tempValue = Excel._indexedMacroTable.get(entireValue.toLowerCase());
-            //message("This is a Indexed\t" + tempValue);
+            //message("GetValue:/This is a Indexed\t" + tempValue);
 
         } else if (entireValue.startsWith("$$%") && entireValue.endsWith("%")) {
             entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
@@ -2364,7 +2433,7 @@ public class Controller extends Thread {
         Log.Debug("Controller/ValidateDatabaseEntries : Start of function");
         try {
             //message("The Seesion Id  "+sessionid);
-           davosclient.heartBeat(sessionid);
+            davosclient.heartBeat(sessionid);
         } catch (DavosExecutionException e) {
             e.printStackTrace();
         }
@@ -2724,10 +2793,9 @@ public class Controller extends Thread {
             //TODO create DavosClient instance global variable.dbHOst dbname
             //Session id for Davos connection 
             ContextVar.setContextVar("ZUG_SESSIONID", sessionid);
-            connnect_flag=true;
-        }catch(DavosExecutionException dd)
-        {
-            
+            connnect_flag = true;
+        } catch (DavosExecutionException dd) {
+
             Log.Error("Controller/ConnectToDavos : Exception while Connecting to Davos "
                     + dBName
                     + " of host "
@@ -2735,11 +2803,10 @@ public class Controller extends Thread {
                     + " with user "
                     + dbUserName + ". The Exception is " + dd.getMessage());
             dd.printStackTrace();
-            connnect_flag=false;
+            connnect_flag = false;
             System.exit(1);
-            
-        }
-        catch (Exception ex) {
+
+        } catch (Exception ex) {
             Log.Error("Controller/ConnectToDavos : Exception while connecting to Davos "
                     + dBName
                     + " of host "
@@ -2747,7 +2814,7 @@ public class Controller extends Thread {
                     + " with user "
                     + dbUserName + ". The Exception is " + ex.getMessage());
             Log.Debug("Controller/ConnectToDavos : End of Function. Function returns FALSE.");
-            connnect_flag= false;
+            connnect_flag = false;
         }
 
         Log.Debug("Controller/ConnectToDavos : End of Function. Function returns TRUE.");
@@ -2760,7 +2827,7 @@ public class Controller extends Thread {
         TestCase[] testcases = (TestCase[]) act;
 
         //System.out.println("\n*** Number of TestCase to Execute is "+ testcases.length + "***\n ");
-        System.out.println("\n*** Number of TestCase in Chur Sheet "+ testcases.length + " ***\n ");
+        System.out.println("\n*** Number of TestCase in Chur Sheet " + testcases.length + " ***\n ");
         System.out.println("\n*** Start Executing the testcases ***\n ");
 
         // Harness Specific ContextVariable to store AH_TPSTARTTIME = Timestamp
@@ -2781,7 +2848,7 @@ public class Controller extends Thread {
             HiPerfTimer testPlanStartTime = new HiPerfTimer();
 
             testPlanStartTime.Start();
-boolean testcasenotfound=false;
+            boolean testcasenotfound = false;
             for (TestCase test : testcases) {
                 // If this is a cleanup Step, then dont run it now, that should
                 // be handled at the end.
@@ -2800,13 +2867,11 @@ boolean testcasenotfound=false;
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
                         if (!manualTestCaseID.contains(test.testCaseID.trim())) {
                             //if (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())) {
-                                testcasenotfound=true;
-                              continue;
+                            testcasenotfound = true;
+                            continue;
+                        } else {
+                            testcasenotfound = false;
                         }
-                            else
-                            {
-                                testcasenotfound=false;
-                            }
                     }
                 }
 
@@ -2860,8 +2925,8 @@ boolean testcasenotfound=false;
                     }
                 }
             }
-                //if(testcasenotfound)
-                          //  message(manualTestCaseID+" The testcase is not Present in Chur Sheet");
+            //if(testcasenotfound)
+            //  message(manualTestCaseID+" The testcase is not Present in Chur Sheet");
             testPlanStartTime.Stop();
 
             repeatDurationLong -= testPlanStartTime.Duration();
@@ -3016,7 +3081,7 @@ boolean testcasenotfound=false;
                 Log.TurnOFFDebugLogs = true;
                 message("Repeat Count is on   " + isLongevityOn);
             }
- boolean testcasenotpresent=false;
+            boolean testcasenotpresent = false;
             for (TestCase test : testcases) {
                 // If this is a cleanup Step, then dont run it now, that should
                 // be handled at the end.
@@ -3024,29 +3089,27 @@ boolean testcasenotfound=false;
                 // execute the test case.
                 if (test.actions.size() <= 0
                         || (test.testCaseID.compareToIgnoreCase("cleanup") == 0)) {
-                    continue; 
+                    continue;
                 }
 
                 // If TestCaseId is specified in the command prompt, then make
                 // sure, that
                 // the current executing test case is also specified.
-               
+
                 if (test.testCaseID.compareToIgnoreCase("init") != 0) {
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
                         if (!manualTestCaseID.contains(test.testCaseID.trim())) {
-                        //if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
-                            testcasenotpresent=true;
-                            
+                            //if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
+                            testcasenotpresent = true;
+
                             continue;
-                            }
-                        else
-                        {
-                            testcasenotpresent=false;
+                        } else {
+                            testcasenotpresent = false;
                         }
-                        
+
                     }
                 }
-                
+
 
                 if ((initWorkedFine == true)
                         || (initWorkedFine == false && (test.testCaseID.compareToIgnoreCase("cleanup") == 0))) {
@@ -3099,8 +3162,9 @@ boolean testcasenotfound=false;
                     }
                 }
             }
-            if(testcasenotpresent)
-                message(manualTestCaseID+" The testcase is not Present in Chur Sheet");
+            if (testcasenotpresent) {
+                //message(manualTestCaseID + " The testcase is not Present in Chur Sheet");
+            }
             repeatCount--;
 
             // Make sure we run all the test cases, till the RepeatCount is
@@ -3410,9 +3474,17 @@ boolean testcasenotfound=false;
                         tempList.add(NormalizeVariable(verificationVal,
                                 threadID));
                     }
-                    RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,
-                            verification.nameSpace)), tempList,
-                            action.parentTestCaseID, action.stackTrace);
+                    boolean isMoleculeVerificationNegative;
+                    if(verification.isNegative)
+                    {
+                        isMoleculeVerificationNegative=true;
+                    }
+                    else
+                    {
+                        isMoleculeVerificationNegative=false;
+                    }
+                    //RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,                            verification.nameSpace)), tempList,                            action.parentTestCaseID, action.stackTrace,isMoleculeVerificationNegative);
+                    RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,verification.nameSpace)), tempList,action.parentTestCaseID, action.stackTrace);
                     Log.Debug(String.format("Controller/RunVerification: Successfully executed  RunAbstractTestCase for Abstract TestCase ID as : %s ",
                             abstractTestCaseName));
                 } else {
@@ -3704,101 +3776,8 @@ boolean testcasenotfound=false;
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
                 }
-            } /*
-            else  if(verification.verificationName.toLowerCase().contains("browseroperations"))
-            {
-            try
-            {
-            //Spliting the for method name
-            String method[] = verification.verificationName.trim().split("\\.");
-            
-            //checking all the arguments for % occurance
-            for (int i = 0; i < verification.verificationArguments.size(); i++) {
-            if (verification.verificationArguments.get(i).startsWith("%") && verification.verificationArguments.get(i).endsWith("%")) {
-            
-            //replacing them with ""
-            String verificationargs = verification.verificationArguments.get(i).replaceAll("%", "");
-            //picking out the database value
-            String context_value = ContextVar.getContextVar(verificationargs);
-            verification.verificationArguments.set(i, context_value);
-            Log.Debug(String.format("Controller/RunVerification context variable value %s set", context_value));
-            
             }
-            
-            }
-            //Checking and calling dynamic class atoms
-            if(!builtin_atom_package_name.equalsIgnoreCase("browseroperations"))
-            {
-            builtin_atom_package_name="BrowserOperations";
-            //    invokeAtoms=new AtomInvoker(builtin_atom_package_name);
-            invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-            //
-            }
-            invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.verificationArguments);
-            message(String.format("Controller/RunAction :Successfully Webdriver called with %s with values %s ", verification.verificationName, verification.verificationArguments));
-            Log.Debug(String.format("Controller/RunAction :Successfully Webdriver called with %s..", verification.verificationName));
-            }
-            catch(Exception e)
-            {
-            throw new Exception(
-            String.format(
-            "Exception Happened while executing Verification %s which is located at Line %s of Sheet %s."
-            + " Exception is %s",
-            verification.verificationName,
-            verification.lineNumber + 1,
-            verification.sheetName, e.getMessage()));
-            }
-            }
-            else if(action.actionName.trim().toLowerCase().contains("string"))
-            {
-            try {
-            String method[] = action.actionName.trim().split("\\.");
-            
-            //StringOperations str_atom=new StringOperations();
-            
-            
-            for (int i = 0; i < action.actionArguments.size(); i++) {
-            if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
-            
-            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
-            
-            String context_value = ContextVar.getContextVar(actionargs);
-            action.actionArguments.set(i, context_value);
-            
-            
-            }
-            
-            }
-            message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-            if(!builtin_atom_package_name.equalsIgnoreCase("stringoperations"))
-            {
-            builtin_atom_package_name="StringOperations";
-            //    invokeAtoms=new AtomInvoker(builtin_atom_package_name);
-            invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-            //
-            }
-            invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], verification.verificationArguments);
-            //str_atom.StringOperationsMethod(method[1],action.actionArguments);
-            
-            message(String.format(
-            "\n[%s] Action %s SUCCESSFULLY Executed",
-            action.stackTrace.toUpperCase(),
-            action.actionName.toUpperCase()));
-            RunVerification(action, threadID);
-            Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));
-            }catch(Exception e)
-            {
-            throw new Exception(
-            String.format(
-            "\n\nException Happened while executing Action %s which is located "
-            + "at Line %s of Sheet %s. Exception is %s",
-            action.actionName, action.lineNumber,
-            action.sheetName, e.toString()));
-            }
-            
-            
-            }
-             */ else if (verification.verificationName.trim().contains(".") && !verification.verificationName.trim().startsWith("&") && !verification.verificationName.trim().startsWith("@")) {
+              else if (verification.verificationName.trim().contains(".") && !verification.verificationName.trim().startsWith("&") && !verification.verificationName.trim().startsWith("@")) {
                 try {
                     boolean PkgstructureFound = false;
                     String package_struct[] = verification.verificationName.trim().split("\\.");
@@ -3815,21 +3794,37 @@ boolean testcasenotfound=false;
                         if (!verification.verificationArguments.get(i).isEmpty()) {
                             if (verification.verificationArguments.get(i).startsWith("$$%") && verification.verificationArguments.get(i).endsWith("%")) {
                                 String verification_arg = StringUtils.removeStart(verification.verificationArguments.get(i), "$$");
-                                verification.verificationArguments.set(i, getActualDefnValue(verification_arg));
+                                verification.verificationArguments.set(i,NormalizeVariable(verification_arg,threadID));
                             } else {
-                                verification.verificationArguments.set(i, getActualDefnValue(verification.verificationArguments.get(i)));
+                                verification.verificationArguments.set(i, NormalizeVariable(verification.verificationArguments.get(i),threadID));
                             }
                         }
 
                     }
-                    message(String.format("[%s] Execution Started Action %s with values %s ", verification.stackTrace.toUpperCase(), verification.verificationName, verification.verificationArguments));
+                    message(String.format("[%s] Execution Started Verification %s with values %s ", verification.stackTrace.toUpperCase(), verification.verificationName, verification.verificationArguments));
                     for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
                         if (pkg_name.equalsIgnoreCase(package_struct[0])) {
                             if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
                                 builtin_atom_package_name = pkg_name;
                                 invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
                             }
-                            invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), verification.verificationArguments);
+                            try{
+                                //message("The Values "+verification.isNegative);
+                                invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), verification.verificationArguments);
+                                
+                            }catch(Exception e)
+                            {
+                                //
+                                if(verification.isNegative)
+                                {
+                                    ContextVar.setContextVar("ZUG_VERIFY_EXCEPTION",  String.format("\n\nException in Verification %s (%s:%s).\n\tMessage: %s",verification.verificationName, verification.sheetName, verification.lineNumber, e.getMessage()));
+                                    Log.Error("Note: Executing Negative Verify Test Step.");
+                                }
+                                else
+                                {
+                                    throw new Exception(String.format("\n\nException in Verification %s (%s:%s).\n\tMessage: %s",  verification.verificationName,verification.sheetName, verification.lineNumber,e.getMessage()),e);
+                                }
+                            }
                             PkgstructureFound = true;
                             break;
 
@@ -3839,24 +3834,18 @@ boolean testcasenotfound=false;
                     if (PkgstructureFound == false) {
                         throw new Exception(
                                 String.format(
-                                "\n\nException Happened while executing Action %s which is located "
-                                + "at Line %s of Sheet %s.\n %s Package architecture is not matching with ZugINI.xml definition",
-                                verification.verificationName, verification.lineNumber,
-                                verification.sheetName, package_struct[0]));
+                                "\n\nException in Verification %s (%s:%s).\n\t %s Package architecture is not matching with ZugINI.xml definition",
+                                verification.verificationName, verification.sheetName,verification.lineNumber, package_struct[0]));
                     }
                     message(String.format(
-                            "\n[%s] Action %s SUCCESSFULLY Executed",
+                            "\n[%s] Verification %s SUCCESSFULLY Executed",
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
 
                     Log.Debug(String.format("Controller/RunAction :Successfully Action called %s..", verification.verificationName));
                 } catch (Exception e) {
-                    throw new Exception(
-                            String.format(
-                            "\n\nException Happened while executing Action %s which is located "
-                            + "at Line %s of Sheet %s.\n Exception is %s",
-                            verification.verificationName, verification.lineNumber,
-                            verification.sheetName, e.toString()));
+                    //throw new Exception(String.format("\n\nException in Verification %s (%s:%s).\n\t Message: %s",verification.verificationName, verification.lineNumber,verification.sheetName, e.toString()));
+                    throw e;
                 }
 
             } else {
@@ -3987,12 +3976,22 @@ boolean testcasenotfound=false;
             Log.Debug(String.format("Controller/ExecuteVerificationCommand : End of function with command = %s ",
                     verification.verificationName));
         } catch (Exception ex) {
-            throw new Exception(
-                    String.format(
-                    "Exception Happened while executing Verification %s which is located at Line %s of Sheet %s.\n\tException Message is %s",
+            if(verification.isNegative)
+            {
+                ContextVar.setContextVar("ZUG_VERIFY_EXCEPTION",String.format(
+                    "Exception in Verification %s (%s:%s).\n\tMessage: %s",
                     verification.verificationName,
                     verification.lineNumber + 1,
                     verification.sheetName, ex.getMessage()));
+                Log.Error(String.format("\tException in Verification %s (%s:%s).\n\tMessage: %s\nNote: Executing Negative Vrify Test Step.", verification.verificationName, verification.sheetName, verification.lineNumber , ex.getMessage()));
+                
+            }
+            else{
+            throw new Exception(
+                    String.format(
+                    "Exception in Verification %s (%s:%s).\n\tMessage: %s",
+                    verification.verificationName,verification.sheetName, verification.lineNumber , ex.getMessage()));
+            }
         }
     }
 
@@ -4070,9 +4069,29 @@ boolean testcasenotfound=false;
                     Log.Debug(String.format("Controller/RunAction: Calling  RunAbstractTestCase for Abstract TestCase ID as : %s and action.parentTestCaseID = %s .",
                             abstractTestCaseName,
                             action.parentTestCaseID));
-                    RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,
-                            action.nameSpace)), tempList,
-                            action.parentTestCaseID, action.stackTrace);
+                    boolean isMoleculeActionNegative;
+                    if(action.isActionNegative)
+                    {
+                        isMoleculeActionNegative=true;
+                    }
+                    else if(action.isNegative)
+                            {
+                                isMoleculeActionNegative=true;
+                            }
+                    
+                    else
+                    {
+                        isMoleculeActionNegative=false;
+                    }
+                    if(isMoleculeActionNegative)
+                    {
+                        Log.Error("----------Negative property not yet supported for Molecules---------");
+                       throw new Exception("Negative property not yet supported for Molecules for "+action.actionName);
+                               
+                        
+                    }
+                    //RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace)), tempList,    action.parentTestCaseID, action.stackTrace,isMoleculeActionNegative);
+                     RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace)), tempList,action.parentTestCaseID, action.stackTrace);
                     Log.Debug(String.format("Controller/RunAction: Successfully executed  RunAbstractTestCase for Abstract TestCase ID as : %s ",
                             abstractTestCaseName));
 
@@ -4357,6 +4376,7 @@ boolean testcasenotfound=false;
                 }
             } else if (action.actionName.trim().compareToIgnoreCase(
                     "appendtocontextvar") == 0) {
+                //message("Argument list "+action.actionArguments);
                 if (action.actionArguments.size() >= 2) {
                     try {
                         // TODO NIIISH Check context var exists or not
@@ -4387,6 +4407,7 @@ boolean testcasenotfound=false;
                                 action.stackTrace.toUpperCase(),
                                 action.actionName.toUpperCase(),
                                 contextVarName, appendValueBuilder.toString()));
+                        
                         String value = ContextVar.getContextVar(contextVarName);
                         if (value == null) {
                             Log.Error("AppendtoContextVar: ContextVariable is not defined");
@@ -4418,148 +4439,30 @@ boolean testcasenotfound=false;
                             action.stackTrace.toUpperCase(),
                             action.actionName.toUpperCase()));
                 }
-            }
-            else if(action.actionName.trim().toLowerCase().contains("print"))
-            {
-                if(action.actionArguments.size()>0)
-                {
-                for(int i=0;i<action.actionArguments.size();i++)
-                {
-                  if (!action.actionArguments.get(i).isEmpty()) {
+            } else if (action.actionName.trim().toLowerCase().contains("print")) {
+                if (action.actionArguments.size() > 0) {
+                    for (int i = 0; i < action.actionArguments.size(); i++) {
+                        if (!action.actionArguments.get(i).isEmpty()) {
 
                             if (action.actionArguments.get(i).startsWith("$$%") && action.actionArguments.get(i).endsWith("%")) {
                                 //message("The values are "+action.actionArguments.get(i));
                                 String action_args = StringUtils.removeStart(action.actionArguments.get(i), "$$");
-                                action.actionArguments.set(i, NormalizeVariable(action_args,threadID));
+                                action.actionArguments.set(i, NormalizeVariable(action_args, threadID));
                             } else {
-                                action.actionArguments.set(i, NormalizeVariable(action.actionArguments.get(i),threadID));
+                                action.actionArguments.set(i, NormalizeVariable(action.actionArguments.get(i), threadID));
                             }
 
                         }
+                    }
+                    message(String.format("[%s] Executed Action %s with values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
+                } else {
+                    message(String.format("[%s] Executed Action %s with No Values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
                 }
-                  message(String.format("[%s] Executed Action %s with values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
-                }
-                else
-                {
-         message(String.format("[%s] Executed Action %s with No Values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));           
-                }
-            }
-                    
-                    
-                    
-                    /*else if (action.actionName.trim().toLowerCase().contains("browseroperations")) {
-            try {//message("Webdriver ");
-            
-            String method[] = action.actionName.trim().split("\\.");
+            } 
             
             
             
-            
-            for (int i = 0; i < action.actionArguments.size(); i++) {
-            if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
-            
-            
-            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
-            
-            String context_value = ContextVar.getContextVar(actionargs);
-            action.actionArguments.set(i, context_value);
-            
-            
-            }
-            
-            }
-            message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-            if(!builtin_atom_package_name.equalsIgnoreCase("browseroperations"))
-            {
-            builtin_atom_package_name="BrowserOperations";
-            //invokeAtoms =new AtomInvoker(builtin_atom_package_name);
-            invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-            
-            }
-            
-            invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.actionArguments);
-            
-            //                if(cont_var.startsWith("%")&&cont_var.endsWith("%"))
-            //                {
-            //
-            //                    cont_var=cont_var.replace("%","");
-            //
-            //                    action.actionArguments.set(0,cont_var);
-            //
-            //                    //message("THeArray List changed"+action.actionArguments.get(0));
-            //                }
-            ////message("THeArray List"+action.actionArguments);
-            //web_atom.BuiltInWebDriverMethod(method[1], action.actionArguments);
-            message(String.format(
-            "\n[%s] Action %s SUCCESSFULLY Executed",
-            action.stackTrace.toUpperCase(),
-            action.actionName.toUpperCase()));
-            RunVerification(action, threadID);
-            Log.Debug(String.format("Controller/RunAction :Successfully Webdriver called with %s..", action.actionName));
-            } catch (Exception e) {
-            
-            throw new Exception(
-            String.format(
-            "\n\nException Happened while executing Action %s which is located "
-            + "at Line %s of Sheet %s. Exception is %s",
-            action.actionName, action.lineNumber,
-            action.sheetName, e.toString()));
-            
-            
-            }
-            }else if(action.actionName.trim().toLowerCase().contains("string"))
-            {
-            try {
-            String method[] = action.actionName.trim().split("\\.");
-            
-            //StringOperations str_atom=new StringOperations();
-            
-            
-            for (int i = 0; i < action.actionArguments.size(); i++) {
-            if (action.actionArguments.get(i).startsWith("%") && action.actionArguments.get(i).endsWith("%")) {
-            
-            String actionargs = action.actionArguments.get(i).replaceAll("%", "");
-            
-            String context_value = ContextVar.getContextVar(actionargs);
-            action.actionArguments.set(i, context_value);
-            
-            
-            }
-            
-            }
-            message(String.format("[%s] Execution Started Action %s with values %s ",action.stackTrace.toUpperCase(),action.actionName, action.actionArguments));
-            
-            //str_atom.StringOperationsMethod(method[1],action.actionArguments);
-            if(!builtin_atom_package_name.equalsIgnoreCase("stringoperations"))
-            {
-            
-            builtin_atom_package_name="StringOperations";
-            //invokeAtoms =new AtomInvoker(builtin_atom_package_name);
-            invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-            
-            }
-            invokeAtoms.get(builtin_atom_package_name).invokeMethod(method[1], action.actionArguments);
-            
-            message(String.format(
-            "\n[%s] Action %s SUCCESSFULLY Executed",
-            action.stackTrace.toUpperCase(),
-            action.actionName.toUpperCase()));
-            RunVerification(action, threadID);
-            Log.Debug(String.format("Controller/RunAction :Successfully String package called with %s..", action.actionName));  
-            }catch(Exception e)
-            {
-            throw new Exception(
-            String.format(
-            "\n\nException Happened while executing Action %s which is located "
-            + "at Line %s of Sheet %s. Exception is %s",
-            action.actionName, action.lineNumber,
-            action.sheetName, e.toString()));
-            }
-            
-            
-            
-            
-            }*/ else if (action.actionName.trim().startsWith("#define")) {
+             else if (action.actionName.trim().startsWith("#define")) {
             } else if (action.actionName.trim().contains("\\.") || !action.actionName.startsWith("&")) {
                 try {
                     boolean PkgstructureFound = false;
@@ -4579,9 +4482,9 @@ boolean testcasenotfound=false;
                             if (action.actionArguments.get(i).startsWith("$$%") && action.actionArguments.get(i).endsWith("%")) {
                                 //message("The values are "+action.actionArguments.get(i));
                                 String action_args = StringUtils.removeStart(action.actionArguments.get(i), "$$");
-                                action.actionArguments.set(i, NormalizeVariable(action_args,threadID));
+                                action.actionArguments.set(i, NormalizeVariable(action_args, threadID));
                             } else {
-                                action.actionArguments.set(i, NormalizeVariable(action.actionArguments.get(i),threadID));
+                                action.actionArguments.set(i, NormalizeVariable(action.actionArguments.get(i), threadID));
                             }
 
                         }
@@ -4596,11 +4499,10 @@ boolean testcasenotfound=false;
                             }
                             invokeAtoms.get(builtin_atom_package_name).setInprocessAction(action);
                             invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), action.actionArguments);
-                            if(StringUtils.isNotBlank(ContextVar.getContextVar("ZUG_EXCEPTION")))
-                            {
+                            if (StringUtils.isNotBlank(ContextVar.getContextVar("ZUG_EXCEPTION"))) {
                                 ContextVar.alterContextVar("ZUG_EXCEPTION", NormalizeVariable(ContextVar.getContextVar("ZUG_EXCEPTION"), threadID));
                             }
-                                PkgstructureFound = true;
+                            PkgstructureFound = true;
                             break;
 
                         }
@@ -4609,8 +4511,7 @@ boolean testcasenotfound=false;
                     if (PkgstructureFound == false) {
                         throw new Exception(
                                 String.format(
-                                "\n\nException in Action %s which is located "
-                                + "at Line %s of Sheet %s.\n %s Package architecture is not matching with ZugINI.xml definition ",
+                                "\n\nException in Action %s (%s:%s).\n %s Package architecture is not matching with ZugINI.xml definition ",
                                 action.actionName, action.lineNumber,
                                 action.sheetName, package_struct[0]));
                     }
@@ -4621,11 +4522,20 @@ boolean testcasenotfound=false;
                     RunVerification(action, threadID);
                     Log.Debug(String.format("Controller/RunAction :Successfully called action %s ", action.actionName));
                 } catch (Exception e) {
+                    if(action.isActionNegative)
+                    {
+                        //message("The Exception is "+e.toString());
+                     ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s",action.actionName, action.sheetName, action.lineNumber,e.getMessage()));        
+                     Log.Error("Note: Executing Negative Action Test Step.");
+                      RunVerification(action, threadID);
+                    }
+                    else{
                     throw new Exception(
                             String.format(
-                            "\n\nException in Action %s (%s:%s).\n Exception is %s",
+                            "\n\nException in Action %s (%s:%s).\n\t Message: %s",
                             action.actionName, action.sheetName, action.lineNumber,
-                            e.toString()));
+                            e.getMessage()));
+                    }
                 }
 
             } else {
@@ -4785,22 +4695,30 @@ boolean testcasenotfound=false;
             Log.Debug(String.format("Controller/ExecuteActionCommand : End of function with command = %s ",
                     action.actionName));
         } catch (Exception ex) {
-         
-            if(action.isNegative||action.actionProperty.equalsIgnoreCase(Excel.NEGATIVE))
-            {
-                ContextVar.setContextVar("ZUG_EXCEPTION",  String.format(
-                    "\tException in Action %s (%s:%s).\n\t%s",
-                    action.actionName, action.sheetName, action.lineNumber + 1,
-                    ex.getMessage()));
-                
+//message("The values of property "+action.isActionNegative+" The value of Neg "+action.isNegative);
+            if (action.isNegative) {
+                ContextVar.setContextVar("ZUG_EXCEPTION", String.format(
+                        "\tException in Action %s (%s:%s).\n\t%s",
+                        action.actionName, action.sheetName, action.lineNumber + 1,
+                        ex.getMessage()));
+                Log.Error(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s\nNote: Executing Negative Test Step.", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
+                // message("Comming to if Clause ");
             }
-            else{
-            throw new Exception(
-                    String.format(
-                    "\tException in Action %s (%s:%s).\n\t%s",
-                    action.actionName, action.sheetName, action.lineNumber + 1,
-                    ex.getMessage()));
+                    if(action.isActionNegative)
+                    {
+                         ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", String.format(
+                        "\tException in Action %s (%s:%s).\n\t%s",
+                        action.actionName, action.sheetName, action.lineNumber + 1,
+                        ex.getMessage()));
+                Log.Error(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s\nNote: Executing Negative Action Test Step.", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
+                    }
+            
+            else {
+                //message("Comming to else Clause ");
+
+                throw new Exception(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
             }
+//             throw new Exception(String.format("\tException in Action %s (%s:%s).\n\t%s",action.actionName, action.sheetName, action.lineNumber + 1,ex.getMessage()));
         }
     }
 
@@ -5080,7 +4998,7 @@ boolean testcasenotfound=false;
         Log.Debug(String.format("Controller/ExecuteCommand : Start of function with command = %s, Arguments = %s and Working Directory = %s & parentTestCaseID = %s ",
                 command, arguments, workingDirectoryList,
                 parentTestCaseId));
-       
+
         String actualCommand = command;
 
         Log.Debug("Controller/ExecuteCommand: Calling Controller/FindWorkingDirectory()");
@@ -5389,7 +5307,7 @@ boolean testcasenotfound=false;
             String error = String.format("Exception in Command %s.\n\tException Message is :\n\tFoot Print:\n %s",
                     command, ex.getMessage());
             // Log.Error(error);
-            
+
             throw new Exception(error);
         } finally {
             // Close the process created.
@@ -5929,6 +5847,7 @@ boolean testcasenotfound=false;
      * Result Database
      */
     String testcaseid = null;
+
     @Deprecated
     private void SaveTestCase(String testCaseID, String testCaseDesc)
             throws Exception, DavosExecutionException {
@@ -5947,7 +5866,7 @@ boolean testcasenotfound=false;
     /***
      * Function to Save the Test Case Result at intermediate steps.
      */
-    String testexecutiondetailid = null, testcycletopologysetid = null,variables=null;
+    String testexecutiondetailid = null, testcycletopologysetid = null, variables = null;
 
     private void SaveTestCaseResultEveryTime(ExecutedTestCase tData)
             throws Exception, DavosExecutionException {
@@ -5977,19 +5896,19 @@ boolean testcasenotfound=false;
 
         if (StringUtils.isNotBlank(testCycleId)) {
             Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetail_write call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
-           
-            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(),tData.testcasedescription , testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
+
+            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), tData.testcasedescription, testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
             //variables=davosclient.variables_write(testCaseResult.get_testCaseId(),"" ,"" );
-           
-            
+
+
         } else {
-           
+
             Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestCycle_Write call using TestPlanID=" + TestPlanId + " TestCycleDescription=TC_" + Utility.dateAsString() + "---TIMESTAMP:: " + Utility.dateNow());
             //Harness specific TestCycle name
             ContextVar.setContextVar("ZUG_TCYCLENAME", "TC_" + Utility.dateAsString());
             testCycleId = davosclient.testCycle_write(TestPlanId, ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "", new Integer(initializationTime).toString(), new Integer(testCaseResult.get_testExecution_Time()).toString());
             Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetail_write call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
-            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(),tData.testcasedescription, testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
+            testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), tData.testcasedescription, testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
 //testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), testCycleId, testCaseResult.get_status(), testCaseResult.get_buildNo(), new Integer(testCaseResult.get_testExecution_Time()).toString(), testCaseResult.get_performanceExecutionDetailTable().get_performanceExecutionDetailId(), testCaseResult.get_executionDate().toString(), testSuitName,topologySetId);//no performance detail id
         }
         Log.Debug(String.format("Controller/SaveTestCaseResultEveryTime : TestCaseId = %s Status = %s and Comments = %s is saved. The TestExecutionID=%s",
@@ -6424,62 +6343,58 @@ boolean testcasenotfound=false;
                     + archiveLogLocation + ": " + e.getMessage());
         }
     }
-     /*
+    /*
      * Find the  Variables and Values of TestCase running
      * @param test as TestCase object
      * return HashMap
      */
-    private  HashMap<String,String> findVariablesValueForTestCase(TestCase test)
-    {
-        HashMap<String,String> variablevalueMap=new HashMap<String, String>();
+
+    private HashMap<String, String> findVariablesValueForTestCase(TestCase test) {
+        HashMap<String, String> variablevalueMap = new HashMap<String, String>();
         //message("The finding variables started "+test.testCaseID);
-        Action test_action_arr[]=new Action[test.actions.size()];
+        Action test_action_arr[] = new Action[test.actions.size()];
         test.actions.toArray(test_action_arr);
-        for(int i=0;i<test_action_arr.length;i++)
-        {
-            Action testcase_actions=test_action_arr[i];
+        for (int i = 0; i < test_action_arr.length; i++) {
+            Action testcase_actions = test_action_arr[i];
             //message("the varabless are "+testcase_actions.actionArguments+"\n Action Actual Arguments "+testcase_actions.actionActualArguments);
-            
-            if(testcase_actions.actionArguments.size()==testcase_actions.actionActualArguments.size())
-                for(int j=0;j<testcase_actions.actionArguments.size();j++)
-            {
-                String variable_name=testcase_actions.actionActualArguments.get(j);
-                //message("the varabless are "+variable_name);
-                if(variable_name.startsWith("$$"))
-                variablevalueMap.put(variable_name,testcase_actions.actionArguments.get(j));
-                else if(variable_name.contains("="))
-                {
-                    variable_name=Excel.SplitOnFirstEquals(variable_name)[1];
-                    if(variable_name.startsWith("$$"))
-                    {
-                        variablevalueMap.put(variable_name,testcase_actions.actionArguments.get(j));
+
+            if (testcase_actions.actionArguments.size() == testcase_actions.actionActualArguments.size()) {
+                for (int j = 0; j < testcase_actions.actionArguments.size(); j++) {
+                    String variable_name = testcase_actions.actionActualArguments.get(j);
+                    //message("the varabless are "+variable_name);
+                    if (variable_name.startsWith("$$")) {
+                        variablevalueMap.put(variable_name, testcase_actions.actionArguments.get(j));
+                    } else if (variable_name.contains("=")) {
+                        variable_name = Excel.SplitOnFirstEquals(variable_name)[1];
+                        if (variable_name.startsWith("$$")) {
+                            variablevalueMap.put(variable_name, testcase_actions.actionArguments.get(j));
+                        }
                     }
                 }
             }
-                
-                }
-        
-       Log.Debug("Controller/findVariablesValueForTestCase: The Variable Map "+variablevalueMap );
+
+        }
+
+        Log.Debug("Controller/findVariablesValueForTestCase: The Variable Map " + variablevalueMap);
         return variablevalueMap;
     }
-     /*
+    /*
      * Saves the Variables and Values of TestCase running
      * @param test as TestCase object
      * return HashMap
      */
 
-    private void saveTestCaseVariables(HashMap<String,String> variablemap,String testcase_id,String testsuite_name) throws DavosExecutionException, InterruptedException
-    {
-        Set<String> variable_key_set=variablemap.keySet();
-        Iterator<String> var_key_iterate=variable_key_set.iterator();
-        
-        while(var_key_iterate.hasNext())
-        {
-            String variable_key=var_key_iterate.next();
-           Log.Debug("Controller/saveTestCaseVariables: The variable key saved "+variable_key+" the value "+variablemap.get(variable_key));
-            davosclient.variables_write(testsuite_name,testcase_id,variable_key ,variablemap.get(variable_key));
+    private void saveTestCaseVariables(HashMap<String, String> variablemap, String testcase_id, String testsuite_name) throws DavosExecutionException, InterruptedException {
+        Set<String> variable_key_set = variablemap.keySet();
+        Iterator<String> var_key_iterate = variable_key_set.iterator();
+
+        while (var_key_iterate.hasNext()) {
+            String variable_key = var_key_iterate.next();
+            Log.Debug("Controller/saveTestCaseVariables: The variable key saved " + variable_key + " the value " + variablemap.get(variable_key));
+            davosclient.variables_write(testsuite_name, testcase_id, variable_key, variablemap.get(variable_key));
         }
     }
+
     /***
      * This will be executed on a separate thread..This will run the expanded
      * test case.
@@ -6514,7 +6429,7 @@ boolean testcasenotfound=false;
             // when Test Case execution started
             ContextVar.setContextVar("ZUG_TCSTARTTIME", Utility.dateAsString());
 //Method Return Variable names and Values.
-            
+
             // If the testCase is not an Init or Cleanup Step then only Save the
             // TestCase Result to the Framework Database.
             if (!(baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || baseTestCaseID.compareToIgnoreCase("init") == 0)) {
@@ -6522,8 +6437,8 @@ boolean testcasenotfound=false;
                 tData.testCaseID = test.testCaseID;
                 tData.timeToExecute = 0;
                 tData.testCaseExecutionComments = StringUtils.EMPTY;
-                tData.testCaseStatus = "running";
-                tData.testcasedescription=test.testCaseDescription;
+                tData.testCaseStatus = "ready";
+                tData.testcasedescription = test.testCaseDescription;
 
                 executedTestCaseData.put(tData.testCaseID, tData);
 //findVariablesValueForTestCase(test);
@@ -6560,7 +6475,7 @@ boolean testcasenotfound=false;
                                 test.testCaseDescription));
 
                         SaveTestCaseResultEveryTime(tData);
-                        saveTestCaseVariables(findVariablesValueForTestCase(test),test.testCaseID,testSuitName);
+                        saveTestCaseVariables(findVariablesValueForTestCase(test), test.testCaseID, testSuitName);
                     } else {
                         Log.Debug(String.format("Controller/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
                                 test.testCaseID));
@@ -7155,7 +7070,11 @@ boolean testcasenotfound=false;
      */
     public static void main(String[] args) throws InterruptedException,
             Exception,
-            DavosExecutionException {
+            DavosExecutionException,
+            MoleculeDefinitionException {
+       
+
+
 //Getting Operating System Information
         OS_NAME = System.getProperty("os.name");
         OS_ARCH = System.getProperty("os.arch");
@@ -7213,7 +7132,7 @@ boolean testcasenotfound=false;
         // First Validate the Command Line Arguments
         if (args.length > 1) {
             for (String arg : args) {
-
+//controller.message("The argumentss "+arg);
                 if (arg.equalsIgnoreCase("-nyon")) {
                     nyonserver = true;
                     controller.message("This is the Nyon-Server executions\t"
@@ -7358,7 +7277,7 @@ boolean testcasenotfound=false;
                 // utility.ReadTopologySetInformation(controller.topologySetXMLFile);
                 Log.Debug("Controller/InitializeVariables : Successfully got the TopologySet from the Excel Sheet");
 
-               // controller.message("Connecting to the Davos : " + controller.dBName + " of Host "+ controller.dBHostName + " with User "+ controller.dbUserName);
+                // controller.message("Connecting to the Davos : " + controller.dBName + " of Host "+ controller.dBHostName + " with User "+ controller.dbUserName);
 
                 if (!controller.ConnectToDavos()) {
                     controller.message("\nError Connecting to Davos. Controller Exiting ");
@@ -7417,6 +7336,7 @@ boolean testcasenotfound=false;
                                 + e.getMessage();
                         Log.Error(error);
                         e.printStackTrace();
+                        
                     }
                 }
             });
@@ -7465,6 +7385,7 @@ boolean testcasenotfound=false;
             Log.Error("\nController/Main : Exception Raised while executing the Test Cases in Controller. Exception is "
                     + ex.getMessage() + " and Stack Trace is : \n");
             ex.printStackTrace();
+            
         }
 
         controller.message("\n******************************************************************************** ");
