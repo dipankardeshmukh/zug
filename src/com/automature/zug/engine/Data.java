@@ -228,6 +228,8 @@ class Verification
 	/* Is this Verification a Comment*/
 	public Boolean isComment 		= false;
         //Is this Verification negative
-public Boolean isNegative=false;
+public Boolean isVerifyNegative=false;
+//Is this Row negative
+public Boolean isRowNegative=false;
 	public UserData userObj;
 }

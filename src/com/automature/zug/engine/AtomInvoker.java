@@ -188,6 +188,7 @@ public class AtomInvoker {
      * Check if the Atom have negative propery
      * @param action name
      */
+    @Deprecated
     public boolean checkIfNegativeAtom(String inprocess_atom_name)
     {
         try{
@@ -249,17 +250,17 @@ public class AtomInvoker {
                 Log.Error("No Exception Message Not Found. Please Check Debug Log");
                 throw e;
             }
-            if(checkIfNegativeAtom(method_name))
-            {
-             ContextVar.setContextVar("ZUG_EXCEPTION",exception_message);
-             //debugMessage("Comming to if Clause ");
-              Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message+"\nNote: Executing Negative Test Step.");
-            }else
-            {
-               //debugMessage("Comming to else Clause ");
+//            if(checkIfNegativeAtom(method_name))
+//            {
+//             ContextVar.setContextVar("ZUG_EXCEPTION",exception_message);
+//             //debugMessage("Comming to if Clause ");
+//              Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
+//            }else
+//            {
+//               //debugMessage("Comming to else Clause ");
             Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
             throw new Exception(exception_message, e);
-            }
+           // }
 
         }
         

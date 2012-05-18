@@ -2854,14 +2854,14 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             {
                 Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
                 
-                verifyObj.isNegative=true;
+                verifyObj.isRowNegative=true;
                 
             }
                   if(property!=null&&(property.toLowerCase().contains("neg-verify")||property.toLowerCase().contains("negative-verify")))
             {
                 Log.Debug("Excel/ReadActionSection: Verification(only) is Negative ");
                 
-                verifyObj.isNegative=true;
+                verifyObj.isVerifyNegative=true;
                 
             }
             verifyObj.verificationName = GetCellValueAsString(worksheet.getRow(
@@ -2939,14 +2939,14 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             {
                 Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
                 
-                verifyObj.isNegative=true;
+                verifyObj.isRowNegative=true;
                 
             }
                   if(property!=null&&(property.toLowerCase().contains("neg-verify")||property.toLowerCase().contains("negative-verify")))
             {
                 Log.Debug("Excel/ReadActionSection: Verification(only) is Negative ");
                 
-                verifyObj.isNegative=true;
+                verifyObj.isVerifyNegative=true;
                 
             }
             // Get the Value of the Expected Result here.

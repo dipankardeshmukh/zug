@@ -909,23 +909,22 @@ public class Controller extends Thread {
      * @return boolean
      *            true or false
      */
-    private boolean isParameterPassingConsistent(ArrayList<String> arguments,TestCase temp) throws Exception {
+    private boolean isParameterPassingConsistent(ArrayList<String> arguments, TestCase temp) throws Exception {
         boolean equalsPresent = true, equalsNotPresent = true;
         //Looping to get every arguments from the arraylist
         for (String args : arguments) {
             //Checking every argument if it contains any = or not
             //message("args are "+args);
             if (args.contains("=")) {
-                
+
                 //Putting the proposition logic Boolean AND operation
                 equalsPresent = true && equalsPresent;
                 equalsNotPresent = false && equalsNotPresent;
 
             } else {
-               // message("The definitions "+temp._testcasemoleculeArgDefn+"\nLength "+temp._testcasemoleculeArgDefn.size());
-                if(arguments.size()!=temp._testcasemoleculeArgDefn.size())
-                {
-                    throw new Exception("Named Argument size mismatch between pass by value and the definition :\n\tNo of Arguments in Molecule Definition: "+temp._testcasemoleculeArgDefn.size()+"\n\tNo of Arguments Passed to the Molecule: "+arguments.size());
+                // message("The definitions "+temp._testcasemoleculeArgDefn+"\nLength "+temp._testcasemoleculeArgDefn.size());
+                if (arguments.size() != temp._testcasemoleculeArgDefn.size()) {
+                    throw new Exception("Named Argument size mismatch between pass by value and the definition :\n\tNo of Arguments in Molecule Definition: " + temp._testcasemoleculeArgDefn.size() + "\n\tNo of Arguments Passed to the Molecule: " + arguments.size());
                 }
                 equalsNotPresent = true && equalsNotPresent;
                 equalsPresent = false && equalsPresent;
@@ -1029,8 +1028,8 @@ public class Controller extends Thread {
             tempAction.lineNumber = action.lineNumber;
             tempAction.sheetName = action.sheetName;
             tempAction.actionActualArguments = action.actionActualArguments;
-            tempAction.isNegative=action.isNegative;
-            tempAction.isActionNegative=action.isActionNegative;
+            tempAction.isNegative = action.isNegative;
+            tempAction.isActionNegative = action.isActionNegative;
 
             Log.Debug("Controller/RunAbstractTestCase: Working on Action "
                     + action.actionName + " with Step Number as  "
@@ -1154,19 +1153,18 @@ public class Controller extends Thread {
                         }
                     }
                 } //Checking For any new defined molecule exists or not.
-                else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#") || actionVal.toLowerCase().contains("=##")||actionVal.toLowerCase().contains("=%#") ) {
+                else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#") || actionVal.toLowerCase().contains("=##") || actionVal.toLowerCase().contains("=%#")) {
                     String key = null, value = null;
 //TODO the work for INDEXD MACROOO checking fails the code.
-                    
-                    boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false,isThisContextVarTypeAtom=false;
-                    if(action.actionName.equalsIgnoreCase("appendtocontextvar")||action.actionName.equalsIgnoreCase("setcontextvar"))
-                    {
-                        isThisContextVarTypeAtom=true;
+
+                    boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false, isThisContextVarTypeAtom = false;
+                    if (action.actionName.equalsIgnoreCase("appendtocontextvar") || action.actionName.equalsIgnoreCase("setcontextvar")) {
+                        isThisContextVarTypeAtom = true;
                         //message("Action Name "+action.actionName+" The boolean "+isThisAppenToContextVarAtom);
                     }
                     //message("The action Name "+action.actionName+" Runabstract:: Actionss--" + actionVal+" Arguments list "+argumentValues);
                     //Checking for the arguments if they are consistent
-                    if (isParameterPassingConsistent(argumentValues,test)) {
+                    if (isParameterPassingConsistent(argumentValues, test)) {
 
 
                         if (actionVal.contains("=")) {
@@ -1176,7 +1174,7 @@ public class Controller extends Thread {
                         } else {
                             value = actionVal.toLowerCase();
                         }
-                       //message("RUNABSTRACT::-1 Key value- " + key);
+                        //message("RUNABSTRACT::-1 Key value- " + key);
                         if (value.startsWith("%") && value.endsWith("%")) {
                             value = value.replaceAll("%", "");
                             isThisAContextVar = true;
@@ -1186,10 +1184,10 @@ public class Controller extends Thread {
                         if (argumentValues.get(0).contains("=")) {
                             for (String molecule_arg : argumentValues) {
                                 String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
-                               //message("RUNABSTRACT::2 split value- " + temp_value_split[0] + "\tValue " + value);
+                                //message("RUNABSTRACT::2 split value- " + temp_value_split[0] + "\tValue " + value);
                                 //message("RUNABSTRACT::2-d" + molecule_arg + " 1->" + temp_value_split.length);
                                 if (temp_value_split[0].equalsIgnoreCase(value)) {
-                                    if (temp_value_split.length<2) {
+                                    if (temp_value_split.length < 2) {
                                         throw new Exception("Controller/RunAbstractTestCase: Formal argument value is Empty:: " + temp_value_split[0]);
                                     }
                                     //message("RUNABSTRACT::3 " + value + " keyen " + isKeyEnabled);
@@ -1224,24 +1222,22 @@ public class Controller extends Thread {
                                 throw new Exception("Formal Argument Not found for Action: " + action.actionName + " In sheet: " + action.sheetName + " where testcase: " + action.testCaseID);
                             }
                         } else {
-                           //message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
+                            //message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
                             //message("RUNABSTRACT:: "+value+" The index no "+test._testcasemoleculeArgDefn);
-                            if(test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())<0)
-                            {
-                                throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ",value,test._testcasemoleculeArgDefn));
+                            if (test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase()) < 0) {
+                                throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ", value, test._testcasemoleculeArgDefn));
                             }
                             if (isThisAContextVar) {
-                                
+
                                 actionVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase().trim())) + "%";
                             } else {
                                 actionVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase().trim()));
                             }
-                            if(isKeyEnabled)
-                            {
-                                actionVal=key+"="+actionVal;
-                               //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()))); 
+                            if (isKeyEnabled) {
+                                actionVal = key + "=" + actionVal;
+                                //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()))); 
                             }
-                           
+
                         }
 
 
@@ -1249,7 +1245,7 @@ public class Controller extends Thread {
                     } else {
                         throw new Exception("Argument Passing Not Consistent:Either use named argument passing or positional argument passing. ");
                     }
-                   // message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
+                    // message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
 //                    if(isThisContextVarTypeAtom)
 //                    {
 //                        actionVal=key+"="+actionVal;
@@ -1257,7 +1253,7 @@ public class Controller extends Thread {
 //                    }
 //                    else 
                     ///TODO Find a better solution
-                  // message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
+                    // message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
                 }
                 try {
 
@@ -1309,7 +1305,8 @@ public class Controller extends Thread {
                 tempVerification.lineNumber = verification.lineNumber;
                 tempVerification.sheetName = verification.sheetName;
                 tempVerification.verificationActualArguments = verification.verificationActualArguments;
-                tempVerification.isNegative=verification.isNegative;
+                tempVerification.isVerifyNegative = verification.isVerifyNegative;
+                tempVerification.isRowNegative = verification.isRowNegative;
 //message("The Verificationn bool "+tempVerification.isNegative);
                 // Log.Debug("Controller/RunAbstractTestCase: Expected Result = "+verification.verificationName+" fon Verification "+
                 // verification.verificationName);
@@ -1445,13 +1442,13 @@ public class Controller extends Thread {
 
                             }
                         }
-                    } else if (verificationVal.toLowerCase().startsWith("#") || verificationVal.toLowerCase().startsWith("%#") || verificationVal.toLowerCase().contains("=#") || verificationVal.toLowerCase().contains("=%#"))   {
+                    } else if (verificationVal.toLowerCase().startsWith("#") || verificationVal.toLowerCase().startsWith("%#") || verificationVal.toLowerCase().contains("=#") || verificationVal.toLowerCase().contains("=%#")) {
                         String key = null, value = null;
 
                         boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
                         //message("Runabstract:: Actionss--"+actionVal);
                         //Checking for the arguments if they are consistent
-                        if (isParameterPassingConsistent(argumentValues,test)) {
+                        if (isParameterPassingConsistent(argumentValues, test)) {
 
 
                             if (verificationVal.contains("=")) {
@@ -1473,9 +1470,9 @@ public class Controller extends Thread {
                                     String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
                                     //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
                                     if (temp_value_split[0].equalsIgnoreCase(value)) {
-                                        if (temp_value_split.length<2) {
-                                        throw new Exception("Controller/RunAbstractTestCase: Formal argument value is Empty:: " + temp_value_split[0]);
-                                    }
+                                        if (temp_value_split.length < 2) {
+                                            throw new Exception("Controller/RunAbstractTestCase: Formal argument value is Empty:: " + temp_value_split[0]);
+                                        }
                                         if (isKeyEnabled) {
                                             if (isThisAContextVar) {
                                                 verificationVal = key + "=%" + temp_value_split[1] + "%";
@@ -1488,7 +1485,7 @@ public class Controller extends Thread {
                                             } else {
                                                 verificationVal = temp_value_split[1];
                                             }
-                                           
+
 
                                         }
 
@@ -1502,19 +1499,17 @@ public class Controller extends Thread {
                                     throw new Exception("Formal Argument Not found");
                                 }
                             } else {
-                                 if(test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())<0)
-                            {
-                                throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ",value,test._testcasemoleculeArgDefn));
-                            }
+                                if (test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase()) < 0) {
+                                    throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ", value, test._testcasemoleculeArgDefn));
+                                }
                                 if (isThisAContextVar) {
                                     verificationVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())) + "%";
                                 } else {
                                     verificationVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()));
                                 }
-                                 if(isKeyEnabled)
-                                            {
-                                                verificationVal=key+"="+verificationVal;
-                                            }
+                                if (isKeyEnabled) {
+                                    verificationVal = key + "=" + verificationVal;
+                                }
                             }
 
 
@@ -1571,7 +1566,7 @@ public class Controller extends Thread {
 //            }
 //            else
 //            {
-                throw new Exception(ex.getMessage());
+            throw new Exception(ex.getMessage());
             //}
         } finally {
             message("\n******************** Molecule "
@@ -2120,7 +2115,7 @@ public class Controller extends Thread {
                     tempAction.actionProperty = action.actionProperty;
                     tempAction.actionDescription = action.actionDescription;
                     tempAction.isNegative = action.isNegative;
-                    tempAction.isActionNegative=action.isActionNegative;
+                    tempAction.isActionNegative = action.isActionNegative;
                     for (int i = 0; i < action.actionArguments.size(); ++i) {
                         tempAction.actionArguments.add(GetActualCombination(
                                 (String) action.actionArguments.get(i),
@@ -2154,8 +2149,8 @@ public class Controller extends Thread {
                         tempVerification.isComment = verification.isComment;
                         tempVerification.lineNumber = verification.lineNumber;
                         tempVerification.sheetName = verification.sheetName;
-                        tempVerification.isNegative=verification.isNegative;
-
+                        tempVerification.isVerifyNegative = verification.isVerifyNegative;
+                        tempVerification.isRowNegative = verification.isRowNegative;
                         for (int i = 0; i < verification.verificationArguments.size(); ++i) {
 
                             tempVerification.verificationArguments.add(GetActualCombination(
@@ -3475,16 +3470,13 @@ public class Controller extends Thread {
                                 threadID));
                     }
                     boolean isMoleculeVerificationNegative;
-                    if(verification.isNegative)
-                    {
-                        isMoleculeVerificationNegative=true;
-                    }
-                    else
-                    {
-                        isMoleculeVerificationNegative=false;
+                    if (verification.isVerifyNegative || verification.isRowNegative) {
+                        isMoleculeVerificationNegative = true;
+                    } else {
+                        isMoleculeVerificationNegative = false;
                     }
                     //RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,                            verification.nameSpace)), tempList,                            action.parentTestCaseID, action.stackTrace,isMoleculeVerificationNegative);
-                    RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,verification.nameSpace)), tempList,action.parentTestCaseID, action.stackTrace);
+                    RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName, verification.nameSpace)), tempList, action.parentTestCaseID, action.stackTrace);
                     Log.Debug(String.format("Controller/RunVerification: Successfully executed  RunAbstractTestCase for Abstract TestCase ID as : %s ",
                             abstractTestCaseName));
                 } else {
@@ -3776,8 +3768,7 @@ public class Controller extends Thread {
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
                 }
-            }
-              else if (verification.verificationName.trim().contains(".") && !verification.verificationName.trim().startsWith("&") && !verification.verificationName.trim().startsWith("@")) {
+            } else if (verification.verificationName.trim().contains(".") && !verification.verificationName.trim().startsWith("&") && !verification.verificationName.trim().startsWith("@")) {
                 try {
                     boolean PkgstructureFound = false;
                     String package_struct[] = verification.verificationName.trim().split("\\.");
@@ -3794,35 +3785,36 @@ public class Controller extends Thread {
                         if (!verification.verificationArguments.get(i).isEmpty()) {
                             if (verification.verificationArguments.get(i).startsWith("$$%") && verification.verificationArguments.get(i).endsWith("%")) {
                                 String verification_arg = StringUtils.removeStart(verification.verificationArguments.get(i), "$$");
-                                verification.verificationArguments.set(i,NormalizeVariable(verification_arg,threadID));
+                                verification.verificationArguments.set(i, NormalizeVariable(verification_arg, threadID));
                             } else {
-                                verification.verificationArguments.set(i, NormalizeVariable(verification.verificationArguments.get(i),threadID));
+                                verification.verificationArguments.set(i, NormalizeVariable(verification.verificationArguments.get(i), threadID));
                             }
                         }
 
                     }
                     message(String.format("[%s] Execution Started Verification %s with values %s ", verification.stackTrace.toUpperCase(), verification.verificationName, verification.verificationArguments));
-                    for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
+       boolean exception_occured=true;
+       for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
                         if (pkg_name.equalsIgnoreCase(package_struct[0])) {
                             if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
                                 builtin_atom_package_name = pkg_name;
                                 invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
                             }
-                            try{
+                         
+                            try {
                                 //message("The Values "+verification.isNegative);
                                 invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), verification.verificationArguments);
+                                //message("what is condition " + verification.isRowNegative);
+exception_occured=true;
+
+                            } catch (Exception e) {
                                 
-                            }catch(Exception e)
-                            {
-                                //
-                                if(verification.isNegative)
-                                {
-                                    ContextVar.setContextVar("ZUG_VERIFY_EXCEPTION",  String.format("\n\nException in Verification %s (%s:%s).\n\tMessage: %s",verification.verificationName, verification.sheetName, verification.lineNumber, e.getMessage()));
-                                    Log.Error("Note: Executing Negative Verify Test Step.");
-                                }
-                                else
-                                {
-                                    throw new Exception(String.format("\n\nException in Verification %s (%s:%s).\n\tMessage: %s",  verification.verificationName,verification.sheetName, verification.lineNumber,e.getMessage()),e);
+                                exception_occured=false;
+                                if (verification.isVerifyNegative || verification.isRowNegative) {
+                                    ContextVar.setContextVar("ZUG_VERIFY_EXCEPTION", NormalizeVariable(String.format("\n\nException in Verification %s (%s:%s).\n\tMessage: %s", verification.verificationName, verification.sheetName, verification.lineNumber, e.getMessage()), threadID));
+
+                                } else {
+                                    throw new Exception(String.format("\n\nException in Verification %s (%s:%s).\n\tMessage: %s", verification.verificationName, verification.sheetName, verification.lineNumber, e.getMessage()), e);
                                 }
                             }
                             PkgstructureFound = true;
@@ -3835,13 +3827,18 @@ public class Controller extends Thread {
                         throw new Exception(
                                 String.format(
                                 "\n\nException in Verification %s (%s:%s).\n\t %s Package architecture is not matching with ZugINI.xml definition",
-                                verification.verificationName, verification.sheetName,verification.lineNumber, package_struct[0]));
+                                verification.verificationName, verification.sheetName, verification.lineNumber, package_struct[0]));
                     }
                     message(String.format(
                             "\n[%s] Verification %s SUCCESSFULLY Executed",
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
+                    if (verification.isRowNegative&&exception_occured) {
 
+                        throw new Exception(String.format("\n\nException:: Verify Step passed while Test step: %s (%s:%s) property set to negative", verification.verificationName, verification.sheetName, verification.lineNumber));
+                    } else if (verification.isVerifyNegative&&exception_occured) {
+                        throw new Exception(String.format("\n\nException:: Verify Step passed while Test step: %s (%s:%s) property set to negative", verification.verificationName, verification.sheetName, verification.lineNumber));
+                    }
                     Log.Debug(String.format("Controller/RunAction :Successfully Action called %s..", verification.verificationName));
                 } catch (Exception e) {
                     //throw new Exception(String.format("\n\nException in Verification %s (%s:%s).\n\t Message: %s",verification.verificationName, verification.lineNumber,verification.sheetName, e.toString()));
@@ -3975,22 +3972,27 @@ public class Controller extends Thread {
 
             Log.Debug(String.format("Controller/ExecuteVerificationCommand : End of function with command = %s ",
                     verification.verificationName));
-        } catch (Exception ex) {
-            if(verification.isNegative)
-            {
-                ContextVar.setContextVar("ZUG_VERIFY_EXCEPTION",String.format(
-                    "Exception in Verification %s (%s:%s).\n\tMessage: %s",
-                    verification.verificationName,
-                    verification.lineNumber + 1,
-                    verification.sheetName, ex.getMessage()));
-                Log.Error(String.format("\tException in Verification %s (%s:%s).\n\tMessage: %s\nNote: Executing Negative Vrify Test Step.", verification.verificationName, verification.sheetName, verification.lineNumber , ex.getMessage()));
-                
+            if (verification.isVerifyNegative) {
+                throw new Exception(String.format("\n\nException:: Action %s (%s:%s) passed while test step property set to neg-action or negative-action ", verification.verificationName, verification.sheetName, verification.lineNumber));
+            } else if (verification.isRowNegative) {
+                throw new Exception(String.format("\n\nException:: Action %s (%s:%s) passed while test step property set to negative ", verification.verificationName, verification.sheetName, verification.lineNumber));
             }
-            else{
-            throw new Exception(
-                    String.format(
-                    "Exception in Verification %s (%s:%s).\n\tMessage: %s",
-                    verification.verificationName,verification.sheetName, verification.lineNumber , ex.getMessage()));
+
+
+        } catch (Exception ex) {
+            if (verification.isVerifyNegative || verification.isRowNegative) {
+                ContextVar.setContextVar("ZUG_VERIFY_EXCEPTION", String.format(
+                        "Exception in Verification %s (%s:%s).\n\tMessage: %s",
+                        verification.verificationName,
+                        verification.lineNumber + 1,
+                        verification.sheetName, ex.getMessage()));
+                Log.Error(String.format("\tException in Verification %s (%s:%s).\n\tMessage: %s\nNote: Executing Negative Vrify Test Step.", verification.verificationName, verification.sheetName, verification.lineNumber, ex.getMessage()));
+
+            } else {
+                throw new Exception(
+                        String.format(
+                        "Exception in Verification %s (%s:%s).\n\tMessage: %s",
+                        verification.verificationName, verification.sheetName, verification.lineNumber, ex.getMessage()));
             }
         }
     }
@@ -4070,28 +4072,21 @@ public class Controller extends Thread {
                             abstractTestCaseName,
                             action.parentTestCaseID));
                     boolean isMoleculeActionNegative;
-                    if(action.isActionNegative)
-                    {
-                        isMoleculeActionNegative=true;
+                    if (action.isActionNegative) {
+                        isMoleculeActionNegative = true;
+                    } else if (action.isNegative) {
+                        isMoleculeActionNegative = true;
+                    } else {
+                        isMoleculeActionNegative = false;
                     }
-                    else if(action.isNegative)
-                            {
-                                isMoleculeActionNegative=true;
-                            }
-                    
-                    else
-                    {
-                        isMoleculeActionNegative=false;
-                    }
-                    if(isMoleculeActionNegative)
-                    {
+                    if (isMoleculeActionNegative) {
                         Log.Error("----------Negative property not yet supported for Molecules---------");
-                       throw new Exception("Negative property not yet supported for Molecules for "+action.actionName);
-                               
-                        
+                        throw new Exception("Negative property not yet supported for Molecules for " + action.actionName);
+
+
                     }
                     //RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace)), tempList,    action.parentTestCaseID, action.stackTrace,isMoleculeActionNegative);
-                     RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace)), tempList,action.parentTestCaseID, action.stackTrace);
+                    RunAbstractTestCase((TestCase) abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName, action.nameSpace)), tempList, action.parentTestCaseID, action.stackTrace);
                     Log.Debug(String.format("Controller/RunAction: Successfully executed  RunAbstractTestCase for Abstract TestCase ID as : %s ",
                             abstractTestCaseName));
 
@@ -4407,7 +4402,7 @@ public class Controller extends Thread {
                                 action.stackTrace.toUpperCase(),
                                 action.actionName.toUpperCase(),
                                 contextVarName, appendValueBuilder.toString()));
-                        
+
                         String value = ContextVar.getContextVar(contextVarName);
                         if (value == null) {
                             Log.Error("AppendtoContextVar: ContextVariable is not defined");
@@ -4458,11 +4453,7 @@ public class Controller extends Thread {
                 } else {
                     message(String.format("[%s] Executed Action %s with No Values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
                 }
-            } 
-            
-            
-            
-             else if (action.actionName.trim().startsWith("#define")) {
+            } else if (action.actionName.trim().startsWith("#define")) {
             } else if (action.actionName.trim().contains("\\.") || !action.actionName.startsWith("&")) {
                 try {
                     boolean PkgstructureFound = false;
@@ -4498,10 +4489,30 @@ public class Controller extends Thread {
                                 invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
                             }
                             invokeAtoms.get(builtin_atom_package_name).setInprocessAction(action);
-                            invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), action.actionArguments);
-                            if (StringUtils.isNotBlank(ContextVar.getContextVar("ZUG_EXCEPTION"))) {
-                                ContextVar.alterContextVar("ZUG_EXCEPTION", NormalizeVariable(ContextVar.getContextVar("ZUG_EXCEPTION"), threadID));
+                            try {
+                                invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), action.actionArguments);
+                                if (action.isNegative) {
+                                    throw new Exception(String.format("\n\nException: The test step %s (%s:%s) passed while property is set to negative.", action.actionName, action.sheetName, action.lineNumber));
+                                }
+                                if (action.isActionNegative) {
+                                    throw new Exception(String.format("\n\nException: The test step %s (%s:%s) passed while property is set to negative-action.", action.actionName, action.sheetName, action.lineNumber));
+                                }
+                            } catch (Exception e) {
+                                //message(action.isActionNegative+" v "+action.isNegative);
+                                if (action.isActionNegative) {
+                                    //message("The Exception is action neg " + e.toString());
+                                    ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
+
+                                    RunVerification(action, threadID);
+                                } else if (action.isNegative) {
+                                    //message("Total Row negative ");
+                                    ContextVar.setContextVar("ZUG_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
+                                    RunVerification(action, threadID);
+                                } else {
+                                    throw new Exception(e.getMessage());
+                                }
                             }
+
                             PkgstructureFound = true;
                             break;
 
@@ -4519,23 +4530,18 @@ public class Controller extends Thread {
                             "\n[%s] Action %s SUCCESSFULLY Executed",
                             action.stackTrace.toUpperCase(),
                             action.actionName.toUpperCase()));
+
+
                     RunVerification(action, threadID);
                     Log.Debug(String.format("Controller/RunAction :Successfully called action %s ", action.actionName));
                 } catch (Exception e) {
-                    if(action.isActionNegative)
-                    {
-                        //message("The Exception is "+e.toString());
-                     ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s",action.actionName, action.sheetName, action.lineNumber,e.getMessage()));        
-                     Log.Error("Note: Executing Negative Action Test Step.");
-                      RunVerification(action, threadID);
-                    }
-                    else{
+
                     throw new Exception(
                             String.format(
                             "\n\nException in Action %s (%s:%s).\n\t Message: %s",
                             action.actionName, action.sheetName, action.lineNumber,
                             e.getMessage()));
-                    }
+
                 }
 
             } else {
@@ -4694,6 +4700,12 @@ public class Controller extends Thread {
 
             Log.Debug(String.format("Controller/ExecuteActionCommand : End of function with command = %s ",
                     action.actionName));
+            if (action.isActionNegative) {
+                throw new Exception(String.format("\n\nException:: Action %s (%s:%s) passed while test step property set to neg-action or negative-action ", action.actionName, action.sheetName, action.lineNumber + 1));
+            } else if (action.isNegative) {
+                throw new Exception(String.format("\n\nException:: Action %s (%s:%s) passed while test step property set to negative ", action.actionName, action.sheetName, action.lineNumber + 1));
+            }
+
         } catch (Exception ex) {
 //message("The values of property "+action.isActionNegative+" The value of Neg "+action.isNegative);
             if (action.isNegative) {
@@ -4701,19 +4713,16 @@ public class Controller extends Thread {
                         "\tException in Action %s (%s:%s).\n\t%s",
                         action.actionName, action.sheetName, action.lineNumber + 1,
                         ex.getMessage()));
-                Log.Error(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s\nNote: Executing Negative Test Step.", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
+                Log.Error(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
                 // message("Comming to if Clause ");
             }
-                    if(action.isActionNegative)
-                    {
-                         ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", String.format(
+            if (action.isActionNegative) {
+                ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", String.format(
                         "\tException in Action %s (%s:%s).\n\t%s",
                         action.actionName, action.sheetName, action.lineNumber + 1,
                         ex.getMessage()));
-                Log.Error(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s\nNote: Executing Negative Action Test Step.", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
-                    }
-            
-            else {
+                Log.Error(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
+            } else {
                 //message("Comming to else Clause ");
 
                 throw new Exception(String.format("\tException in Action %s (%s:%s).\n\tMessage: %s", action.actionName, action.sheetName, action.lineNumber + 1, ex.getMessage()));
@@ -7072,7 +7081,7 @@ public class Controller extends Thread {
             Exception,
             DavosExecutionException,
             MoleculeDefinitionException {
-       
+
 
 
 //Getting Operating System Information
@@ -7336,7 +7345,7 @@ public class Controller extends Thread {
                                 + e.getMessage();
                         Log.Error(error);
                         e.printStackTrace();
-                        
+
                     }
                 }
             });
@@ -7385,7 +7394,7 @@ public class Controller extends Thread {
             Log.Error("\nController/Main : Exception Raised while executing the Test Cases in Controller. Exception is "
                     + ex.getMessage() + " and Stack Trace is : \n");
             ex.printStackTrace();
-            
+
         }
 
         controller.message("\n******************************************************************************** ");
