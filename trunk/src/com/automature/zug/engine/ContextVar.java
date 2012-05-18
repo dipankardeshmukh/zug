@@ -283,6 +283,8 @@ public class ContextVar {
 	 * @param name
 	 */
 	public static void Delete(String name) throws Exception{
+            synchronized (justForLock)
+            {
 		 Log.Debug("Delete: Start of Function with with name as : " + name );
 		 Connection conn = null;
 		 try
@@ -316,6 +318,7 @@ public class ContextVar {
 				 conn.close();              
               Log.Debug("ContextVar/Delete: Connection is closed. End of Function ");     
 		 }
+            }
 		
 	}
 
