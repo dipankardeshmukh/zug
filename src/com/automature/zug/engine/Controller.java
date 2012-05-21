@@ -82,7 +82,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 4.2." + "20120515" + ".068";
+    private static String Version = "ZUG Premium 4.3." + "20120521" + ".069";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
