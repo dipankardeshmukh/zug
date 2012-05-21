@@ -1,6 +1,6 @@
-The software included in this product contains copyrighted software that is licensed under the GPLv3. A copy of that license is included in this document on page X. You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product and/or spare parts there for, which will be no earlier than yyyy-mm-dd, on our website at:
 
-http://www.automature.com/sources/productname/
+The software included in this product uses, and is dependent copyrighted software that is licensed under the GPLv3. Copies of the applicable licenses can be found at the following sites, viz. 
+
 
 
 My SQL:
@@ -25,15 +25,6 @@ The source code for the product is located at:
 http://twiki.org/cgi-bin/view/Codev/DownloadTWiki
 
 
-Hibernate
-
-The licensing agreement for Hibernate can be found at the following location:
-
-http://www.hibernate.org/license
-
-The source code for the product is located at:
-
-http://www.hibernate.org/downloads.html
 
 Apache
 
@@ -69,9 +60,12 @@ The source code for the software can be downloaded at:
 http://www.ruby-lang.org/en/downloads/
 
 
-Watir
+Selenium
 
-Watir is an Open Source tool. The licensing agreement can be found at:
+All Selenium projects are licensed under the Apache 2.0 License.
 
-http://www.opensource.org/docs/definition.php
+Licensing agreement can be found at:
+
+http://seleniumhq.org/about/license.html
+
 
