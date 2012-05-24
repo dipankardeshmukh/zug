@@ -121,7 +121,7 @@ Section "MainSection" SEC01
   ExecWait '"$INSTDIR\ZUG\Setup.cmd" "$R2\lib\ext\"'
   AccessControl::GrantOnFile \
   "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
-  CopyFiles `$R2\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
+  CopyFiles `$Java_SOURCE_TEXT\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
   Delete "$TEMP\ZUG.zip"
 SectionEnd
 
