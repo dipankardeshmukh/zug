@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
@@ -82,7 +80,7 @@ public class Controller extends Thread {
     private static int repeatDuration = 0;
     private static double repeatDurationLong = 0;
     // Change this Number every time the Harness is Released.
-    private static String Version = "ZUG Premium 4.3." + "20120521" + ".069";
+    private static String Version = "ZUG Premium 5.0." + "20120628" + ".080";
     private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
     private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -90,6 +88,7 @@ public class Controller extends Thread {
     // Assuming that the Test Plan Initialization will Work Fine.
     boolean initWorkedFine = true;
     private static String manualTestCaseID = StringUtils.EMPTY;
+    private static String testcasesNotPresent = StringUtils.EMPTY;
     private Hashtable<String, ExecutedTestCase> executedTestCaseData = new Hashtable<String, ExecutedTestCase>();
     //Hashtable to store the name key value pair of the Command line macro entry
     public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -118,6 +117,10 @@ public class Controller extends Thread {
     private String testSuitRole = StringUtils.EMPTY;
     private String validTopoDetail = StringUtils.EMPTY;
     private String TestPlanId = StringUtils.EMPTY;
+    private String TestPlanPath = StringUtils.EMPTY;
+    private String BuildTag = StringUtils.EMPTY;
+    private String TopologySetName = StringUtils.EMPTY;
+    private String BuildNo = StringUtils.EMPTY;
     private String testCycleId = StringUtils.EMPTY;
     private String[] productLogFiles = null;
     private Hashtable<String, Prototype> prototypeHashTable = null;
@@ -138,12 +141,16 @@ public class Controller extends Thread {
     public static String mvmconfiguration = "512MB";
     //Initiating AtomInvoker
     //public static AtomInvoker invokeAtoms=null;  
-    public static final String external_jar_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
-    public static final String external_jar_xml_tag_attribute_name = "name";
+    public static final String inprocess_jar_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
+    public static final String inprocess_jar_xml_tag_attribute_name = "name";
+    public static final String native_inprocess_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
+    public static final String inprocess_xml_tag_attribute_language = "language";
     public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
+    public static HashMap<String, AtomInvoker> invoke_native_atoms = new HashMap<String, AtomInvoker>();
     private static String builtin_atom_package_name = "";
 //Web Service Connection
     static DavosClient davosclient = null;
+    private boolean testcasenotfoundflag = false;
 
     /*
      * Constructor that initializes the program options.
@@ -235,6 +242,13 @@ public class Controller extends Thread {
         helpMessagebuf.append("\n\n\n\n\t -TopologysetId=[Topology Set Id] : The Id of the TopologySet. It is used to register results in a testcycle for the specified Topology Set");
 
         helpMessagebuf.append("\n\n\n\n\t -TestplanId and -TopologysetId both have to be set to put the test case execution result to the Framework Database.");
+        helpMessagebuf.append("\n\n\n\n\t -Testplan and -Topologyset both have to be set to put the test case execution result to the Framework Database.");
+        helpMessagebuf.append("\n\n\n\n\t -TestPlan=[Fully qualified path name of testplan] : Fully qualified name is a \":\" (colon) delimited string, comprising of the name of the name of product, the release, the sprint, and the testplan - that uniquely identifies the plan, under which the testcycle is to be created. If the release, sprint, or testplan does not already exist in Zermatt, new ones will be automatically created. Note that if any of the object names has spaces, then the entire string must be enclosed in quotes. When using this option, do not use the TestplanId option, as these are mutually exclusive.\n\n\n\n\t Example: -TestPlan=\"ZUG:First Release:rc7 sprint:Smoke test plan\"");
+        helpMessagebuf.append("\n\n\n\n\t -TestPlanID=[Test Plan Id] : a numeric identifier for an existing testplan in Zermatt. To find the testplan identifier, use the appropriate icons under the Testsuite listing page to generate the appropriate command line options. When using this option, do not use the Testplan option, as these are mutually exclusive.");
+        helpMessagebuf.append("\n\n\n\n\t -Topologyset=[Topology Set Name] : A name that uniquely identifies an existing topology set in Zermatt. When using this option, do not use the TopologysetId option, as these are mutually exclusive.");
+        helpMessagebuf.append("\n\n\n\n\t -TopologysetId=[Topology Set Id] : a numeric identifier for an existing topology set in Zermatt. To find the topologyset identifier, use the appropriate icons under the Testsuite listing page to generate the appropriate command line options. Note that, when using the topologyset identifier option, the topologyset must already be included for the testplan. When using this option, do not use the Topologyset option, as these are mutually exclusive.");
+
+        helpMessagebuf.append("\n\n\n\n\t -Buildtag=[Build Tag] : The tag used to identify the build of the product being tested. If the build tag does not exist in Zermatt (for the applicable sprint), a new record will be created. Note that if tag has spaces, then the entire string must be enclosed in quotes.\n\n\n\n\tExample: -Buildtag=\"Zug V4.3 - rc2 build 4035\"");
         /*
          * dbreporting switch is taken out and is implicitly understoods by the
          * testplanid and topologysetXML options which trivially follows that
@@ -256,10 +270,10 @@ public class Controller extends Thread {
         helpMessagebuf.append(" Correct   : \"c:\\input.xls\"\n");
         helpMessagebuf.append(" Incorrect : D:\\CPAPI Test\\Automation\\inputFiles\\input.xls\n");
         helpMessagebuf.append(" Correct   : \"D:\\CPAPI Test\\Automation\\inputFiles\\input.xls\"");
-
+        helpMessagebuf.append("Note. You Must use both the TestPlan and the Topologyset together,when reporting results to Zermatt ");
         helpMessagebuf.append("\n\n");
         helpMessage = helpMessagebuf.toString();
-        ;
+
     }
 
     // / This function prints the Usage
@@ -303,8 +317,12 @@ public class Controller extends Thread {
         String repeatDurationVal = StringUtils.EMPTY;
         String compileModeFlagVal = null;
         String verboseFlagVal = null;
+
         boolean testplanidVal = false;
+        boolean testplanpathVal = false;
         boolean topologysetXMLVal = false;
+        boolean topologysetid = false;
+        boolean topologysetname = false;
         try {
             // check if debug mode is set to true. else default value is True
             if ((debugModeVal = opts.getString("debug", null)) == "true") {
@@ -570,6 +588,7 @@ public class Controller extends Thread {
                 manualTestCaseID = StringUtils.EMPTY;
                 //message("No specific testcase is invoked\n All testcases will be executed.");
             } else {
+                // message("The manual Testcase "+manualTestCaseID);
                 Log.Debug("Controller/GetOptions: ManualTestCase ID specified by user is = "
                         + manualTestCaseID);
             }
@@ -601,6 +620,7 @@ public class Controller extends Thread {
             // {
             dbReporting = false;
             if ((TestPlanId = opts.getString("testplanid", null)) == null) {
+                //TODO here put checking for testplanid=product:sprint:
                 /*
                  * Log.Error(
                  * "Controller/GetOptions: Error : missing TestPlan ID(Release regression Test Plan ID)."
@@ -619,8 +639,22 @@ public class Controller extends Thread {
                 testplanidVal = true;
             }
 
+            if ((TestPlanPath = opts.getString("testplan", null)) == null) {
+                testplanpathVal = false;
+                Log.Debug("Controller/GetOptions: testplanpath not specified. dbreporting os OFF");
+            } else {
+                ContextVar.setContextVar("ZUG_TESTPLANPATH", TestPlanPath);
+                Log.Debug("Controller/GetOptions: TestPlanId = " + TestPlanPath);
+                //message("The testplanpath is "+TestPlanPath);
+                //message("ContextVar set "+ContextVar.getContextVar("ZUG_TESTPLANPATH"));
+                testplanpathVal = true;
+            }
             if ((topologySetId = opts.getString("topologysetid", null)) == null) {
-                if (testplanidVal) {
+                boolean topologysetnameexists = false;
+                if (StringUtils.isNotBlank(opts.getString("topologyset", null))) {
+                    topologysetnameexists = true;
+                }
+                if (testplanidVal && !topologysetnameexists) {
                     Log.Error("Controller/GetOptions: Error : missing Topology Set Id.");
                     System.out.println("\n\nMissing required value : Topology Set Id "
                             + "\n Use -help/-h for Usage information\n\n");
@@ -628,25 +662,123 @@ public class Controller extends Thread {
                     return false;
                 }
             } else {
+
                 Log.Debug("Controller/GetOptions: topologySetId = "
                         + topologySetId);
-                if (testplanidVal) {
+                if (testplanidVal || testplanpathVal) {//put or checking for the new value testplanpathvalue=true
                     if (compileMode) {
                         Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
                         dbReporting = false;
                     } else {
+                        if (topologysetname) {
+                            Log.Error("Controller/GetOptions: Error: Toplogy name is already used.");
+                            System.out.println("\n\nToplogy name is already used. "
+                                    + "\n Use -help/-h for Usage Information\n\n");
+                            Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+                            return false;
+                        }
                         // dbReporting option is ON as both testplanID and
                         // topologysetXML is specified
                         Log.Debug("Controller/GetOptions: dbReportingVal ON.");
+                        topologysetid = true;
                         dbReporting = true;
                     }
                 } else {
-                    Log.Error("Controller/GetOptions: Error: missing testplanid.");
-                    System.out.println("\n\nMissing required value: testplanid "
+                    Log.Error("Controller/GetOptions: Error: missing testplanid or testplan.");
+                    System.out.println("\n\nMissing required value: testplanid or testplanid"
                             + "\n Use -help/-h for Usage Information\n\n");
                     Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
                     return false;
                 }
+            }
+            if ((TopologySetName = opts.getString("topologyset", null)) == null) {
+                // message("The topologyset is null "+TopologySetName);
+                //message("Toplogy id? "+topologysetid);
+                if (testplanpathVal && !topologysetid) {
+                    Log.Error("Controller/GetOptions: Error : missing Topology Set Name.");
+                    System.out.println("\n\nMissing required value : topologyset"
+                            + "\n Use -help/-h for Usage information\n\n");
+                    Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+                    return false;
+                }
+
+            } else {
+                Log.Debug("Controller/GetOptions: topologySet = "
+                        + TopologySetName);
+                //message("The topologyset is "+TopologySetName);
+                if (testplanidVal || testplanpathVal) {//put or checking for the new value testplanpathvalue=true
+                    if (compileMode) {
+                        Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
+                        dbReporting = false;
+                    } else {
+                        if (topologysetid) {
+                            Log.Error("Controller/GetOptions: Error: Toplogy ID is already used.");
+                            System.out.println("\n\nToplogy ID is already used. "
+                                    + "\n Use -help/-h for Usage Information\n\n");
+                            Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+                            return false;
+                        }
+                        // dbReporting option is ON as both testplanID and
+                        // topologysetXML is specified
+                        Log.Debug("Controller/GetOptions: dbReportingVal ON.");
+                        topologysetname = true;
+                        dbReporting = true;
+                    }
+                } else {
+                    Log.Error("Controller/GetOptions: Error: missing testplan or testplanid.");
+                    System.out.println("\n\nMissing required value: testplan or testplanid "
+                            + "\n Use -help/-h for Usage Information\n\n");
+                    Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+                    return false;
+                }
+            }
+            if ((topologySetId = opts.getString("topologysetid", null)) == null) {
+                if (testplanidVal && !topologysetname) {
+                    Log.Error("Controller/GetOptions: Error : missing Topology Set Id.");
+                    System.out.println("\n\nMissing required value : Topology Set Id "
+                            + "\n Use -help/-h for Usage information\n\n");
+                    Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+                    return false;
+                }
+            } else {
+
+                Log.Debug("Controller/GetOptions: topologySetId = "
+                        + topologySetId);
+                if (testplanidVal || testplanpathVal) {//put or checking for the new value testplanpathvalue=true
+                    if (compileMode) {
+                        Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
+                        dbReporting = false;
+                    } else {
+                        if (topologysetname) {
+                            Log.Error("Controller/GetOptions: Error: Toplogy name is already used.");
+                            System.out.println("\n\nToplogy name is already used. "
+                                    + "\n Use -help/-h for Usage Information\n\n");
+                            Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+                            return false;
+                        }
+                        // dbReporting option is ON as both testplanID and
+                        // topologysetXML is specified
+                        Log.Debug("Controller/GetOptions: dbReportingVal ON.");
+                        topologysetid = true;
+                        dbReporting = true;
+                    }
+                } else {
+                    Log.Error("Controller/GetOptions: Error: missing testplanid or testplan.");
+                    System.out.println("\n\nMissing required value: testplanid or testplanid"
+                            + "\n Use -help/-h for Usage Information\n\n");
+                    Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+                    return false;
+                }
+            }
+            if ((BuildTag = opts.getString("buildtag", null)) == null) {
+
+                Log.Debug("Controller/GetOptions: buildtag not specified. dbreporting os OFF");
+            } else {
+                ContextVar.setContextVar("ZUG_BUILDTAG", BuildTag);
+                Log.Debug("Controller/GetOptions: BuildTag = " + BuildTag);
+                //message("The testplanpath is "+TestPlanPath
+                //message("ContextVar set "+ContextVar.getContextVar("ZUG_TESTPLANPATH"));
+
             }
             /*
              * if ((topologySetXMLFile = opts.getString("topologysetXML", null))
@@ -718,6 +850,7 @@ public class Controller extends Thread {
                     + testCaseResult.get_testExecution_Time() + "\t\t "
                     + testCaseResult.get_comments());
         }
+
     }
 
     private class TestCaseDateComparator implements Comparator<Object> {
@@ -741,7 +874,7 @@ public class Controller extends Thread {
         Log.Debug("Controller/SaveTestCaseResult : Start of the Function");
 
         // BusinessLayer.TestCycle testCycle = new BusinessLayer.TestCycle();
-        String buildNumber = null;
+        String buildNumber = BuildNo;
 //message("SaveTestCaseResult::\t The result to Save in a TEST case result  ");
         //BusinessLayer.TestCycleData testCycleData = new BusinessLayer.TestCycleData();
 
@@ -1044,6 +1177,7 @@ public class Controller extends Thread {
                 Log.Debug("Controller/RunAbstractTestCase: Working on Action Argument : "
                         + i + " for action : " + action.actionName);
                 String actionVal = action.actionArguments.get(i).toString();
+                // message("RUNABSTRACT: The MOlecule-Atom args lvl 0 "+actionVal);
                 Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
                         + "] = " + actionVal + " for action : "
                         + action.actionName);
@@ -1152,7 +1286,7 @@ public class Controller extends Thread {
                                     + action.actionName);
                         }
                     }
-                } //Checking For any new defined molecule exists or not.
+                }//Checking For any new defined molecule exists or not.                        
                 else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#") || actionVal.toLowerCase().contains("=##") || actionVal.toLowerCase().contains("=%#")) {
                     String key = null, value = null;
 //TODO the work for INDEXD MACROOO checking fails the code.
@@ -1255,6 +1389,7 @@ public class Controller extends Thread {
                     ///TODO Find a better solution
                     // message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
                 }
+                //message("RUNABSTRACT: The MOlecule-Atom args lvl 2 "+actionVal);
                 try {
 
                     if (action.actionArguments.get(i).toString().toLowerCase().contains("$$input_arg")) {
@@ -1708,7 +1843,7 @@ public class Controller extends Thread {
         test.actions.toArray(allActions);
         Log.Debug("Controller/ExpandTestCase: Number of Actions are : "
                 + allActions.length + " for testcase : " + test.testCaseID);
-//message("THE testcase coming 1c " + test.testCaseID);
+        // message("EXPANDTESTCASE THE testcase coming 1c " + test.testCaseID);
         int count1 = -1;
         Hashtable<Integer, String> multiValuedVariablePosition = new Hashtable<Integer, String>();
 
@@ -1725,8 +1860,9 @@ public class Controller extends Thread {
                     ///In case of Molecule the actual value is not coming ? why?
                     //message("THE testcase coming 1e " + test.testCaseID + " Every Values " + action.actionArguments.get(i) + " Action Actual Arguments " + action.actionActualArguments);
                     count1++;
-                    //message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments.get(i));
+                    //message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments);
                     String tempVal = GetTheActualValue((String) (action.actionArguments.get(i)));
+                    //message("The Temp Val "+tempVal);
                     //message("Expandtest:/lengths " + action.actionArguments.size()+"\n\t"+action.actionActualArguments.size());
                     if (action.actionActualArguments.size() == action.actionArguments.size()) {
                         //put in a hashmap
@@ -1745,7 +1881,7 @@ public class Controller extends Thread {
                     }
                     //mvm_vector_map.put( tempVal,action.actionActualArguments.get(i).trim());
                     //message("THE vector map only action " + tempVal);
-                    //message("cheks to Macro exp\t" + tempVal);
+                    // message("cheks to Macro exp\t" + tempVal);
 
                     if (tempVal == null) {
                         Log.Error("Controller/ExpandedTestCase : Variable -> " + action.actionArguments.get(i) + " Value -> " + tempVal + " NullValueException \n In TesrCaseId: " + action.testCaseID);
@@ -1787,7 +1923,7 @@ public class Controller extends Thread {
                 allActionVerificationArgs.add(new ArrayList<String>(Arrays.asList(new String[]{" Some value"})));
 
             }
-
+//message("Expands :: action arguments "+action.actionArguments);
             Verification[] verifications = new Verification[action.verification.size()];
             action.verification.toArray(verifications);
             Log.Debug("Controller/ExpandTestCase: Number of verifications are : "
@@ -1856,6 +1992,7 @@ public class Controller extends Thread {
             }
 
         }
+        //message("the arguments are "+allActionVerificationArgs);
 
         List<Tuple<String>> resultAfterIndexed = CartesianProduct.indexedProduct(allActionVerificationArgs);// .get(0),
         // allActionVerificationArgs.get(1));
@@ -1993,7 +2130,7 @@ public class Controller extends Thread {
 
                 tempTestCase.user = test.user;
                 tempTestCase.userObj = test.userObj;
-
+                //message("EXPANDTESTCASE THE testcase coming 1d " + tempTestCase.testCaseID);
                 ArrayList<String> tempCollection = new ArrayList<String>();
                 Object[] actualValue = subList.ToArray();
                 for (int q = 0; q < actualValue.length; ++q) {
@@ -2063,6 +2200,7 @@ public class Controller extends Thread {
                         }
                     }
                 }
+                // message("EXPANDTESTCASE THE testcase coming 1f " + tempTestCase.testCaseID);
 
                 tempTestCase.stackTrace = test.stackTrace;
                 tempTestCase.threadID = test.threadID;
@@ -2095,6 +2233,7 @@ public class Controller extends Thread {
                 }
 
                 count = 0;
+                //message("EXPNDD:: arguments .. "+actions[1].actionArguments);
                 for (int cnt = 0; cnt < actions.length; ++cnt) {
                     Action action = actions[cnt];
                     Action tempAction = new Action();
@@ -2116,10 +2255,12 @@ public class Controller extends Thread {
                     tempAction.actionDescription = action.actionDescription;
                     tempAction.isNegative = action.isNegative;
                     tempAction.isActionNegative = action.isActionNegative;
+                    //message("EXXCC: argsss " + action.actionArguments);
                     for (int i = 0; i < action.actionArguments.size(); ++i) {
                         tempAction.actionArguments.add(GetActualCombination(
                                 (String) action.actionArguments.get(i),
                                 tempTestCaseVar[count++]));
+
                     }
 
                     Verification[] verifications = new Verification[action.verification.size()];
@@ -2161,13 +2302,34 @@ public class Controller extends Thread {
                     }
                     tempTestCase.actions.add(tempAction);
                 }
-                tempTestCases.add(tempTestCase);
+//message("Expndd:: The Action arguments "+tempTestCase.actions.get(1).actionArguments);
+                if (manualTestCaseID.contains(",")) {
+                    if (checkWithCommandLineIfComma(tempTestCase).testCaseID.equalsIgnoreCase("Not Present")) {
+                        //message("Tempo Test Case is "+tempTestCase.testCaseID);
+                        // continue;
+                    } else {
+                        //message("Temp case added "+tempTestCase.testCaseID);            
+                        tempTestCases.add(checkWithCommandLineIfComma(tempTestCase));
+                    }
+
+                } else {
+                    //message("Not Comma Separted command Line");
+                    if (checkWithCommandLine(tempTestCase).testCaseID.equalsIgnoreCase("Not Present")) {
+                        //message("Tempo Test Case is "+tempTestCase.testCaseID);
+                        // continue;
+                    } else {
+                        //message("Temp case added "+tempTestCase.testCaseID);            
+                        tempTestCases.add(checkWithCommandLine(tempTestCase));
+                    }
+                }
+
             }
         }
 
         if (tempTestCases.size() == 0) {
             Log.Debug("Controller/ExpandTestCase: Returning only 1 testcase after Expansion. End of function with TestCase ID is "
                     + test.testCaseID);
+            //message("ExpandTestCase:: The Manual isss22  " + test.testCaseID);
             return new TestCase[]{test};
         }
 
@@ -2175,14 +2337,115 @@ public class Controller extends Thread {
                 + tempTestCases.size()
                 + " testcase after Expansion. End of function with TestCase ID is "
                 + test.testCaseID);
+
+
         TestCase[] tempT = new TestCase[tempTestCases.size()];
         return tempTestCases.toArray(tempT);
+    }
+
+    /*
+     * Check the command line Testcase contains , 
+     * @param testcase
+     * @return testcase
+     */
+    private TestCase checkWithCommandLineIfComma(TestCase tempcom) {
+
+        //Implement the code
+        TestCase command_line_testcase = new TestCase();
+        command_line_testcase.testCaseID = "Not Present";
+        //message("checkWithCommandLineIfComma:: The , manualtestcase " + manualTestCaseID);
+        String cmdTestCases[] = manualTestCaseID.split(",");
+        for (String manual : cmdTestCases) {
+            //message("checkWithCommandLineIfComma " + manual + " tempt Testcase " + tempcom.testCaseID);
+            if (tempcom.parentTestCaseID.equalsIgnoreCase(tempcom.testCaseID)) {
+                if (manual.equalsIgnoreCase(tempcom.testCaseID)) {
+                    command_line_testcase = tempcom;
+                    //message("checkWithCommandLineIfComma 1a " + manual + " testcase " + tempcom.testCaseID);
+                    break;
+                } else if (tempcom.testCaseID.trim().contains(manual)) {
+                    command_line_testcase = tempcom;
+                    //message("checkWithCommandLineIfComma 1b " + manual + " testcase " + tempcom.testCaseID);
+                    break;
+                }
+
+            } else {
+                if (manual.equalsIgnoreCase(tempcom.parentTestCaseID)) {
+                    command_line_testcase = tempcom;
+                    //message("checkWithCommandLineIfComma 1a " + manual + " testcase " + tempcom.testCaseID);
+                    break;
+                } else if (tempcom.parentTestCaseID.trim().contains(manual)) {
+                    command_line_testcase = tempcom;
+                    //message("checkWithCommandLineIfComma 1b " + manual + " testcase " + tempcom.testCaseID);
+                    break;
+                }
+            }
+        }
+        //message("the testcase id evrytime "+tempcom.testCaseID);
+        return command_line_testcase;
+
+    }
+    /*
+     * Check the command line Testcase exists 
+     * @param testcase
+     * @return testcase
+     */
+
+    private TestCase checkWithCommandLine(TestCase tempt) {
+
+        TestCase commadLine = new TestCase();
+        commadLine.testCaseID = "Not Present";
+        //message("checkWithCommandLine:: 1a ParentId "+tempt.parentTestCaseID+" child testcase " + tempt.testCaseID + " Manual Test " + manualTestCaseID);
+//        if(manualTestCaseID.indexOf(",")>0)
+//        {
+//            return tempt;
+//        }
+        if (tempt.parentTestCaseID.equalsIgnoreCase(tempt.testCaseID)) {
+            if (manualTestCaseID.equalsIgnoreCase(tempt.testCaseID)) {
+                //message("checkWithCommandLine:: 1b " + tempt.testCaseID + " Manual Test " + manualTestCaseID);
+                commadLine = tempt;
+                //return tempt;
+            }
+            if (tempt.testCaseID.trim().contains(manualTestCaseID)) {
+                //message("checkWithCommandLine:: index  "+manualTestCaseID.indexOf(","));
+                //message("checkWithCommandLine:: 1cc " + tempt.testCaseID + " Manual Test " + manualTestCaseID);
+                commadLine = tempt;
+                //return tempt;
+            }
+            if (manualTestCaseID == null) {
+                commadLine = tempt;
+                //return tempt;
+            }
+        } else {
+            if (manualTestCaseID.equalsIgnoreCase(tempt.parentTestCaseID)) {
+                commadLine = tempt;
+            }
+            if (tempt.parentTestCaseID.trim().contains(manualTestCaseID)) {
+                //message("checkWithCommandLine:: index  "+manualTestCaseID.indexOf(","));
+                //message("checkWithCommandLine:: 1cc " + tempt.testCaseID + " Manual Test " + manualTestCaseID);
+                commadLine = tempt;
+                //return tempt;
+            }
+            if (manualTestCaseID == null) {
+                commadLine = tempt;
+
+            }
+        }
+
+//        } else {
+//            //message("checkWithCommandLine:: 1d " + tempt.testCaseID + " Manual Test " + manualTestCaseID);
+//            //testcasesNotPresent = manualTestCaseID;
+//            tempt.testCaseID = "Not Present";
+//            return tempt;
+//        }
+
+        return commadLine;
     }
 
     private String GetActualCombination(String entireValue,
             String valueToSubstitute) {
 
         String tempValue = StringUtils.EMPTY;
+        //message("GetActualComb:: 1a "+entireValue+" valusubs "+valueToSubstitute);
         if (entireValue.contains("=")) {
             Log.Debug("Controller/GetActualCombination : entireValue contains an = sign ");
             String[] splitVariableToFind = Excel.SplitOnFirstEquals(entireValue);
@@ -2194,17 +2457,31 @@ public class Controller extends Thread {
                         + entireValue
                         + " and its value is -> "
                         + valueToSubstitute);
+                //message("GetActualComb:: 1b "+entireValue+" valusubs "+valueToSubstitute);
                 return valueToSubstitute;
             }
-            tempValue = splitVariableToFind[0] + "=" + valueToSubstitute;
+            if (valueToSubstitute.contains("=")) {
+                if (valueToSubstitute.contains("{")) {
+                    valueToSubstitute = valueToSubstitute.replace("{", "");
+                } else if (valueToSubstitute.contains("}")) {
+                    valueToSubstitute = valueToSubstitute.replace("}", "");
+                }
+                //message("GetActualComb:: 3a "+valueToSubstitute.replace("{",""));
+                tempValue = valueToSubstitute;
+                //message("GetActualComb:: GGHH"+tempValue);
+            } else {
+                tempValue = splitVariableToFind[0] + "=" + valueToSubstitute;
+            }
+            //message("GetActualComb:: 1c "+tempValue);
         } // First Check in the Context Variable
         else {
             tempValue = valueToSubstitute;
+            //message("GetActualComb:: 1d "+tempValue);
         }
 
         Log.Debug("Controller/GetActualCombination : End of function with variableToFind = "
                 + entireValue + " and its value is -> " + tempValue);
-
+//message("GetActualComb:: 1e "+tempValue);
         return tempValue;
     }
 
@@ -2245,21 +2522,28 @@ public class Controller extends Thread {
             if (splitVariableToFind.length <= 1) {
                 Log.Debug("Controller/GetTheActualValue : End of function with variableToFind = "
                         + entireValue + " and its value is -> " + entireValue);
+
                 return entireValue;
             }
 
+
             tempValue = splitVariableToFind[1];
+            //message("as temp val have = "+tempValue);
+
             if (tempValue.startsWith("$$") && tempValue.endsWith("%")) {
-                //message("EQUAL contextvariablemvm "+tempValue);
+                // message("EQUAL contextvariablemvm "+tempValue);
                 tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
                 tempValue = tempValue.replaceAll("%", "");
                 tempValue = ContextVar.getContextVar(tempValue);
-                // message("EQUAL contextvariablemvm value"+tempValue);
+                //message("EQUAL contextvariablemvm value"+tempValue);
             } else if (tempValue.startsWith("$$") & tempValue.contains("#")) {
                 //message("GetValue:/This is Indexed = " + tempValue);
                 tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
                 tempValue = Excel._indexedMacroTable.get(tempValue.toLowerCase());
                 //message("GetValue:/This is Indexed The Value = " + tempValue);
+            } else {
+                //message("The entire value unchanged "+entireValue);
+                tempValue = entireValue;
             }
             Log.Debug("Controller/GetTheActualValue : variableToFind = "
                     + tempValue);
@@ -2275,6 +2559,7 @@ public class Controller extends Thread {
             entireValue = entireValue.replaceAll("%", "");
             tempValue = ContextVar.getContextVar(entireValue);
         } else {
+            //message("TempVal=EntireVal "+tempValue);
             tempValue = entireValue;
         }
 
@@ -2394,16 +2679,15 @@ public class Controller extends Thread {
                     levelAndMessage.indexOf(","));
             String message = levelAndMessage.substring(levelAndMessage.indexOf(",") + 1);
 
-            if (level.compareToIgnoreCase("error") == 0
-                    || level.compareToIgnoreCase("fatal") == 0) {
+            if (level.equalsIgnoreCase("error") || level.equalsIgnoreCase("fatal")) {
                 Log.Error(message);
                 Log.Debug(message);
                 Log.PrimitiveErrors(message);
-            } else if (level.compareToIgnoreCase("debug") == 0) {
+            } else if (level.equalsIgnoreCase("debug")) {
                 Log.Debug(message);
                 Log.Primitive(message);
             } // This is basically to Log the Results of Primitives
-            else if (level.compareToIgnoreCase("info") == 0) {
+            else if (level.equalsIgnoreCase("info")) {
                 Log.Debug(message);
                 Log.Primitive(message);
                 Log.PrimitiveResults(message);
@@ -2860,6 +3144,7 @@ public class Controller extends Thread {
 
                 if (test.testCaseID.compareToIgnoreCase("init") != 0) {
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
+
                         if (!manualTestCaseID.contains(test.testCaseID.trim())) {
                             //if (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())) {
                             testcasenotfound = true;
@@ -2880,10 +3165,13 @@ public class Controller extends Thread {
                             // Function to run and Execute the TestCase
 
                             if (test.testCaseID.compareToIgnoreCase("init") == 0) {
+
                                 TestCase tempTest = GenerateNewTestCaseID(test,
                                         count);
+                                // message("The generated Id 0a "+tempTest.testCaseID);
                                 RunTestCase(tempTest);
                             } else {
+                                //message("The generated Id 0b "+test.testCaseID);
                                 RunTestCase(test);
                             }
                         } else {
@@ -2961,6 +3249,7 @@ public class Controller extends Thread {
                     // that
                     // the current executing test case is also specified.
                     if (test.testCaseID.compareTo("init") != 0) {
+
                         if (StringUtils.isNotBlank(manualTestCaseID)) {
                             if (!manualTestCaseID.contains(test.testCaseID.trim())) {
                                 continue;
@@ -2988,8 +3277,10 @@ public class Controller extends Thread {
                                 if (!(test.testCaseID.compareToIgnoreCase("init") == 0)) {
                                     TestCase tempTest = GenerateNewTestCaseID(
                                             test, count);
+                                    message("The generated Id 0a " + tempTest.testCaseID);
                                     RunTestCase(tempTest);
                                 } else {
+                                    message("The generated Id 0b " + test.testCaseID);
                                     RunTestCase(test);
                                 }
 
@@ -3093,8 +3384,10 @@ public class Controller extends Thread {
 
                 if (test.testCaseID.compareToIgnoreCase("init") != 0) {
                     if (StringUtils.isNotBlank(manualTestCaseID)) {
+                        //message("The manual commandline 1b " + manualTestCaseID + "\n The Testcase ids " + test.testCaseID);
                         if (!manualTestCaseID.contains(test.testCaseID.trim())) {
                             //if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
+
                             testcasenotpresent = true;
 
                             continue;
@@ -3104,7 +3397,7 @@ public class Controller extends Thread {
 
                     }
                 }
-
+                //message("The testcase step comming alpha " + test.testCaseID);
 
                 if ((initWorkedFine == true)
                         || (initWorkedFine == false && (test.testCaseID.compareToIgnoreCase("cleanup") == 0))) {
@@ -3118,10 +3411,12 @@ public class Controller extends Thread {
                                     && isLongevityOn) {
                                 TestCase tempTest = GenerateNewTestCaseID(test,
                                         count);
+                                // message("The Testcases to match1a " + tempTest.testCaseID);
                                 RunTestCase(tempTest);
                             } else {
                                 test.threadID = (String.valueOf(Thread.currentThread().getId()));
                             }
+                            //message("The generated Id 2a " + test.testCaseID);
                             RunTestCase(test);
                         } else {
                             Log.Debug("Controller/RunTestCaseForMain : TestCase ID "
@@ -3157,9 +3452,9 @@ public class Controller extends Thread {
                     }
                 }
             }
-            if (testcasenotpresent) {
-                //message(manualTestCaseID + " The testcase is not Present in Chur Sheet");
-            }
+//            if (testcasenotpresent) {
+//                //message(manualTestCaseID + " The testcase is not Present in Chur Sheet");
+//            }
             repeatCount--;
 
             // Make sure we run all the test cases, till the RepeatCount is
@@ -3194,6 +3489,7 @@ public class Controller extends Thread {
                     // make sure, that
                     // the current executing test case is also specified.
                     if (test.testCaseID.compareToIgnoreCase("init") != 0) {
+                        // message("The manual commandline 1c" + manualTestCaseID + "\n The Testcase ids " + test.testCaseID);
                         if (StringUtils.isNotBlank(manualTestCaseID)) {
                             if (!manualTestCaseID.contains(test.testCaseID.trim())) {
                                 continue;
@@ -3224,6 +3520,7 @@ public class Controller extends Thread {
                                         && isLongevityOn) {
                                     TestCase tempTest = GenerateNewTestCaseID(
                                             test, count);
+                                    message("The Testcases to match1b " + tempTest.testCaseID);
                                     RunTestCase(tempTest);
                                 } else {
                                     RunTestCase(test);
@@ -3363,6 +3660,21 @@ public class Controller extends Thread {
         ArrayList<Thread> ThreadPool = new ArrayList<Thread>();
         for (TestCase test : expandedTestCases) {
             final TestCase test2 = test;
+//            message("\n The test case id " + test.testCaseID + " check with command line " + checkWithCommandLine(test).testCaseID);
+////            if (checkWithCommandLine(test).testCaseID.equalsIgnoreCase("Not Present")) {
+////                message("The commandline error " + checkWithCommandLine(test).testCaseID);
+////               continue;
+////            } else 
+////            {
+//                if (test.testCaseID.equalsIgnoreCase("init") || test.testCaseID.equalsIgnoreCase("cleanup")) {
+//                    message("INITI_CLEANUP");
+//                    test2 = test;
+//
+//                } else {
+//                    message("COMMANDLINE " + test.testCaseID);
+//                    test2 = checkWithCommandLine(test);
+//                }
+////            }
             // RunExpandedTestCase(test);
             // Start a new thread and run the expanded test case on it
             if (test1.concurrentExecutionOnExpansion == true) {
@@ -3554,6 +3866,157 @@ public class Controller extends Thread {
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
                 }
+            } else if (verification.verificationName.trim().equalsIgnoreCase("GetValueAtIndex")) {
+                if (verification.verificationArguments.size() == 3) {
+                    try {
+                        String arg1 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(0),
+                                threadID);
+                        String arg2 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(1),
+                                threadID);
+                        String arg3 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(2),
+                                threadID);
+                        message(String.format("\n[%s] Verification %s Execution STARTED With Arguments %s",
+                                verification.stackTrace.toUpperCase(),
+                                verification.verificationName.toUpperCase(), verification.verificationArguments));
+
+                        String args_list[] = arg1.split(",");
+
+                        if (args_list.length >= Integer.valueOf(arg2)) {
+                            //message(args_list[Integer.valueOf(arg2)].replace("{","").replace("}",""));
+                            CreateContextVariable(arg3 + "=" + args_list[Integer.valueOf(arg2) - 1].replace("{", "").replace("}", ""));
+                            message(String.format(
+                                    "\n[%s] Verification  %s SUCCESSFULLY Executed",
+                                    verification.stackTrace.toUpperCase(),
+                                    verification.verificationName.toUpperCase()));
+                        } else {
+                            throw new Exception("\n\tIndex is greater than MVM argument length ");
+                        }
+
+                    } catch (Exception ex) {
+                        throw new Exception(
+                                String.format(
+                                "\n\nException Happened while executing Verification %s which is located at Line %s of Sheet %s. Exception Message is %s",
+                                verification.verificationName,
+                                verification.lineNumber,
+                                verification.sheetName, ex.getMessage()));
+                    }
+                } else {
+                    throw new Exception(String.format("\n\t %s Number of argument mismatch. Excpected argument length 3", verification.verificationName));
+                }
+
+            } else if (verification.verificationName.trim().equalsIgnoreCase("GetCurrentIndex")) {
+                if (verification.verificationArguments.size() == 3) {
+                    try {
+                        String arg1 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(0),
+                                threadID);
+                        String arg2 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(1),
+                                threadID);
+                        String arg3 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(2),
+                                threadID);
+                        message(String.format("\n[%s] Verification %s Execution STARTED With Arguments %s",
+                                verification.stackTrace.toUpperCase(),
+                                verification.verificationName.toUpperCase(), verification.verificationArguments));
+
+                        String args_list[] = arg1.split(",");
+                        boolean element_present = false;
+                        int count_index = 1;
+                        for (String arg : args_list) {
+                            arg = arg.replace("{", "").replace("}", "");
+                            if (arg.equalsIgnoreCase(arg2)) {
+                                //message("The count Index "+count_index);
+                                element_present = true;
+                                break;
+                            } else {
+                                element_present = false;
+                                count_index++;
+                            }
+
+                        }
+                        if (!element_present) {
+                            throw new Exception("\n\t" + arg2 + " Element is not present is given list " + arg1);
+                        }
+                        //message(args_list[Integer.valueOf(arg2)].replace("{","").replace("}",""));
+                        CreateContextVariable(arg3 + "=" + new Integer(count_index).toString());
+                        message(String.format(
+                                "\n[%s] Verification %s SUCCESSFULLY Executed",
+                                verification.stackTrace.toUpperCase(),
+                                verification.verificationName.toUpperCase()));
+                    } catch (Exception ex) {
+                        throw new Exception(
+                                String.format(
+                                "\n\nException Happened while executing Verification %s which is located at Line %s of Sheet %s. Exception Message is %s",
+                                verification.verificationName,
+                                verification.lineNumber,
+                                verification.sheetName, ex.getMessage()));
+                    }
+                } else {
+                    throw new Exception(String.format("\n\t %s Number of argument mismatch. Excpected argument length 3", verification.verificationName));
+                }
+
+            } else if (verification.verificationName.trim().equalsIgnoreCase("GetValueAt")) {
+                if (verification.verificationArguments.size() == 4) {
+                    try {
+                        String arg1 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(0),
+                                threadID);
+                        String arg2 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(1),
+                                threadID);
+                        String arg3 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(2),
+                                threadID);
+                        String arg4 = NormalizeVariable(
+                                (String) verification.verificationArguments.get(3),
+                                threadID);
+                        message(String.format("\n[%s] Verification %s Execution STARTED With Arguments %s",
+                                verification.stackTrace.toUpperCase(),
+                                verification.verificationName.toUpperCase(), verification.verificationArguments));
+
+                        String args1_list[] = arg1.split(",");
+                        String args2_list[] = arg2.split(",");
+                        if (args1_list.length == args2_list.length) {
+                            int count_source_index = 0;
+                            boolean element_found = false;
+                            for (String arg : args2_list) {
+                                arg = arg.replace("{", "").replace("}", "");
+                                if (arg.equalsIgnoreCase(arg3)) {
+                                    element_found = true;
+                                    break;
+                                } else {
+                                    element_found = false;
+                                    count_source_index++;
+                                }
+                            }
+                            if (!element_found) {
+                                throw new Exception("\n\t" + arg3 + " Element is not present is given Source list " + arg2);
+                            }
+                            CreateContextVariable(arg4 + "=" + args1_list[count_source_index].replace("{", "").replace("}", ""));
+                            message(String.format(
+                                    "\n[%s] Verification %s SUCCESSFULLY Executed",
+                                    verification.stackTrace.toUpperCase(),
+                                    verification.verificationName.toUpperCase()));
+                        } else {
+                            throw new Exception("\n\tTarget list and Source list are not similar.");
+                        }
+
+                    } catch (Exception ex) {
+                        throw new Exception(
+                                String.format(
+                                "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
+                                verification.verificationName,
+                                verification.lineNumber,
+                                verification.sheetName, ex.getMessage()));
+                    }
+                } else {
+                    throw new Exception(String.format("\n\t %s Number of argument mismatch. Excpected argument length 4", verification.verificationName));
+                }
+
             } else if (verification.verificationName.trim().compareToIgnoreCase("getattribute") == 0) {
                 try {
                     Hashtable<String, String> ht = new Hashtable<String, String>();
@@ -3769,6 +4232,7 @@ public class Controller extends Thread {
                             verification.verificationName.toUpperCase()));
                 }
             } else if (verification.verificationName.trim().contains(".") && !verification.verificationName.trim().startsWith("&") && !verification.verificationName.trim().startsWith("@")) {
+
                 try {
                     boolean PkgstructureFound = false;
                     String package_struct[] = verification.verificationName.trim().split("\\.");
@@ -3793,23 +4257,23 @@ public class Controller extends Thread {
 
                     }
                     message(String.format("[%s] Execution Started Verification %s with values %s ", verification.stackTrace.toUpperCase(), verification.verificationName, verification.verificationArguments));
-       boolean exception_occured=true;
-       for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
+                    boolean exception_occured = true;
+                    for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path, inprocess_jar_xml_tag_attribute_name)) {
                         if (pkg_name.equalsIgnoreCase(package_struct[0])) {
                             if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
                                 builtin_atom_package_name = pkg_name;
                                 invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
                             }
-                         
+
                             try {
                                 //message("The Values "+verification.isNegative);
                                 invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), verification.verificationArguments);
                                 //message("what is condition " + verification.isRowNegative);
-exception_occured=true;
+                                exception_occured = true;
 
                             } catch (Exception e) {
-                                
-                                exception_occured=false;
+
+                                exception_occured = false;
                                 if (verification.isVerifyNegative || verification.isRowNegative) {
                                     ContextVar.setContextVar("ZUG_VERIFY_EXCEPTION", NormalizeVariable(String.format("\n\nException in Verification %s (%s:%s).\n\tMessage: %s", verification.verificationName, verification.sheetName, verification.lineNumber, e.getMessage()), threadID));
 
@@ -3833,11 +4297,11 @@ exception_occured=true;
                             "\n[%s] Verification %s SUCCESSFULLY Executed",
                             verification.stackTrace.toUpperCase(),
                             verification.verificationName.toUpperCase()));
-                    if (verification.isRowNegative&&exception_occured) {
+                    if (verification.isRowNegative && exception_occured) {
 
-                        throw new Exception(String.format("\n\nException:: Verify Step passed while Test step: %s (%s:%s) property set to negative", verification.verificationName, verification.sheetName, verification.lineNumber));
-                    } else if (verification.isVerifyNegative&&exception_occured) {
-                        throw new Exception(String.format("\n\nException:: Verify Step passed while Test step: %s (%s:%s) property set to negative", verification.verificationName, verification.sheetName, verification.lineNumber));
+                        throw new Exception(String.format("\n\nException:: Verify Step passed while Test step: %s (%s:%s) property set to negative.", verification.verificationName, verification.sheetName, verification.lineNumber));
+                    } else if (verification.isVerifyNegative && exception_occured) {
+                        throw new Exception(String.format("\n\nException:: Verify Step passed while Test step: %s (%s:%s) property set to negative-verify or neg-verify.", verification.verificationName, verification.sheetName, verification.lineNumber));
                     }
                     Log.Debug(String.format("Controller/RunAction :Successfully Action called %s..", verification.verificationName));
                 } catch (Exception e) {
@@ -4184,6 +4648,159 @@ exception_occured=true;
                             action.stackTrace.toUpperCase(),
                             action.actionName.toUpperCase()));
                 }
+            } else if (action.actionName.trim().equalsIgnoreCase("GetValueAtIndex")) {
+                if (action.actionArguments.size() == 3) {
+                    try {
+                        String arg1 = NormalizeVariable(
+                                (String) action.actionArguments.get(0),
+                                threadID);
+                        String arg2 = NormalizeVariable(
+                                (String) action.actionArguments.get(1),
+                                threadID);
+                        String arg3 = NormalizeVariable(
+                                (String) action.actionArguments.get(2),
+                                threadID);
+                        message(String.format("\n[%s] Action %s Execution STARTED With Arguments %s",
+                                action.stackTrace.toUpperCase(),
+                                action.actionName.toUpperCase(), action.actionArguments));
+
+                        String args_list[] = arg1.split(",");
+
+                        if (args_list.length >= Integer.valueOf(arg2)) {
+                            //message(args_list[Integer.valueOf(arg2)].replace("{","").replace("}",""));
+                            CreateContextVariable(arg3 + "=" + args_list[Integer.valueOf(arg2) - 1].replace("{", "").replace("}", ""));
+                            message(String.format(
+                                    "\n[%s] Action %s SUCCESSFULLY Executed",
+                                    action.stackTrace.toUpperCase(),
+                                    action.actionName.toUpperCase()));
+                        } else {
+                            throw new Exception("\n\tIndex is greater than MVM argument length ");
+                        }
+                        RunVerification(action, threadID);
+                    } catch (Exception ex) {
+                        throw new Exception(
+                                String.format(
+                                "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
+                                action.actionName,
+                                action.lineNumber + 1,
+                                action.sheetName, ex.getMessage()));
+                    }
+                } else {
+                    throw new Exception(String.format("\n\t %s Number of argument mismatch. Excpected argument length 3", action.actionName));
+                }
+
+            } else if (action.actionName.trim().equalsIgnoreCase("GetCurrentIndex")) {
+                if (action.actionArguments.size() == 3) {
+                    try {
+                        String arg1 = NormalizeVariable(
+                                (String) action.actionArguments.get(0),
+                                threadID);
+                        String arg2 = NormalizeVariable(
+                                (String) action.actionArguments.get(1),
+                                threadID);
+                        String arg3 = NormalizeVariable(
+                                (String) action.actionArguments.get(2),
+                                threadID);
+                        message(String.format("\n[%s] Action %s Execution STARTED With Arguments %s",
+                                action.stackTrace.toUpperCase(),
+                                action.actionName.toUpperCase(), action.actionArguments));
+
+                        String args_list[] = arg1.split(",");
+                        boolean element_present = false;
+                        int count_index = 1;
+                        for (String arg : args_list) {
+                            arg = arg.replace("{", "").replace("}", "");
+                            if (arg.equalsIgnoreCase(arg2)) {
+                                //message("The count Index "+count_index);
+                                element_present = true;
+                                break;
+                            } else {
+                                element_present = false;
+                                count_index++;
+                            }
+
+                        }
+                        if (!element_present) {
+                            throw new Exception("\n\t" + arg2 + " Element is not present is given list " + arg1);
+                        }
+                        //message(args_list[Integer.valueOf(arg2)].replace("{","").replace("}",""));
+                        CreateContextVariable(arg3 + "=" + new Integer(count_index).toString());
+                        message(String.format(
+                                "\n[%s] Action %s SUCCESSFULLY Executed",
+                                action.stackTrace.toUpperCase(),
+                                action.actionName.toUpperCase()));
+                        RunVerification(action, threadID);
+                    } catch (Exception ex) {
+                        throw new Exception(
+                                String.format(
+                                "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
+                                action.actionName,
+                                action.lineNumber + 1,
+                                action.sheetName, ex.getMessage()));
+                    }
+                } else {
+                    throw new Exception(String.format("\n\t %s Number of argument mismatch. Excpected argument length 3", action.actionName));
+                }
+
+            } else if (action.actionName.trim().equalsIgnoreCase("GetValueAt")) {
+                if (action.actionArguments.size() == 4) {
+                    try {
+                        String arg1 = NormalizeVariable(
+                                (String) action.actionArguments.get(0),
+                                threadID);
+                        String arg2 = NormalizeVariable(
+                                (String) action.actionArguments.get(1),
+                                threadID);
+                        String arg3 = NormalizeVariable(
+                                (String) action.actionArguments.get(2),
+                                threadID);
+                        String arg4 = NormalizeVariable(
+                                (String) action.actionArguments.get(3),
+                                threadID);
+                        message(String.format("\n[%s] Action %s Execution STARTED With Arguments %s",
+                                action.stackTrace.toUpperCase(),
+                                action.actionName.toUpperCase(), action.actionArguments));
+
+                        String args1_list[] = arg1.split(",");
+                        String args2_list[] = arg2.split(",");
+                        if (args1_list.length == args2_list.length) {
+                            int count_source_index = 0;
+                            boolean element_found = false;
+                            for (String arg : args2_list) {
+                                arg = arg.replace("{", "").replace("}", "");
+                                if (arg.equalsIgnoreCase(arg3)) {
+                                    element_found = true;
+                                    break;
+                                } else {
+                                    element_found = false;
+                                    count_source_index++;
+                                }
+                            }
+                            if (!element_found) {
+                                throw new Exception("\n\t" + arg3 + " Element is not present is given Source list " + arg2);
+                            }
+                            CreateContextVariable(arg4 + "=" + args1_list[count_source_index].replace("{", "").replace("}", ""));
+                            message(String.format(
+                                    "\n[%s] Action %s SUCCESSFULLY Executed",
+                                    action.stackTrace.toUpperCase(),
+                                    action.actionName.toUpperCase()));
+                            RunVerification(action, threadID);
+                        } else {
+                            throw new Exception("\n\tTarget list and Source list are not similar.");
+                        }
+
+                    } catch (Exception ex) {
+                        throw new Exception(
+                                String.format(
+                                "\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
+                                action.actionName,
+                                action.lineNumber + 1,
+                                action.sheetName, ex.getMessage()));
+                    }
+                } else {
+                    throw new Exception(String.format("\n\t %s Number of argument mismatch. Excpected argument length 4", action.actionName));
+                }
+
             } else if (action.actionName.trim().compareToIgnoreCase(
                     "getattribute") == 0) {
                 try {
@@ -4371,10 +4988,11 @@ exception_occured=true;
                 }
             } else if (action.actionName.trim().compareToIgnoreCase(
                     "appendtocontextvar") == 0) {
-                //message("Argument list "+action.actionArguments);
+                message("Argument list " + action.actionArguments);
                 if (action.actionArguments.size() >= 2) {
                     try {
                         // TODO NIIISH Check context var exists or not
+                        // message("Appened to contervar value "+action.actionArguments);
                         String contextVarName = StringUtils.EMPTY;
                         StringBuilder appendValueBuilder = new StringBuilder();
 
@@ -4386,9 +5004,11 @@ exception_occured=true;
                                 opt = ContextVar.getContextVar(opt.replaceAll("%", ""));
                             }
                             int idx = opt.indexOf('=');
+                            //message("the index is "+idx);
                             if (idx == -1) {
                                 continue;
                             } else {
+                                //message("the opt string "+opt.substring(0,idx));
                                 if (opt.substring(0, idx).toLowerCase().compareToIgnoreCase("contextvar") == 0) {
                                     contextVarName = opt.substring(idx + 1);
                                 } else {
@@ -4450,11 +5070,13 @@ exception_occured=true;
                         }
                     }
                     message(String.format("[%s] Executed Action %s with values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
+                    RunVerification(action, threadID);
                 } else {
                     message(String.format("[%s] Executed Action %s with No Values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
                 }
             } else if (action.actionName.trim().startsWith("#define")) {
             } else if (action.actionName.trim().contains("\\.") || !action.actionName.startsWith("&")) {
+                boolean isActionPassing = false;
                 try {
                     boolean PkgstructureFound = false;
                     String package_struct[] = action.actionName.trim().split("\\.");
@@ -4482,36 +5104,47 @@ exception_occured=true;
 
                     }
                     message(String.format("[%s] Execution Started Action %s with values %s ", action.stackTrace.toUpperCase(), action.actionName, action.actionArguments));
-                    for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
+                    for (String pkg_name : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path, inprocess_jar_xml_tag_attribute_name)) {
                         if (pkg_name.equalsIgnoreCase(package_struct[0])) {
                             if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
                                 builtin_atom_package_name = pkg_name;
-                                invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+                                if (invokeAtoms.get(pkg_name).native_flag) {
+                                    // message("This is native Dll Calling");                                       
+                                } else if (invokeAtoms.get(pkg_name).com_flag) {
+                                    //message("Com Jacob Calling");
+                                } else {
+                                    invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+                                }
                             }
                             invokeAtoms.get(builtin_atom_package_name).setInprocessAction(action);
-                            try {
-                                invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), action.actionArguments);
-                                if (action.isNegative) {
-                                    throw new Exception(String.format("\n\nException: The test step %s (%s:%s) passed while property is set to negative.", action.actionName, action.sheetName, action.lineNumber));
-                                }
-                                if (action.isActionNegative) {
-                                    throw new Exception(String.format("\n\nException: The test step %s (%s:%s) passed while property is set to negative-action.", action.actionName, action.sheetName, action.lineNumber));
-                                }
-                            } catch (Exception e) {
-                                //message(action.isActionNegative+" v "+action.isNegative);
-                                if (action.isActionNegative) {
-                                    //message("The Exception is action neg " + e.toString());
-                                    ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
+                            //try {
+                            isActionPassing = true;
+                            invokeAtoms.get(builtin_atom_package_name).invokeMethod(package_struct[1].trim(), action.actionArguments);
 
-                                    RunVerification(action, threadID);
-                                } else if (action.isNegative) {
-                                    //message("Total Row negative ");
-                                    ContextVar.setContextVar("ZUG_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
-                                    RunVerification(action, threadID);
-                                } else {
-                                    throw new Exception(e.getMessage());
-                                }
+                            if (action.isNegative) {
+                                isActionPassing = false;
+                                throw new Exception(String.format("\n\nException: The test step %s (%s:%s) passed while property is set to negative.", action.actionName, action.sheetName, action.lineNumber));
+
                             }
+                            if (action.isActionNegative) {
+                                isActionPassing = false;
+                                throw new Exception(String.format("\n\nException: The test step %s (%s:%s) passed while property is set to negative-action or neg-action.", action.actionName, action.sheetName, action.lineNumber));
+                            }
+                            // } catch (Exception e) {
+                            //message(action.isActionNegative+" v "+action.isNegative);
+//                                if (action.isActionNegative) {
+//                                    //message("The Exception is action neg " + e.toString());
+//                                    ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
+//
+//                                    RunVerification(action, threadID);
+//                                } else if (action.isNegative) {
+//                                    //message("Total Row negative ");
+//                                    ContextVar.setContextVar("ZUG_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
+//                                    RunVerification(action, threadID);
+//                                } else {
+//                                    throw new Exception(e.getMessage());
+//                                }
+//                            }
 
                             PkgstructureFound = true;
                             break;
@@ -4535,12 +5168,23 @@ exception_occured=true;
                     RunVerification(action, threadID);
                     Log.Debug(String.format("Controller/RunAction :Successfully called action %s ", action.actionName));
                 } catch (Exception e) {
+                    if (action.isActionNegative && isActionPassing) {
+                        //message("The Exception is action neg " + e.toString());
+                        ContextVar.setContextVar("ZUG_ACTION_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
 
-                    throw new Exception(
-                            String.format(
-                            "\n\nException in Action %s (%s:%s).\n\t Message: %s",
-                            action.actionName, action.sheetName, action.lineNumber,
-                            e.getMessage()));
+                        RunVerification(action, threadID);
+                    } else if (action.isNegative && isActionPassing) {
+                        //message("Total Row negative ");
+                        ContextVar.setContextVar("ZUG_EXCEPTION", NormalizeVariable(String.format("\n\nException in Action %s (%s:%s).\n\t Message: %s", action.actionName, action.sheetName, action.lineNumber, e.getMessage()), threadID));
+                        RunVerification(action, threadID);
+                    } else {
+
+                        throw new Exception(
+                                String.format(
+                                "\n\nException in Action %s (%s:%s).\n\t Message: %s",
+                                action.actionName, action.sheetName, action.lineNumber,
+                                e.getMessage()));
+                    }
 
                 }
 
@@ -5882,8 +6526,8 @@ exception_occured=true;
         Log.Debug("Controller/SaveTestCaseResultEveryTime : Start of the Function");
 //message("SaveTestCaseResultEveryTime::\t"+tData.testCaseID+"\t"+tData.testCaseStatus);
 //        BusinessLayer.TestCycle testCycle = new BusinessLayer.TestCycle();
-        String buildNumber = StringUtils.EMPTY;// Get the build number from Davos ...
-
+        String buildNumber = BuildNo;// Get the build number from Davos ...
+//message("The Build Tag is "+BuildTag+" The build no "+BuildNo);
         TestCaseResult testCaseResult = new TestCaseResult();
         testCaseResult.set_testCaseId(tData.testCaseID);
         // testCaseResult.set_testSuiteName(testSuitName);
@@ -5901,11 +6545,18 @@ exception_occured=true;
             testCaseResult.set_buildNo(buildNumber);
         }
 
-
-
+        //message("The build number " + buildNumber);
+        //message("Ininitime " + initializationTime);
+        //message("exec time " + testCaseResult.get_testExecution_Time());
+        //message("Testcase description "+tData.testcasedescription);
         if (StringUtils.isNotBlank(testCycleId)) {
             Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetail_write call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
-
+            //message("testcycle found " + testCycleId);
+            //message("testexecution call \n" + testCaseResult.get_testCaseId() + "--" + tData.testcasedescription + "--" + testCycleId + testCaseResult.get_status() + buildNumber + new Integer(testCaseResult.get_testExecution_Time()).toString() + "" + "" + testSuitName + topologySetId + readExcel.TestSuitRole() + testCaseResult.get_comments());
+            if (StringUtils.isBlank(tData.testcasedescription)) {
+                tData.testcasedescription = "";
+            }
+            ContextVar.setContextVar("ZUG_TCYCLENAME", "");
             testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), tData.testcasedescription, testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
             //variables=davosclient.variables_write(testCaseResult.get_testCaseId(),"" ,"" );
 
@@ -5917,6 +6568,7 @@ exception_occured=true;
             ContextVar.setContextVar("ZUG_TCYCLENAME", "TC_" + Utility.dateAsString());
             testCycleId = davosclient.testCycle_write(TestPlanId, ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "", new Integer(initializationTime).toString(), new Integer(testCaseResult.get_testExecution_Time()).toString());
             Log.Debug("Controller/SaveTestCaseEveryTime:: Davos TestExecutionDetail_write call using TestCaseId=" + testCaseResult.get_testCaseId() + " TestCycleId=" + testCycleId + "---TIMESTAMP:: " + Utility.dateNow());
+            //message("testexecution call \n" + testCaseResult.get_testCaseId() + "--" + tData.testcasedescription + "--" + testCycleId + testCaseResult.get_status() + buildNumber + new Integer(testCaseResult.get_testExecution_Time()).toString() + "" + "" + testSuitName + topologySetId + readExcel.TestSuitRole() + testCaseResult.get_comments());
             testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), tData.testcasedescription, testCycleId, testCaseResult.get_status(), buildNumber, new Integer(testCaseResult.get_testExecution_Time()).toString(), "", "", testSuitName, topologySetId, readExcel.TestSuitRole(), testCaseResult.get_comments());
 //testexecutiondetailid = davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(), testCycleId, testCaseResult.get_status(), testCaseResult.get_buildNo(), new Integer(testCaseResult.get_testExecution_Time()).toString(), testCaseResult.get_performanceExecutionDetailTable().get_performanceExecutionDetailId(), testCaseResult.get_executionDate().toString(), testSuitName,topologySetId);//no performance detail id
         }
@@ -6404,6 +7056,69 @@ exception_occured=true;
         }
     }
 
+    /**
+     * gets the test plan id from Testplan path
+     * @param String testplanpath : separated as path
+     * return String the testplan id
+     */
+    private String getTestPlanId(String testplanpath) throws DavosExecutionException, InterruptedException {
+        String result = null;
+        try {
+            if (testplanpath.contains(":")) {
+                result = davosclient.testplanpath_write(testplanpath);
+                return result;
+            } else {
+                throw new DavosExecutionException("Test plan name Must contain ':'");
+            }
+        } catch (DavosExecutionException ex) {
+            Log.Error("Controller/getTestPlanId:DavosExecutionException " + ex.getMessage());
+
+            result = ex.getLocalizedMessage();
+            System.exit(1);
+            return result;
+        }
+
+    }
+
+    /**
+     * gets the topologyset id from topologysetname
+     * @param String topologysetname 
+     * return String the topologysetid
+     */
+    private String getTopologySetId(String topologysetname) throws DavosExecutionException, InterruptedException {
+        String result = null;
+        try {
+            if (topologysetname.length() > 0) {
+                result = davosclient.topologyset_read(topologysetname);
+                return result;
+            } else {
+                throw new DavosExecutionException("Topology Set Name is null");
+            }
+        } catch (DavosExecutionException x) {
+            Log.Error("Controller/getTopologySetId:DavosExecutionException " + x.getMessage());
+            result = x.getMessage();
+            System.exit(1);
+            return result;
+
+        }
+    }
+    /*
+     * Saves the build tag 
+     * @param Testplan id and the build tag name
+     * 
+     */
+
+    private String saveBuildTag(String testplanid, String buildtag) throws DavosExecutionException, InterruptedException {
+        Log.Debug("Controller/saveBuildTag: TestPlanid " + testplanid + " Build tag " + buildtag);
+        try {
+            return davosclient.buildtag_write(testplanid, buildtag);
+        } catch (DavosExecutionException ee) {
+            Log.Error("Controller/saveBuildTag: Exception: " + ee.getMessage());
+            System.exit(1);
+            return ee.getMessage();
+        }
+    }
+
     /***
      * This will be executed on a separate thread..This will run the expanded
      * test case.
@@ -6447,9 +7162,13 @@ exception_occured=true;
                 tData.timeToExecute = 0;
                 tData.testCaseExecutionComments = StringUtils.EMPTY;
                 tData.testCaseStatus = "ready";
-                tData.testcasedescription = test.testCaseDescription;
-
+                if (StringUtils.isNotBlank(test.testCaseDescription)) {
+                    tData.testcasedescription = test.testCaseDescription;
+                } else {
+                    tData.testcasedescription = "";
+                }
                 executedTestCaseData.put(tData.testCaseID, tData);
+                //message("RunExpandTest: Description  "+tData.testcasedescription);
 //findVariablesValueForTestCase(test);
 //saveVariables(findVariablesValueForTestCase(test),test.testCaseID);
                 // At any cost save the TestCase ID to the result Database.
@@ -7121,20 +7840,21 @@ exception_occured=true;
         final Controller controller = new Controller();
         // controller.LoggedInUser();
         //geting the process id of the program
-
+//System.out.println(System.getProperty("java.library.path"));
 
 //Checking for jar file entry in ZugINI.xml
-        if (new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name).length > 0) {
+        if (new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path, inprocess_jar_xml_tag_attribute_name).length > 0) {
             int c = 0;
-            for (String package_names : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(external_jar_xml_tag_path, external_jar_xml_tag_attribute_name)) {
+            for (String package_names : new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path, inprocess_jar_xml_tag_attribute_name)) {
                 AtomInvoker ai = new AtomInvoker(package_names);
                 invokeAtoms.put(package_names, ai);
             }
 
             // invokeAtoms.loadJarFile(new ExtensionInterpreterSupport().readExternalJarFilePath().get(0));
         } else {
-            controller.message("Controller/Main: No external Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
+            controller.message("Controller/Main: No Inprocess Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
         }
+
 
         Controller.harnessPIDValue = Integer.parseInt((java.lang.management.ManagementFactory.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
 
@@ -7157,6 +7877,12 @@ exception_occured=true;
 
         try {
             controller.message("\n\nController/Main : Validating Command Line Arguments");
+//Jacob Test
+//            ContextVar.setContextVar("testing","testingvalue");
+//            ActiveXComponent test = new ActiveXComponent("Automature.ZugAPI");
+//            int response=Dispatch.call(test,"AlterContextVar","testing","newvalue").toInt();
+//            controller.message("Response "+response);
+//            controller.message("Ctx value "+ContextVar.getContextVar("testing"));
 
             Log.Debug("Controller/Main : Calling ProgramOptions.parse() to Parse program argument");
             controller.opts = ProgramOptions.parse(args);
@@ -7306,6 +8032,20 @@ exception_occured=true;
                 controller.message("Connection to Davos is successful.\n ");
                 // First task is to insert the test suite to the Database.
                 //  controller.SaveTestSuite();
+                if (StringUtils.isNotEmpty(controller.TestPlanPath) && StringUtils.isBlank(controller.TestPlanId)) {
+                    //controller.message("THe testplan path is "+controller.TestPlanPath);
+                    controller.TestPlanId = controller.getTestPlanId(controller.TestPlanPath);
+
+                }
+                if (StringUtils.isNotEmpty(controller.TopologySetName) && StringUtils.isBlank(controller.topologySetId)) {
+                    controller.topologySetId = controller.getTopologySetId(controller.TopologySetName);
+
+                }
+                //controller.message("The build tag "+controller.BuildTag );
+                if (StringUtils.isNotEmpty(controller.BuildTag)) {
+
+                    controller.BuildNo = controller.saveBuildTag(controller.TestPlanId, controller.BuildTag);
+                }
             }
 
             // Now run the test-case one by one -
