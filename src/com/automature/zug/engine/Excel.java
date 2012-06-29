@@ -2636,7 +2636,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             for (; index <= worksheet.getLastRowNum(); index++) {
                 Log.Debug("Excel/GetAbstractTestCaseSheetValues : Reading the Abstract TestCase Excel sheet at Index -> "
                         + index);
-
+//System.out.println("The description "+description);
                 HSSFCell col = worksheet.getRow(index).getCell(
                         ((short) (testCaseIndex)));
 
@@ -2651,9 +2651,12 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                         && valueInTestCaseColumn.toLowerCase().equals("comment")) {
                     col = worksheet.getRow(index).getCell(
                             ((short) (testCaseIndex + 1)));
+                    //System.out.println("The description 1c"+description);
                     if (col != null) {
+                        //System.out.println("Its not Nulll ");
                         description = GetCellValueAsString(col);
                     }
+                   
                     // system.out.println("\nTest Case Description : "+
                     // description);
                     Log.Debug("Excel/GetAbstractTestCaseSheetValues : This is a Comment Section/Row..Ignoring this as this is of no use to Automation. ");
@@ -2752,6 +2755,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     // / Read the TestCase Section of the Row
                     Log.Debug("Excel/GetAbstractTestCaseSheetValues : Calling ReadTestCase with row index as : "
                             + index);
+                    //System.out.println("The description 1d"+description);
                     testCase = ReadTestCase(worksheet, labelIndex, index,
                             testCaseIndex, description, nameSpace);
 
@@ -2850,14 +2854,14 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 Log.Debug("Excel/ReadVerificationSection : End of the Function.");
                 return null;
             }
-                  if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+                  if(property!=null&&property.toLowerCase().equalsIgnoreCase(NEGATIVE))
             {
                 Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
                 
                 verifyObj.isRowNegative=true;
                 
             }
-                  if(property!=null&&(property.toLowerCase().contains("neg-verify")||property.toLowerCase().contains("negative-verify")))
+                  if(property!=null&&(property.toLowerCase().equalsIgnoreCase("neg-verify")||property.toLowerCase().equalsIgnoreCase("negative-verify")))
             {
                 Log.Debug("Excel/ReadActionSection: Verification(only) is Negative ");
                 
@@ -2935,14 +2939,14 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             }
             Log.Debug("Excel/ReadVerificationSection : Row[" + index
                     + "] test case ID is isComment = " + verifyObj.isComment);
-       if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+       if(property!=null&&property.toLowerCase().equalsIgnoreCase(NEGATIVE))
             {
                 Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
                 
                 verifyObj.isRowNegative=true;
                 
             }
-                  if(property!=null&&(property.toLowerCase().contains("neg-verify")||property.toLowerCase().contains("negative-verify")))
+                  if(property!=null&&(property.toLowerCase().equalsIgnoreCase("neg-verify")||property.toLowerCase().equalsIgnoreCase("negative-verify")))
             {
                 Log.Debug("Excel/ReadActionSection: Verification(only) is Negative ");
                 
@@ -3228,6 +3232,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 return variableToFind;
             }
             if (variableToFind.contains("=")) {
+                //System.out.println("The Variable "+variableToFind);
                 Log.Debug("Excel/FindInMacroAndEnvTable : The Variable to Find contains an = sign ");
                 String[] splitVariableToFind = Excel.SplitOnFirstEquals(variableToFind); // .Split('=');
 
@@ -3284,8 +3289,9 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
 //                     }
                 }
                         //Checking for vector macro
-                else if(tempValue.startsWith("$$"))
+                else if(tempValue.startsWith("$$")&&!tempValue.contains("%"))
                 {
+                    //System.out.println("TempValue starts with -Prefix "+tempValPrefix+" Value: "+tempValue);
                     boolean macroFound=false;
                     tempValue=Utility.TrimStartEnd(tempValue, '$',1);
                     tempValue=AppendNamespace(tempValue, nameSpace);
@@ -3325,7 +3331,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                         tempValue));
             }                    
                     //checking for any vector macro
-            else if(variableToFind.startsWith("$$")) {
+            else if(variableToFind.startsWith("$$")&&!variableToFind.endsWith("%")) {
                 boolean macroFoundFlag=false;
                 tempValue=Utility.TrimStartEnd(tempValue, '$',1);
                 //System.out.println("FindMacro 2a->"+tempValue);
@@ -3418,7 +3424,8 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 + " and  Index of testCaseIndex column as : "
                 + testCaseIndex);
         HSSFCell col;
-
+        //Same description comming for other testcases.....
+//System.out.println("Testcaseid "+index +" TestcaseDescription->"+description);
         TestCase testCase = new TestCase();
 
         try {
@@ -3451,6 +3458,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
 
             testCase.testCaseDescription = description; // (string)((Range)worksheet.Cells[index,
             // (int)labelIndex["description"]]).Text.ToString();
+            
             Log.Debug("\n"
                     + String.format(
                     "Excel/ReadTestCase : Row[%d] test case ID = %s ",
@@ -3574,7 +3582,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 
                 return null;
             }
-            if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+            if(property!=null&&property.toLowerCase().equalsIgnoreCase(NEGATIVE))
             {
                 Log.Debug("Excel/ReadActionSection: Action(row) is Negative ");
                 actionObj.actionProperty=property.toLowerCase();
@@ -3582,7 +3590,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 
             }
          
-                    if(property!=null&&(property.toLowerCase().contains("neg-action")||property.toLowerCase().contains("negative-action")))
+                    if(property!=null&&(property.toLowerCase().contains("neg-action")||property.toLowerCase().equalsIgnoreCase("negative-action")))
             {
                 Log.Debug("Excel/ReadActionSection: Action(only) is Negative ");
                 
@@ -3671,14 +3679,14 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     && (property.contains("comment") || property.contains("rem"))) {
                 actionObj.isComment = true;
             }   
-            if(property!=null&&property.toLowerCase().contains(NEGATIVE))
+            if(property!=null&&property.toLowerCase().equalsIgnoreCase(NEGATIVE))
             {
                 Log.Debug("Excel/ReadActionSection: Action(row) is Negative ");
                 
                 actionObj.isNegative=true;
                 
             }
-            if(property!=null&&(property.toLowerCase().contains("neg-action")||property.toLowerCase().contains("negative-action")))
+            if(property!=null&&(property.toLowerCase().equalsIgnoreCase("neg-action")||property.toLowerCase().equalsIgnoreCase("negative-action")))
             {
                 Log.Debug("Excel/ReadActionSection: Action(only) is Negative ");
                 
@@ -3742,8 +3750,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                         // system.out.print("\nAction ArgValue " +
                         // argumentValue);
 //System.out.println("THE Argument sent "+argumentValue+" namt "+nameSpace);
-                        argumentValue = FindInMacroAndEnvTable(argumentValue,
-                                nameSpace);
+                        argumentValue = FindInMacroAndEnvTable(argumentValue, nameSpace);
                         Log.Debug("Excel/ReadActionSection : AFTER CALLING FindInMacroAndEnvTable -> Row["
                                 + index
                                 + "] ...actionArgument "
@@ -3780,6 +3787,8 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     + index
                     + " and  Index of Action column as : "
                     + actionIndex);
+            
+            //System.out.println("sheetName "+sheetName+"\ntestcase "+testCaseID+"\n Args "+actionObj.actionArguments);
             //Checking fot Molecule sheet and create the definition
             if (sheetName.equalsIgnoreCase(AbstractSheetName) || actionObj.sheetName.equalsIgnoreCase(AbstractSheetName)) {
                 //System.out.println("Testcase id=" + testCase.testCaseID + "\n" + actionObj.actionArguments);
@@ -4106,19 +4115,21 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 Log.Debug("Excel/GetTestCaseSheetValues : Reading the TestCase Excel sheet at Index -> "
                         + index);
                 String valueInTestCaseColumn = null;
-
+//System.out.println("The Descriptions 1d"+description);
                 col = worksheet.getRow(index).getCell((short) testCaseIndex);
                 if (col != null) {
                     valueInTestCaseColumn = GetCellValueAsString(col);
                 }
                 // / If this is a comment then Ignore
+                
                 if (valueInTestCaseColumn != null
                         && valueInTestCaseColumn.toLowerCase().equals("comment")) {
                     description = GetCellValueAsString(worksheet.getRow(index).getCell((short) (testCaseIndex + 1)));
-                    // system.out.print("\nTest case Description"+description);
+                    // System.out.print("\nTest case Description"+description);
                     Log.Debug("Excel/GetTestCaseSheetValues : This is a Comment Section/Row..Ignoring this as this is of no use to Automation. ");
                     continue;
                 }
+                //System.out.println("The Descriptions 2d"+description);
                 // / First checking for the Verification Methods
                 String valueInVerificationColumn = null;
 
@@ -4195,8 +4206,10 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     // / Read the TestCase Section of the Row
                     Log.Debug("Excel/GetTestCaseSheetValues : Calling ReadTestCase with row index as : "
                             + index);
+                    //System.out.println("The Descriptions 3d"+description);
                     testCase = ReadTestCase(worksheet, labelIndex, index,
                             testCaseIndex, description, nameSpace);
+                    description=null;
                 }
 
                 // / Checking the last Row and saving the
@@ -4221,6 +4234,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     }
                 }
             }
+
         } catch (Exception e) {
             Log.Error("Excel/GetTestCaseSheetValues : Exception occured while Getting TestCaseSheet Values, exception message is : "
                     + e.getMessage());

@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "ZUG"
-!define PRODUCT_VERSION "4.3"
+!define PRODUCT_VERSION "5.0"
 !define PRODUCT_PUBLISHER "Automature, Inc."
 !define PRODUCT_WEB_SITE "http://www.automature.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
@@ -55,7 +55,7 @@ Page custom JavaPage JavaPageLeave
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "ZugSetup-4.3-rc1.exe"
+OutFile "ZugSetup-5.0-rc3.exe"
 InstallDir "$PROGRAMFILES\Automature"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -117,11 +117,28 @@ Section "MainSection" SEC01
   SetOutPath "$TEMP"
   SetOverwrite on
   File "ZUG.zip"
+  IfFileExists $INSTDIR\ZUG\ZugINI.xml backup donot_backup
+  backup: 
+  Delete "$INSTDIR\ZUG\ZugINI.xml.bak"
+  Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.temp"
+  donot_backup:  
   !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
+  IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
+  interchange: 
+  Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
+  Rename "$INSTDIR\ZUG\ZugINI.xml.temp" "$INSTDIR\ZUG\ZugINI.xml"
+  donot_interchange:  
   ExecWait '"$INSTDIR\ZUG\Setup.cmd" "$R2\lib\ext\"'
   AccessControl::GrantOnFile \
   "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
   CopyFiles `$Java_SOURCE_TEXT\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
+  ReadRegStr $R0 HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "PROCESSOR_ARCHITECTURE"
+  ${If} $R0 == "x86"
+  CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x86\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
+  ${Else}
+  CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x64\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
+  ${EndIf}
+  nsExec::ExecToStack '"$INSTDIR\ZUG\runzug.Bat"'
   Delete "$TEMP\ZUG.zip"
 SectionEnd
 

@@ -1,14 +1,51 @@
 ZUG Release Notes.
-
-The Following has been Introduced in *V4.0*
- * Hibernate data base reporting removed, ZUG now reports the result through Davos Web service. 
- * Bugs fixed. #372,#282,#342,#345,#339,#338,#325,#254
- * MVM context variable introduced.
- * Named Argumet introduced. 
+The Following has been Introduced in *V5.0*
+ * SDK folder organised with Java and dll libs
+ * Fixed redmine issue for testcase comments Bug #478,Bug #482, Bug #483
+ * Partially fixed Bug #473
 Known Issues:
+ * JNI Dll loading Problem for 32bit and 64bit Operating System.
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+The Following has been Introduced in *V4.4*
+ * -toplogyset= command line tag added.
+ * Fixed redmine issue for testcycleid Bug #462
+The Following has been Introduced in *V4.3*
+ * JNI native Dll atom calling introduced
+ * COM Dll Calling introduced. Using Jacob
+ * SDK folder included for C# atom development 
+Known Issues:
+ * JNI Dll loading Problem for 32bit and 64bit Operating System.
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.	
+The Following has been Introduced in *V4.2*
+ * Negative Testing fixed
+ * Typo fixed.
+ * Molecule definition Exception added and fixed 
+ Known Issues:
  * Bug #384 is in working progress . Have the blank line errors.
  * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
 
+The Following has been Introduced in *V4.1*
+ * Bugs fixed. #398 #409 #417 #422(Variables are been reported while DB reporting. Null Test cycle are not generated. ThreadSafe Context Variable works)
+ * Poi jar file changed	
+ * Negative testing introduced.  
+ * Named Argumet Exception Messages reformed. 
+ Known Issues:
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+
+
+
+The Following has been Introduced in *V4.0*
+ * Hibernate data base reporting removed, ZUG now reports the result through Davos Web service. 
+ * Bugs fixed. #372,#282,#342,#345,#339,#338,#325,#254,#386,#387
+ * MVM context variable introduced.
+ * Named Argumet introduced. 
+ * Builtin packages are now named to Inprocess Atoms.
+Known Issues:
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
 
 The Following has been Introduced in *V3.0*
  * External jar file support for calling Builtin Atom calling. 

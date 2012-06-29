@@ -50,7 +50,7 @@
 	</language>
 	</languages>
 	                    <inprocesspackages>
-	        <inprocesspackage name="">
+	        <inprocesspackage name="" language="">
 	      <file-path></file-path>
 	      <jar-package></jar-package>
 	      <class-name></class-name>
