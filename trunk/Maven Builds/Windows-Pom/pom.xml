@@ -5,16 +5,16 @@
     <groupId>com.automature</groupId>
     <artifactId>ZUG</artifactId>
     <packaging>jar</packaging>
-    <version>2.2-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
     <name>ZUG from scatch</name>
     <organization>
         <name>Automature LLC</name>
-        <url>http://www.automature.com</url>
+        <url>http://automature.com</url>
     </organization>
-    <url>http://www.automature.com</url>
+    <url>http://automature.com</url>
     <scm>
-        <connection>scm:svn:http://automature.com:90/svn/zug/branches/V3.1-dev</connection>
-        <developerConnection>scm:svn:http://automature.com:90/svn/zug/branches/V3.1-dev</developerConnection>
+        <connection>scm:svn:http://svn.automature.com:90/svn/zug/branches/V5.2-dev</connection>
+        <developerConnection>scm:svn:http://svn.automature.com:90/svn/zug/branches/V5.2-dev</developerConnection>
         <url></url>
     </scm>
     <properties>
@@ -25,7 +25,7 @@
         <sourceDirectory>export</sourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
         <finalName>${project.artifactId}</finalName>
-        <resources>
+     <!--   <resources>
           <resource>
               <directory>${project.build.sourceDirectory}/Automation/DatabaseLayer</directory>
               <includes><include>*.xml</include></includes>
@@ -37,6 +37,7 @@
                <targetPath>${project.build.outputDirectory}</targetPath>
               </resource>
         </resources>
+        -->
         <plugins>
           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -81,11 +82,12 @@
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.sourceDirectory}/MANIFEST.MF</manifestFile>
-                        <manifest>
-                            <main-class>ZUG.Controller</main-class>
+                       <manifest>
+                            <main-class>com.automature.zug.engine.Controller</main-class>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
+                      
                     </archive>
                     
                 </configuration>
@@ -120,7 +122,7 @@
                            <arg value="makensis.exe" />
                            <arg value="./NSIS/setup.nsi" />
                             </exec>
-                           <move file="./NSIS/ZugSetup-3.1.exe" todir="./" />
+                           <move file="./NSIS/ZugSetup-5.2.exe" todir="./" />
                         
                     </target>
                 </configuration>
@@ -148,13 +150,7 @@
       <version>1.2.15</version>
       <type>jar</type>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <version>3.2.7.ga</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
+        <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
@@ -163,7 +159,7 @@
     <dependency>
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
-      <version>2.5.1-final-20040804</version>
+      <version>3.1-FINAL</version>
       <type>jar</type>
     </dependency>
     <dependency>
@@ -188,6 +184,27 @@
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-classloader</artifactId>
         <version>3.6</version>
+        </dependency>
+       <!-- <dependency>
+            <groupId>net.sf.jacob-project</groupId>
+            <artifactId>jacob</artifactId>
+            <version>1.14.3</version>
+        </dependency>
+        -->
+       
+        <dependency>
+        <groupId>com.automautre</groupId>
+        <artifactId>automature-davosapi</artifactId>
+        <version>1.0</version>
+        <scope>system</scope>
+        <systemPath>C:/Documents and Settings/Administrator/My Documents/Maven workspace/Zug-Development/locallib/automature-davosapi.jar</systemPath>
+        </dependency>
+        <dependency>
+        <groupId>com.jacob</groupId>
+        <artifactId>jacob</artifactId>
+        <version>1.17-M2</version>
+        <scope>system</scope>
+        <systemPath>C:/Documents and Settings/Administrator/My Documents/Maven workspace/Zug-Development/locallib/jacob.jar</systemPath>
         </dependency>
   </dependencies>
 </project>
