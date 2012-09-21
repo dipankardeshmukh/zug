@@ -7,15 +7,12 @@ package com.automature.zug.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import jline.ConsoleReader;
@@ -26,10 +23,7 @@ import com.automature.zug.engine.Controller;
 import com.automature.zug.exceptions.MoleculeDefinitionException;
 import com.automature.zug.util.ExtensionInterpreterSupport;
 import com.automature.zug.util.Utility;
-import java.lang.management.ManagementFactory;
 
-import java.lang.management.RuntimeMXBean;
-import java.util.Collection;
 import java.util.Collections;
 
 
@@ -564,13 +558,14 @@ else
         for (Object macros : tableKey) {
             if (macros.toString().startsWith("$$")) {
                 String macro_arr[] = macroList.get(macros).toString().split(",");
+                //System.out.println("The array value "+macro_arr[0]+"----"+macro_arr[1]);
                 if (macro_arr[0].startsWith("{$$") || macro_arr[0].startsWith("#")) {
                     continue;
                 } else {
                     count = macro_arr.length;
                 }
                 cardinalNumber *= count;
-                // System.out.println(macro_arr[1] + " This is array length for every multi-valued macro- " + count);
+                 //System.out.println(macro_arr[1] + " This is array length for every multi-valued macro- " + count);
             }
 
         }
@@ -715,7 +710,7 @@ else
             // system.out.println(String.format("READING Config SHEET OF %s" ,
             // inputFileName));
 
-            ReadConfigSheet(_workBook);
+            ReadConfigSheet(_workBook, inputFileName);
             readHashTable(_configSheetHashTable);
 
             Log.Debug(String.format("Excel/ReadExcel : The config Sheet - %s of Excel Sheet %s read successfully.",
@@ -805,9 +800,9 @@ else
             //System.out.println("EXCEL/READ:: The Cardinality is " + getCardinality(_macroSheetHashTable));
             //System.out.println("The Macrosheet Hash\t" + _macroSheetHashTable);
 
-            if (!checkOptimalityForCartesianProduct(Utility.getMaxJVMMemorySize(Runtime.getRuntime()), new Integer(getCardinalityForMVM(_macroSheetHashTable)).toString())) {
-                throw new Exception("\nCombination Of MVM values Exceeded permisible limit :: Not Comapatibile \nPlease Contact Automature Support Team. Email: support@automature.com");
-            }
+//            if (!checkOptimalityForCartesianProduct(Utility.getMaxJVMMemorySize(Runtime.getRuntime()), new Integer(getCardinalityForMVM(_macroSheetHashTable)).toString())) {
+//                throw new Exception("\nCombination Of MVM values Exceeded permisible limit :: Not Comapatibile \nPlease Contact Automature Support Team. Email: support@automature.com");
+//            }
 
             Log.Debug(String.format("Excel/ReadExcel : The Macro Sheet - %s of Excel Sheet %s read successfully.",
                     MacroSheetName, inputFileName));
@@ -907,8 +902,8 @@ else
      * @param workBook
      * @throws Exception
      */
-    void ReadConfigSheet(HSSFWorkbook workBook) throws Exception {
-
+    void ReadConfigSheet(HSSFWorkbook workBook, String inputFileName) throws Exception {
+    	
         Log.Debug(String.format("Excel/ReadConfigSheet : Start of the Function with ConfigSheetName as %s",
                 ConfigSheetName));
 
@@ -952,10 +947,13 @@ else
             GetKeyValuePair(workSheet, _configSheetHashTable, "config", null);
             Log.Debug("Excel/ReadConfigSheet : The values from the Config sheet is read successfully.");
             String _nested_include_list = "", _nested_scriptlocation_list = "";
+            Log.Debug("Excel/ReadConfigSheet : calling readNestedIncludes"+inputFileName+"  sheets"+_externalSheets);
 
             for (String nested : _externalSheets) {
+     
                 //forDebug("Excel/ReadConfigSheet : the nested includes " + readNestedIncludes(nested));
-                _nested_include_list += readNestedIncludes(nested);
+                _nested_include_list += readNestedIncludes(nested, inputFileName);
+ 
 
             }
             //forDebug("Excel/ReadConfigSheet : the nested includes "+_nested_include_list);
@@ -1095,8 +1093,7 @@ else
     }
     //This function will read include files and return the list of nested include files
 
-    String readNestedIncludes(String nestedexternalfile) {
-
+    String readNestedIncludes(String nestedexternalfile, String inputFileName) {
         File inputFile = null;
         FileInputStream extFile = null;
         String includePathList = "";
@@ -1146,10 +1143,19 @@ else
                             if (Path.isEmpty()) {
                                 continue;
                             } else {
+                            	
+                            	String actual_path=Controller.getXLSpath();
+                            	File inputFiles = new File(actual_path);
+                            	inputFiles.getParent();
                                 String actualPath = "";
-                                actualPath += ProgramOptions.workingDirectory
+
+                                actualPath += inputFile.getParent()
                                         + Controller.SLASH + Path + ",";
+
+                                //System.out.println("This the actual Path\t"+ actualPath);
                                 includePathList += actualPath;
+                            	
+                
                             }
                         }
 
@@ -1231,29 +1237,32 @@ else
                             break;
                         } else {
                             String[] includeValues = strValue.split(",");
-                            String inlcudelist = "";
+                            String includelist = "";
+                            String actual_path=Controller.getXLSpath();
                             for (String Path : includeValues) {
 
                                 if (Path.contains(":") || Path.startsWith("/")) {
-                                    inlcudelist += Path + ",";
+                                	includelist += Path + ",";
                                     //AddToExternalSheets(strKey, strValue);
                                 } else {
 
                                     if (Path.isEmpty()) {
                                         continue;
                                     } else {
+                                    	File inputFile = new File(actual_path);
+                                    	inputFile.getParent();
                                         String actualPath = "";
 
-                                        actualPath += ProgramOptions.workingDirectory
+                                        actualPath += inputFile.getParent()
                                                 + Controller.SLASH + Path + ",";
 
-                                        //System.out.println("This the actual Path\t" actualPath);
-                                        inlcudelist += actualPath;
-                                    }   //AddToExternalSheets(strKey, actualPath);
+                                        //System.out.println("This the actual Path\t"+ actualPath);
+                                        includelist += actualPath;
+                                    } 
                                 }
                             }
-                            //forDebug("GetKeyValuePair:: The full path ---> " + inlcudelist);
-                            AddToExternalSheets(strKey, inlcudelist);
+                            Log.Debug("GetKeyValuePair::"+strKey+" The full path ---> " + includelist);
+                            AddToExternalSheets(strKey, includelist);
 
                         }
                     } else {
@@ -1286,8 +1295,10 @@ else
                     // System.out.println("key iserted->"+strKey+"\tvalue given--->"+ProgramOptions.workingDirectory+"\\"+strValue);
 
                     if (Controller.nyonserver) {
+                         //System.out.println("Molecule to be parsed "+_externalSheets);
                         for (String moleculefile : _externalSheets) {
-                            System.out.println(xmlfile.genarateXML(moleculefile));
+                           // System.out.println("Molecule files "+moleculefile);
+                            System.out.println(xmlfile.genarateXML(moleculefile)+" Molecule file: "+moleculefile);
                         }
                     }
                 }
@@ -1358,6 +1369,7 @@ else
                     Log.Debug(String.format("Excel/ExpandMacrosValue : Macro value =%s. Working on %s",
                             macroValue, tempStringToExpand));
 //System.out.println("The Temp Value "+tempStringToExpand+" \n Macro Key "+macroKey+"\n Macro Value "+macroValue); 
+                    //if (tempStringToExpand.startsWith("$$")) {
                     if (tempStringToExpand.startsWith("$$")) {
                         tempStringToExpand=Utility.TrimStartEnd(tempStringToExpand, '$', 1);
                        tempStringToExpand="$"+tempStringToExpand;
@@ -1381,8 +1393,10 @@ else
                             //newMacroValue = newMacroValue.replace("{", "~#");
                             //newMacroValue = newMacroValue.replace("}", "#~");
                             //Change from 
-                            newMacroValue = newMacroValue.replace('{', '~');
-                            newMacroValue = newMacroValue.replace('}', '~');
+//                            newMacroValue = newMacroValue.replace('{', '~');
+//                            newMacroValue = newMacroValue.replace('}', '~');
+                            newMacroValue = StringUtils.replace(newMacroValue,"{", "$~$");
+                            newMacroValue = StringUtils.replace(newMacroValue,"}", "$~$");
                             //newMacroValue = newMacroValue.replace('{', '#');
                             //newMacroValue = newMacroValue.replace('}', '#');
                             //newMacroValue="~"+newMacroValue+"~";
@@ -1902,8 +1916,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             for (int i = 0; i < qualifiedPaths.length; i++) {
                 if (new File(qualifiedPaths[i]).exists()) {
                     Log.Debug("\nExternal sheets : " + qualifiedPaths[i]);
-                    System.out.println("\nExternal sheets : "
-                            + qualifiedPaths[i]);
+
                     _externalSheets.add(qualifiedPaths[i]);
                 }
             }
@@ -2564,6 +2577,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
     // / Function to read the Data from the Abstract TestCase sheet. This
     // function will read the Abstract TestCase sheet and will
     // / populate the values in the DataStructures appropriately.
+    boolean molecule_error=false;
     private void GetAbstractTestCaseSheetValues(HSSFSheet worksheet,
             String nameSpace) throws Exception, MoleculeDefinitionException {
         Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
@@ -2632,11 +2646,12 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     + index);
 
             String description = null;
-
+            
+//System.out.println("The RowCount "+worksheet.getLastRowNum());
             for (; index <= worksheet.getLastRowNum(); index++) {
                 Log.Debug("Excel/GetAbstractTestCaseSheetValues : Reading the Abstract TestCase Excel sheet at Index -> "
                         + index);
-//System.out.println("The description "+description);
+
                 HSSFCell col = worksheet.getRow(index).getCell(
                         ((short) (testCaseIndex)));
 
@@ -2645,25 +2660,30 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 if (col != null) {
                     valueInTestCaseColumn = GetCellValueAsString(col);
                 }
-
+//System.out.println("The values in Testcase "+valueInTestCaseColumn);
                 // / If this is a comment then Ignore
                 if (StringUtils.isNotBlank(valueInTestCaseColumn)
                         && valueInTestCaseColumn.toLowerCase().equals("comment")) {
                     col = worksheet.getRow(index).getCell(
                             ((short) (testCaseIndex + 1)));
-                    //System.out.println("The description 1c"+description);
+                   
                     if (col != null) {
-                        //System.out.println("Its not Nulll ");
+                        
                         description = GetCellValueAsString(col);
+                        //System.out.println("Its not Nulll "+description);
                     }
                    
                     // system.out.println("\nTest Case Description : "+
                     // description);
+                    if(StringUtils.isNotBlank(description)&&index==worksheet.getLastRowNum())
+                    {
+                        throw new Exception("Comment can't be provided at last row of "+nameSpace+".xls Sheet: molecule Row: "+worksheet.getLastRowNum());
+                  
+                    }
                     Log.Debug("Excel/GetAbstractTestCaseSheetValues : This is a Comment Section/Row..Ignoring this as this is of no use to Automation. ");
                     continue;
                 }
-
-                // / First checking for the Verification Methods
+              // / First checking for the Verification Methods
 
                 String valueInVerificationColumn = null;
                 col = worksheet.getRow(index).getCell(((short) (verifyIndex)));
@@ -2761,6 +2781,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
 
 
                     testCase._testcasemoleculeArgDefn.addAll(actionObj._actionmoleculeArgDefn);
+                    description=null;
 
                 }
 //System.out.println("The index of row "+index+" the last row "+worksheet.getLastRowNum());
@@ -3425,7 +3446,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 + testCaseIndex);
         HSSFCell col;
         //Same description comming for other testcases.....
-//System.out.println("Testcaseid "+index +" TestcaseDescription->"+description);
+//System.out.println("Testcaseid "+index +" TestcaseDescription->"+description+" Namespace "+nameSpace);
         TestCase testCase = new TestCase();
 
         try {
@@ -3796,6 +3817,10 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 if (actionObj.actionName.startsWith("#define")) {
                     for (String var_key : actionObj.actionArguments) {
 
+                        if(var_key.startsWith("#")||var_key.startsWith("$"))
+                        {
+                            throw new MoleculeDefinitionException("Variable name incosistent. Can't be started with # or $. Molecule: "+actionObj.testCaseID);
+                        }
                         actionObj._actionmoleculeArgDefn.add(var_key.toLowerCase());
 
                     }
@@ -4115,8 +4140,9 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 Log.Debug("Excel/GetTestCaseSheetValues : Reading the TestCase Excel sheet at Index -> "
                         + index);
                 String valueInTestCaseColumn = null;
-//System.out.println("The Descriptions 1d"+description);
+//System.out.println("The GetTestCAse :: "+worksheet.getRow(index).getCell((short)testCaseIndex));
                 col = worksheet.getRow(index).getCell((short) testCaseIndex);
+                
                 if (col != null) {
                     valueInTestCaseColumn = GetCellValueAsString(col);
                 }
@@ -4125,7 +4151,12 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 if (valueInTestCaseColumn != null
                         && valueInTestCaseColumn.toLowerCase().equals("comment")) {
                     description = GetCellValueAsString(worksheet.getRow(index).getCell((short) (testCaseIndex + 1)));
-                    // System.out.print("\nTest case Description"+description);
+                     //System.out.println("\nTest case Description::GETTESTCASE:: "+description);
+                     if(StringUtils.isNotBlank(description)&&index==worksheet.getLastRowNum())
+                     {
+                         //System.out.println("The comment is provided in last row. ");
+                         throw new Exception("Comment cannot be provided in "+nameSpace+".xls Sheet: testcase Row: "+worksheet.getLastRowNum());
+                     }
                     Log.Debug("Excel/GetTestCaseSheetValues : This is a Comment Section/Row..Ignoring this as this is of no use to Automation. ");
                     continue;
                 }
@@ -4234,6 +4265,16 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     }
                 }
             }
+//            for(TestCase ts:testCases)
+//            {
+//                //System.out.println("EXCEL/GetTestCaseSheetValues:: The testcase name "+ts.testCaseID);
+//            if(ts.testCaseID.equalsIgnoreCase("moltest"))
+//            {
+//                
+//                for(Action ac:ts.actions)
+//                System.out.println("arguments are "+ac.actionArguments);
+//            }
+//            }
 
         } catch (Exception e) {
             Log.Error("Excel/GetTestCaseSheetValues : Exception occured while Getting TestCaseSheet Values, exception message is : "
