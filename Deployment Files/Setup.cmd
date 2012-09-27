@@ -1,6 +1,6 @@
 :: Automation - It contains command to install ZUG.
 :: Author : Gurpreet Anand
-:: Modiied by : Nitish Rawat on 23-07-2010,Sankha on 05-01-2012,Chayan on 08-07-2011
+:: Modiied by : Nitish Rawat on 23-07-2010,Sankha on 05-01-2012,Chayan on 08-07-2011,Sankha on 12-06-2012
 :: © Copyright 2009 Automature Inc.. All Rights Reserved.
 
 cls
@@ -74,6 +74,7 @@ Echo.
 Echo. ---------------------------------------------------
 ECHO. Successfully installed ZUG and its Dependent Files.
 ECHO. runZUG.bat location set in System PATH variables.
+
 
 ipconfig/all > config.txt
 Echo.
