@@ -21,12 +21,12 @@ ECHO Automation Started
 ECHO --------------------------------------------------------------------------------
 
 :: Deleting the Temporary Files (ANy old Temporary Files)
-IF EXIST *.txt del *.txt
+::IF EXIST *.txt del *.txt
 
 ZUG -jar ZUG.jar %* %cwd%
 ::echo %* %cwd%
 :: Deleting the Temporary Files that are created as part of the Execution
-IF EXIST *.txt del *.txt
+::IF EXIST *.txt del *.txt
 
 ECHO --------------------------------------------------------------------------------
 ECHO Automation Finished.

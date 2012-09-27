@@ -51,7 +51,9 @@ public class Excel {
     public static final String NEGATIVE="negative";
     private static int counter;
     static XMLWriter xmlfile;
-    // Variable to store total number of Action and Verification Arguments.
+    private String xlsfilepath=StringUtils.EMPTY;
+
+	// Variable to store total number of Action and Verification Arguments.
     private int TotalActionArgs = 0;
     private int TotalVerificationArgs = 0;
     private Double default_cardinality=new Double(10);
@@ -154,7 +156,19 @@ public class Excel {
             return 60 / 2 * 60;
         }
     }
+    /**
+	 * @return the xlsfilepath
+	 */
+	public String getXlsFilePath() {
+		return xlsfilepath;
+	}
 
+	/**
+	 * @param xlsfilepath the xlsfilepath to set
+	 */
+	public void setXlsFilePath(String xlsfilepath) {
+		this.xlsfilepath = xlsfilepath;
+	}
     /**
      * @return ScriptLocation
      */
@@ -710,7 +724,7 @@ else
             // system.out.println(String.format("READING Config SHEET OF %s" ,
             // inputFileName));
 
-            ReadConfigSheet(_workBook, inputFileName);
+            ReadConfigSheet(_workBook);
             readHashTable(_configSheetHashTable);
 
             Log.Debug(String.format("Excel/ReadExcel : The config Sheet - %s of Excel Sheet %s read successfully.",
@@ -902,8 +916,8 @@ else
      * @param workBook
      * @throws Exception
      */
-    void ReadConfigSheet(HSSFWorkbook workBook, String inputFileName) throws Exception {
-    	
+    void ReadConfigSheet(HSSFWorkbook workBook) throws Exception {
+
         Log.Debug(String.format("Excel/ReadConfigSheet : Start of the Function with ConfigSheetName as %s",
                 ConfigSheetName));
 
@@ -947,13 +961,10 @@ else
             GetKeyValuePair(workSheet, _configSheetHashTable, "config", null);
             Log.Debug("Excel/ReadConfigSheet : The values from the Config sheet is read successfully.");
             String _nested_include_list = "", _nested_scriptlocation_list = "";
-            Log.Debug("Excel/ReadConfigSheet : calling readNestedIncludes"+inputFileName+"  sheets"+_externalSheets);
 
             for (String nested : _externalSheets) {
-     
                 //forDebug("Excel/ReadConfigSheet : the nested includes " + readNestedIncludes(nested));
-                _nested_include_list += readNestedIncludes(nested, inputFileName);
- 
+                _nested_include_list += readNestedIncludes(nested);
 
             }
             //forDebug("Excel/ReadConfigSheet : the nested includes "+_nested_include_list);
@@ -1017,7 +1028,7 @@ else
     }
     //This function will read include files and return the list of nested script locations.
 
-    String readNestedScriptLocations(String nestedexternalfile) {
+    private String readNestedScriptLocations(String nestedexternalfile) {
 
         File inputFile = null;
         FileInputStream extFile = null;
@@ -1093,7 +1104,8 @@ else
     }
     //This function will read include files and return the list of nested include files
 
-    String readNestedIncludes(String nestedexternalfile, String inputFileName) {
+    private String readNestedIncludes(String nestedexternalfile) {
+
         File inputFile = null;
         FileInputStream extFile = null;
         String includePathList = "";
@@ -1132,9 +1144,12 @@ else
                     }
                 }
                 if (_configSheetKeys[10].compareTo(extrKey) == 0) {
-                    String[] includeValues = extrValue.split(",");
+                	//System.out.println("The paths are "+extrValue);
+                	String[] includeValues = extrValue.split(",");
 
+                    
                     for (String Path : includeValues) {
+                    	
                         if (Path.contains(":") || Path.startsWith("/")) {
                             //forDebug("Excel/readNestedInclude:: The include files " + Path);
                             includePathList += Path + ",";
@@ -1143,19 +1158,15 @@ else
                             if (Path.isEmpty()) {
                                 continue;
                             } else {
-                            	
-                            	String actual_path=Controller.getXLSpath();
-                            	File inputFiles = new File(actual_path);
-                            	inputFiles.getParent();
+                            	System.out.println("The file name "+this.getXlsFilePath());
                                 String actualPath = "";
-
-                                actualPath += inputFile.getParent()
-                                        + Controller.SLASH + Path + ",";
-
-                                //System.out.println("This the actual Path\t"+ actualPath);
+                                //Implement the Inlcule file path issue.
+                                File inputxlsfile=new File(this.getXlsFilePath());
+                                
+                                //actualPath += ProgramOptions.workingDirectory+ Controller.SLASH + Path + ",";
+                                actualPath+=inputxlsfile.getParent()+Controller.SLASH+Path+",";
+                                //System.out.println("This is the file location of include "+actualPath);
                                 includePathList += actualPath;
-                            	
-                
                             }
                         }
 
@@ -1237,32 +1248,29 @@ else
                             break;
                         } else {
                             String[] includeValues = strValue.split(",");
-                            String includelist = "";
-                            String actual_path=Controller.getXLSpath();
+                            String inlcudelist = "";
                             for (String Path : includeValues) {
 
                                 if (Path.contains(":") || Path.startsWith("/")) {
-                                	includelist += Path + ",";
+                                    inlcudelist += Path + ",";
                                     //AddToExternalSheets(strKey, strValue);
                                 } else {
 
                                     if (Path.isEmpty()) {
                                         continue;
                                     } else {
-                                    	File inputFile = new File(actual_path);
-                                    	inputFile.getParent();
                                         String actualPath = "";
 
-                                        actualPath += inputFile.getParent()
-                                                + Controller.SLASH + Path + ",";
-
-                                        //System.out.println("This the actual Path\t"+ actualPath);
-                                        includelist += actualPath;
-                                    } 
+           File inputxlsfile=new File(this.getXlsFilePath());
+                                        //actualPath += ProgramOptions.workingDirectory+ Controller.SLASH + Path + ",";
+actualPath+=inputxlsfile.getParent()+Controller.SLASH+Path+",";
+                                        //System.out.println("This the actual Path\t"+actualPath);
+                                        inlcudelist += actualPath;
+                                    }   //AddToExternalSheets(strKey, actualPath);
                                 }
                             }
-                            Log.Debug("GetKeyValuePair::"+strKey+" The full path ---> " + includelist);
-                            AddToExternalSheets(strKey, includelist);
+                            //forDebug("GetKeyValuePair:: The full path ---> " + inlcudelist);
+                            AddToExternalSheets(strKey, inlcudelist);
 
                         }
                     } else {
@@ -1276,8 +1284,9 @@ else
                             } else {
                                 String actualPath = "";
                                 {
-                                    actualPath += ProgramOptions.workingDirectory
-                                            + Controller.SLASH + commandline_include + ",";
+                                	File inputxlsfile=new File(this.getXlsFilePath());
+                                    //actualPath += ProgramOptions.workingDirectory+ Controller.SLASH + commandline_include + ",";
+                                    actualPath+=inputxlsfile.getParent()+Controller.SLASH+commandline_include + ",";
                                 }
                                 commmandline_includelist += actualPath;
                             }
@@ -1916,7 +1925,8 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             for (int i = 0; i < qualifiedPaths.length; i++) {
                 if (new File(qualifiedPaths[i]).exists()) {
                     Log.Debug("\nExternal sheets : " + qualifiedPaths[i]);
-
+                    System.out.println("\nExternal sheets : "
+                            + qualifiedPaths[i]);
                     _externalSheets.add(qualifiedPaths[i]);
                 }
             }

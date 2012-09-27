@@ -47,7 +47,7 @@ import com.automature.davos.exceptions.DavosExecutionException;
 //import DatabaseLayer.Testplan;
 public class Controller extends Thread {
 	// Variables for checking Program options
-	private static String xls_path="";
+
 	private String helpMessage = StringUtils.EMPTY;
 	private String versionMessage = StringUtils.EMPTY;
 	Excel readExcel;
@@ -86,7 +86,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.3." + "20120921" + ".099";
+	private static String Version = "ZUG Premium 5.3." + "20120926" + ".100";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -94,7 +94,7 @@ public class Controller extends Thread {
 	// Assuming that the Test Plan Initialization will Work Fine.
 	boolean initWorkedFine = true;
 	private static String manualTestCaseID = StringUtils.EMPTY;
-	private static String excludeTestCaseID =StringUtils.EMPTY;
+	private static String excludeTestCaseID=StringUtils.EMPTY;
 	private static String testcasesNotPresent = StringUtils.EMPTY;
 	private Hashtable<String, ExecutedTestCase> executedTestCaseData = new Hashtable<String, ExecutedTestCase>();
 	// Hashtable to store the name key value pair of the Command line macro
@@ -165,12 +165,6 @@ public class Controller extends Thread {
 	/*
 	 * Constructor that initializes the program options.
 	 */
-	static void setXLSpath(String path){
-		xls_path=path;
-	}
-	static String getXLSpath(){
-		return(xls_path);
-	}
 	public Controller() {
 		StringBuilder helpMessagebuf = new StringBuilder();
 		versionMessage = Version;
@@ -680,7 +674,6 @@ public class Controller extends Thread {
 				Log.Debug("Controller/GetOptions: ManualTestCase ID is not specified.");
 				manualTestCaseID = StringUtils.EMPTY;
 				excludeTestCaseID =opts.getString("excludeTestCaseID", null);
-
 				// message("No specific testcase is invoked\n All testcases will be executed.");
 			} else {
 				// message("The manual Testcase "+manualTestCaseID);
@@ -1289,7 +1282,7 @@ public class Controller extends Thread {
 				|| actionValue.toLowerCase().contains("=##")
 				|| actionValue.toLowerCase().contains("=%#")) {
 			namedArgFlag = true;
-		} else if (StringUtils.countMatches(actionValue, "#") == 1) {
+		} else if (StringUtils.countMatches(actionValue, "#") >=1&&!actionValue.endsWith("##")) {
 
 			if (actionValue.toCharArray().length > 1) {
 				namedArgFlag = true;
@@ -1661,7 +1654,7 @@ String token;
                                        //message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value, temp_value_split[0], temp_value_split[1]));
                                     	if(token.startsWith("#"))
                                     	{
-                                    		token=token.replaceFirst("#","");
+                                    		token=token.replace("#","");
                                     	}
                                     	actionVal=replaceStringOnly(token, temp_value_split[0],temp_value_split[1]);
 //                                        if (isKeyEnabled) {
@@ -1706,7 +1699,7 @@ String token;
                             if (indexNo < 0) {
                                 throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ", value, test._testcasemoleculeArgDefn));
                             }
-                            actionVal=replaceStringOnly(token, test._testcasemoleculeArgDefn.get(indexNo),argumentValues.get(indexNo)).replaceFirst("#","");
+                            actionVal=replaceStringOnly(token, test._testcasemoleculeArgDefn.get(indexNo),argumentValues.get(indexNo)).replace("#","");
                             	//TODO enhance the code for replacing the code.. putting %% for contextvariable for also for name= value pair
 //                            if (isThisAContextVar) {
 //
@@ -1720,7 +1713,8 @@ String token;
                                 actionVal = key + "=" + actionVal;
                                 //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()))); 
                             }
-                            //message("ABS: The action value is "+actionVal.replace("#",""));
+                            
+                            //message("ABS: The action value is "+actionVal);
                             
 
                         }
@@ -2779,28 +2773,33 @@ String token;
 				}
 				// message("Expndd:: The Action arguments "+tempTestCase.actions.get(1).actionArguments);
 				// message("Testcase ID "+tempTestCase.testCaseID);
+				
 				if (manualTestCaseID.contains(",")) {
-					if (checkWithCommandLineIfComma(tempTestCase).testCaseID
+					if (checkWithCommandLineInput(tempTestCase).testCaseID
 							.equalsIgnoreCase("Not Present")) {
 						// message("Tempo Test Case is "+tempTestCase.testCaseID);
 						// continue;
 					} else {
 						// message("Temp case added "+tempTestCase.testCaseID);
 						tempTestCases
-								.add(checkWithCommandLineIfComma(tempTestCase));
-					}
+								.add(checkWithCommandLineInput(tempTestCase));
+						
+						
+											}
 
 				} else {
 					// message("Not Comma Separted command Line");
-					if (checkWithCommandLine(tempTestCase).testCaseID
+					if (checkWithCommandLineInput(tempTestCase).testCaseID
 							.equalsIgnoreCase("Not Present")) {
 						// message("Tempo Test Case is "+tempTestCase.testCaseID);
 						// continue;
 					} else {
 						// message("Temp case added "+tempTestCase.testCaseID);
-						tempTestCases.add(checkWithCommandLine(tempTestCase));
+						tempTestCases.add(checkWithCommandLineInput(tempTestCase));
 					}
 				}
+				
+				
 
 			}
 		}
@@ -2812,11 +2811,6 @@ String token;
 			// test.testCaseID);
 			return new TestCase[] { test };
 		}
-
-		Log.Debug("Controller/ExpandTestCase: Returning "
-				+ tempTestCases.size()
-				+ " testcase after Expansion. End of function with TestCase ID is "
-				+ test.testCaseID);
 		
 		if(excludeTestCaseID!=null)
 		{
@@ -2852,6 +2846,12 @@ String token;
 			tempTestCases.removeAll(removeTestCase);
 		}
 
+
+		Log.Debug("Controller/ExpandTestCase: Returning "
+				+ tempTestCases.size()
+				+ " testcase after Expansion. End of function with TestCase ID is "
+				+ test.testCaseID);
+
 		TestCase[] tempT = new TestCase[tempTestCases.size()];
 		return tempTestCases.toArray(tempT);
 	}
@@ -2863,7 +2863,7 @@ String token;
 	 * 
 	 * @return testcase
 	 */
-	private TestCase checkWithCommandLineIfComma(TestCase tempcom) {
+	private TestCase checkWithCommandLineInput(TestCase tempcom) {
 
 		// Implement the code
 		TestCase command_line_testcase = new TestCase();
@@ -2887,6 +2887,18 @@ String token;
 					// " testcase " + tempcom.testCaseID);
 					break;
 				}
+				else if(tempcom.testCaseID.equalsIgnoreCase("init")||tempcom.testCaseID.equalsIgnoreCase("cleanup"))
+				{
+					command_line_testcase=tempcom;
+					break;
+				}
+				else if(tempcom.parentTestCaseID.equalsIgnoreCase("init")||tempcom.parentTestCaseID.equalsIgnoreCase("cleanup"))
+				{
+					command_line_testcase=tempcom;
+					break;
+				}
+				
+				
 
 			} else {
 				if (manual.equalsIgnoreCase(tempcom.parentTestCaseID)) {
@@ -2899,6 +2911,16 @@ String token;
 					command_line_testcase = tempcom;
 					// message("checkWithCommandLineIfComma 1b " + manual +
 					// " testcase " + tempcom.testCaseID);
+					break;
+			}
+				else if(tempcom.testCaseID.equalsIgnoreCase("init")||tempcom.testCaseID.equalsIgnoreCase("cleanup"))
+				{
+					command_line_testcase=tempcom;
+					break;
+				}
+				else if(tempcom.parentTestCaseID.equalsIgnoreCase("init")||tempcom.parentTestCaseID.equalsIgnoreCase("cleanup"))
+				{
+					command_line_testcase=tempcom;
 					break;
 				}
 			}
@@ -2915,7 +2937,7 @@ String token;
 	 * 
 	 * @return testcase
 	 */
-
+@Deprecated
 	private TestCase checkWithCommandLine(TestCase tempt) {
 
 		TestCase commadLine = new TestCase();
@@ -9250,12 +9272,13 @@ String token;
 		// Check for non verbose result show
 
 		try {
-			controller.setXLSpath(controller.inputFile);
 			Log.Debug("Reading the Excel Sheet = " + controller.inputFile);
 			controller.message("Reading the TestCases Input Sheet  "
 					+ controller.inputFile + ".\n");
 			// Now reading the Excel object.
 			controller.readExcel = new Excel();
+			controller.readExcel.setXlsFilePath(controller.inputFile);
+			
 			controller.readExcel.ReadExcel(controller.inputFile,
 					verificationSwitching, compileMode);
 			controller.message("SUCCESSFULLY Read the TestCases Input Sheet "

@@ -10,6 +10,7 @@ import java.util.HashSet;
 
 	import javax.xml.parsers.DocumentBuilder;
 	import javax.xml.parsers.DocumentBuilderFactory;
+import org.apache.commons.lang.StringUtils;
 	import org.w3c.dom.Document;
 	import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -51,7 +52,7 @@ import org.w3c.dom.Text;
 	        return includeNode;
 	        
 	    }
-
+//Reform this code for fully qualified path and relative paths
 	    public String genarateXML(String input) {
 	        try {
 	            HashSet<String> inputSets=new HashSet<String>();
@@ -69,8 +70,11 @@ import org.w3c.dom.Text;
 	                		}
 	                	}
 	                	if(folder.contains(":")||folder.startsWith("\\")) //if the absolute path is given
-	                	//rootNode.appendChild(this.setAttribute("Molecule-Path", folder, doc));
+                                {//rootNode.appendChild(this.setAttribute("Molecule-Path", folder, doc));
+                                    if(folder.endsWith(".xls"))
+                                        folder=StringUtils.substringBeforeLast(folder,"\\");
 	                	inputSets.add(folder);
+                                }
 	                	else
 	                	{
 	                	
@@ -81,12 +85,16 @@ import org.w3c.dom.Text;
 	                	}
 	                	
 	                }
-	               for(Object items:inputSets)
+                        //System.out.println("The populated hash set "+inputSets);
+	               for(String items:inputSets)
 	               {
-	            	   if(items.toString().contains(".xls"))
-	            		   rootNode.appendChild(this.setAttribute("Molecule-File", items.toString(), doc));
+//                           System.out.println("Items are "+items);
+//                           System.out.println("Items trimied "+StringUtils.substringAfterLast(items,"\\"));
+                           
+	            	   if(items.endsWith(".xls"))
+	            		   rootNode.appendChild(this.setAttribute("Molecule-File", items, doc));
 	            	   else
-	            	      rootNode.appendChild(this.setAttribute("Molecule-Path", items.toString(), doc));
+	            	      rootNode.appendChild(this.setAttribute("Molecule-Path", items, doc));
 	            	   
 	               }
 	               
@@ -120,7 +128,7 @@ import org.w3c.dom.Text;
 	        return "File Is been Created";
 	    }
 	    catch(Exception e) {
-	            return "This is a Problem\t" + e.getLocalizedMessage();
+	            return "Problem in Creating XML\t" + e.getLocalizedMessage();
 	    }
 	}
 

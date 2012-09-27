@@ -12,13 +12,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import com.sun.management.OperatingSystemMXBean;
-import sun.management.ManagementFactory;
+//import sun.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 
 import com.automature.zug.util.Log;
+import java.lang.management.ManagementFactory;
 
 public class Utility {
 
@@ -39,7 +40,12 @@ public class Utility {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         return sdf.format(cal.getTime());
     }
-
+public static String getCurrentDateAsString()
+{
+    Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW_1);
+        return sdf.format(cal.getTime());
+}
     public static Date dateNow() {
 
         Calendar cal = Calendar.getInstance();

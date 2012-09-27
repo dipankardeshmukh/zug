@@ -28,7 +28,7 @@ Make sure that your system meets the minimum requirements to run Zug installer:
 New Feature:
 Zug3.0 version now can call the external java jar files as builtin atoms through chur spreadsheet. To make it happen the ZugINI.xml parsing is need. Inside the Zug installation directory the ZugINI.xml file can be edited to by putting the values in the tags of 
 <inprocesspackages>
-	  <inprocesspackage name="">
+	  <inprocesspackage name="" language="">
 	      <file-path></file-path>
 	      <jar-package></jar-package>
 	      <class-name></class-name>
@@ -39,14 +39,14 @@ this xml configuration is in ZUG installation folder. ZugINI.xml
 
 Example:
 <inprocesspackages>
-	  <inprocesspackage name="Zbrowser">
+	  <inprocesspackage name="Zbrowser" language="java">
 	      <file-path>C:\Programfiles\Automature\ZUOZ\Inprocess</file-path>
 	      <jar-package>com.automature.zuoz.inprocess.zbrowser</jar-package>
 	      <class-name>BrowserOperations</class-name>
 	</inprocesspackage>             
 </inprocesspackages>
              
-             
+             http://attic.automature.com/redmine/boards/3/topics/show/6 for ZUG Release Notes
              
 Zug Dependencies:
   
