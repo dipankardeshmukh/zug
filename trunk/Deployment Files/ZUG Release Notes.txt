@@ -1,4 +1,8 @@
 ZUG Release Notes.
+The Following has been Introduced in V5.4
+ * Log file location changed.
+The Following has been Introduced in V5.3
+ * Bug fixed.
 The Following has been Introduced in V5.2
 
  * BUG fix #176 #282 #327 #343 #398 #408 #409 #410 #422 #442 #446 #448 #449 #452 #482 #504 #505 #520 #531 #557 #564 #563 #566

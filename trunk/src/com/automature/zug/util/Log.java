@@ -14,6 +14,9 @@ import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.xml.DOMConfigurator;
 //Internal Imports
 
+import com.automature.zug.engine.ContextVar;
+import com.automature.zug.engine.Controller;
+
 
 
 	public  class Log {
@@ -38,10 +41,20 @@ import org.apache.log4j.xml.DOMConfigurator;
 			 HarnessLogFileList=new ArrayList<String>();
 			//sets the path for log files
 			//Append current date time in log file name.
-			fullFilePath=System.getenv().get(com.automature.zug.engine.Controller.LOG_DIR)+com.automature.zug.engine.Controller.SLASH+ "ZUG Logs"+com.automature.zug.engine.Controller.SLASH + Utility.dateAsString();
-
+			 
+			 String userDir=System.getProperty("user.dir");
+			 
+			fullFilePath=com.automature.zug.engine.Controller.LOGLOCATION+com.automature.zug.engine.Controller.SLASH+"Automature"+com.automature.zug.engine.Controller.SLASH+ "ZUG Logs"+com.automature.zug.engine.Controller.SLASH + Utility.dateAsString();
+			Controller.ZUG_LOGFILENAME=fullFilePath;
+//try {
+//	ContextVar.setContextVar("ZUG_LOGFILENAME", fullFilePath);
+//	System.out.println("Context  from log var set "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
+//} catch (Exception e) {
+//	
+//	System.out.println("com.automature.zug.util.Log: Error message "+e.getMessage());
+//}
 			//gets current user directory's path
-			String userDir=System.getProperty("user.dir");
+			
 //System.out.println("dir->"+userDir);
 			//gets log4j.properties file's path
 			String logConfigPath= userDir+"/LogConfig/log4j.xml";
