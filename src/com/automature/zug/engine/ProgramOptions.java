@@ -179,6 +179,7 @@ public class ProgramOptions {
         if (StringUtils.isNotBlank(workingDirectory)) {
             workingDirectory=workingDirectory.replaceAll("\"","").trim() ;
             ContextVar.setContextVar("ZUG_PWD", workingDirectory);
+            ContextVar.setContextVar("ZUG_LOGFILENAME",Controller.ZUG_LOGFILENAME);
             //System.out.println("The working dir "+ContextVar.getContextVar("ZUG_PWD"));
         } 
         return new ProgramOptions(ht);

@@ -429,6 +429,7 @@ input_com_list=input_com_list.substring(0, input_com_list.length()-1);
 //            }else
 //            {
 //               //debugMessage("Comming to else Clause ");
+            if(Controller.verbose)
             Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
      
             throw new Exception(exception_message, e);

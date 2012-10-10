@@ -86,7 +86,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.3." + "20120926" + ".100";
+	private static String Version = "ZUG Premium 5.4." + "20121010" + ".103";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -143,11 +143,12 @@ public class Controller extends Thread {
 	public static String SLASH = "";
 	public static String SEPARATOR = "";
 	public static String PATH_CHECK = "";
-	public static String LOG_DIR = "", ZIP_DIR = "";
+	public static String LOG_DIR = "", ZIP_DIR = "",LOGLOCATION="";
 	public static boolean OS_FLAG;
 	public static String JavaVersion = "", JavaHome = "", JavaCompiler = "",
 			JavaLibraryPath = "";
 	public static String mvmconfiguration = "512MB";
+	public static String ZUG_LOGFILENAME="";
 	// Initiating AtomInvoker
 	// public static AtomInvoker invokeAtoms=null;
 	public static final String inprocess_jar_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
@@ -2232,11 +2233,10 @@ String token;
 					// " Action Actual Arguments " +
 					// action.actionActualArguments);
 					count1++;
-					// message("ExpandTest:/cheks to Macro action args exp\t" +
-					// action.actionArguments);
+					//message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments);
 					String tempVal = GetTheActualValue((String) (action.actionArguments
 							.get(i)));
-					// message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
+					//message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
 					// message("Expandtest:/lengths " +
 					// action.actionArguments.size()+"\n\t"+action.actionActualArguments.size());
 					if (action.actionActualArguments.size() == action.actionArguments
@@ -2426,19 +2426,24 @@ String token;
 			}
 
 		}
-		// message("EXZPANDSS:: the arguments are "+allActionVerificationArgs);
+		//message("EXZPANDSS:: the arguments are "+allActionVerificationArgs);
 
 		List<Tuple<String>> resultAfterIndexed = CartesianProduct
-				.indexedProduct(allActionVerificationArgs);// .get(0),
+				.indexedProduct(allActionVerificationArgs);
+		
+		// .get(0),
 		// allActionVerificationArgs.get(1));
 		List<Tuple<String>> result = new ArrayList<Tuple<String>>();
+		
 		for (Tuple<String> tempResult : resultAfterIndexed) {
 			allActionVerificationArgs = new ArrayList<ArrayList<String>>();
 			ArrayList<String> tempResultList = new ArrayList<String>();
 			Object[] actualValue = tempResult.ToArray();
+		
 			for (int q = 0; q < actualValue.length; ++q) {
 				tempResultList.add((String) actualValue[q]);
 			}
+		
 			count1 = -1;
 			try {
 				for (String tempVal : tempResultList) {
@@ -2448,7 +2453,7 @@ String token;
 					// new function for checking the $$ or $ to expand the
 					// testcase
 					count1++;
-
+					
 					// message("Comming to Cartesian Product ");
 					// //if ((tempVal.startsWith("{")) &&
 					// (tempVal.endsWith("}"))) {
@@ -2483,6 +2488,7 @@ String token;
 
 				result.addAll(CartesianProduct
 						.cartesianProduct(allActionVerificationArgs));
+				
 			} catch (OutOfMemoryError e) {
 				testcasenotran = test.testCaseID + "\nError: " + e.getMessage()
 						+ "(memory) exceeded";
@@ -2496,6 +2502,7 @@ String token;
 		}
 
 		ArrayList<TestCase> tempTestCases = new ArrayList<TestCase>();
+		//message("Coming to this end. 7 ");
 		if (result != null) {
 			int size = result.size();
 			Object[] tempResult = result.toArray();
@@ -2504,6 +2511,7 @@ String token;
 				Tuple<String> subList = (Tuple<String>) tempResult[p];
 				// ArrayList<BusinessLayer.Variable> variables = new
 				// ArrayList<BusinessLayer.Variable>();
+				//message("Coming to this end. 8 ");
 				TestCase tempTestCase = new TestCase();
 
 				tempTestCase.testCaseID = test.testCaseID;
@@ -2549,7 +2557,7 @@ String token;
 				Log.Debug("Controller/ExpandTestCase: Number of Actions are : "
 						+ actions.length + " for testcase : "
 						+ tempTestCase.testCaseID);
-
+				
 				for (int j = 0; j < actions.length; ++j) {
 					Action action = actions[j];
 					for (int i = 0; i < action.actionArguments.size(); ++i) {
@@ -2557,26 +2565,28 @@ String token;
 						if (multiValuedVariablePosition.containsKey(count)) {
 							String testcase_partial_id = tempTestCaseVar[count]
 									.toLowerCase();
-							// message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i));
+							 //message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i));
 
 							if (action.actionName
 									.equalsIgnoreCase("appendtocontextvar")
 									|| action.actionName
 											.equalsIgnoreCase("setcontextvar")) {
+								//message("Coming to this end. 10 "+action.actionName);
 								String real_value[] = Excel
 										.SplitOnFirstEquals(testcase_partial_id);
+								//message("Coming to this end. 10 a "+testcase_partial_id);
 								String actual_value[] = Excel
 										.SplitOnFirstEquals(action.actionActualArguments
 												.get(i));
-								if (real_value[0]
-										.equalsIgnoreCase(actual_value[0])) {
-									// message("Before Change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
+								//message("Coming to this end. 10 b "+actual_value[0]+" and real "+real_value[0]);
+								if(real_value.length>0){		if (real_value[0].equalsIgnoreCase(actual_value[0])) {
+									//message("Before Change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
 									testcase_partial_id = StringUtils.replace(
 											testcase_partial_id,
 											actual_value[0] + "=", "");
-									// message("After change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
-								}
-
+									 //message("After change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
+								
+								//message("Coming to this end. 10 c "+testcase_partial_id);
 							} else if (action.actionActualArguments.get(i)
 									.contains("=")) {
 								String realVal[] = Excel
@@ -2586,6 +2596,13 @@ String token;
 
 								}
 							}
+								}
+								else{
+									
+									testcase_partial_id=null;
+								}
+								
+						}
 							tempTestCase.testCaseID += "_"
 									+ testcase_partial_id;
 							// message("TempCase id "+tempTestCase.testCaseID);
@@ -2600,6 +2617,7 @@ String token;
 							// variables.add(var);
 							// }
 						}
+						//message("Coming to this end. 11 "+count);
 						count++;
 					}
 
@@ -6347,6 +6365,7 @@ String token;
 						"\tException in Action %s (%s:%s).\n\t%s",
 						action.actionName, action.sheetName,
 						action.lineNumber + 1, ex.getMessage()));
+				if(verbose)
 				Log.Error(String.format(
 						"\tException in Action %s (%s:%s).\n\tMessage: %s",
 						action.actionName, action.sheetName,
@@ -6358,6 +6377,7 @@ String token;
 						"\tException in Action %s (%s:%s).\n\t%s",
 						action.actionName, action.sheetName,
 						action.lineNumber + 1, ex.getMessage()));
+				if(verbose)
 				Log.Error(String.format(
 						"\tException in Action %s (%s:%s).\n\tMessage: %s",
 						action.actionName, action.sheetName,
@@ -8386,13 +8406,17 @@ String token;
 								.format("Controller/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Davos.",
 										test.testCaseID,
 										test.testCaseDescription));
-
+try{
 						SaveTestCaseResultEveryTime(tData);
-						message("Initial Test data Sent to Davos ");
+						
 						saveTestCaseVariables(
 								findVariablesValueForTestCase(test),
 								test.testCaseID, testSuitName);
-
+}catch(DavosExecutionException de)
+{
+	Log.Error("Davos Reporting Faliure:: "+de.getMessage());
+	System.exit(1);
+}
 					} else {
 						Log.Debug(String
 								.format("Controller/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
@@ -8984,6 +9008,7 @@ String token;
 			// test.testCaseID,(String)errorMessageDuringTestCaseExecution.get(test.parentTestCaseID));
 			message("\n******************** Error Messages For Test Case "
 					+ test.parentTestCaseID + " ***************************");
+			if(verbose)
 			Log.Error(failureReason);
 			message("\n******************* Error Messages End For Test Case "
 					+ test.parentTestCaseID + " **************************");
@@ -9104,7 +9129,11 @@ String token;
 			Log.Error("Not Supporting Operating System\t" + OS_NAME);
 			System.exit(1);
 		}
-
+LOGLOCATION=System.getenv(LOG_DIR);
+if(LOGLOCATION==null)
+{
+	LOGLOCATION=System.getProperty("user.dir")+"/log";
+}
 		final Controller controller = new Controller();
 		StringBuilder cmdinputsargs = new StringBuilder();
 		for (String cmdinputs : args) {
@@ -9112,6 +9141,7 @@ String token;
 		}
 		Log.Debug("Controller/Main:: Command Line Input: "
 				+ cmdinputsargs.toString());
+		
 
 		// controller.LoggedInUser();
 		// geting the process id of the program
