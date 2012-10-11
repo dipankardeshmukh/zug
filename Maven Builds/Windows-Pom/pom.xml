@@ -5,7 +5,7 @@
     <groupId>com.automature</groupId>
     <artifactId>ZUG</artifactId>
     <packaging>jar</packaging>
-    <version>5.3-SNAPSHOT</version>
+    <version>5.4-SNAPSHOT</version>
     <name>ZUG from scatch</name>
     <organization>
         <name>Automature LLC</name>
@@ -13,8 +13,8 @@
     </organization>
     <url>http://automature.com</url>
     <scm>
-        <connection>scm:svn:http://svn.automature.com:90/svn/zug/branches/V5.3-dev</connection>
-        <developerConnection>scm:svn:http://svn.automature.com:90/svn/zug/branches/V5.3-dev</developerConnection>
+        <connection>scm:svn:http://svn.automature.com:90/svn/zug/trunk</connection>
+        <developerConnection>scm:svn:http://svn.automature.com:90/svn/zug/trunk</developerConnection>
         <url></url>
     </scm>
     <properties>
@@ -122,7 +122,7 @@
                            <arg value="makensis.exe" />
                            <arg value="./NSIS/setup.nsi" />
                             </exec>
-                           <move file="./NSIS/ZugSetup-5.3.exe" todir="./" />
+                           <move file="./NSIS/ZugSetup-5.4.exe" todir="./" />
                         
                     </target>
                 </configuration>
