@@ -1,8 +1,82 @@
 ZUG Release Notes.
+The Following has been Introduced in V5.4
+ * Log file location changed.
+ * Multiple Zug running support.
+ * Latest Bug fixes #566, #524
+Known Issue:
+ * Bug #448
+The Following has been Introduced in V5.3
+ * Bug fixed.
+The Following has been Introduced in V5.2
 
-The Following has been Introduced in *V3.1*
- * Nested include file support Chur.
- * Nested Scriptlocation file support Chur.
+ * BUG fix #176 #282 #327 #343 #398 #408 #409 #410 #422 #442 #446 #448 #449 #452 #482 #504 #505 #520 #531 #557 #564 #563 #566
+ * Time Stamp at start and end of testcase execution - Feature Request #548
+ * Zug can wait specified no. of millisecond - Feature Request #548
+
+Known Issues:
+ * JNI Dll loading Problem for 32bit and 64bit Operating System.
+ * Bug #412- When a "comment" is entered in the first row and property column of a molecule, the system throws     an exception.
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+ * Bug #506 - In Non-verbose mode the console does not print which testcase failed during execution. 
+ * 
+
+The Following has been Introduced in *V5.1*
+ * BUG fix 504 483 520 524 523 509 545
+ * Testcase will just fail now if any large mvm value is passed to it
+Known Issues:
+ * JNI Dll loading Problem for 32bit and 64bit Operating System.
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+The Following has been Introduced in *V5.0*
+ * SDK folder organised with Java and dll libs
+ * Fixed redmine issue for testcase comments Bug #478,Bug #482, Bug #483
+ * Fully Fixed Bug #473 #497 #498 #493 #492 #473 #501 #503
+ * Molecules is running without arguments no skipping arguments
+ * New AppendTo Contextvar Atoms and other builtin atoms
+Known Issues:
+ * JNI Dll loading Problem for 32bit and 64bit Operating System.
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+The Following has been Introduced in *V4.4*
+ * -toplogyset= command line tag added.
+ * Fixed redmine issue for testcycleid Bug #462
+The Following has been Introduced in *V4.3*
+ * JNI native Dll atom calling introduced
+ * COM Dll Calling introduced. Using Jacob
+ * SDK folder included for C# atom development 
+Known Issues:
+ * JNI Dll loading Problem for 32bit and 64bit Operating System.
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.	
+The Following has been Introduced in *V4.2*
+ * Negative Testing fixed
+ * Typo fixed.
+ * Molecule definition Exception added and fixed 
+ Known Issues:
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+
+The Following has been Introduced in *V4.1*
+ * Bugs fixed. #398 #409 #417 #422(Variables are been reported while DB reporting. Null Test cycle are not generated. ThreadSafe Context Variable works)
+ * Poi jar file changed	
+ * Negative testing introduced.  
+ * Named Argumet Exception Messages reformed. 
+ Known Issues:
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+
+
+
+The Following has been Introduced in *V4.0*
+ * Hibernate data base reporting removed, ZUG now reports the result through Davos Web service. 
+ * Bugs fixed. #372,#282,#342,#345,#339,#338,#325,#254,#386,#387
+ * MVM context variable introduced.
+ * Named Argumet introduced. 
+ * Builtin packages are now named to Inprocess Atoms.
+Known Issues:
+ * Bug #384 is in working progress . Have the blank line errors.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
 
 The Following has been Introduced in *V3.0*
  * External jar file support for calling Builtin Atom calling. 
