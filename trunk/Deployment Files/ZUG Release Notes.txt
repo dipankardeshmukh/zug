@@ -2,9 +2,9 @@ ZUG Release Notes.
 The Following has been Introduced in V5.4
  * Log file location changed.
  * Multiple Zug running support.
- * Latest Bug fixes #566, #524
+ * Latest Bug fixes #566, 
 Known Issue:
- * Bug #448
+ * Bug #448, #524
 The Following has been Introduced in V5.3
  * Bug fixed.
 The Following has been Introduced in V5.2
