@@ -2950,16 +2950,16 @@ public class Controller extends Thread {
 			// test.testCaseID);
 			return new TestCase[] { test };
 		}
-		ArrayList<TestCase> removemulticases=new ArrayList<TestCase>();
-		//Write a method which removes the similar mvm values.
-		for(TestCase tmp:tempTestCases)
-		{
-		
-			
-			//message("temn  "+tmp.testCaseID);
-			removemulticases=removeSimilarTestCases(tmp,removemulticases);
-		}
-		tempTestCases.removeAll(removemulticases);
+//		ArrayList<TestCase> removemulticases=new ArrayList<TestCase>();
+//		//Write a method which removes the similar mvm values.
+//		for(TestCase tmp:tempTestCases)
+//		{
+//		
+//			
+//			//message("temn  "+tmp.testCaseID);
+//			removemulticases=removeSimilarTestCases(tmp,removemulticases);
+//		}
+//		tempTestCases.removeAll(removemulticases);
 //for(TestCase dd:removemulticases)
 //{
 //	message("The ids "+dd.testCaseID);
@@ -3005,36 +3005,56 @@ public class Controller extends Thread {
  * Method to remove Similar MVM combination testcases
  * 
  */
+	@Deprecated
 	private ArrayList<TestCase> removeSimilarTestCases(TestCase mvmtest,ArrayList<TestCase> toRemove)
 	{
 		ArrayList<TestCase> removingTestCase=toRemove;
 		//message("Method is starting to execute ... with "+mvmtest.testCaseID);
 		
-		Action[] cc=new Action[mvmtest.actions.size()];
+		Action[] tempActions=new Action[mvmtest.actions.size()];
 		//message("Action array created "+cc.length);
-		mvmtest.actions.toArray(cc);
-		for(int k=0;k<cc.length;++k)
+		mvmtest.actions.toArray(tempActions);
+		for(int k=0;k<tempActions.length;++k)
 		{
 			
-			Action aa=cc[k];
-			//message("Every Action to be checked "+aa.actionName);
-			for(int i=0;i<aa.actionActualArguments.size();i++)
+			Action actn=tempActions[k];
+			//message("Every Action to be checked "+actn.actionName);
+			for(int i=0;i<actn.actionActualArguments.size();i++)
 			{
-				//message("Every action argumemts "+aa.actionArguments.get(i));
+				//message("Every action argumemts "+actn.actionArguments.get(i));
 				int nextElm=i+1;
-				//message("Previous element "+i +" The element comes "+nextElm+" " +aa.actionActualArguments.size());
-				if(nextElm!=aa.actionActualArguments.size()){
-				if(aa.actionActualArguments.get(i).equals(aa.actionActualArguments.get(nextElm)))
+				//message("Previous element "+i +" The element comes "+nextElm+" " +actn.actionActualArguments.size());
+				if(nextElm!=actn.actionActualArguments.size()&&actn.actionActualArguments.get(i).startsWith("$$")){
+				if(actn.actionActualArguments.get(i).equals(actn.actionActualArguments.get(nextElm)))
 			{
-					//message("Matching args "+aa.actionActualArguments.get(i));
+					//message("Matching args "+actn.actionActualArguments.get(i)+" Testcase "+mvmtest.testCaseID);
 					String[] tempBreak=mvmtest.testCaseID.split("_");
-					for(String ss:tempBreak)
+					boolean matchFlag=false;
+					for(int cnt=1;cnt<tempBreak.length;cnt++)
 					{
-						//message("count matching... "+StringUtils.countMatches(mvmtest.testCaseID,ss));
-						if(StringUtils.countMatches(mvmtest.testCaseID,ss)>1)
+						String token=tempBreak[cnt],tomatch=tempBreak[1];
+						//message("count matching---->"+ token+" .... "+StringUtils.countMatches(mvmtest.testCaseID,token));
+						//message("Token "+token+" To match "+tomatch);
+						if(token.equals(tomatch))
 						{
-							removingTestCase.add(mvmtest);
+							matchFlag=true;
 						}
+						else{
+							matchFlag=false;
+							break;
+						}
+//						message("count matching---->"+ token+" .... "+StringUtils.countMatches(mvmtest.testCaseID,token));
+//						if(StringUtils.countMatches(mvmtest.testCaseID,token)>1)
+//						{
+							
+						
+//						}
+					}
+					//message("Whats the match flag "+matchFlag);
+					if(matchFlag)
+					{
+						//message("Testcases added to remove "+mvmtest.testCaseID);
+						removingTestCase.add(mvmtest);
 					}
 					
 			}
