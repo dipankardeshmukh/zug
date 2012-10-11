@@ -77,7 +77,7 @@ public class Controller extends Thread {
 	// By default we will assume that the Longevity is OFF
 	// and will ON this when there is a Longevity test going on..
 	public static boolean isLongevityOn = false;
-	
+
 	// / By Default the Repeat Count is 1
 	private static int repeatCount = 1;
 	private static String testsToRepeat = StringUtils.EMPTY;
@@ -86,7 +86,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.4." + "20121010" + ".103";
+	private static String Version = "ZUG Premium 5.4." + "20121011" + ".103";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -94,7 +94,7 @@ public class Controller extends Thread {
 	// Assuming that the Test Plan Initialization will Work Fine.
 	boolean initWorkedFine = true;
 	private static String manualTestCaseID = StringUtils.EMPTY;
-	private static String excludeTestCaseID=StringUtils.EMPTY;
+	private static String excludeTestCaseID = StringUtils.EMPTY;
 	private static String testcasesNotPresent = StringUtils.EMPTY;
 	private Hashtable<String, ExecutedTestCase> executedTestCaseData = new Hashtable<String, ExecutedTestCase>();
 	// Hashtable to store the name key value pair of the Command line macro
@@ -143,12 +143,12 @@ public class Controller extends Thread {
 	public static String SLASH = "";
 	public static String SEPARATOR = "";
 	public static String PATH_CHECK = "";
-	public static String LOG_DIR = "", ZIP_DIR = "",LOGLOCATION="";
+	public static String LOG_DIR = "", ZIP_DIR = "", LOGLOCATION = "";
 	public static boolean OS_FLAG;
 	public static String JavaVersion = "", JavaHome = "", JavaCompiler = "",
 			JavaLibraryPath = "";
 	public static String mvmconfiguration = "512MB";
-	public static String ZUG_LOGFILENAME="";
+	public static String ZUG_LOGFILENAME = "";
 	// Initiating AtomInvoker
 	// public static AtomInvoker invokeAtoms=null;
 	public static final String inprocess_jar_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
@@ -674,14 +674,14 @@ public class Controller extends Thread {
 			if ((manualTestCaseID = opts.getString("testcaseID", null)) == null) {
 				Log.Debug("Controller/GetOptions: ManualTestCase ID is not specified.");
 				manualTestCaseID = StringUtils.EMPTY;
-				excludeTestCaseID =opts.getString("excludeTestCaseID", null);
+				excludeTestCaseID = opts.getString("excludeTestCaseID", null);
 				// message("No specific testcase is invoked\n All testcases will be executed.");
 			} else {
 				// message("The manual Testcase "+manualTestCaseID);
 				Log.Debug("Controller/GetOptions: ManualTestCase ID specified by user is = "
 						+ manualTestCaseID);
-				if((excludeTestCaseID = opts.getString("excludetestcaseID", null)) == null)
-				{
+				if ((excludeTestCaseID = opts.getString("excludetestcaseID",
+						null)) == null) {
 					excludeTestCaseID = StringUtils.EMPTY;
 				}
 			}
@@ -1283,7 +1283,8 @@ public class Controller extends Thread {
 				|| actionValue.toLowerCase().contains("=##")
 				|| actionValue.toLowerCase().contains("=%#")) {
 			namedArgFlag = true;
-		} else if (StringUtils.countMatches(actionValue, "#") >=1&&!actionValue.endsWith("##")) {
+		} else if (StringUtils.countMatches(actionValue, "#") >= 1
+				&& !actionValue.endsWith("##")) {
 
 			if (actionValue.toCharArray().length > 1) {
 				namedArgFlag = true;
@@ -1293,59 +1294,60 @@ public class Controller extends Thread {
 		}
 		return namedArgFlag;
 	}
-/**
- * Method to Replace the namedargument from a String
- * @param String,String,String
- * 		  source,searchS,replaceS	
- */	
-	private String replaceStringOnly(String source,String searchS,String replaceS)
-	{
-		
-		Pattern pattrn=Pattern.compile("(\\b"+searchS.toLowerCase()+")(?)");
-		
-	Matcher matchr=pattrn.matcher(source.toLowerCase());
-	StringBuffer bufferString=new StringBuffer();
-	while(matchr.find())
-	{
-		matchr.appendReplacement(bufferString, replaceS);
-	}
-	matchr.appendTail(bufferString);
-	//message("Source: "+source+" Search: "+searchS+" Replace: "+replaceS+" replaced: "+bufferString.toString());
-	
+
+	/**
+	 * Method to Replace the namedargument from a String
+	 * 
+	 * @param String
+	 *            ,String,String source,searchS,replaceS
+	 */
+	private String replaceStringOnly(String source, String searchS,
+			String replaceS) {
+
+		Pattern pattrn = Pattern.compile("(\\b" + searchS.toLowerCase()
+				+ ")(?)");
+
+		Matcher matchr = pattrn.matcher(source.toLowerCase());
+		StringBuffer bufferString = new StringBuffer();
+		while (matchr.find()) {
+			matchr.appendReplacement(bufferString, replaceS);
+		}
+		matchr.appendTail(bufferString);
+		// message("Source: "+source+" Search: "+searchS+" Replace: "+replaceS+" replaced: "+bufferString.toString());
+
 		return bufferString.toString();
 	}
+
 	/**
 	 * Method to sort a ArrayList<String> according to length of the strings
-	 * @param ArrayList<String>
-	 * 				unsortedlist
+	 * 
+	 * @param ArrayList
+	 *            <String> unsortedlist
 	 * @retrun sortedlist ArrayList<String>
 	 */
-	private ArrayList<String> sortListByLength(ArrayList<String> unsortedList)
-	{
-		ArrayList<Integer> lengthlist=new ArrayList<Integer>();
-		for(String elemnt:unsortedList)
-		{
-			Integer length=elemnt.length();
+	private ArrayList<String> sortListByLength(ArrayList<String> unsortedList) {
+		ArrayList<Integer> lengthlist = new ArrayList<Integer>();
+		for (String elemnt : unsortedList) {
+			Integer length = elemnt.length();
 			lengthlist.add(length);
 		}
-		Comparator compr=Collections.reverseOrder();
-		Collections.sort(lengthlist,compr);
-		ArrayList<String> sortedlist=new ArrayList<String>();
+		Comparator compr = Collections.reverseOrder();
+		Collections.sort(lengthlist, compr);
+		ArrayList<String> sortedlist = new ArrayList<String>();
 		for (int i = 0; i < lengthlist.size(); i++) {
-			int count_string=lengthlist.get(i);
-			for(int j=0;j<unsortedList.size();j++)
-			{
-				String tempstring=unsortedList.get(j);
-				if(tempstring.length()==count_string)
-				{
+			int count_string = lengthlist.get(i);
+			for (int j = 0; j < unsortedList.size(); j++) {
+				String tempstring = unsortedList.get(j);
+				if (tempstring.length() == count_string) {
 					sortedlist.add(tempstring);
 					break;
 				}
 			}
-			
+
 		}
 		return sortedlist;
 	}
+
 	/**
 	 * Method to get the index of Positional argument
 	 * 
@@ -1353,22 +1355,24 @@ public class Controller extends Thread {
 	 *            ArrayList<String>
 	 * @return indexno Integer
 	 */
-//TODO this method is total broken discuss and change it
+	// TODO this method is total broken discuss and change it
 	private int getMoleculeDefinitionIndex(ArrayList<String> moleculearglist,
 			String valuetomatch) throws Exception {
 		int count_index = 0;
 		boolean argnotfound = true;
-		//create a reverse order list checking with the String inputs lengths
-		ArrayList<String> reverselist=sortListByLength(moleculearglist);
-		//message("The reverse order "+reverselist);
+		// create a reverse order list checking with the String inputs lengths
+		ArrayList<String> reverselist = sortListByLength(moleculearglist);
+		// message("The reverse order "+reverselist);
 		for (int i = 0; i < reverselist.size(); i++) {
 			String molecule_arg = reverselist.get(i);
-			 //message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n Count matching "+ StringUtils.countMatches(valuetomatch,molecule_arg));
-			//if (StringUtils.countMatches(valuetomatch, molecule_arg)==1) {
-			 if(valuetomatch.contains("#"+molecule_arg)){
-			 //if(molecule_arg.matches("("+valuetomatch+")")){
-			
-				//message("count matching "+molecule_arg+" index "+i);
+			// message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
+			// Count matching "+
+			// StringUtils.countMatches(valuetomatch,molecule_arg));
+			// if (StringUtils.countMatches(valuetomatch, molecule_arg)==1) {
+			if (valuetomatch.contains("#" + molecule_arg)) {
+				// if(molecule_arg.matches("("+valuetomatch+")")){
+
+				// message("count matching "+molecule_arg+" index "+i);
 				count_index = i;
 				argnotfound = false;
 				break;
@@ -1383,7 +1387,7 @@ public class Controller extends Thread {
 		if (argnotfound) {
 			throw new Exception("Argument not present in Molecule Definition");
 		}
-		//message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
+		// message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
 		return moleculearglist.indexOf(reverselist.get(count_index));
 	}
 
@@ -1395,668 +1399,782 @@ public class Controller extends Thread {
 	 */
 	// TODO check for named argument positional
 	private void RunAbstractTestCase(TestCase test,
-            ArrayList<String> argumentValues, String parentTestCaseID,
-            String callingtTestCaseSTACK) throws Exception {
-        Log.Debug("Controller/RunAbstractTestCase: Start of function with a new TestCase. TestCase ID is "
-                + test.testCaseID
-                + " and parentTestCaseID = "
-                + parentTestCaseID);
-
-        TestCase tempTestCase = new TestCase();
-        tempTestCase.automated = test.automated;
-        Log.Debug("Controller/RunAbstractTestCase: tempTestCase.automated = "
-                + tempTestCase.automated);
-
-        tempTestCase.nameSpace = test.nameSpace;
-        Log.Debug("Controller/RunAbstractTestCase: tempTestCase.nameSpace = "
-                + tempTestCase.nameSpace);
-
-        tempTestCase.concurrentExecutionOnExpansion = test.concurrentExecutionOnExpansion;
-        Log.Debug("Controller/RunAbstractTestCase: tempTestCase.concurrentExecutionOnExpansion = "
-                + tempTestCase.concurrentExecutionOnExpansion);
-
-        tempTestCase.testCaseDescription = test.testCaseDescription;
-        Log.Debug("Controller/RunAbstractTestCase: tempTestCase.testCaseDescription = "
-                + tempTestCase.testCaseDescription);
-        tempTestCase.testCaseID = test.testCaseID;
-        Log.Debug("Controller/RunAbstractTestCase: tempTestCase.testCaseID = "
-                + tempTestCase.testCaseID);
-
-        tempTestCase.parentTestCaseID = parentTestCaseID;
-        Log.Debug("Controller/RunAbstractTestCase: tempTestCase.parentTestCaseID = "
-                + tempTestCase.parentTestCaseID);
-
-        // Get the thread ID of the parent
-        tempTestCase.threadID = (String) threadIdForTestCases.get(callingtTestCaseSTACK);
-
-        tempTestCase.stackTrace = callingtTestCaseSTACK + "_" + test.stackTrace;
-
-        tempTestCase.user = test.user;
-        tempTestCase.userObj = test.userObj;
-
-        Action[] actions = new Action[test.actions.size()];
-        test.actions.toArray(actions);
-        Log.Debug("Controller/RunAbstractTestCase: Number of Actions are : "
-                + actions.length + " for testcase : " + test.testCaseID);
-
-        for (int j = 0; j < actions.length; j++) {
-            Action action = (Action) actions[j];
-            Action tempAction = new Action();
-            tempAction.actionName = action.actionName;
-            tempAction.isComment = action.isComment;
-            tempAction.testCaseID = tempTestCase.testCaseID;
-            tempAction.parentTestCaseID = parentTestCaseID;
-            Log.Debug("Controller/RunAbstractTestCase: tempAction.parentTestCaseID =  : "
-                    + tempAction.parentTestCaseID);
-
-            tempAction.stackTrace = tempTestCase.stackTrace;
-            tempAction.nameSpace = action.nameSpace;
-
-            tempAction.userObj = action.userObj;
-            tempAction.step = action.step;
-            tempAction.lineNumber = action.lineNumber;
-            tempAction.sheetName = action.sheetName;
-            tempAction.actionActualArguments = action.actionActualArguments;
-            tempAction.isNegative = action.isNegative;
-            tempAction.isActionNegative = action.isActionNegative;
-
-            Log.Debug("Controller/RunAbstractTestCase: Working on Action "
-                    + action.actionName + " with Step Number as  "
-                    + action.step);
-            Log.Debug("Controller/RunAbstractTestCase: Number of Action Arguments are : "
-                    + action.actionArguments.size()
-                    + " for action : "
-                    + action.actionName);
-
-            ArrayList<String> tempActionArguments = new ArrayList<String>();
-            for (int i = 0; i < action.actionArguments.size(); ++i) {
-                Log.Debug("Controller/RunAbstractTestCase: Working on Action Argument : "
-                        + i + " for action : " + action.actionName);
-                String actionVal = action.actionArguments.get(i).toString();
-                // message("RUNABSTRACT: The MOlecule-Atom args lvl 0 "+actionVal);
-                Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
-                        + "] = " + actionVal + " for action : "
-                        + action.actionName);
-                if (actionVal.toLowerCase().contains("$input_arg")
-                        || actionVal.toLowerCase().contains("$$input_arg")) {
-                    boolean isThisAContextVar = false;
-                    Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
-                            + "] = " + actionVal
-                            + " is an Input Argument for action : "
-                            + action.actionName);
-
-                    if (actionVal.contains("=")) {
-                        Log.Debug("Controller/RunAbstractTestCase:  actionVal["
-                                + i + "] = " + actionVal
-                                + " contains an = sign ");
-                        String[] splitActionVal = Excel.SplitOnFirstEquals(actionVal);
-
-                        String tempActionVal = splitActionVal[1];
-
-                        try {
-                            if (tempActionVal.startsWith("%")
-                                    && tempActionVal.endsWith("%")) {
-                                tempActionVal = Utility.TrimStartEnd(
-                                        tempActionVal, '%', 0);
-                                tempActionVal = Utility.TrimStartEnd(
-                                        tempActionVal, '%', 1);
-                                isThisAContextVar = true;
-                            }
-
-                            if (actionVal.toLowerCase().contains("$$input_arg")) {
-                                tempActionVal = argumentValues.get(
-                                        Integer.parseInt(tempActionVal.substring(11)) - 1).toString();
-                            } else {
-                                tempActionVal = argumentValues.get(
-                                        Integer.parseInt(tempActionVal.substring(10)) - 1).toString();
-                            }
-                            Log.Debug("Controller/RunAbstractTestCase: actionVal["
-                                    + i
-                                    + "] = "
-                                    + tempActionVal
-                                    + " is an Input Argument for action : "
-                                    + action.actionName);
-
-                            if (tempActionVal.contains("=")) {
-                                tempActionVal = Excel.SplitOnFirstEquals(tempActionVal)[1];
-                            }
-
-                            Log.Debug("Controller/RunAbstractTestCase: actionVal["
-                                    + i
-                                    + "] = "
-                                    + tempActionVal
-                                    + " is an Input Argument for action : "
-                                    + action.actionName);
-                        } catch (Exception e) {
-                            tempActionVal = StringUtils.EMPTY;
-                            Log.Debug("Controller/RunAbstractTestCase: actionVal["
-                                    + i
-                                    + "] = "
-                                    + actionVal
-                                    + " is an Input Argument for action : "
-                                    + action.actionName);
-                        }
-
-                        if (!isThisAContextVar) {
-                            actionVal = splitActionVal[0] + "=" + tempActionVal;
-                        } else {
-                            actionVal = splitActionVal[0] + "=%"
-                                    + tempActionVal + "%";
-                        }
-                    } else {
-                        try {
-                            if (actionVal.startsWith("%")
-                                    && actionVal.endsWith("%")) {
-                                actionVal = Utility.TrimStartEnd(actionVal,
-                                        '%', 0);
-                                actionVal = Utility.TrimStartEnd(actionVal,
-                                        '%', 1);
-                                isThisAContextVar = true;
-                            }
-
-                            if (actionVal.toLowerCase().contains("$$input_arg")) {
-                                actionVal = argumentValues.get(
-                                        Integer.parseInt(actionVal.substring(11)) - 1).toString();
-                            } else {
-                                actionVal = argumentValues.get(
-                                        Integer.parseInt(actionVal.substring(10)) - 1).toString();
-                            }
-
-                            if (isThisAContextVar) {
-                                actionVal = "%" + actionVal + "%";
-                            }
-
-                            Log.Debug("Controller/RunAbstractTestCase: actionVal["
-                                    + i
-                                    + "] = "
-                                    + actionVal
-                                    + " is an Input Argument for action : "
-                                    + action.actionName);
-                        } catch (Exception e) {
-                            actionVal = StringUtils.EMPTY;
-                            Log.Debug("Controller/RunAbstractTestCase: actionVal["
-                                    + i
-                                    + "] = "
-                                    + actionVal
-                                    + " is an Input Argument for action : "
-                                    + action.actionName);
-                        }
-                    }
-                }//Checking For any new defined molecule exists or not.                        
-                //else if (actionVal.toLowerCase().startsWith("#") || actionVal.toLowerCase().startsWith("%#") || actionVal.toLowerCase().contains("=#") || actionVal.toLowerCase().contains("=##") || actionVal.toLowerCase().contains("=%#")) {
-                else if (checkIfNamedArgument(actionVal)) {
-                    //check for firstoccurrance of # string
-
-                    String key = null, value = null;
-//TODO the work for INDEXD MACROOO checking fails the code.
-//Document the behavior to use named argument for = values
-                    boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false, isThisContextVarTypeAtom = false;
-                    if (action.actionName.equalsIgnoreCase("appendtocontextvar") || action.actionName.equalsIgnoreCase("setcontextvar")) {
-                        isThisContextVarTypeAtom = true;
-                        //message("Action Name "+action.actionName+" The boolean "+isThisAppenToContextVarAtom);
-                    }
-                    //message("The action Name "+action.actionName+" Runabstract:: Actionss--" + actionVal+" Arguments list "+argumentValues);
-                    //Checking for the arguments if they are consistent
-                    if (isParameterPassingConsistent(argumentValues, test)) {
-
-String token;
-                        if (actionVal.contains("=")) {
-                            key = Excel.SplitOnFirstEquals(actionVal)[0];
-                            value = Excel.SplitOnFirstEquals(actionVal)[1];
-                            token=value;
-                            isKeyEnabled = true;
-                        } else {
-                        	token=actionVal;
-                            value = actionVal.toLowerCase();
-                        }
-                        //message("RUNABSTRACT::-1 Key value- " + key);
-                        if (value.startsWith("%") && value.endsWith("%")) {
-                            value = value.replaceAll("%", "");
-                            isThisAContextVar = true;
-                        }
-                        
-                        //message("RUNABSTRACT::1a Key value- " + value + "\targumentss " + argumentValues);
-                        if (argumentValues.get(0).contains("=")) {
-                        	value = value.replaceAll("#", "");
-                            for (String molecule_arg : argumentValues) {
-                                String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
-                                //message("RUNABSTRACT::2 split value- " + temp_value_split[0] + "\tValue " + value);
-                                //message("RUNABSTRACT::2-d" + molecule_arg + " 1->" + temp_value_split.length);
-                                //
-                                if (StringUtils.countMatches(value.toLowerCase(), temp_value_split[0].toLowerCase()) >= 1) {
-                                    if (temp_value_split[0].equalsIgnoreCase(value)) {
-                                        if (temp_value_split.length < 2) {
-                                            throw new Exception("Controller/RunAbstractTestCase: Formal argument value is Empty:: " + temp_value_split[0]);
-                                        }
-                                        //message("RUNABSTRACT::3EqualMatchingDone " + value + " keyen " + isKeyEnabled);
-                                        if (isKeyEnabled) {
-                                            if (isThisAContextVar) {
-
-                                                actionVal = key + "=%" + temp_value_split[1] + "%";
-                                            } else {
-                                                actionVal = key + "=" + temp_value_split[1];
-                                            }
-                                        } else {
-                                            if (isThisAContextVar) {
-                                                actionVal = "%" + temp_value_split[1] + "%";
-                                            } else {
-                                                actionVal = temp_value_split[1];
-                                            }
-
-                                        }
-
-                                        //message("RUNABSTRACT:: step forloop " + actionVal);
-
-                                        foundFormalArg = true;
-                                        break;
-
-                                    } else {
-                                        //message("action value "+value+" tempv0 "+temp_value_split[0]+" tempv1 "+temp_value_split[1]);
-                                       //message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value, temp_value_split[0], temp_value_split[1]));
-                                    	if(token.startsWith("#"))
-                                    	{
-                                    		token=token.replace("#","");
-                                    	}
-                                    	actionVal=replaceStringOnly(token, temp_value_split[0],temp_value_split[1]);
-//                                        if (isKeyEnabled) {
-//                                            if (isThisAContextVar) {
-//                                                actionVal = key + "=%" + StringUtils.replace(value, temp_value_split[0], temp_value_split[1]) + "%";
-//                                            	
-//                                            } else {
-//                                                actionVal = key + "=" + StringUtils.replace(value, temp_value_split[0], temp_value_split[1]);
-//                                            }
-//                                        } else {
-//                                            if (isThisAContextVar) {
-//                                                actionVal = "%" + StringUtils.replace(value, temp_value_split[0], temp_value_split[1]) + "%";
-//                                                
-//                                            } else {
-//                                                actionVal = StringUtils.replace(value, temp_value_split[0], temp_value_split[1]);
-//                                            }
-//                                        
-//                                        
-//                                         //foundFormalArg = true;
-//                                         //break;
-//                                        
-//                                        }
-                                        //message("RUNABSTRACT final result : "+actionVal);
-                                    }
-                                  
-                                }
-//                                else
-//                                {
-//                               throw new Exception("Formal Argument key-name mismatch or Formal argument value is Empty "+temp_value_split[0]);     
-//                                }
-                            }
-//                            if (!foundFormalArg) {
-//                                throw new Exception("Formal Argument Not found for Action: " + action.actionName + " In sheet: " + action.sheetName + " where testcase: " + action.testCaseID);
-//                            }
-                        } else {
-                        	//value = value.replaceAll("#", "");
-                            //message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
-                            //message("RUNABSTRACT:: " + value + " The index no " + test._testcasemoleculeArgDefn);
-                            //int indexNo=test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())+1;
-                             int indexNo=getMoleculeDefinitionIndex(test._testcasemoleculeArgDefn,value);
-                            //message("Indexno " + indexNo +" RUNABSTRACT:: " + argumentValues.get(indexNo));
-                            if (indexNo < 0) {
-                                throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ", value, test._testcasemoleculeArgDefn));
-                            }
-                            actionVal=replaceStringOnly(token, test._testcasemoleculeArgDefn.get(indexNo),argumentValues.get(indexNo)).replace("#","");
-                            	//TODO enhance the code for replacing the code.. putting %% for contextvariable for also for name= value pair
-//                            if (isThisAContextVar) {
-//
-//                                //actionVal = "%" + argumentValues.get(indexNo) + "%";
-//                            	actionVal="%"+replaceStringOnly(token, test._testcasemoleculeArgDefn.get(indexNo),argumentValues.get(indexNo)).replace("#","")+"%";
-//                            } else {
-//                                //actionVal = argumentValues.get(indexNo);
-//                            	actionVal=replaceStringOnly(token, test._testcasemoleculeArgDefn.get(indexNo),argumentValues.get(indexNo)).replace("#","");
-//                            }
-                            if (isKeyEnabled) {
-                                actionVal = key + "=" + actionVal;
-                                //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()))); 
-                            }
-                            
-                            //message("ABS: The action value is "+actionVal);
-                            
-
-                        }
-
-
-
-                    } else {
-                        throw new Exception("Argument Passing Not Consistent:Either use named argument passing or positional argument passing. ");
-                    }
-                     //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
-//                    if(isThisContextVarTypeAtom)
-//                    {
-//                        actionVal=key+"="+actionVal;
-//                        //message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
-//                    }
-//                    else 
-                    ///TODO Find a better solution
-                    // message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
-                }
-                //message("RUNABSTRACT: The MOlecule-Atom args lvl 2 "+actionVal);
-                try {
-
-                    if (action.actionArguments.get(i).toString().toLowerCase().contains("$$input_arg")) {
-                        actionVal = readExcel.FindInMacroAndEnvTableForSingleVector(
-                                actionVal, action.nameSpace);
-                    }
-//TODO have to put some check if the Value is comming $$# for named argument.>>>
-                    Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
-                            + "] = " + actionVal
-                            + " is the Final Value for action : "
-                            + action.actionName);
-
-                    tempAction.actionArguments.add(actionVal);
-                    //message("After The Argument List for Molecule "+tempAction.actionArguments);
-                } catch (Exception e) {
-                    // Log.Error("Controller/RunAbstractTestCase: "+e.getMessage());
-                    throw new Exception("Controller/RunAbstractTestCase: "
-                            + e.getMessage());
-                }
-            }
-
-            Verification[] verifications = new Verification[action.verification.size()];
-            action.verification.toArray(verifications);
-            Log.Debug("Controller/RunAbstractTestCase: Number of verifications are : "
-                    + verifications.length
-                    + " for Action : "
-                    + action.actionName);
-
-            for (int cnt = 0; cnt < verifications.length; cnt++) {
-                Verification verification = new Verification();
-                verification = verifications[cnt];
-                Log.Debug("Controller/RunAbstractTestCase: Working on Verification {0}. "
-                        + verification.verificationName);
-                Verification tempVerification = new Verification();
-                // tempVerification.expectedResult =
-                // verification.expectedResult;
-                tempVerification.verificationName = verification.verificationName;
-                tempVerification.isComment = verification.isComment;
-                tempVerification.testCaseID = tempTestCase.testCaseID;
-                tempVerification.userObj = verification.userObj;
-                tempVerification.parentTestCaseID = parentTestCaseID;
-                Log.Debug("Controller/RunAbstractTestCase: tempVerification.parentTestCaseID =  : "
-                        + tempVerification.parentTestCaseID);
-
-                tempVerification.stackTrace = tempTestCase.stackTrace;
-                tempVerification.nameSpace = verification.nameSpace;
-
-                tempVerification.lineNumber = verification.lineNumber;
-                tempVerification.sheetName = verification.sheetName;
-                tempVerification.verificationActualArguments = verification.verificationActualArguments;
-                tempVerification.isVerifyNegative = verification.isVerifyNegative;
-                tempVerification.isRowNegative = verification.isRowNegative;
-//message("The Verificationn bool "+tempVerification.isNegative);
-                // Log.Debug("Controller/RunAbstractTestCase: Expected Result = "+verification.verificationName+" fon Verification "+
-                // verification.verificationName);
-
-                Log.Debug("Controller/RunAbstractTestCase: Number of Verification Arguments = "
-                        + verification.verificationArguments.size()
-                        + " for Verification " + verification.verificationName);
-                for (int i = 0; i < verification.verificationArguments.size(); ++i) {
-                    Log.Debug("Controller/RunAbstractTestCase: Working on Verification Argument : "
-                            + i
-                            + " for Verification : "
-                            + verification.verificationName);
-                    String verificationVal = verification.verificationArguments.get(i).toString();
-                    Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                            + i
-                            + "] = "
-                            + verificationVal
-                            + " for Verification : "
-                            + verification.verificationName);
-
-                    if (verificationVal.toLowerCase().contains("$input_arg")
-                            || verificationVal.toLowerCase().contains(
-                            "$$input_arg")) {
-                        boolean isThisAContextVar = false;
-                        Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                                + i
-                                + "] = "
-                                + verificationVal
-                                + " is an Input Argument for Verification : "
-                                + verification.verificationName);
-
-                        if (verificationVal.contains("=")) {
-                            Log.Debug("Controller/RunAbstractTestCase:  verificationVal["
-                                    + i
-                                    + "] = "
-                                    + verificationVal
-                                    + " contains an = sign ");
-                            String[] splitVerificationVal = Excel.SplitOnFirstEquals(verificationVal);
-
-                            String tempVerificationVal = splitVerificationVal[1];
-
-                            try {
-                                if (tempVerificationVal.startsWith("%")
-                                        && tempVerificationVal.endsWith("%")) {
-                                    tempVerificationVal = Utility.TrimStartEnd(
-                                            tempVerificationVal, '%', 0);
-                                    tempVerificationVal = Utility.TrimStartEnd(
-                                            tempVerificationVal, '%', 1);
-                                    isThisAContextVar = true;
-                                }
-
-                                if (verificationVal.toLowerCase().contains(
-                                        "$$input_arg")) {
-                                    tempVerificationVal = argumentValues.get(Integer.parseInt(tempVerificationVal.substring(11)) - 1).toString();
-                                } else {
-                                    tempVerificationVal = argumentValues.get(Integer.parseInt(tempVerificationVal.substring(10)) - 1).toString();
-                                }
-
-                                Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                                        + i
-                                        + "] = "
-                                        + tempVerificationVal
-                                        + " is an Input Argument for Verification : "
-                                        + verification.verificationName);
-
-                                if (tempVerificationVal.contains("=")) {
-                                    tempVerificationVal = Excel.SplitOnFirstEquals(tempVerificationVal)[1];
-                                }
-
-                                Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                                        + i
-                                        + "] = "
-                                        + tempVerificationVal
-                                        + " is an Input Argument for Verification : "
-                                        + verification.verificationName);
-                            } catch (Exception e) {
-                                tempVerificationVal = StringUtils.EMPTY;
-                                Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                                        + i
-                                        + "] = "
-                                        + tempVerificationVal
-                                        + " is an Input Argument for Verification : "
-                                        + verification.verificationName);
-                            }
-
-                            if (!isThisAContextVar) {
-                                verificationVal = splitVerificationVal[0] + "="
-                                        + tempVerificationVal;
-                            } else {
-                                verificationVal = splitVerificationVal[0]
-                                        + "=%" + tempVerificationVal + "%";
-                            }
-
-                        } else {
-                            try {
-                                if (verificationVal.startsWith("%")
-                                        && verificationVal.endsWith("%")) {
-                                    verificationVal = Utility.TrimStartEnd(
-                                            verificationVal, '%', 0);
-                                    verificationVal = Utility.TrimStartEnd(
-                                            verificationVal, '%', 1);
-                                    isThisAContextVar = true;
-                                }
-
-                                if (verificationVal.toLowerCase().contains(
-                                        "$$input_arg")) {
-                                    verificationVal = argumentValues.get(
-                                            Integer.parseInt(verificationVal.substring(11)) - 1).toString();
-                                } else {
-                                    verificationVal = argumentValues.get(
-                                            Integer.parseInt(verificationVal.substring(10)) - 1).toString();
-                                }
-
-                                if (isThisAContextVar) {
-                                    verificationVal = "%" + verificationVal
-                                            + "%";
-                                }
-                                Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                                        + i
-                                        + "] = "
-                                        + verificationVal
-                                        + " is an Input Argument for Verification : "
-                                        + verification.verificationName);
-
-                            } catch (Exception e) {
-                                verificationVal = StringUtils.EMPTY;
-                                Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                                        + i
-                                        + "] = "
-                                        + verificationVal
-                                        + " is an Input Argument for Verification : "
-                                        + verification.verificationName);
-
-                            }
-                        }
-                    } else if (verificationVal.toLowerCase().startsWith("#") || verificationVal.toLowerCase().startsWith("%#") || verificationVal.toLowerCase().contains("=#") || verificationVal.toLowerCase().contains("=%#")) {
-                        String key = null, value = null;
-
-                        boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
-                        //message("Runabstract:: Actionss--"+actionVal);
-                        //Checking for the arguments if they are consistent
-                        if (isParameterPassingConsistent(argumentValues, test)) {
-
-
-                            if (verificationVal.contains("=")) {
-                                key = Excel.SplitOnFirstEquals(verificationVal)[0];
-                                value = Excel.SplitOnFirstEquals(verificationVal)[1];
-                                isKeyEnabled = true;
-                            } else {
-                                value = verificationVal.toLowerCase();
-                            }
-                            //message("RUNABSTRACT::-1 Key value- "+key);
-                            if (value.startsWith("%") && value.endsWith("%")) {
-                                value = value.replaceAll("%", "");
-                                isThisAContextVar = true;
-                            }
-                            value = value.replaceAll("#", "");
-                            // message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
-                            if (argumentValues.get(0).contains("=")) {
-                                for (String molecule_arg : argumentValues) {
-                                    String temp_value_split[] = Excel.SplitOnFirstEquals(molecule_arg);
-                                    //message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
-                                    if (temp_value_split[0].equalsIgnoreCase(value)) {
-                                        if (temp_value_split.length < 2) {
-                                            throw new Exception("Controller/RunAbstractTestCase: Formal argument value is Empty:: " + temp_value_split[0]);
-                                        }
-                                        if (isKeyEnabled) {
-                                            if (isThisAContextVar) {
-                                                verificationVal = key + "=%" + temp_value_split[1] + "%";
-                                            } else {
-                                                verificationVal = key + "=" + temp_value_split[1];
-                                            }
-                                        } else {
-                                            if (isThisAContextVar) {
-                                                verificationVal = "%" + temp_value_split[1] + "%";
-                                            } else {
-                                                verificationVal = temp_value_split[1];
-                                            }
-
-
-                                        }
-
-//message("RUNABSTRACT:: step forloop "+actionVal);
-                                        foundFormalArg = true;
-                                        break;
-
-                                    }
-                                }
-                                if (!foundFormalArg) {
-                                    throw new Exception("Formal Argument Not found");
-                                }
-                            } else {
-                                if (test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase()) < 0) {
-                                    throw new Exception(String.format("Controller/RunAbstractTestCase: %s is not present in molecule definition %s ", value, test._testcasemoleculeArgDefn));
-                                }
-                                if (isThisAContextVar) {
-                                    verificationVal = "%" + argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())) + "%";
-                                } else {
-                                    verificationVal = argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase()));
-                                }
-                                if (isKeyEnabled) {
-                                    verificationVal = key + "=" + verificationVal;
-                                }
-                            }
-
-
-
-                        } else {
-                            throw new Exception("Argument Passing Not Consistent:Either use named argument passing or positional argument passing");
-                        }
-                        //message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value)+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
-                    }
-
-                    try {
-                        if (verification.verificationArguments.get(i).toString().toLowerCase().contains("$$input_arg")) {
-                            verificationVal = readExcel.FindInMacroAndEnvTableForSingleVector(
-                                    verificationVal,
-                                    verification.nameSpace);
-                        }
-//TODO have to put some check if the Value is comming $$# for named argument.>>>
-                        Log.Debug("Controller/RunAbstractTestCase: verificationVal["
-                                + i
-                                + "] = "
-                                + verificationVal
-                                + " is he Final Value for Verification : "
-                                + verification.verificationName);
-
-                        tempVerification.verificationArguments.add(verificationVal);
-                    } catch (Exception e) {
-                        // Log.Error("Controller/RunAbstractTestCase: "+e.getMessage());
-                        throw new Exception("Controller/RunAbstractTestCase: "
-                                + e.getMessage());
-                    }
-                }
-                tempAction.verification.add(tempVerification);
-            }
-            tempTestCase.actions.add(tempAction);
-        }
-
-        try {
-            message("\n******************** Running Molecule "
-                    + tempTestCase.stackTrace
-                    + " ***************************\n");
-            // Now everything is ready. Call the RunTestCase Function.
-            RunTestCaseForMolecule(tempTestCase);
-        } catch (Exception ex) {
-            Log.Error("Exception while running Abstract Test Case "
-                    + tempTestCase.stackTrace + " is : " + ex.getMessage());
-            // throw new Exception("Exception while running Abstract Test Case "
-            // + tempTestCase.stackTrace + " is : " + ex.getMessage());
-            //message("Thhe boolean value "+isMoleculeNegative);
-//            if(isMoleculeNegative)
-//            {
-//                ContextVar.setContextVar("ZUG_EXCEPTION", ex.getMessage());
-//                Log.Error("Note: Executing Negative Molecule ");
-//                
-//            }
-//            else
-//            {
-            throw new Exception(ex.getMessage());
-            //}
-        } finally {
-            message("\n******************** Molecule "
-                    + tempTestCase.stackTrace
-                    + " Execution Finished **************************\n\n");
-        }
-        Log.Debug("Controller/RunAbstractTestCase: End of function with a new TestCase. TestCase ID is "
-                + test.testCaseID);
-    }
+			ArrayList<String> argumentValues, String parentTestCaseID,
+			String callingtTestCaseSTACK) throws Exception {
+		Log.Debug("Controller/RunAbstractTestCase: Start of function with a new TestCase. TestCase ID is "
+				+ test.testCaseID
+				+ " and parentTestCaseID = "
+				+ parentTestCaseID);
+
+		TestCase tempTestCase = new TestCase();
+		tempTestCase.automated = test.automated;
+		Log.Debug("Controller/RunAbstractTestCase: tempTestCase.automated = "
+				+ tempTestCase.automated);
+
+		tempTestCase.nameSpace = test.nameSpace;
+		Log.Debug("Controller/RunAbstractTestCase: tempTestCase.nameSpace = "
+				+ tempTestCase.nameSpace);
+
+		tempTestCase.concurrentExecutionOnExpansion = test.concurrentExecutionOnExpansion;
+		Log.Debug("Controller/RunAbstractTestCase: tempTestCase.concurrentExecutionOnExpansion = "
+				+ tempTestCase.concurrentExecutionOnExpansion);
+
+		tempTestCase.testCaseDescription = test.testCaseDescription;
+		Log.Debug("Controller/RunAbstractTestCase: tempTestCase.testCaseDescription = "
+				+ tempTestCase.testCaseDescription);
+		tempTestCase.testCaseID = test.testCaseID;
+		Log.Debug("Controller/RunAbstractTestCase: tempTestCase.testCaseID = "
+				+ tempTestCase.testCaseID);
+
+		tempTestCase.parentTestCaseID = parentTestCaseID;
+		Log.Debug("Controller/RunAbstractTestCase: tempTestCase.parentTestCaseID = "
+				+ tempTestCase.parentTestCaseID);
+
+		// Get the thread ID of the parent
+		tempTestCase.threadID = (String) threadIdForTestCases
+				.get(callingtTestCaseSTACK);
+
+		tempTestCase.stackTrace = callingtTestCaseSTACK + "_" + test.stackTrace;
+
+		tempTestCase.user = test.user;
+		tempTestCase.userObj = test.userObj;
+
+		Action[] actions = new Action[test.actions.size()];
+		test.actions.toArray(actions);
+		Log.Debug("Controller/RunAbstractTestCase: Number of Actions are : "
+				+ actions.length + " for testcase : " + test.testCaseID);
+
+		for (int j = 0; j < actions.length; j++) {
+			Action action = (Action) actions[j];
+			Action tempAction = new Action();
+			tempAction.actionName = action.actionName;
+			tempAction.isComment = action.isComment;
+			tempAction.testCaseID = tempTestCase.testCaseID;
+			tempAction.parentTestCaseID = parentTestCaseID;
+			Log.Debug("Controller/RunAbstractTestCase: tempAction.parentTestCaseID =  : "
+					+ tempAction.parentTestCaseID);
+
+			tempAction.stackTrace = tempTestCase.stackTrace;
+			tempAction.nameSpace = action.nameSpace;
+
+			tempAction.userObj = action.userObj;
+			tempAction.step = action.step;
+			tempAction.lineNumber = action.lineNumber;
+			tempAction.sheetName = action.sheetName;
+			tempAction.actionActualArguments = action.actionActualArguments;
+			tempAction.isNegative = action.isNegative;
+			tempAction.isActionNegative = action.isActionNegative;
+
+			Log.Debug("Controller/RunAbstractTestCase: Working on Action "
+					+ action.actionName + " with Step Number as  "
+					+ action.step);
+			Log.Debug("Controller/RunAbstractTestCase: Number of Action Arguments are : "
+					+ action.actionArguments.size()
+					+ " for action : "
+					+ action.actionName);
+
+			ArrayList<String> tempActionArguments = new ArrayList<String>();
+			for (int i = 0; i < action.actionArguments.size(); ++i) {
+				Log.Debug("Controller/RunAbstractTestCase: Working on Action Argument : "
+						+ i + " for action : " + action.actionName);
+				String actionVal = action.actionArguments.get(i).toString();
+				// message("RUNABSTRACT: The MOlecule-Atom args lvl 0 "+actionVal);
+				Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
+						+ "] = " + actionVal + " for action : "
+						+ action.actionName);
+				if (actionVal.toLowerCase().contains("$input_arg")
+						|| actionVal.toLowerCase().contains("$$input_arg")) {
+					boolean isThisAContextVar = false;
+					Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
+							+ "] = " + actionVal
+							+ " is an Input Argument for action : "
+							+ action.actionName);
+
+					if (actionVal.contains("=")) {
+						Log.Debug("Controller/RunAbstractTestCase:  actionVal["
+								+ i + "] = " + actionVal
+								+ " contains an = sign ");
+						String[] splitActionVal = Excel
+								.SplitOnFirstEquals(actionVal);
+
+						String tempActionVal = splitActionVal[1];
+
+						try {
+							if (tempActionVal.startsWith("%")
+									&& tempActionVal.endsWith("%")) {
+								tempActionVal = Utility.TrimStartEnd(
+										tempActionVal, '%', 0);
+								tempActionVal = Utility.TrimStartEnd(
+										tempActionVal, '%', 1);
+								isThisAContextVar = true;
+							}
+
+							if (actionVal.toLowerCase().contains("$$input_arg")) {
+								tempActionVal = argumentValues.get(
+										Integer.parseInt(tempActionVal
+												.substring(11)) - 1).toString();
+							} else {
+								tempActionVal = argumentValues.get(
+										Integer.parseInt(tempActionVal
+												.substring(10)) - 1).toString();
+							}
+							Log.Debug("Controller/RunAbstractTestCase: actionVal["
+									+ i
+									+ "] = "
+									+ tempActionVal
+									+ " is an Input Argument for action : "
+									+ action.actionName);
+
+							if (tempActionVal.contains("=")) {
+								tempActionVal = Excel
+										.SplitOnFirstEquals(tempActionVal)[1];
+							}
+
+							Log.Debug("Controller/RunAbstractTestCase: actionVal["
+									+ i
+									+ "] = "
+									+ tempActionVal
+									+ " is an Input Argument for action : "
+									+ action.actionName);
+						} catch (Exception e) {
+							tempActionVal = StringUtils.EMPTY;
+							Log.Debug("Controller/RunAbstractTestCase: actionVal["
+									+ i
+									+ "] = "
+									+ actionVal
+									+ " is an Input Argument for action : "
+									+ action.actionName);
+						}
+
+						if (!isThisAContextVar) {
+							actionVal = splitActionVal[0] + "=" + tempActionVal;
+						} else {
+							actionVal = splitActionVal[0] + "=%"
+									+ tempActionVal + "%";
+						}
+					} else {
+						try {
+							if (actionVal.startsWith("%")
+									&& actionVal.endsWith("%")) {
+								actionVal = Utility.TrimStartEnd(actionVal,
+										'%', 0);
+								actionVal = Utility.TrimStartEnd(actionVal,
+										'%', 1);
+								isThisAContextVar = true;
+							}
+
+							if (actionVal.toLowerCase().contains("$$input_arg")) {
+								actionVal = argumentValues.get(
+										Integer.parseInt(actionVal
+												.substring(11)) - 1).toString();
+							} else {
+								actionVal = argumentValues.get(
+										Integer.parseInt(actionVal
+												.substring(10)) - 1).toString();
+							}
+
+							if (isThisAContextVar) {
+								actionVal = "%" + actionVal + "%";
+							}
+
+							Log.Debug("Controller/RunAbstractTestCase: actionVal["
+									+ i
+									+ "] = "
+									+ actionVal
+									+ " is an Input Argument for action : "
+									+ action.actionName);
+						} catch (Exception e) {
+							actionVal = StringUtils.EMPTY;
+							Log.Debug("Controller/RunAbstractTestCase: actionVal["
+									+ i
+									+ "] = "
+									+ actionVal
+									+ " is an Input Argument for action : "
+									+ action.actionName);
+						}
+					}
+				}// Checking For any new defined molecule exists or not.
+					// else if (actionVal.toLowerCase().startsWith("#") ||
+					// actionVal.toLowerCase().startsWith("%#") ||
+					// actionVal.toLowerCase().contains("=#") ||
+					// actionVal.toLowerCase().contains("=##") ||
+					// actionVal.toLowerCase().contains("=%#")) {
+				else if (checkIfNamedArgument(actionVal)) {
+					// check for firstoccurrance of # string
+
+					String key = null, value = null;
+					// TODO the work for INDEXD MACROOO checking fails the code.
+					// Document the behavior to use named argument for = values
+					boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false, isThisContextVarTypeAtom = false;
+					if (action.actionName
+							.equalsIgnoreCase("appendtocontextvar")
+							|| action.actionName
+									.equalsIgnoreCase("setcontextvar")) {
+						isThisContextVarTypeAtom = true;
+						// message("Action Name "+action.actionName+" The boolean "+isThisAppenToContextVarAtom);
+					}
+					// message("The action Name "+action.actionName+" Runabstract:: Actionss--"
+					// + actionVal+" Arguments list "+argumentValues);
+					// Checking for the arguments if they are consistent
+					if (isParameterPassingConsistent(argumentValues, test)) {
+
+						String token;
+						if (actionVal.contains("=")) {
+							key = Excel.SplitOnFirstEquals(actionVal)[0];
+							value = Excel.SplitOnFirstEquals(actionVal)[1];
+							token = value;
+							isKeyEnabled = true;
+						} else {
+							token = actionVal;
+							value = actionVal.toLowerCase();
+						}
+						// message("RUNABSTRACT::-1 Key value- " + key);
+						if (value.startsWith("%") && value.endsWith("%")) {
+							value = value.replaceAll("%", "");
+							isThisAContextVar = true;
+						}
+
+						// message("RUNABSTRACT::1a Key value- " + value +
+						// "\targumentss " + argumentValues);
+						if (argumentValues.get(0).contains("=")) {
+							value = value.replaceAll("#", "");
+							for (String molecule_arg : argumentValues) {
+								String temp_value_split[] = Excel
+										.SplitOnFirstEquals(molecule_arg);
+								// message("RUNABSTRACT::2 split value- " +
+								// temp_value_split[0] + "\tValue " + value);
+								// message("RUNABSTRACT::2-d" + molecule_arg +
+								// " 1->" + temp_value_split.length);
+								//
+								if (StringUtils.countMatches(
+										value.toLowerCase(),
+										temp_value_split[0].toLowerCase()) >= 1) {
+									if (temp_value_split[0]
+											.equalsIgnoreCase(value)) {
+										if (temp_value_split.length < 2) {
+											throw new Exception(
+													"Controller/RunAbstractTestCase: Formal argument value is Empty:: "
+															+ temp_value_split[0]);
+										}
+										// message("RUNABSTRACT::3EqualMatchingDone "
+										// + value + " keyen " + isKeyEnabled);
+										if (isKeyEnabled) {
+											if (isThisAContextVar) {
+
+												actionVal = key + "=%"
+														+ temp_value_split[1]
+														+ "%";
+											} else {
+												actionVal = key + "="
+														+ temp_value_split[1];
+											}
+										} else {
+											if (isThisAContextVar) {
+												actionVal = "%"
+														+ temp_value_split[1]
+														+ "%";
+											} else {
+												actionVal = temp_value_split[1];
+											}
+
+										}
+
+										// message("RUNABSTRACT:: step forloop "
+										// + actionVal);
+
+										foundFormalArg = true;
+										break;
+
+									} else {
+										// message("action value "+value+" tempv0 "+temp_value_split[0]+" tempv1 "+temp_value_split[1]);
+										// message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value,
+										// temp_value_split[0],
+										// temp_value_split[1]));
+										if (token.startsWith("#")) {
+											token = token.replace("#", "");
+										}
+										actionVal = replaceStringOnly(token,
+												temp_value_split[0],
+												temp_value_split[1]);
+										// if (isKeyEnabled) {
+										// if (isThisAContextVar) {
+										// actionVal = key + "=%" +
+										// StringUtils.replace(value,
+										// temp_value_split[0],
+										// temp_value_split[1]) + "%";
+										//
+										// } else {
+										// actionVal = key + "=" +
+										// StringUtils.replace(value,
+										// temp_value_split[0],
+										// temp_value_split[1]);
+										// }
+										// } else {
+										// if (isThisAContextVar) {
+										// actionVal = "%" +
+										// StringUtils.replace(value,
+										// temp_value_split[0],
+										// temp_value_split[1]) + "%";
+										//
+										// } else {
+										// actionVal =
+										// StringUtils.replace(value,
+										// temp_value_split[0],
+										// temp_value_split[1]);
+										// }
+										//
+										//
+										// //foundFormalArg = true;
+										// //break;
+										//
+										// }
+										// message("RUNABSTRACT final result : "+actionVal);
+									}
+
+								}
+								// else
+								// {
+								// throw new
+								// Exception("Formal Argument key-name mismatch or Formal argument value is Empty "+temp_value_split[0]);
+								// }
+							}
+							// if (!foundFormalArg) {
+							// throw new
+							// Exception("Formal Argument Not found for Action: "
+							// + action.actionName + " In sheet: " +
+							// action.sheetName + " where testcase: " +
+							// action.testCaseID);
+							// }
+						} else {
+							// value = value.replaceAll("#", "");
+							// message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
+							// message("RUNABSTRACT:: " + value +
+							// " The index no " +
+							// test._testcasemoleculeArgDefn);
+							// int
+							// indexNo=test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())+1;
+							int indexNo = getMoleculeDefinitionIndex(
+									test._testcasemoleculeArgDefn, value);
+							// message("Indexno " + indexNo +" RUNABSTRACT:: " +
+							// argumentValues.get(indexNo));
+							if (indexNo < 0) {
+								throw new Exception(
+										String.format(
+												"Controller/RunAbstractTestCase: %s is not present in molecule definition %s ",
+												value,
+												test._testcasemoleculeArgDefn));
+							}
+							actionVal = replaceStringOnly(token,
+									test._testcasemoleculeArgDefn.get(indexNo),
+									argumentValues.get(indexNo)).replace("#",
+									"");
+							// TODO enhance the code for replacing the code..
+							// putting %% for contextvariable for also for name=
+							// value pair
+							// if (isThisAContextVar) {
+							//
+							// //actionVal = "%" + argumentValues.get(indexNo) +
+							// "%";
+							// actionVal="%"+replaceStringOnly(token,
+							// test._testcasemoleculeArgDefn.get(indexNo),argumentValues.get(indexNo)).replace("#","")+"%";
+							// } else {
+							// //actionVal = argumentValues.get(indexNo);
+							// actionVal=replaceStringOnly(token,
+							// test._testcasemoleculeArgDefn.get(indexNo),argumentValues.get(indexNo)).replace("#","");
+							// }
+							if (isKeyEnabled) {
+								actionVal = key + "=" + actionVal;
+								// message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())));
+							}
+
+							// message("ABS: The action value is "+actionVal);
+
+						}
+
+					} else {
+						throw new Exception(
+								"Argument Passing Not Consistent:Either use named argument passing or positional argument passing. ");
+					}
+					// message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
+					// if(isThisContextVarTypeAtom)
+					// {
+					// actionVal=key+"="+actionVal;
+					// //message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
+					// }
+					// else
+					// /TODO Find a better solution
+					// message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
+				}
+				// message("RUNABSTRACT: The MOlecule-Atom args lvl 2 "+actionVal);
+				try {
+
+					if (action.actionArguments.get(i).toString().toLowerCase()
+							.contains("$$input_arg")) {
+						actionVal = readExcel
+								.FindInMacroAndEnvTableForSingleVector(
+										actionVal, action.nameSpace);
+					}
+					// TODO have to put some check if the Value is comming $$#
+					// for named argument.>>>
+					Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
+							+ "] = " + actionVal
+							+ " is the Final Value for action : "
+							+ action.actionName);
+
+					tempAction.actionArguments.add(actionVal);
+					// message("After The Argument List for Molecule "+tempAction.actionArguments);
+				} catch (Exception e) {
+					// Log.Error("Controller/RunAbstractTestCase: "+e.getMessage());
+					throw new Exception("Controller/RunAbstractTestCase: "
+							+ e.getMessage());
+				}
+			}
+
+			Verification[] verifications = new Verification[action.verification
+					.size()];
+			action.verification.toArray(verifications);
+			Log.Debug("Controller/RunAbstractTestCase: Number of verifications are : "
+					+ verifications.length
+					+ " for Action : "
+					+ action.actionName);
+
+			for (int cnt = 0; cnt < verifications.length; cnt++) {
+				Verification verification = new Verification();
+				verification = verifications[cnt];
+				Log.Debug("Controller/RunAbstractTestCase: Working on Verification {0}. "
+						+ verification.verificationName);
+				Verification tempVerification = new Verification();
+				// tempVerification.expectedResult =
+				// verification.expectedResult;
+				tempVerification.verificationName = verification.verificationName;
+				tempVerification.isComment = verification.isComment;
+				tempVerification.testCaseID = tempTestCase.testCaseID;
+				tempVerification.userObj = verification.userObj;
+				tempVerification.parentTestCaseID = parentTestCaseID;
+				Log.Debug("Controller/RunAbstractTestCase: tempVerification.parentTestCaseID =  : "
+						+ tempVerification.parentTestCaseID);
+
+				tempVerification.stackTrace = tempTestCase.stackTrace;
+				tempVerification.nameSpace = verification.nameSpace;
+
+				tempVerification.lineNumber = verification.lineNumber;
+				tempVerification.sheetName = verification.sheetName;
+				tempVerification.verificationActualArguments = verification.verificationActualArguments;
+				tempVerification.isVerifyNegative = verification.isVerifyNegative;
+				tempVerification.isRowNegative = verification.isRowNegative;
+				// message("The Verificationn bool "+tempVerification.isNegative);
+				// Log.Debug("Controller/RunAbstractTestCase: Expected Result = "+verification.verificationName+" fon Verification "+
+				// verification.verificationName);
+
+				Log.Debug("Controller/RunAbstractTestCase: Number of Verification Arguments = "
+						+ verification.verificationArguments.size()
+						+ " for Verification " + verification.verificationName);
+				for (int i = 0; i < verification.verificationArguments.size(); ++i) {
+					Log.Debug("Controller/RunAbstractTestCase: Working on Verification Argument : "
+							+ i
+							+ " for Verification : "
+							+ verification.verificationName);
+					String verificationVal = verification.verificationArguments
+							.get(i).toString();
+					Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+							+ i
+							+ "] = "
+							+ verificationVal
+							+ " for Verification : "
+							+ verification.verificationName);
+
+					if (verificationVal.toLowerCase().contains("$input_arg")
+							|| verificationVal.toLowerCase().contains(
+									"$$input_arg")) {
+						boolean isThisAContextVar = false;
+						Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+								+ i
+								+ "] = "
+								+ verificationVal
+								+ " is an Input Argument for Verification : "
+								+ verification.verificationName);
+
+						if (verificationVal.contains("=")) {
+							Log.Debug("Controller/RunAbstractTestCase:  verificationVal["
+									+ i
+									+ "] = "
+									+ verificationVal
+									+ " contains an = sign ");
+							String[] splitVerificationVal = Excel
+									.SplitOnFirstEquals(verificationVal);
+
+							String tempVerificationVal = splitVerificationVal[1];
+
+							try {
+								if (tempVerificationVal.startsWith("%")
+										&& tempVerificationVal.endsWith("%")) {
+									tempVerificationVal = Utility.TrimStartEnd(
+											tempVerificationVal, '%', 0);
+									tempVerificationVal = Utility.TrimStartEnd(
+											tempVerificationVal, '%', 1);
+									isThisAContextVar = true;
+								}
+
+								if (verificationVal.toLowerCase().contains(
+										"$$input_arg")) {
+									tempVerificationVal = argumentValues
+											.get(Integer
+													.parseInt(tempVerificationVal
+															.substring(11)) - 1)
+											.toString();
+								} else {
+									tempVerificationVal = argumentValues
+											.get(Integer
+													.parseInt(tempVerificationVal
+															.substring(10)) - 1)
+											.toString();
+								}
+
+								Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+										+ i
+										+ "] = "
+										+ tempVerificationVal
+										+ " is an Input Argument for Verification : "
+										+ verification.verificationName);
+
+								if (tempVerificationVal.contains("=")) {
+									tempVerificationVal = Excel
+											.SplitOnFirstEquals(tempVerificationVal)[1];
+								}
+
+								Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+										+ i
+										+ "] = "
+										+ tempVerificationVal
+										+ " is an Input Argument for Verification : "
+										+ verification.verificationName);
+							} catch (Exception e) {
+								tempVerificationVal = StringUtils.EMPTY;
+								Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+										+ i
+										+ "] = "
+										+ tempVerificationVal
+										+ " is an Input Argument for Verification : "
+										+ verification.verificationName);
+							}
+
+							if (!isThisAContextVar) {
+								verificationVal = splitVerificationVal[0] + "="
+										+ tempVerificationVal;
+							} else {
+								verificationVal = splitVerificationVal[0]
+										+ "=%" + tempVerificationVal + "%";
+							}
+
+						} else {
+							try {
+								if (verificationVal.startsWith("%")
+										&& verificationVal.endsWith("%")) {
+									verificationVal = Utility.TrimStartEnd(
+											verificationVal, '%', 0);
+									verificationVal = Utility.TrimStartEnd(
+											verificationVal, '%', 1);
+									isThisAContextVar = true;
+								}
+
+								if (verificationVal.toLowerCase().contains(
+										"$$input_arg")) {
+									verificationVal = argumentValues.get(
+											Integer.parseInt(verificationVal
+													.substring(11)) - 1)
+											.toString();
+								} else {
+									verificationVal = argumentValues.get(
+											Integer.parseInt(verificationVal
+													.substring(10)) - 1)
+											.toString();
+								}
+
+								if (isThisAContextVar) {
+									verificationVal = "%" + verificationVal
+											+ "%";
+								}
+								Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+										+ i
+										+ "] = "
+										+ verificationVal
+										+ " is an Input Argument for Verification : "
+										+ verification.verificationName);
+
+							} catch (Exception e) {
+								verificationVal = StringUtils.EMPTY;
+								Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+										+ i
+										+ "] = "
+										+ verificationVal
+										+ " is an Input Argument for Verification : "
+										+ verification.verificationName);
+
+							}
+						}
+					} else if (verificationVal.toLowerCase().startsWith("#")
+							|| verificationVal.toLowerCase().startsWith("%#")
+							|| verificationVal.toLowerCase().contains("=#")
+							|| verificationVal.toLowerCase().contains("=%#")) {
+						String key = null, value = null;
+
+						boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
+						// message("Runabstract:: Actionss--"+actionVal);
+						// Checking for the arguments if they are consistent
+						if (isParameterPassingConsistent(argumentValues, test)) {
+
+							if (verificationVal.contains("=")) {
+								key = Excel.SplitOnFirstEquals(verificationVal)[0];
+								value = Excel
+										.SplitOnFirstEquals(verificationVal)[1];
+								isKeyEnabled = true;
+							} else {
+								value = verificationVal.toLowerCase();
+							}
+							// message("RUNABSTRACT::-1 Key value- "+key);
+							if (value.startsWith("%") && value.endsWith("%")) {
+								value = value.replaceAll("%", "");
+								isThisAContextVar = true;
+							}
+							value = value.replaceAll("#", "");
+							// message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
+							if (argumentValues.get(0).contains("=")) {
+								for (String molecule_arg : argumentValues) {
+									String temp_value_split[] = Excel
+											.SplitOnFirstEquals(molecule_arg);
+									// message("RUNABSTRACT::2 Key value- "+value+"\targumentss "+argumentValues);
+									if (temp_value_split[0]
+											.equalsIgnoreCase(value)) {
+										if (temp_value_split.length < 2) {
+											throw new Exception(
+													"Controller/RunAbstractTestCase: Formal argument value is Empty:: "
+															+ temp_value_split[0]);
+										}
+										if (isKeyEnabled) {
+											if (isThisAContextVar) {
+												verificationVal = key + "=%"
+														+ temp_value_split[1]
+														+ "%";
+											} else {
+												verificationVal = key + "="
+														+ temp_value_split[1];
+											}
+										} else {
+											if (isThisAContextVar) {
+												verificationVal = "%"
+														+ temp_value_split[1]
+														+ "%";
+											} else {
+												verificationVal = temp_value_split[1];
+											}
+
+										}
+
+										// message("RUNABSTRACT:: step forloop "+actionVal);
+										foundFormalArg = true;
+										break;
+
+									}
+								}
+								if (!foundFormalArg) {
+									throw new Exception(
+											"Formal Argument Not found");
+								}
+							} else {
+								if (test._testcasemoleculeArgDefn.indexOf(value
+										.trim().toLowerCase()) < 0) {
+									throw new Exception(
+											String.format(
+													"Controller/RunAbstractTestCase: %s is not present in molecule definition %s ",
+													value,
+													test._testcasemoleculeArgDefn));
+								}
+								if (isThisAContextVar) {
+									verificationVal = "%"
+											+ argumentValues
+													.get(test._testcasemoleculeArgDefn.indexOf(value
+															.toLowerCase()))
+											+ "%";
+								} else {
+									verificationVal = argumentValues
+											.get(test._testcasemoleculeArgDefn
+													.indexOf(value
+															.toLowerCase()));
+								}
+								if (isKeyEnabled) {
+									verificationVal = key + "="
+											+ verificationVal;
+								}
+							}
+
+						} else {
+							throw new Exception(
+									"Argument Passing Not Consistent:Either use named argument passing or positional argument passing");
+						}
+						// message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe index is "+test._testcasemoleculeArgDefn.indexOf(value)+"\t The TestCase ArrayList "+test._testcasemoleculeArgDefn);
+					}
+
+					try {
+						if (verification.verificationArguments.get(i)
+								.toString().toLowerCase()
+								.contains("$$input_arg")) {
+							verificationVal = readExcel
+									.FindInMacroAndEnvTableForSingleVector(
+											verificationVal,
+											verification.nameSpace);
+						}
+						// TODO have to put some check if the Value is comming
+						// $$# for named argument.>>>
+						Log.Debug("Controller/RunAbstractTestCase: verificationVal["
+								+ i
+								+ "] = "
+								+ verificationVal
+								+ " is he Final Value for Verification : "
+								+ verification.verificationName);
+
+						tempVerification.verificationArguments
+								.add(verificationVal);
+					} catch (Exception e) {
+						// Log.Error("Controller/RunAbstractTestCase: "+e.getMessage());
+						throw new Exception("Controller/RunAbstractTestCase: "
+								+ e.getMessage());
+					}
+				}
+				tempAction.verification.add(tempVerification);
+			}
+			tempTestCase.actions.add(tempAction);
+		}
+
+		try {
+			message("\n******************** Running Molecule "
+					+ tempTestCase.stackTrace
+					+ " ***************************\n");
+			// Now everything is ready. Call the RunTestCase Function.
+			RunTestCaseForMolecule(tempTestCase);
+		} catch (Exception ex) {
+			Log.Error("Exception while running Abstract Test Case "
+					+ tempTestCase.stackTrace + " is : " + ex.getMessage());
+			// throw new Exception("Exception while running Abstract Test Case "
+			// + tempTestCase.stackTrace + " is : " + ex.getMessage());
+			// message("Thhe boolean value "+isMoleculeNegative);
+			// if(isMoleculeNegative)
+			// {
+			// ContextVar.setContextVar("ZUG_EXCEPTION", ex.getMessage());
+			// Log.Error("Note: Executing Negative Molecule ");
+			//
+			// }
+			// else
+			// {
+			throw new Exception(ex.getMessage());
+			// }
+		} finally {
+			message("\n******************** Molecule "
+					+ tempTestCase.stackTrace
+					+ " Execution Finished **************************\n\n");
+		}
+		Log.Debug("Controller/RunAbstractTestCase: End of function with a new TestCase. TestCase ID is "
+				+ test.testCaseID);
+	}
 
 	// /***
 	// * Function to check if value is MVM
@@ -2233,10 +2351,11 @@ String token;
 					// " Action Actual Arguments " +
 					// action.actionActualArguments);
 					count1++;
-					//message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments);
+					// message("ExpandTest:/cheks to Macro action args exp\t" +
+					// action.actionArguments);
 					String tempVal = GetTheActualValue((String) (action.actionArguments
 							.get(i)));
-					//message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
+					// message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
 					// message("Expandtest:/lengths " +
 					// action.actionArguments.size()+"\n\t"+action.actionActualArguments.size());
 					if (action.actionActualArguments.size() == action.actionArguments
@@ -2426,24 +2545,24 @@ String token;
 			}
 
 		}
-		//message("EXZPANDSS:: the arguments are "+allActionVerificationArgs);
+		// message("EXZPANDSS:: the arguments are "+allActionVerificationArgs);
 
 		List<Tuple<String>> resultAfterIndexed = CartesianProduct
 				.indexedProduct(allActionVerificationArgs);
-		
+
 		// .get(0),
 		// allActionVerificationArgs.get(1));
 		List<Tuple<String>> result = new ArrayList<Tuple<String>>();
-		
+
 		for (Tuple<String> tempResult : resultAfterIndexed) {
 			allActionVerificationArgs = new ArrayList<ArrayList<String>>();
 			ArrayList<String> tempResultList = new ArrayList<String>();
 			Object[] actualValue = tempResult.ToArray();
-		
+
 			for (int q = 0; q < actualValue.length; ++q) {
 				tempResultList.add((String) actualValue[q]);
 			}
-		
+
 			count1 = -1;
 			try {
 				for (String tempVal : tempResultList) {
@@ -2453,7 +2572,7 @@ String token;
 					// new function for checking the $$ or $ to expand the
 					// testcase
 					count1++;
-					
+
 					// message("Comming to Cartesian Product ");
 					// //if ((tempVal.startsWith("{")) &&
 					// (tempVal.endsWith("}"))) {
@@ -2488,7 +2607,7 @@ String token;
 
 				result.addAll(CartesianProduct
 						.cartesianProduct(allActionVerificationArgs));
-				
+
 			} catch (OutOfMemoryError e) {
 				testcasenotran = test.testCaseID + "\nError: " + e.getMessage()
 						+ "(memory) exceeded";
@@ -2502,7 +2621,7 @@ String token;
 		}
 
 		ArrayList<TestCase> tempTestCases = new ArrayList<TestCase>();
-		//message("Coming to this end. 7 ");
+		// message("Coming to this end. 7 ");
 		if (result != null) {
 			int size = result.size();
 			Object[] tempResult = result.toArray();
@@ -2511,7 +2630,7 @@ String token;
 				Tuple<String> subList = (Tuple<String>) tempResult[p];
 				// ArrayList<BusinessLayer.Variable> variables = new
 				// ArrayList<BusinessLayer.Variable>();
-				//message("Coming to this end. 8 ");
+				// message("Coming to this end. 8 ");
 				TestCase tempTestCase = new TestCase();
 
 				tempTestCase.testCaseID = test.testCaseID;
@@ -2557,7 +2676,7 @@ String token;
 				Log.Debug("Controller/ExpandTestCase: Number of Actions are : "
 						+ actions.length + " for testcase : "
 						+ tempTestCase.testCaseID);
-				
+
 				for (int j = 0; j < actions.length; ++j) {
 					Action action = actions[j];
 					for (int i = 0; i < action.actionArguments.size(); ++i) {
@@ -2565,44 +2684,48 @@ String token;
 						if (multiValuedVariablePosition.containsKey(count)) {
 							String testcase_partial_id = tempTestCaseVar[count]
 									.toLowerCase();
-							 //message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i));
+							
+														
+							 //message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i)+" "+action.actionArguments.get(i));
 
 							if (action.actionName
 									.equalsIgnoreCase("appendtocontextvar")
 									|| action.actionName
 											.equalsIgnoreCase("setcontextvar")) {
-								//message("Coming to this end. 10 "+action.actionName);
+								// message("Coming to this end. 10 "+action.actionName);
 								String real_value[] = Excel
 										.SplitOnFirstEquals(testcase_partial_id);
-								//message("Coming to this end. 10 a "+testcase_partial_id);
+								// message("Coming to this end. 10 a "+testcase_partial_id);
 								String actual_value[] = Excel
 										.SplitOnFirstEquals(action.actionActualArguments
 												.get(i));
-								//message("Coming to this end. 10 b "+actual_value[0]+" and real "+real_value[0]);
-								if(real_value.length>0){		if (real_value[0].equalsIgnoreCase(actual_value[0])) {
-									//message("Before Change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
-									testcase_partial_id = StringUtils.replace(
-											testcase_partial_id,
-											actual_value[0] + "=", "");
-									 //message("After change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
-								
-								//message("Coming to this end. 10 c "+testcase_partial_id);
-							} else if (action.actionActualArguments.get(i)
-									.contains("=")) {
-								String realVal[] = Excel
-										.SplitOnFirstEquals(testcase_partial_id);
-								if (realVal.length > 1) {
-									testcase_partial_id = realVal[1];
+								// message("Coming to this end. 10 b "+actual_value[0]+" and real "+real_value[0]);
+								if (real_value.length > 0) {
+									if (real_value[0]
+											.equalsIgnoreCase(actual_value[0])) {
+										// message("Before Change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
+										testcase_partial_id = StringUtils
+												.replace(testcase_partial_id,
+														actual_value[0] + "=",
+														"");
+										// message("After change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
 
+										// message("Coming to this end. 10 c "+testcase_partial_id);
+									} else if (action.actionActualArguments
+											.get(i).contains("=")) {
+										String realVal[] = Excel
+												.SplitOnFirstEquals(testcase_partial_id);
+										if (realVal.length > 1) {
+											testcase_partial_id = realVal[1];
+
+										}
+									}
+								} else {
+
+									testcase_partial_id = null;
 								}
+
 							}
-								}
-								else{
-									
-									testcase_partial_id=null;
-								}
-								
-						}
 							tempTestCase.testCaseID += "_"
 									+ testcase_partial_id;
 							// message("TempCase id "+tempTestCase.testCaseID);
@@ -2617,7 +2740,7 @@ String token;
 							// variables.add(var);
 							// }
 						}
-						//message("Coming to this end. 11 "+count);
+						// message("Coming to this end. 11 "+count);
 						count++;
 					}
 
@@ -2791,7 +2914,7 @@ String token;
 				}
 				// message("Expndd:: The Action arguments "+tempTestCase.actions.get(1).actionArguments);
 				// message("Testcase ID "+tempTestCase.testCaseID);
-				
+
 				if (manualTestCaseID.contains(",")) {
 					if (checkWithCommandLineInput(tempTestCase).testCaseID
 							.equalsIgnoreCase("Not Present")) {
@@ -2801,9 +2924,8 @@ String token;
 						// message("Temp case added "+tempTestCase.testCaseID);
 						tempTestCases
 								.add(checkWithCommandLineInput(tempTestCase));
-						
-						
-											}
+
+					}
 
 				} else {
 					// message("Not Comma Separted command Line");
@@ -2813,11 +2935,10 @@ String token;
 						// continue;
 					} else {
 						// message("Temp case added "+tempTestCase.testCaseID);
-						tempTestCases.add(checkWithCommandLineInput(tempTestCase));
+						tempTestCases
+								.add(checkWithCommandLineInput(tempTestCase));
 					}
 				}
-				
-				
 
 			}
 		}
@@ -2829,41 +2950,46 @@ String token;
 			// test.testCaseID);
 			return new TestCase[] { test };
 		}
-		
-		if(excludeTestCaseID!=null)
+		ArrayList<TestCase> removemulticases=new ArrayList<TestCase>();
+		//Write a method which removes the similar mvm values.
+		for(TestCase tmp:tempTestCases)
 		{
-			ArrayList<TestCase>removeTestCase=new ArrayList<TestCase>();
-			if(excludeTestCaseID.contains(","))
-			{
 		
-				String excludeTCID []=excludeTestCaseID.split(",");
-				 
-				for(int i=0;i<excludeTCID.length;i++)
-				{
+			
+			//message("temn  "+tmp.testCaseID);
+			removemulticases=removeSimilarTestCases(tmp,removemulticases);
+		}
+		tempTestCases.removeAll(removemulticases);
+//for(TestCase dd:removemulticases)
+//{
+//	message("The ids "+dd.testCaseID);
+//}
+		if (excludeTestCaseID != null) {
+			ArrayList<TestCase> removeTestCase = new ArrayList<TestCase>();
+			if (excludeTestCaseID.contains(",")) {
+
+				String excludeTCID[] = excludeTestCaseID.split(",");
+
+				for (int i = 0; i < excludeTCID.length; i++) {
 					for (TestCase tt : tempTestCases) {
-						if(tt.testCaseID.equalsIgnoreCase(excludeTCID[i]))
-						{
+						if (tt.testCaseID.equalsIgnoreCase(excludeTCID[i])) {
 							removeTestCase.add(tt);
-							
+
 						}
 					}
 				}
-				
-			}
-			else
-			{
+
+			} else {
 				for (TestCase tt : tempTestCases) {
-					if(tt.testCaseID.equalsIgnoreCase(excludeTestCaseID))
-					{
+					if (tt.testCaseID.equalsIgnoreCase(excludeTestCaseID)) {
 						removeTestCase.add(tt);
 						break;
 					}
 				}
 			}
-		
+
 			tempTestCases.removeAll(removeTestCase);
 		}
-
 
 		Log.Debug("Controller/ExpandTestCase: Returning "
 				+ tempTestCases.size()
@@ -2873,8 +2999,57 @@ String token;
 		TestCase[] tempT = new TestCase[tempTestCases.size()];
 		return tempTestCases.toArray(tempT);
 	}
-
-	/*
+	
+	
+/**
+ * Method to remove Similar MVM combination testcases
+ * 
+ */
+	private ArrayList<TestCase> removeSimilarTestCases(TestCase mvmtest,ArrayList<TestCase> toRemove)
+	{
+		ArrayList<TestCase> removingTestCase=toRemove;
+		//message("Method is starting to execute ... with "+mvmtest.testCaseID);
+		
+		Action[] cc=new Action[mvmtest.actions.size()];
+		//message("Action array created "+cc.length);
+		mvmtest.actions.toArray(cc);
+		for(int k=0;k<cc.length;++k)
+		{
+			
+			Action aa=cc[k];
+			//message("Every Action to be checked "+aa.actionName);
+			for(int i=0;i<aa.actionActualArguments.size();i++)
+			{
+				//message("Every action argumemts "+aa.actionArguments.get(i));
+				int nextElm=i+1;
+				//message("Previous element "+i +" The element comes "+nextElm+" " +aa.actionActualArguments.size());
+				if(nextElm!=aa.actionActualArguments.size()){
+				if(aa.actionActualArguments.get(i).equals(aa.actionActualArguments.get(nextElm)))
+			{
+					//message("Matching args "+aa.actionActualArguments.get(i));
+					String[] tempBreak=mvmtest.testCaseID.split("_");
+					for(String ss:tempBreak)
+					{
+						//message("count matching... "+StringUtils.countMatches(mvmtest.testCaseID,ss));
+						if(StringUtils.countMatches(mvmtest.testCaseID,ss)>1)
+						{
+							removingTestCase.add(mvmtest);
+						}
+					}
+					
+			}
+			}
+//				else
+//				{
+//					message("Out of index");
+//				}
+//				
+			}
+		}
+		
+		return removingTestCase;
+	}
+	/**
 	 * Check the command line Testcase contains ,
 	 * 
 	 * @param testcase
@@ -2904,19 +3079,15 @@ String token;
 					// message("checkWithCommandLineIfComma 1b " + manual +
 					// " testcase " + tempcom.testCaseID);
 					break;
-				}
-				else if(tempcom.testCaseID.equalsIgnoreCase("init")||tempcom.testCaseID.equalsIgnoreCase("cleanup"))
-				{
-					command_line_testcase=tempcom;
+				} else if (tempcom.testCaseID.equalsIgnoreCase("init")
+						|| tempcom.testCaseID.equalsIgnoreCase("cleanup")) {
+					command_line_testcase = tempcom;
+					break;
+				} else if (tempcom.parentTestCaseID.equalsIgnoreCase("init")
+						|| tempcom.parentTestCaseID.equalsIgnoreCase("cleanup")) {
+					command_line_testcase = tempcom;
 					break;
 				}
-				else if(tempcom.parentTestCaseID.equalsIgnoreCase("init")||tempcom.parentTestCaseID.equalsIgnoreCase("cleanup"))
-				{
-					command_line_testcase=tempcom;
-					break;
-				}
-				
-				
 
 			} else {
 				if (manual.equalsIgnoreCase(tempcom.parentTestCaseID)) {
@@ -2930,15 +3101,13 @@ String token;
 					// message("checkWithCommandLineIfComma 1b " + manual +
 					// " testcase " + tempcom.testCaseID);
 					break;
-			}
-				else if(tempcom.testCaseID.equalsIgnoreCase("init")||tempcom.testCaseID.equalsIgnoreCase("cleanup"))
-				{
-					command_line_testcase=tempcom;
+				} else if (tempcom.testCaseID.equalsIgnoreCase("init")
+						|| tempcom.testCaseID.equalsIgnoreCase("cleanup")) {
+					command_line_testcase = tempcom;
 					break;
-				}
-				else if(tempcom.parentTestCaseID.equalsIgnoreCase("init")||tempcom.parentTestCaseID.equalsIgnoreCase("cleanup"))
-				{
-					command_line_testcase=tempcom;
+				} else if (tempcom.parentTestCaseID.equalsIgnoreCase("init")
+						|| tempcom.parentTestCaseID.equalsIgnoreCase("cleanup")) {
+					command_line_testcase = tempcom;
 					break;
 				}
 			}
@@ -2955,7 +3124,7 @@ String token;
 	 * 
 	 * @return testcase
 	 */
-@Deprecated
+	@Deprecated
 	private TestCase checkWithCommandLine(TestCase tempt) {
 
 		TestCase commadLine = new TestCase();
@@ -5553,7 +5722,7 @@ String token;
 										action.stackTrace.toUpperCase(),
 										action.actionName.toUpperCase(), arg));
 						CreateContextVariable(arg);
-						
+
 						message(String.format(
 								"\n[%s] Action %s SUCCESSFULLY Executed",
 								action.stackTrace.toUpperCase(),
@@ -5913,8 +6082,9 @@ String token;
 								action.stackTrace.toUpperCase(),
 								action.actionName.toUpperCase(),
 								contextVarName, appendValueBuilder.toString()));
-//message("The contextvar "+contextVarName+" value "+ReadContextVariable(contextVarName));
-						String value = ContextVar.getContextVar(contextVarName.trim());
+						// message("The contextvar "+contextVarName+" value "+ReadContextVariable(contextVarName));
+						String value = ContextVar.getContextVar(contextVarName
+								.trim());
 						if (value == null) {
 							Log.Error("AppendtoContextVar: ContextVariable is not defined");
 							throw new Exception("Context Variable not defined");
@@ -5950,9 +6120,9 @@ String token;
 				}
 			} else if (action.actionName.trim().toLowerCase().contains("print")) {
 				if (action.actionArguments.size() > 0) {
-					//message("THe Args "+action.actionArguments);
+					// message("THe Args "+action.actionArguments);
 					for (int i = 0; i < action.actionArguments.size(); i++) {
-						
+
 						if (!action.actionArguments.get(i).isEmpty()) {
 
 							if (action.actionArguments.get(i).startsWith("$$%")
@@ -6365,11 +6535,11 @@ String token;
 						"\tException in Action %s (%s:%s).\n\t%s",
 						action.actionName, action.sheetName,
 						action.lineNumber + 1, ex.getMessage()));
-				if(verbose)
-				Log.Error(String.format(
-						"\tException in Action %s (%s:%s).\n\tMessage: %s",
-						action.actionName, action.sheetName,
-						action.lineNumber + 1, ex.getMessage()));
+				if (verbose)
+					Log.Error(String.format(
+							"\tException in Action %s (%s:%s).\n\tMessage: %s",
+							action.actionName, action.sheetName,
+							action.lineNumber + 1, ex.getMessage()));
 				// message("Comming to if Clause ");
 			}
 			if (action.isActionNegative) {
@@ -6377,11 +6547,11 @@ String token;
 						"\tException in Action %s (%s:%s).\n\t%s",
 						action.actionName, action.sheetName,
 						action.lineNumber + 1, ex.getMessage()));
-				if(verbose)
-				Log.Error(String.format(
-						"\tException in Action %s (%s:%s).\n\tMessage: %s",
-						action.actionName, action.sheetName,
-						action.lineNumber + 1, ex.getMessage()));
+				if (verbose)
+					Log.Error(String.format(
+							"\tException in Action %s (%s:%s).\n\tMessage: %s",
+							action.actionName, action.sheetName,
+							action.lineNumber + 1, ex.getMessage()));
 			} else {
 				// message("Comming to else Clause ");
 
@@ -6774,7 +6944,7 @@ String token;
 		} else {
 			commandValue = arguments.split("\" \""); // splits the Argument
 		} // string on
-		// " "(<quote><space><quote>)
+			// " "(<quote><space><quote>)
 		Process process = null;
 		ArrayList<String> commandparam = new ArrayList<String>(); // ArrayList
 		// to hold
@@ -7184,12 +7354,11 @@ String token;
 					tempVariable += threadID;
 				}
 
-//				if (StringUtils.isNotBlank(ContextVar
-//						.getContextVar(tempVariable))) {
-					isContextVar = true;
-//				}
+				// if (StringUtils.isNotBlank(ContextVar
+				// .getContextVar(tempVariable))) {
+				isContextVar = true;
+				// }
 				tempVariable = ReadContextVariable(tempVariable);
-			
 
 				Log.Debug(String
 						.format("Controller/DoSomeFineTuning : After Context Variable Parsing, variableToFind = %s ",
@@ -7210,8 +7379,9 @@ String token;
 			Log.Debug(String.format(
 					"Controller/DoSomeFineTuning : actualValue = %s",
 					actualValue.toString()));
-			//message("The actual value "+actualValue+"\t The temp " +tempVariable);
-			
+			// message("The actual value "+actualValue+"\t The temp "
+			// +tempVariable);
+
 			if (isContextVar) {
 				actualValue.replace(firstOccuranceOfPercentage,
 						secondOccuranceOfPercentage + 1, tempVariable);
@@ -7220,7 +7390,7 @@ String token;
 						tempVariable);
 			}
 
-			//message("The actual value after insert "+actualValue);
+			// message("The actual value after insert "+actualValue);
 			Log.Debug(String
 					.format("Controller/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
 							actualValue, variable));
@@ -7877,8 +8047,84 @@ String token;
 	 * with the different primitives, so that there can be one common location
 	 * for logging.
 	 */
+	private void ListenToPrimitives(int iPORT) {
+		String ParamFromClient = StringUtils.EMPTY;
+		Socket conn = null;
+		ServerSocket sock = null;
+
+		InputStream inStream = null;
+		// DataInputStream inDataStream = null;
+		BufferedReader inDataStream = null;
+
+		try {
+
+			// Server Socket initialization with iPORT=8245
+			sock = new ServerSocket(iPORT);
+			if (sock != null) {
+				Log.Debug("Socket created successfully!!!!!!! ->  " + sock);
+			}
+			// Setting it Reusable for keep on running if the thread waits
+			// for 2mls
+			sock.setReuseAddress(true);
+
+			Log.Debug("Controller/ListenToPrimitive : Server Socket Created on port "
+					+ Integer.toString(iPORT));
+//			System.out
+//					.println("Controller/ListenToPrimitive : Server Socket Created on port "
+//							+ Integer.toString(iPORT));
+			while (true) {
+
+				conn = sock.accept();
+				Log.Debug("Controller/ListenToPrimitive : Client Connected....");
+
+				Log.Debug("Controller/ListenToPrimitive : Creating input stream object in order to read from socket.");
+
+				inStream = conn.getInputStream();
+
+				// inDataStream = new DataInputStream ( inStream );
+
+				inDataStream = new BufferedReader(new InputStreamReader(
+						inStream));
+
+				Log.Debug("Controller/ListenToPrimitive : Creating input stream object in order to read from socket...Successful");
+				Log.Debug("Controller/ListenToPrimitive : Reading Data from Socket. Sent by Client.");
+
+				try {
+					while ((ParamFromClient = inDataStream.readLine()) != null) {
+
+						Log.Debug("Controller/ListenToPrimitive : Data from client is - "
+								+ ParamFromClient);
+						// message("The Length of The param is\t"+ParamFromClient.length());
+
+						if (ParamFromClient.length() != 0) // Checking for
+															// if the
+															// Content is
+															// null or not.
+						{
+							LogPrimitiveMessage(ParamFromClient);
+						}
+						// else
+						// Log.Error("Controller/ListenToPrimitive :ParamFromClient length is zero");
+						// message("This is the Log Param->"+ParamFromClient);
+
+					}
+				} catch (StringIndexOutOfBoundsException se) {
+					continue;
+
+				}
+
+			}
+
+		} catch (Exception e) {
+			Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
+					+ e.getMessage());
+			System.exit(1);
+		}
+	}
+
 	private void ListenToPrimitives() {
 		int iPORT = 8245;
+		
 		String ParamFromClient = StringUtils.EMPTY;
 		Socket conn = null;
 		ServerSocket sock = null;
@@ -7902,6 +8148,9 @@ String token;
 
 				Log.Debug("Controller/ListenToPrimitive : Server Socket Created on port "
 						+ Integer.toString(iPORT));
+//				System.out
+//						.println("Controller/ListenToPrimitive : Server Socket Created on port "
+//								+ Integer.toString(iPORT));
 				while (true) {
 
 					conn = sock.accept();
@@ -7946,9 +8195,16 @@ String token;
 				}
 
 			} catch (Exception e) {
-				Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
-						+ e.getMessage());
-				System.exit(1);
+//				Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
+//						+ e.getMessage());
+				iPORT++;
+				if(iPORT==8256)
+				{
+					Log.Error("Controller/ListenToPrimitive: Only ten zug instances can run simultaneously "+iPORT);
+					System.exit(1);
+				}
+				ListenToPrimitives(iPORT);
+				//System.exit(1);
 			} finally {
 				try {
 					conn.close();
@@ -8406,17 +8662,23 @@ String token;
 								.format("Controller/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Davos.",
 										test.testCaseID,
 										test.testCaseDescription));
-try{
-						SaveTestCaseResultEveryTime(tData);
-						
-						saveTestCaseVariables(
-								findVariablesValueForTestCase(test),
-								test.testCaseID, testSuitName);
-}catch(DavosExecutionException de)
-{
-	Log.Error("Davos Reporting Faliure:: "+de.getMessage());
-	System.exit(1);
-}
+						try {
+
+							// if(!davosclient.validateData())
+							// {
+							// Log.Error("Davos Reporting Data are not Valid. ");
+							// System.exit(1);
+							// }
+
+							SaveTestCaseResultEveryTime(tData);
+
+							saveTestCaseVariables(
+									findVariablesValueForTestCase(test),
+									test.testCaseID, testSuitName);
+						} catch (DavosExecutionException de) {
+							Log.Error("Failure:: " + de.getMessage());
+							System.exit(1);
+						}
 					} else {
 						Log.Debug(String
 								.format("Controller/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
@@ -9008,8 +9270,8 @@ try{
 			// test.testCaseID,(String)errorMessageDuringTestCaseExecution.get(test.parentTestCaseID));
 			message("\n******************** Error Messages For Test Case "
 					+ test.parentTestCaseID + " ***************************");
-			if(verbose)
-			Log.Error(failureReason);
+			if (verbose)
+				Log.Error(failureReason);
 			message("\n******************* Error Messages End For Test Case "
 					+ test.parentTestCaseID + " **************************");
 			message(String.format(
@@ -9129,11 +9391,10 @@ try{
 			Log.Error("Not Supporting Operating System\t" + OS_NAME);
 			System.exit(1);
 		}
-LOGLOCATION=System.getenv(LOG_DIR);
-if(LOGLOCATION==null)
-{
-	LOGLOCATION=System.getProperty("user.dir")+"/log";
-}
+		LOGLOCATION = System.getenv(LOG_DIR);
+		if (LOGLOCATION == null) {
+			LOGLOCATION = System.getProperty("user.dir") + "/log";
+		}
 		final Controller controller = new Controller();
 		StringBuilder cmdinputsargs = new StringBuilder();
 		for (String cmdinputs : args) {
@@ -9141,7 +9402,6 @@ if(LOGLOCATION==null)
 		}
 		Log.Debug("Controller/Main:: Command Line Input: "
 				+ cmdinputsargs.toString());
-		
 
 		// controller.LoggedInUser();
 		// geting the process id of the program
@@ -9308,7 +9568,7 @@ if(LOGLOCATION==null)
 			// Now reading the Excel object.
 			controller.readExcel = new Excel();
 			controller.readExcel.setXlsFilePath(controller.inputFile);
-			
+
 			controller.readExcel.ReadExcel(controller.inputFile,
 					verificationSwitching, compileMode);
 			controller.message("SUCCESSFULLY Read the TestCases Input Sheet "
@@ -9482,7 +9742,14 @@ if(LOGLOCATION==null)
 							+ controller.dBHostName + "\\" + controller.dBName
 							+ " Davos.....");
 
-					controller.SaveTestCaseResult();
+					try {
+						controller.SaveTestCaseResult();
+					} catch (DavosExecutionException de) {
+						Log.Error(de.getMessage());
+						// System.exit(1);
+
+					}
+
 					controller
 							.message("\n\nSUCCESSFULLY Stored the TestCase Result to "
 									+ controller.dBHostName
