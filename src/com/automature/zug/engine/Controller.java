@@ -34,6 +34,7 @@ import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.extractor.ExcelExtractor;
 
 //Internal package imports
 import com.automature.zug.util.Log;
@@ -86,7 +87,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.4." + "20121011" + ".103";
+	private static String Version = "ZUG Premium 5.4." + "20121015" + ".104";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -157,7 +158,7 @@ public class Controller extends Thread {
 	public static final String inprocess_xml_tag_attribute_language = "language";
 	public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
 	public static HashMap<String, AtomInvoker> invoke_native_atoms = new HashMap<String, AtomInvoker>();
-	private static String builtin_atom_package_name = "";
+	private static volatile String builtin_atom_package_name = "";
 	// Web Service Connection
 	static DavosClient davosclient = null;
 	private boolean testcasenotfoundflag = false;
@@ -2305,7 +2306,74 @@ public class Controller extends Thread {
 
 		return checkMVM;
 	}
-
+	/**
+	 * Method to remove the duplicate mvm variables
+	 * @param Action action
+	 * refines the Action object to remove the  
+	 * @return Action 
+	 */
+private Action removeDuplicateMVMVariables(Action action)
+{
+	Action refinedAction=new Action();
+	refinedAction.actionName=action.actionName;
+	refinedAction.actionProperty=action.actionProperty;
+	refinedAction.actionDescription=action.actionDescription;
+	//TODO the checking for duplicacy using Hasmap and Set
+	message("the elements "+action.actionActualArguments);
+	int count=0;
+	for(String tmparg:action.actionActualArguments)
+	{
+		if(tmparg.startsWith("$$"))
+		{
+			message(tmparg+" = "+new Integer(count).toString() );
+			refinedAction._mvmmap.put(tmparg+" "+count, new Integer(count).toString());
+		}
+		count++;
+	}
+	message("The refined map is "+refinedAction._mvmmap);
+	return refinedAction;
+}
+/**
+ * method for adding extra action in testcase
+ * @throws Exception 
+ */
+private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
+{
+	
+	ArrayList<Action> tempActions=new ArrayList<Action>();
+	Excel er= new Excel();
+	for(Action act:tes.actions)
+	{
+		
+		for(int i=0;i<act.actionActualArguments.size();i++)
+		{
+			String arg=act.actionActualArguments.get(i);
+			String value=act.actionArguments.get(i);
+			if(arg.startsWith("$$"))
+			{
+				Action tempaction=new Action();
+				tempaction.nameSpace=act.nameSpace;
+				tempaction.testCaseID=act.testCaseID;
+				tempaction.stackTrace=act.testCaseID;
+				tempaction.parentTestCaseID=act.parentTestCaseID;
+				tempaction.actionName="SetContextVar";
+				//String ctxvarname=tempaction.testCaseID+"_"+arg;
+				tempaction.actionActualArguments.add(tempaction.testCaseID+"_"+arg+"="+value);
+				tempaction.actionActualArguments.add(er.FindInMacroAndEnvTable(arg.replace("$","" ), act.nameSpace));
+				tempActions.add(tempaction);
+//				act.actionArguments.remove(i);
+//				act.actionArguments.add(i, "%"+ctxvarname+"%");
+				}
+			
+		}
+				
+		
+	}
+	System.out.println("TempAction generated "+tempActions.size());
+	tes.actions.addAll(tempActions);
+	return tes;
+	
+}
 	/***
 	 * Function to Expand the TestCases
 	 * 
@@ -2322,7 +2390,8 @@ public class Controller extends Thread {
 		// HashMap<String, String> mvm_vector_map = new HashMap<String,
 		// String>();
 		// message("THE testcase coming1a " + test.testCaseID);
-
+//write the subroutine here.
+		//test=addSetContextVarMVMAction(test);
 		ArrayList<ArrayList<String>> allActionVerificationArgs = new ArrayList<ArrayList<String>>();
 		Action[] allActions = new Action[test.actions.size()];
 		// message("THE testcase coming 1b" + test.testCaseID);
@@ -2340,8 +2409,10 @@ public class Controller extends Thread {
 					+ action.actionName);
 			// //TODO put checking if testcase have no actio argument then at
 			// least print any message or put the exception
-			// message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
+			message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
+			
 			if (action.actionArguments.size() > 0) {
+				//removeDuplicateMVMVariables(action);
 				for (int i = 0; i < action.actionArguments.size(); ++i) {
 
 					// /In case of Molecule the actual value is not coming ?
@@ -2545,7 +2616,7 @@ public class Controller extends Thread {
 			}
 
 		}
-		// message("EXZPANDSS:: the arguments are "+allActionVerificationArgs);
+		//message("EXZPANDSS:: the arguments are "+allActionVerificationArgs+" multivalued macro position "+multiValuedVariablePosition);
 
 		List<Tuple<String>> resultAfterIndexed = CartesianProduct
 				.indexedProduct(allActionVerificationArgs);
@@ -2562,7 +2633,7 @@ public class Controller extends Thread {
 			for (int q = 0; q < actualValue.length; ++q) {
 				tempResultList.add((String) actualValue[q]);
 			}
-
+//message("temp result list "+tempResultList);
 			count1 = -1;
 			try {
 				for (String tempVal : tempResultList) {
@@ -2708,6 +2779,10 @@ public class Controller extends Thread {
 												.replace(testcase_partial_id,
 														actual_value[0] + "=",
 														"");
+										if(testcase_partial_id.contains("="))
+										{
+											testcase_partial_id=Excel.SplitOnFirstEquals(testcase_partial_id)[1];
+										}
 										// message("After change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
 
 										// message("Coming to this end. 10 c "+testcase_partial_id);
@@ -3011,50 +3086,31 @@ public class Controller extends Thread {
 		ArrayList<TestCase> removingTestCase=toRemove;
 		//message("Method is starting to execute ... with "+mvmtest.testCaseID);
 		
-		Action[] tempActions=new Action[mvmtest.actions.size()];
+		Action[] cc=new Action[mvmtest.actions.size()];
 		//message("Action array created "+cc.length);
-		mvmtest.actions.toArray(tempActions);
-		for(int k=0;k<tempActions.length;++k)
+		mvmtest.actions.toArray(cc);
+		for(int k=0;k<cc.length;++k)
 		{
 			
-			Action actn=tempActions[k];
-			//message("Every Action to be checked "+actn.actionName);
-			for(int i=0;i<actn.actionActualArguments.size();i++)
+			Action aa=cc[k];
+			//message("Every Action to be checked "+aa.actionName);
+			for(int i=0;i<aa.actionActualArguments.size();i++)
 			{
-				//message("Every action argumemts "+actn.actionArguments.get(i));
+				//message("Every action argumemts "+aa.actionArguments.get(i));
 				int nextElm=i+1;
-				//message("Previous element "+i +" The element comes "+nextElm+" " +actn.actionActualArguments.size());
-				if(nextElm!=actn.actionActualArguments.size()&&actn.actionActualArguments.get(i).startsWith("$$")){
-				if(actn.actionActualArguments.get(i).equals(actn.actionActualArguments.get(nextElm)))
+				//message("Previous element "+i +" The element comes "+nextElm+" " +aa.actionActualArguments.size());
+				if(nextElm!=aa.actionActualArguments.size()){
+				if(aa.actionActualArguments.get(i).equals(aa.actionActualArguments.get(nextElm)))
 			{
-					//message("Matching args "+actn.actionActualArguments.get(i)+" Testcase "+mvmtest.testCaseID);
+					//message("Matching args "+aa.actionActualArguments.get(i));
 					String[] tempBreak=mvmtest.testCaseID.split("_");
-					boolean matchFlag=false;
-					for(int cnt=1;cnt<tempBreak.length;cnt++)
+					for(String ss:tempBreak)
 					{
-						String token=tempBreak[cnt],tomatch=tempBreak[1];
-						//message("count matching---->"+ token+" .... "+StringUtils.countMatches(mvmtest.testCaseID,token));
-						//message("Token "+token+" To match "+tomatch);
-						if(token.equals(tomatch))
+						//message("count matching... "+StringUtils.countMatches(mvmtest.testCaseID,ss));
+						if(StringUtils.countMatches(mvmtest.testCaseID,ss)>1)
 						{
-							matchFlag=true;
+							removingTestCase.add(mvmtest);
 						}
-						else{
-							matchFlag=false;
-							break;
-						}
-//						message("count matching---->"+ token+" .... "+StringUtils.countMatches(mvmtest.testCaseID,token));
-//						if(StringUtils.countMatches(mvmtest.testCaseID,token)>1)
-//						{
-							
-						
-//						}
-					}
-					//message("Whats the match flag "+matchFlag);
-					if(matchFlag)
-					{
-						//message("Testcases added to remove "+mvmtest.testCaseID);
-						removingTestCase.add(mvmtest);
 					}
 					
 			}
@@ -5316,18 +5372,15 @@ public class Controller extends Thread {
 									inprocess_jar_xml_tag_path,
 									inprocess_jar_xml_tag_attribute_name)) {
 						if (pkg_name.equalsIgnoreCase(package_struct[0])) {
-							if (!builtin_atom_package_name
-									.equalsIgnoreCase(pkg_name)) {
-								builtin_atom_package_name = pkg_name;
-								invokeAtoms
-										.get(builtin_atom_package_name)
-										.loadInstance(builtin_atom_package_name);
-							}
+							//if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
+								//builtin_atom_package_name = pkg_name;
+								//invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+							//}
 
 							try {
 								// message("The Values "+verification.isNegative);
 								invokeAtoms
-										.get(builtin_atom_package_name)
+										.get(pkg_name)
 										.invokeMethod(
 												package_struct[1].trim(),
 												verification.verificationArguments);
@@ -6220,6 +6273,8 @@ public class Controller extends Thread {
 						}
 
 					}
+					
+					//TODO need to make the builtin_atom_package_name as threadsafe....
 					message(String.format(
 							"[%s] Execution Started Action %s with values %s ",
 							action.stackTrace.toUpperCase(), action.actionName,
@@ -6229,27 +6284,30 @@ public class Controller extends Thread {
 									inprocess_jar_xml_tag_path,
 									inprocess_jar_xml_tag_attribute_name)) {
 						if (pkg_name.equalsIgnoreCase(package_struct[0])) {
-							if (!builtin_atom_package_name
-									.equalsIgnoreCase(pkg_name)) {
-								builtin_atom_package_name = pkg_name;
-								if (invokeAtoms.get(pkg_name).native_flag) {
-									// message("This is native Dll Calling");
-								} else if (invokeAtoms.get(pkg_name).com_flag) {
-									// message("Com Jacob Calling");
-								} else {
-									invokeAtoms.get(builtin_atom_package_name)
-											.loadInstance(
-													builtin_atom_package_name);
-								}
-							}
-							invokeAtoms.get(builtin_atom_package_name)
+//							if (!builtin_atom_package_name
+//									.equalsIgnoreCase(pkg_name)) {
+//								builtin_atom_package_name = pkg_name;
+//								if (invokeAtoms.get(pkg_name).native_flag) {
+//									// message("This is native Dll Calling");
+//								} else if (invokeAtoms.get(pkg_name).com_flag) {
+//									// message("Com Jacob Calling");
+//								} else {
+//									invokeAtoms.get(builtin_atom_package_name)
+//											.loadInstance(
+//													builtin_atom_package_name);
+//								}
+//							}
+							//Need Work on this
+							invokeAtoms.get(pkg_name)
 									.setInprocessAction(action);
 							// try {
+							
 							isActionPassing = true;
-							invokeAtoms.get(builtin_atom_package_name)
+							//try{
+							invokeAtoms.get(pkg_name)
 									.invokeMethod(package_struct[1].trim(),
 											action.actionArguments);
-
+							
 							if (action.isNegative) {
 								isActionPassing = false;
 								throw new Exception(
@@ -9435,10 +9493,25 @@ public class Controller extends Thread {
 			for (String package_names : new ExtensionInterpreterSupport()
 					.reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path,
 							inprocess_jar_xml_tag_attribute_name)) {
-				AtomInvoker ai = new AtomInvoker(package_names);
+				if(StringUtils.isNotBlank(package_names)||StringUtils.isNotEmpty(package_names))
+				{
+					AtomInvoker ai = new AtomInvoker(package_names);
+				
+				if (ai.native_flag) {
+				 //controller.message("This is native Dll Calling");
+				} else if (ai.com_flag) {
+					// controller.message("Com Jacob Calling");
+			} else {
+				//controller.message("invoking jar instance "+package_names);
+					ai.loadInstance(package_names);
+				}
 				invokeAtoms.put(package_names, ai);
+			}else
+			{
+				controller.message("[Warning] ZugINI.xml contains blank inprocess package definition. Please refer to the readme.txt or Zug User Manual");
 			}
-
+			}
+			
 			// invokeAtoms.loadJarFile(new
 			// ExtensionInterpreterSupport().readExternalJarFilePath().get(0));
 		} else {
