@@ -2674,6 +2674,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                 // / If this is a comment then Ignore
                 if (StringUtils.isNotBlank(valueInTestCaseColumn)
                         && valueInTestCaseColumn.toLowerCase().equals("comment")) {
+                	//System.out.println("if comment valid ");
                     col = worksheet.getRow(index).getCell(
                             ((short) (testCaseIndex + 1)));
                    
@@ -2683,8 +2684,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                         //System.out.println("Its not Nulll "+description);
                     }
                    
-                    // system.out.println("\nTest Case Description : "+
-                    // description);
+                    //System.out.println("\nTest Case Description : "+ description);
                     if(StringUtils.isNotBlank(description)&&index==worksheet.getLastRowNum())
                     {
                         throw new Exception("Comment can't be provided at last row of "+nameSpace+".xls Sheet: molecule Row: "+worksheet.getLastRowNum());
@@ -2748,7 +2748,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                         testCase.actions.add(actionObj);
                         //
 
-//                         System.out.println("The action arguments  "+actionObj.actionArguments);
+                         //System.out.println("The action arguments  "+actionObj.actionArguments);
 
 
                     }
@@ -2785,14 +2785,24 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     // / Read the TestCase Section of the Row
                     Log.Debug("Excel/GetAbstractTestCaseSheetValues : Calling ReadTestCase with row index as : "
                             + index);
-                    //System.out.println("The description 1d"+description);
+                    //System.out.println("The description 1d "+description+" ---- "+worksheet+"++++++"+labelIndex+"_______"+index+"::::::::"+nameSpace);
                     testCase = ReadTestCase(worksheet, labelIndex, index,
                             testCaseIndex, description, nameSpace);
+                    
+//System.out.println("The control coming to 2d "+actionObj);
+try{
+	String acnval=actionObj.testCaseID;
+}
+catch(Exception e)
+{
+	//System.out.println("Problems "+e.getMessage());
+	continue;
+	
+}
 
-
-                    testCase._testcasemoleculeArgDefn.addAll(actionObj._actionmoleculeArgDefn);
+    testCase._testcasemoleculeArgDefn.addAll(actionObj._actionmoleculeArgDefn);
                     description=null;
-
+                    //System.out.println("The control coming to 3d");
                 }
 //System.out.println("The index of row "+index+" the last row "+worksheet.getLastRowNum());
                 // / Checking the last Row and saving the Abstract
@@ -3474,7 +3484,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     + String.format(
                     "Excel/ReadTestCase : Row[%d] test case ID = %s ",
                     index, testCase.testCaseID));
-
+            //System.out.print("\nTest Case ID "+ testCase.testCaseID);
             if (StringUtils.isNotBlank(testCase.testCaseID)) // system.out.print("\nTest Case ID "+ testCase.testCaseID);
             {
                 testCase.parentTestCaseID = testCase.testCaseID;
@@ -3566,6 +3576,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                     + " .Exception message is : "
                     + e.getMessage());
         }
+        //System.out.println("testcase returning "+testCase.testCaseID);
         return testCase;
     }// ReadTestCase
 
@@ -4236,7 +4247,35 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
                                 TestCaseSheetName, testCase, testCaseIndex,
                                 nameSpace);
                     }
-
+                    
+                   ArrayList<Action> tempActions=new ArrayList<Action>();
+//                	               		
+  //             		for(int i=0;i<actionObj.actionActualArguments.size();i++)
+   //             		{
+ //               			String arg=actionObj.actionActualArguments.get(i);
+ //             			String value=actionObj.actionArguments.get(i);
+//                			if(arg.startsWith("$$"))
+//                			{
+//                				Action tempaction=new Action();
+//                				tempaction.nameSpace=actionObj.nameSpace;
+//                				tempaction.testCaseID=actionObj.testCaseID;
+//                				tempaction.stackTrace=actionObj.testCaseID;
+//                				tempaction.parentTestCaseID=actionObj.parentTestCaseID;
+//                				tempaction.actionName="SetContextVar";
+//                				//String ctxvarname=tempaction.testCaseID+"_"+arg;
+//                				tempaction.actionActualArguments.add(tempaction.testCaseID+"_"+arg+"="+value);
+//                				tempaction.actionActualArguments.add(FindInMacroAndEnvTable(arg.replace("$","" ), actionObj.nameSpace));
+//                				tempActions.add(tempaction);
+////                				act.actionArguments.remove(i);
+////                				act.actionArguments.add(i, "%"+ctxvarname+"%");
+//                				}
+//             
+  //            			System.out.println("action args "+arg+" value "+value);
+  //             		}
+//                				
+//                		
+//                	System.out.println("TempAction generated "+tempActions.size());
+//                	testCase.actions.addAll(tempActions);
                 }
                 // Else if this is a new test case
                 if (StringUtils.isNotBlank(valueInTestCaseColumn)) {

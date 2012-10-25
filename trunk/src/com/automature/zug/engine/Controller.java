@@ -87,7 +87,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.4." + "20121015" + ".104";
+	private static String Version = "ZUG Premium 5.4." + "20121025" + ".107";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -678,7 +678,13 @@ public class Controller extends Thread {
 				excludeTestCaseID = opts.getString("excludeTestCaseID", null);
 				// message("No specific testcase is invoked\n All testcases will be executed.");
 			} else {
-				// message("The manual Testcase "+manualTestCaseID);
+				 //message("The manual Testcase "+manualTestCaseID);
+				if(manualTestCaseID.contains(".")||manualTestCaseID.contains("/")||manualTestCaseID.contains(":")||manualTestCaseID.contains(";"))
+				{
+					//message("it contains . "+manualTestCaseID);
+					Log.Error("[Error]Multiple testcaseid must separate by , (comma) wrong inputs: "+manualTestCaseID);
+					System.exit(1);
+				}
 				Log.Debug("Controller/GetOptions: ManualTestCase ID specified by user is = "
 						+ manualTestCaseID);
 				if ((excludeTestCaseID = opts.getString("excludetestcaseID",
@@ -2409,7 +2415,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 					+ action.actionName);
 			// //TODO put checking if testcase have no actio argument then at
 			// least print any message or put the exception
-			message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
+			//message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
 			
 			if (action.actionArguments.size() > 0) {
 				//removeDuplicateMVMVariables(action);
@@ -9593,12 +9599,12 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 			Log.Debug("Controller/Main : Getting and Validating Command Line Arguments.");
 
-			controller.message("\n\nCommand Line Arguments Validated \n");
+			
 			if (!controller.GetOptions()) {
 
 				return;
 			}
-
+			controller.message("\n\nCommand Line Arguments Validated \n");
 		} catch (Exception e) {
 			controller
 					.message("Failed to Validate Command Line Arguments, exiting "
