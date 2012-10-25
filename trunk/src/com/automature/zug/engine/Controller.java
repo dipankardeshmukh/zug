@@ -1620,8 +1620,7 @@ public class Controller extends Thread {
 						isThisContextVarTypeAtom = true;
 						// message("Action Name "+action.actionName+" The boolean "+isThisAppenToContextVarAtom);
 					}
-					// message("The action Name "+action.actionName+" Runabstract:: Actionss--"
-					// + actionVal+" Arguments list "+argumentValues);
+					// message("The action Name "+action.actionName+" Runabstract:: Actionss--"+actionVal+" Arguments list "+argumentValues);
 					// Checking for the arguments if they are consistent
 					if (isParameterPassingConsistent(argumentValues, test)) {
 
@@ -1635,23 +1634,20 @@ public class Controller extends Thread {
 							token = actionVal;
 							value = actionVal.toLowerCase();
 						}
-						// message("RUNABSTRACT::-1 Key value- " + key);
+						//message("RUNABSTRACT::-1 Key value- " + key);
 						if (value.startsWith("%") && value.endsWith("%")) {
 							value = value.replaceAll("%", "");
 							isThisAContextVar = true;
 						}
 
-						// message("RUNABSTRACT::1a Key value- " + value +
-						// "\targumentss " + argumentValues);
+						 //message("RUNABSTRACT::1a Key value- " + value +"\targumentss " + argumentValues);
 						if (argumentValues.get(0).contains("=")) {
 							value = value.replaceAll("#", "");
 							for (String molecule_arg : argumentValues) {
 								String temp_value_split[] = Excel
 										.SplitOnFirstEquals(molecule_arg);
-								// message("RUNABSTRACT::2 split value- " +
-								// temp_value_split[0] + "\tValue " + value);
-								// message("RUNABSTRACT::2-d" + molecule_arg +
-								// " 1->" + temp_value_split.length);
+								//message("RUNABSTRACT::2 split value- " + temp_value_split[0] + "\tValue " + value);
+								//message("RUNABSTRACT::2-d" + molecule_arg + " 1->" + temp_value_split.length);
 								//
 								if (StringUtils.countMatches(
 										value.toLowerCase(),
@@ -1693,11 +1689,9 @@ public class Controller extends Thread {
 										break;
 
 									} else {
-										// message("action value "+value+" tempv0 "+temp_value_split[0]+" tempv1 "+temp_value_split[1]);
-										// message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value,
-										// temp_value_split[0],
-										// temp_value_split[1]));
-										if (token.startsWith("#")) {
+										// message("action value "+value+" tempv0 "+temp_value_split[0]+" tempv1 "+temp_value_split[1]+" token "+token);
+										// message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value, temp_value_split[0],temp_value_split[1]));
+										if (token.startsWith("#")||token.startsWith("$$%#")) {
 											token = token.replace("#", "");
 										}
 										actionVal = replaceStringOnly(token,
@@ -1735,7 +1729,7 @@ public class Controller extends Thread {
 										// //break;
 										//
 										// }
-										// message("RUNABSTRACT final result : "+actionVal);
+										 //message("RUNABSTRACT final result : "+actionVal);
 									}
 
 								}
@@ -1794,7 +1788,7 @@ public class Controller extends Thread {
 								// message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())));
 							}
 
-							// message("ABS: The action value is "+actionVal);
+							///message("ABS: The action value is "+actionVal);
 
 						}
 
@@ -1812,7 +1806,7 @@ public class Controller extends Thread {
 					// /TODO Find a better solution
 					// message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
 				}
-				// message("RUNABSTRACT: The MOlecule-Atom args lvl 2 "+actionVal);
+				//message("RUNABSTRACT: The MOlecule-Atom args lvl 2 "+actionVal);
 				try {
 
 					if (action.actionArguments.get(i).toString().toLowerCase()
@@ -1829,7 +1823,7 @@ public class Controller extends Thread {
 							+ action.actionName);
 
 					tempAction.actionArguments.add(actionVal);
-					// message("After The Argument List for Molecule "+tempAction.actionArguments);
+					 //message("After The Argument List for Molecule "+tempAction.actionArguments);
 				} catch (Exception e) {
 					// Log.Error("Controller/RunAbstractTestCase: "+e.getMessage());
 					throw new Exception("Controller/RunAbstractTestCase: "
