@@ -87,7 +87,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.5." + "20121107" + ".110";
+	private static String Version = "ZUG Premium 5.5." + "20121108" + ".111";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1206,10 +1206,15 @@ public class Controller extends Thread {
 		}
 		else
 		{
-			String tcycle=ContextVar.getContextVar("ZUG_TCYCLENAME");
-			if(tcycle!=null)
-			{	message("\n No execution found to Report updating the TestCycle "+tcycle+" to "
-					+ dBHostName + "/" + " through Davos Web Service.");
+			//String tcycle=davosclient.getTestCycleDescriptionByID(TestPlanId,testCycleId);
+			String tcycle=null;
+			if(StringUtils.isEmpty(tcycle))
+			{
+				Log.Error("Controller/SaveTestCaseResult:: No TestCycle description Found");
+			}
+			else{
+				message("\n No execution found to Report updating the TestCycle "+tcycle+" to "
+						+ dBHostName + "/" + " through Davos Web Service.");
 			
 			testCycleId = davosclient.testCycle_write(TestPlanId, ContextVar
 					.getContextVar("ZUG_TCYCLENAME"), "", "", new Integer(
@@ -2796,7 +2801,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 							if (action.actionName
 									.equalsIgnoreCase("appendtocontextvar")
 									|| action.actionName
-											.equalsIgnoreCase("setcontextvar")) {
+											.equalsIgnoreCase("setcontextvar")|action.actionName.startsWith("&")) {
 								// message("Coming to this end. 10 "+action.actionName);
 								String real_value[] = Excel
 										.SplitOnFirstEquals(testcase_partial_id);
@@ -9797,12 +9802,28 @@ controller.CreateContextVariable("ZUG_BWD="+new File(controller.readExcel.getXls
 				
 				if(StringUtils.isNotBlank(controller.testCycleId)||StringUtils.isNotEmpty(controller.testCycleId))
 				{
-					if(davosclient.getTestplanFromTestCycleID(controller.testCycleId)!=controller.TestPlanId)
+					String testplandavos=davosclient.getTestplanFromTestCycleID(controller.testCycleId);
+					Integer davostestplanid=Integer.valueOf(testplandavos);
+					Integer cmdlinetestplanid=Integer.valueOf(controller.TestPlanId);
+					Log.Debug("Controller/Main:: Testplan from davos:"+davostestplanid+". Testplan provided in command line:"+cmdlinetestplanid+".");
+					Log.Debug("Controller/Main:: Comparison:"+davostestplanid.compareTo(cmdlinetestplanid));
+					
+					if(davostestplanid.compareTo(cmdlinetestplanid)==0)
+					{
+						Log.Debug(String.format("Controller/Main: The testplan id is %s specific to the testcycle id is %s Matched",testplandavos,controller.testCycleId));	
+//							
+					}
+					else
 					{
 						Log.Error(String.format("Testcycle: %s is not mapped to Testplan: %s",controller.testCycleId,controller.TestPlanId));
 						System.exit(1);
-						
 					}
+//					if(davosclient.getTestplanFromTestCycleID(controller.testCycleId)!=controller.TestPlanId)
+//					{
+//						Log.Error(String.format("Testcycle: %s is not mapped to Testplan: %s",controller.testCycleId,controller.TestPlanId));
+//					System.exit(1);
+//					
+//					}
 				}
 			}
 
