@@ -3,7 +3,7 @@
  *    This is the Controller class which executes the Test Cases for the Automation 
  */
 package com.automature.zug.engine;
-
+ 
 import com.automature.zug.exceptions.MoleculeDefinitionException;
 import java.io.BufferedReader;
 import java.io.File;
@@ -87,7 +87,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.4." + "20121025" + ".107";
+	private static String Version = "ZUG Premium 5.5." + "20121107" + ".110";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1090,6 +1090,8 @@ public class Controller extends Thread {
 		// + testCasesExecutedMachine.get_role() + "\t"
 		// + testCasesExecutedMachine.get_buildNumber());
 		// // }
+		if(executedTestCaseData.size()>0)
+		{
 		ExecutedTestCase[] executedTestCase = new ExecutedTestCase[executedTestCaseData
 				.size()];
 
@@ -1201,6 +1203,20 @@ public class Controller extends Thread {
 		// + testCycle.get_testCycleMessage() + " and TestPlan ID  "
 		// + testCycleData.getTestplan_id() + " of Test Suit "
 		// + testSuitName);
+		}
+		else
+		{
+			String tcycle=ContextVar.getContextVar("ZUG_TCYCLENAME");
+			if(tcycle!=null)
+			{	message("\n No execution found to Report updating the TestCycle "+tcycle+" to "
+					+ dBHostName + "/" + " through Davos Web Service.");
+			
+			testCycleId = davosclient.testCycle_write(TestPlanId, ContextVar
+					.getContextVar("ZUG_TCYCLENAME"), "", "", new Integer(
+					initializationTime).toString(),
+					new Integer(executionTime).toString());
+			}
+		}
 		message("\n-----------------------------------------------------------------------------------------------------------------------");
 		message("\n-----------------------------------------------------------------------------------------------------------------------");
 
@@ -1341,16 +1357,24 @@ public class Controller extends Thread {
 		Comparator compr = Collections.reverseOrder();
 		Collections.sort(lengthlist, compr);
 		ArrayList<String> sortedlist = new ArrayList<String>();
-		for (int i = 0; i < lengthlist.size(); i++) {
-			int count_string = lengthlist.get(i);
-			for (int j = 0; j < unsortedList.size(); j++) {
-				String tempstring = unsortedList.get(j);
-				if (tempstring.length() == count_string) {
-					sortedlist.add(tempstring);
-					break;
-				}
-			}
-
+//		for (int i = 0; i < lengthlist.size(); i++) {
+//			int count_string = lengthlist.get(i);
+//			for (int j = 0; j < unsortedList.size(); j++) {
+//				String tempstring = unsortedList.get(j);
+//				if (tempstring.length() == count_string) {
+//					sortedlist.add(tempstring);
+//					break;
+//				}
+//			}
+//
+//		}
+		String tempArray[]=new String[unsortedList.size()];
+		unsortedList.toArray(tempArray);
+		Arrays.sort(tempArray);
+		for(int i=0;i<tempArray.length;i++)
+		{
+			//System.out.println("The values "+tempArray[i]);
+			sortedlist.add(tempArray[i]);
 		}
 		return sortedlist;
 	}
@@ -1367,12 +1391,13 @@ public class Controller extends Thread {
 			String valuetomatch) throws Exception {
 		int count_index = 0;
 		boolean argnotfound = true;
+		//message("The molecule arglist "+moleculearglist);
 		// create a reverse order list checking with the String inputs lengths
 		ArrayList<String> reverselist = sortListByLength(moleculearglist);
-		// message("The reverse order "+reverselist);
+		//message("The reverse order "+reverselist);
 		for (int i = 0; i < reverselist.size(); i++) {
 			String molecule_arg = reverselist.get(i);
-			// message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
+			 //message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
 			// Count matching "+
 			// StringUtils.countMatches(valuetomatch,molecule_arg));
 			// if (StringUtils.countMatches(valuetomatch, molecule_arg)==1) {
@@ -1394,7 +1419,7 @@ public class Controller extends Thread {
 		if (argnotfound) {
 			throw new Exception("Argument not present in Molecule Definition");
 		}
-		// message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
+		//message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
 		return moleculearglist.indexOf(reverselist.get(count_index));
 	}
 
@@ -2473,6 +2498,15 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 										+ tempVal
 										+ " NullValueException \n In TesrCaseId: "
 										+ action.testCaseID);
+					}
+					String tempindexcheckin[]=Excel.SplitOnFirstEquals(tempVal);
+					if(tempindexcheckin.length==2)
+					{
+						if(tempindexcheckin[1].startsWith("$~$")&&tempindexcheckin[1].endsWith("$~$"))
+						{
+							//message("indexmacro checking: from "+tempVal+" to "+tempindexcheckin[1]);
+							tempVal=tempindexcheckin[1];
+						}
 					}
 					if ((tempVal.startsWith("$~$"))
 							&& (tempVal.endsWith("$~$"))) {
@@ -9425,7 +9459,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 		} catch (LoginException e) { // Login failed } }
 		}
 	}
-
+	
 	/**
 	 * main method for Harness. Entry point to the Controller
 	 * 
@@ -9661,7 +9695,9 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 			// Now reading the Excel object.
 			controller.readExcel = new Excel();
 			controller.readExcel.setXlsFilePath(controller.inputFile);
-
+			
+controller.CreateContextVariable("ZUG_BWD="+new File(controller.readExcel.getXlsFilePath()).getParent());
+//System.out.println("The base working directory "+ContextVar.getContextVar("ZUG_PWD"));
 			controller.readExcel.ReadExcel(controller.inputFile,
 					verificationSwitching, compileMode);
 			controller.message("SUCCESSFULLY Read the TestCases Input Sheet "
@@ -9747,6 +9783,26 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 					controller.BuildNo = controller.saveBuildTag(
 							controller.TestPlanId, controller.BuildTag);
+				}
+				try{
+					davosclient.validate_Testplan(controller.TestPlanId);
+					davosclient.validate_Topologyset(controller.topologySetId);
+				}catch(DavosExecutionException e)
+				{
+					Log.Error("Error in Validating Data: "+e.getMessage());
+					System.exit(1);
+				}
+				
+				
+				
+				if(StringUtils.isNotBlank(controller.testCycleId)||StringUtils.isNotEmpty(controller.testCycleId))
+				{
+					if(davosclient.getTestplanFromTestCycleID(controller.testCycleId)!=controller.TestPlanId)
+					{
+						Log.Error(String.format("Testcycle: %s is not mapped to Testplan: %s",controller.testCycleId,controller.TestPlanId));
+						System.exit(1);
+						
+					}
 				}
 			}
 
@@ -9839,16 +9895,36 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 						controller.SaveTestCaseResult();
 					} catch (DavosExecutionException de) {
 						Log.Error(de.getMessage());
-						// System.exit(1);
+						System.exit(1);
 
 					}
 
+					
 					controller
 							.message("\n\nSUCCESSFULLY Stored the TestCase Result to "
 									+ controller.dBHostName
 									+ "\\"
 									+ controller.dBName + " Davos.....");
+					
 				}
+				else
+				{
+					controller.message("\n\n Updating testcycle data with no test execution data");
+					try{
+						controller.SaveTestCaseResult();
+						controller.message("\n\nSUCCESSFULLY Stored the TestCycle Result to "
+								+ controller.dBHostName
+								+ "\\"
+								+ controller.dBName + " Davos.....");
+			
+					}catch(DavosExecutionException de)
+					{
+						Log.Error(de.getMessage());
+						System.exit(1);
+					}
+					
+					
+					}
 			} else // / Even if the DB reporting is FALSE, still we should
 					// actually
 			// show the statistics.
