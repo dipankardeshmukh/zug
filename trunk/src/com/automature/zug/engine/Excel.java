@@ -766,11 +766,18 @@ else
             // , inputFileName));
             // / After Reading the Configuration Sheet, we need to read all the
             // External Molecule Sheet
+        	//System.out.println("External sheet before removing duplicates "+_externalSheets);
+        	  _externalSheets=Utility.removeDuplicatesFromArrayList(_externalSheets);
+        	  //System.out.println("External sheet after removing duplicates "+_externalSheets);
+              for (Iterator iterator = _externalSheets.iterator(); iterator.hasNext();) {
+      			String type_element = (String)iterator.next();
+      			System.out.println("\nExternal sheets : " + type_element);
+      			ReadExternalMacros(type_element);
+      		}
             for (String externalSheet : _externalSheets) {
                 Log.Debug(String.format("Excel/ReadExcel : Reading the External INCLUDE Sheet %s",
                         externalSheet));
-                // system.out.println(String.format("Reading the External INCLUDE  FILE : $s",
-                // externalSheet));
+                 //System.out.println(String.format("Reading the External INCLUDE  FILE : %s", externalSheet));
 
                 ReadExternalSheets(externalSheet);
 
@@ -963,7 +970,7 @@ else
             String _nested_include_list = "", _nested_scriptlocation_list = "";
 
             for (String nested : _externalSheets) {
-                //forDebug("Excel/ReadConfigSheet : the nested includes " + readNestedIncludes(nested));
+                //System.out.println("Excel/ReadConfigSheet : the nested includes " + readNestedIncludes(nested));
                 _nested_include_list += readNestedIncludes(nested);
 
             }
@@ -1104,7 +1111,8 @@ else
     }
     //This function will read include files and return the list of nested include files
 
-    private String readNestedIncludes(String nestedexternalfile) {
+    @SuppressWarnings("finally")
+	private String readNestedIncludes(String nestedexternalfile) {
 
         File inputFile = null;
         FileInputStream extFile = null;
@@ -1151,14 +1159,14 @@ else
                     for (String Path : includeValues) {
                     	
                         if (Path.contains(":") || Path.startsWith("/")) {
-                            //forDebug("Excel/readNestedInclude:: The include files " + Path);
+                            //System.out.println("Excel/readNestedInclude:: The include files " + Path);
                             includePathList += Path + ",";
 
                         } else {
                             if (Path.isEmpty()) {
                                 continue;
                             } else {
-                            	System.out.println("The file name "+this.getXlsFilePath());
+                            	//System.out.println("The file name "+this.getXlsFilePath());
                                 String actualPath = "";
                                 //Implement the Inlcule file path issue.
                                 File inputxlsfile=new File(this.getXlsFilePath());
@@ -1185,6 +1193,9 @@ else
                     "Excel/readNestedIncludeMolecules : Error occured while getting values from the %s Sheet. \n Message %s: ", nestedexternalfile, ex.getMessage()));
 
         } finally {
+        	
+        	
+        	//System.out.println("nested include file "+includePathList+" external include file list "+_externalSheets);
             return includePathList;
         }
     }
@@ -1264,7 +1275,7 @@ else
            File inputxlsfile=new File(this.getXlsFilePath());
                                         //actualPath += ProgramOptions.workingDirectory+ Controller.SLASH + Path + ",";
 actualPath+=inputxlsfile.getParent()+Controller.SLASH+Path+",";
-                                        //System.out.println("This the actual Path\t"+actualPath);
+                                        //System.out.println(Path+" This the actual Path\t"+actualPath);
                                         inlcudelist += actualPath;
                                     }   //AddToExternalSheets(strKey, actualPath);
                                 }
@@ -1765,7 +1776,68 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             return null;
 
         }
-    }// AppendNamespace
+    }
+    /**
+     * 
+     * @param inputFileName
+     * @throws Exception
+     */
+    private void ReadExternalMacros(String inputFileName) throws Exception
+    {
+    	File inputFile = null;
+        FileInputStream inFile = null;
+        try {
+        	
+        	inputFile = new File(inputFileName);
+            if (!inputFile.exists()) {
+                String error = "Excel/ReadExternalMacros :  External Excel file (INCLUDE) specified  "
+                        + inputFileName
+                        + " does not exits. Enter a valid file path";
+                Log.Error(error);
+                throw new Exception(error);
+            }
+
+            String fileName = inputFile.getName();
+            int i;
+            for (i = fileName.length() - 1; i > 0; i--) {
+                if (fileName.charAt(i) == '.') {
+                    break;
+                }
+            }
+            String nameSpace = fileName.substring(0, i).toLowerCase();
+
+            /** Create a POIFSFileSystem object **/
+            inFile = new FileInputStream(inputFile);
+            POIFSFileSystem inputFileSystem = new POIFSFileSystem(inFile);
+
+            Log.Debug("Excel/ReadExternalMacros : Opening the excel File "
+                    + inputFileName);
+            Log.Debug("Excel/ReadExternalMacros : Creating new workbook object ");
+
+            // / Create a workbook using the File System
+            HSSFWorkbook _workBook_extern = new HSSFWorkbook(inputFileSystem);
+
+            Log.Debug("Excel/ReadExternalMacros : The excel File "
+                    + inputFileName + " opened successfully");
+            
+            ReadMacroSheet(_workBook_extern, nameSpace);
+
+            Log.Debug(String.format("Excel/ReadExternalMacros : The Macro Sheet - %s of Excel Sheet %s read successfully.",
+                    MacroSheetName, inputFileName));
+            
+        }catch(Exception ex)
+        {
+        	Log.Error(String.format("Excel/ReadExternalMacros : Error occured while Reading the External (INCLUDE) Excel file %s \nMessage : %s ",
+                    inputFileName, ex.getMessage()));
+            inFile.close();
+            throw new Exception(
+                    String.format(
+                    "Excel/ReadExternalMacros : Error occured while Reading the External (INCLUDE) Excel file %s \nMessage : %s ",
+                    inputFileName, ex.getMessage()));
+        }
+    }
+    
+    // AppendNamespace
 
     // / Function to read external Included Sheets. This will read the following
     // sheets -
@@ -1822,8 +1894,8 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             // system.out.println("READING Macro SHEET OF " +
             // inputFileName+"\n");
 
-            ReadMacroSheet(_workBook_extern, nameSpace);
-            readHashTable(_macroSheetHashTable);
+            //ReadMacroSheet(_workBook_extern, nameSpace);
+            //System.out.println("Macro Values of: "+nameSpace+" - "+readHashTable(_macroSheetHashTable));
 
             Log.Debug(String.format("Excel/ReadExternalSheets : The Macro Sheet - %s of Excel Sheet %s read successfully.",
                     MacroSheetName, inputFileName));
@@ -1925,12 +1997,12 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             for (int i = 0; i < qualifiedPaths.length; i++) {
                 if (new File(qualifiedPaths[i]).exists()) {
                     Log.Debug("\nExternal sheets : " + qualifiedPaths[i]);
-                    System.out.println("\nExternal sheets : "
-                            + qualifiedPaths[i]);
+                    //System.out.println("\nExternal sheets : " + qualifiedPaths[i]);
                     _externalSheets.add(qualifiedPaths[i]);
                 }
             }
         }
+      
     }// AddToExternalSheets
 
     // / Function to read the User sheet
@@ -2799,7 +2871,7 @@ catch(Exception e)
 	continue;
 	
 }
-
+//System.out.println("mol defn "+actionObj._actionmoleculeArgDefn);
     testCase._testcasemoleculeArgDefn.addAll(actionObj._actionmoleculeArgDefn);
                     description=null;
                     //System.out.println("The control coming to 3d");
@@ -3258,7 +3330,7 @@ catch(Exception e)
         String tempValue = variableToFind;
         Log.Debug("Excel/FindInMacroAndEnvTable : Start of function with variableToFind = "
                 + variableToFind);
-       // System.out.print("The variable to find "+variableToFind);
+        //System.out.println("The variable to find "+variableToFind+" Macro Table coming "+_macroSheetHashTable+" namespace "+nameSpace);
         try {
             //Getting keys of macro hash table
             Set<String> _macroKeys=_macroSheetHashTable.keySet();
@@ -3362,7 +3434,7 @@ catch(Exception e)
             } // / First Check in the Macro Sheet
              if (_macroSheetHashTable.get(AppendNamespace(tempValue,
                     nameSpace)) != null) {
-               // System.out.println("The value comming action "+tempValue);
+                //System.out.println("The value comming action "+tempValue);
                 tempValue = (String) _macroSheetHashTable.get(AppendNamespace(
                         tempValue, nameSpace));
                 //System.out.println(tempValue+" THE macro hashtable "+_macroSheetHashTable);
@@ -3837,7 +3909,7 @@ catch(Exception e)
                // System.out.println("the Action Name=="+actionObj.actionName+" action ID--"+actionObj.testCaseID+" negative "+actionObj.isNegative);
                 if (actionObj.actionName.startsWith("#define")) {
                     for (String var_key : actionObj.actionArguments) {
-
+//System.out.println("mol args "+var_key.toLowerCase());
                         if(var_key.startsWith("#")||var_key.startsWith("$"))
                         {
                             throw new MoleculeDefinitionException("Variable name incosistent. Can't be started with # or $. Molecule: "+actionObj.testCaseID);
@@ -4339,13 +4411,14 @@ catch(Exception e)
     // Hashtables on to console
     // / After integration of this module with others this function should be
     // removed
-    private void readHashTable(Hashtable<?, ?> hTable) {
+    private String readHashTable(Hashtable<?, ?> hTable) {
         Set<?> it = hTable.keySet();
+        StringBuilder hashStream=new StringBuilder();
         for (Object s : it) {
-            // system.out.println("Key : " + s.toString() + "  value : "+
-            // hTable.get(s).toString());
+            hashStream.append("Key : " + s.toString() + "  value : "+ hTable.get(s).toString());
+            hashStream.append("\n");
         }
-
+return hashStream.toString();
     }
 }// class
 
