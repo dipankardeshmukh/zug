@@ -3,7 +3,7 @@
  *    This is the Controller class which executes the Test Cases for the Automation 
  */
 package com.automature.zug.engine;
- 
+
 import com.automature.zug.exceptions.MoleculeDefinitionException;
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,7 +68,7 @@ public class Controller extends Thread {
 	// needed to generate the XML
 	// file or not.
 	public static boolean macroentry = false; // Flag to set a Command Line
-												// Macro Value
+	// Macro Value
 	public static boolean includeFlag = true; // A new Flag which checks whether
 	// the inlcude switch is enabled
 	// or not
@@ -87,7 +87,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.5." + "20121108" + ".111";
+	private static String Version = "ZUG Premium 5.6." + "20121120" + ".115";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -678,11 +678,14 @@ public class Controller extends Thread {
 				excludeTestCaseID = opts.getString("excludeTestCaseID", null);
 				// message("No specific testcase is invoked\n All testcases will be executed.");
 			} else {
-				 //message("The manual Testcase "+manualTestCaseID);
-				if(manualTestCaseID.contains(".")||manualTestCaseID.contains("/")||manualTestCaseID.contains(":")||manualTestCaseID.contains(";"))
-				{
-					//message("it contains . "+manualTestCaseID);
-					Log.Error("[Error]Multiple testcaseid must separate by , (comma) wrong inputs: "+manualTestCaseID);
+				// message("The manual Testcase "+manualTestCaseID);
+				if (manualTestCaseID.contains(".")
+						|| manualTestCaseID.contains("/")
+						|| manualTestCaseID.contains(":")
+						|| manualTestCaseID.contains(";")) {
+					// message("it contains . "+manualTestCaseID);
+					Log.Error("[Error]Multiple testcaseid must separate by , (comma) wrong inputs: "
+							+ manualTestCaseID);
 					System.exit(1);
 				}
 				Log.Debug("Controller/GetOptions: ManualTestCase ID specified by user is = "
@@ -768,8 +771,8 @@ public class Controller extends Thread {
 				Log.Debug("Controller/GetOptions: topologySetId = "
 						+ topologySetId);
 				if (testplanidVal || testplanpathVal) {// put or checking for
-														// the new value
-														// testplanpathvalue=true
+					// the new value
+					// testplanpathvalue=true
 					if (compileMode) {
 						Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
 						dbReporting = false;
@@ -814,8 +817,8 @@ public class Controller extends Thread {
 						+ TopologySetName);
 				// message("The topologyset is "+TopologySetName);
 				if (testplanidVal || testplanpathVal) {// put or checking for
-														// the new value
-														// testplanpathvalue=true
+					// the new value
+					// testplanpathvalue=true
 					if (compileMode) {
 						Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
 						dbReporting = false;
@@ -857,8 +860,8 @@ public class Controller extends Thread {
 				Log.Debug("Controller/GetOptions: topologySetId = "
 						+ topologySetId);
 				if (testplanidVal || testplanpathVal) {// put or checking for
-														// the new value
-														// testplanpathvalue=true
+					// the new value
+					// testplanpathvalue=true
 					if (compileMode) {
 						Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
 						dbReporting = false;
@@ -1090,138 +1093,142 @@ public class Controller extends Thread {
 		// + testCasesExecutedMachine.get_role() + "\t"
 		// + testCasesExecutedMachine.get_buildNumber());
 		// // }
-		if(executedTestCaseData.size()>0)
-		{
-		ExecutedTestCase[] executedTestCase = new ExecutedTestCase[executedTestCaseData
-				.size()];
+		if (executedTestCaseData.size() > 0) {
+			ExecutedTestCase[] executedTestCase = new ExecutedTestCase[executedTestCaseData
+					.size()];
 
-		int count = 0;
-		Set<String> TestCaseKey = executedTestCaseData.keySet();
-		for (String s : TestCaseKey) {
-			executedTestCase[count++] = (ExecutedTestCase) executedTestCaseData
-					.get(s);
-		}
-
-		Log.Debug("Controller/SaveTestCaseResult : Number of TestCase Status to add is "
-				+ executedTestCase.length);
-
-		if (executedTestCase.length > 0) {
-			message("\nFollowing are the Details of the TestCases Result getting added to the "
-					+ dBHostName + "/" + " through Davos Web Service.");// TODO
-																		// Change
-																		// for
-																		// Davos
-																		// latest
-																		// updates
-			message("\nTestCase ID \t Status \t Time Taken(In mili-seconds) \t Comments\n ");
-		}
-
-		for (int i = 0; i < executedTestCase.length; i++) {
-			TestCaseResult testCaseResult = new TestCaseResult();
-			testCaseResult.set_testCaseId(executedTestCase[i].testCaseID);
-			// testCaseResult.set_testSuiteName(testSuitName);
-			if (StringUtils.isNotBlank(testSuiteId)) {
-				testCaseResult.set_testSuiteId(Integer.valueOf(testSuiteId)
-						.intValue());
-			}
-			// else
-			// testCaseResult.set_testSuiteId(2012);
-			testCaseResult.set_testEngineerName("Automation");
-			testCaseResult
-					.set_executionDate(executedTestCase[i].testCaseCompletetionTime);
-			testCaseResult
-					.set_testExecution_Time(executedTestCase[i].timeToExecute);
-			testCaseResult.set_status(executedTestCase[i].testCaseStatus);
-			testCaseResult
-					.set_comments(executedTestCase[i].testCaseExecutionComments);
-
-			testCaseResult.set_buildNo(StringUtils.EMPTY);
-			if (StringUtils.isNotBlank(buildNumber)) {
-				testCaseResult.set_buildNo(buildNumber);
+			int count = 0;
+			Set<String> TestCaseKey = executedTestCaseData.keySet();
+			for (String s : TestCaseKey) {
+				executedTestCase[count++] = (ExecutedTestCase) executedTestCaseData
+						.get(s);
 			}
 
-			// Log.Debug("Controller/SaveTestCaseResult : TestCaseId = "+testCaseResult.get_testCaseId()+" TestSuiteId = "+testCaseResult.get_testSuiteName()+" Status = "+testCaseResult.get_status()+" and Comments = "+testCaseResult.get_comments()+" will be saved.");
-			Log.Debug("Controller/SaveTestCaseResult : TestCaseIdentifier = "
-					+ testCaseResult.get_testCaseId() + " TestSuiteId = "
-					+ testCaseResult.get_testSuiteId() + " Status = "
-					+ testCaseResult.get_status() + " and Comments = "
-					+ testCaseResult.get_comments() + " will be saved.");
-			// topologyResultData.get_testCaseResultList().add(testCaseResult);
-			testCycleId = davosclient.testCycle_write(TestPlanId, ContextVar
-					.getContextVar("ZUG_TCYCLENAME"), "", "", new Integer(
-					initializationTime).toString(),
-					new Integer(testCaseResult.get_testExecution_Time())
-							.toString());
-			message("\n" + testCaseResult.get_testCaseId() + "\t"
-					+ testCaseResult.get_status() + "\t"
-					+ testCaseResult.get_testExecution_Time() + "\t"
-					+ testCaseResult.get_comments());
-			if (testCycleId == null) {
-				Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle=Null");
-				// // message("No testcycle provided  ");
-			} else {
+			Log.Debug("Controller/SaveTestCaseResult : Number of TestCase Status to add is "
+					+ executedTestCase.length);
 
-				Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle="
-						+ testCycleId);
-				// davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(),
-				// testCycleId,
-				// testCaseResult.get_status(),testCaseResult.get_buildNo(), new
-				// Integer(testCaseResult.get_testExecution_Time()).toString(),testCaseResult.get_performanceExecutionDetailTable().get_performanceExecutionDetailId()
-				// , testCaseResult.get_executionDate().toString(),
-				// testSuitName);
-				// message("Test Execution is done  "+testCycleId);
+			if (executedTestCase.length > 0) {
+				message("\nFollowing are the Details of the TestCases Result getting added to the "
+						+ dBHostName + "/" + " through Davos Web Service.");// TODO
+				// Change
+				// for
+				// Davos
+				// latest
+				// updates
+				message("\nTestCase ID \t Status \t Time Taken(In mili-seconds) \t Comments\n ");
 			}
-			// testCycleData.get_topologySetResultDataList().add(topologyResultData);
+
+			for (int i = 0; i < executedTestCase.length; i++) {
+				TestCaseResult testCaseResult = new TestCaseResult();
+				testCaseResult.set_testCaseId(executedTestCase[i].testCaseID);
+				// testCaseResult.set_testSuiteName(testSuitName);
+				if (StringUtils.isNotBlank(testSuiteId)) {
+					testCaseResult.set_testSuiteId(Integer.valueOf(testSuiteId)
+							.intValue());
+				}
+				// else
+				// testCaseResult.set_testSuiteId(2012);
+				testCaseResult.set_testEngineerName("Automation");
+				testCaseResult
+						.set_executionDate(executedTestCase[i].testCaseCompletetionTime);
+				testCaseResult
+						.set_testExecution_Time(executedTestCase[i].timeToExecute);
+				testCaseResult.set_status(executedTestCase[i].testCaseStatus);
+				testCaseResult
+						.set_comments(executedTestCase[i].testCaseExecutionComments);
+
+				testCaseResult.set_buildNo(StringUtils.EMPTY);
+				if (StringUtils.isNotBlank(buildNumber)) {
+					testCaseResult.set_buildNo(buildNumber);
+				}
+
+				// Log.Debug("Controller/SaveTestCaseResult : TestCaseId = "+testCaseResult.get_testCaseId()+" TestSuiteId = "+testCaseResult.get_testSuiteName()+" Status = "+testCaseResult.get_status()+" and Comments = "+testCaseResult.get_comments()+" will be saved.");
+				Log.Debug("Controller/SaveTestCaseResult : TestCaseIdentifier = "
+						+ testCaseResult.get_testCaseId()
+						+ " TestSuiteId = "
+						+ testCaseResult.get_testSuiteId()
+						+ " Status = "
+						+ testCaseResult.get_status()
+						+ " and Comments = "
+						+ testCaseResult.get_comments() + " will be saved.");
+				// topologyResultData.get_testCaseResultList().add(testCaseResult);
+				testCycleId = davosclient.testCycle_write(TestPlanId,
+						ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "",
+						new Integer(initializationTime).toString(),
+						new Integer(testCaseResult.get_testExecution_Time())
+								.toString());
+				message("\n" + testCaseResult.get_testCaseId() + "\t"
+						+ testCaseResult.get_status() + "\t"
+						+ testCaseResult.get_testExecution_Time() + "\t"
+						+ testCaseResult.get_comments());
+				if (testCycleId == null) {
+					Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle=Null");
+					// // message("No testcycle provided  ");
+				} else {
+
+					Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle="
+							+ testCycleId);
+					// davosclient.testExecutionDetails_write(testCaseResult.get_testCaseId(),
+					// testCycleId,
+					// testCaseResult.get_status(),testCaseResult.get_buildNo(),
+					// new
+					// Integer(testCaseResult.get_testExecution_Time()).toString(),testCaseResult.get_performanceExecutionDetailTable().get_performanceExecutionDetailId()
+					// , testCaseResult.get_executionDate().toString(),
+					// testSuitName);
+					// message("Test Execution is done  "+testCycleId);
+				}
+				// testCycleData.get_topologySetResultDataList().add(topologyResultData);
+				//
+				// Log.Debug("Controller/SaveTestCaseResult : Calling testCycle.Save method with TestCycle Data filled above.");
+				//
+				// if (testCycle == null) {
+				// Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle=Null");
+				// } else {
+				// try {
+				// Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle="
+				// + testCycle.toString()
+				// + ", TestCycleExist= "
+				// + (StringUtils.isBlank(testCycleId) ? "Null"
+				// :
+				// testCycle.TestCycleExist(Integer.parseInt(testCycleId))).toString());
+				//
+				// // For all topologies
+				// testCycle.Save(testCycleData);
+				// } catch (Exception e) {
+				// Log.Error("Controller/SaveTestCaseResultEveryTime : Exception occured while saving test cases"
+				// + e.getMessage());
+				// throw new Exception(
+				// "Controller/SaveTestCaseResultEveryTime : Exception occured while saving test cases"
+				// + e.getMessage());
+				//
+				// }
+			}
 			//
-			// Log.Debug("Controller/SaveTestCaseResult : Calling testCycle.Save method with TestCycle Data filled above.");
-			//
-			// if (testCycle == null) {
-			// Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle=Null");
-			// } else {
-			// try {
-			// Log.Debug("Controller/SaveTestCaseResultEveryTime : TestCycle="
-			// + testCycle.toString()
-			// + ", TestCycleExist= "
-			// + (StringUtils.isBlank(testCycleId) ? "Null"
-			// :
-			// testCycle.TestCycleExist(Integer.parseInt(testCycleId))).toString());
-			//
-			// // For all topologies
-			// testCycle.Save(testCycleData);
-			// } catch (Exception e) {
-			// Log.Error("Controller/SaveTestCaseResultEveryTime : Exception occured while saving test cases"
-			// + e.getMessage());
-			// throw new Exception(
-			// "Controller/SaveTestCaseResultEveryTime : Exception occured while saving test cases"
-			// + e.getMessage());
-			//
-			// }
+			// Log.Debug("Controller/SaveTestCaseResult : SUCCESSFULLY SAVED THE TestCycle Data filled above.");
+			// message("\n\nSUCCESSFULLY SAVED Result for TestCycle "
+			// + testCycle.get_testCycleMessage() + " and TestPlan ID  "
+			// + testCycleData.getTestplan_id() + " of Test Suit "
+			// + testSuitName);
 		}
-		//
-		// Log.Debug("Controller/SaveTestCaseResult : SUCCESSFULLY SAVED THE TestCycle Data filled above.");
-		// message("\n\nSUCCESSFULLY SAVED Result for TestCycle "
-		// + testCycle.get_testCycleMessage() + " and TestPlan ID  "
-		// + testCycleData.getTestplan_id() + " of Test Suit "
-		// + testSuitName);
-		}
-		else
-		{
-			//String tcycle=davosclient.getTestCycleDescriptionByID(TestPlanId,testCycleId);
-			String tcycle=null;
-			if(StringUtils.isEmpty(tcycle))
-			{
-				Log.Error("Controller/SaveTestCaseResult:: No TestCycle description Found");
-			}
-			else{
-				message("\n No execution found to Report updating the TestCycle "+tcycle+" to "
-						+ dBHostName + "/" + " through Davos Web Service.");
-			
-			testCycleId = davosclient.testCycle_write(TestPlanId, ContextVar
-					.getContextVar("ZUG_TCYCLENAME"), "", "", new Integer(
-					initializationTime).toString(),
-					new Integer(executionTime).toString());
-			}
-		}
+		// else
+		// {
+		// String tcycle=davosclient.getTestCycleDescriptionByID(testCycleId);
+		// Log.Debug("Controller/SaveTestCaseResult:: The testcyle description from davos call "+tcycle);
+		// //String tcycle=null;
+		// if(StringUtils.isEmpty(tcycle))
+		// {
+		// Log.Error("Controller/SaveTestCaseResult:: No TestCycle description Found");
+		// }
+		// else{
+		// message("\n No execution found to Report updating the TestCycle "+tcycle+" to "
+		// + dBHostName + "/" + " through Davos Web Service.");
+		// //message("Data passed "+initializationTime+" --- "+executionTime);
+		// testCycleId = davosclient.testCycle_write(TestPlanId, tcycle, "", "",
+		// new Integer(
+		// initializationTime).toString(),
+		// new Integer(executionTime).toString());
+		// }
+		// }
 		message("\n-----------------------------------------------------------------------------------------------------------------------");
 		message("\n-----------------------------------------------------------------------------------------------------------------------");
 
@@ -1362,23 +1369,22 @@ public class Controller extends Thread {
 		Comparator compr = Collections.reverseOrder();
 		Collections.sort(lengthlist, compr);
 		ArrayList<String> sortedlist = new ArrayList<String>();
-//		for (int i = 0; i < lengthlist.size(); i++) {
-//			int count_string = lengthlist.get(i);
-//			for (int j = 0; j < unsortedList.size(); j++) {
-//				String tempstring = unsortedList.get(j);
-//				if (tempstring.length() == count_string) {
-//					sortedlist.add(tempstring);
-//					break;
-//				}
-//			}
-//
-//		}
-		String tempArray[]=new String[unsortedList.size()];
+		// for (int i = 0; i < lengthlist.size(); i++) {
+		// int count_string = lengthlist.get(i);
+		// for (int j = 0; j < unsortedList.size(); j++) {
+		// String tempstring = unsortedList.get(j);
+		// if (tempstring.length() == count_string) {
+		// sortedlist.add(tempstring);
+		// break;
+		// }
+		// }
+		//
+		// }
+		String tempArray[] = new String[unsortedList.size()];
 		unsortedList.toArray(tempArray);
 		Arrays.sort(tempArray);
-		for(int i=0;i<tempArray.length;i++)
-		{
-			//System.out.println("The values "+tempArray[i]);
+		for (int i = 0; i < tempArray.length; i++) {
+			// System.out.println("The values "+tempArray[i]);
 			sortedlist.add(tempArray[i]);
 		}
 		return sortedlist;
@@ -1396,13 +1402,13 @@ public class Controller extends Thread {
 			String valuetomatch) throws Exception {
 		int count_index = 0;
 		boolean argnotfound = true;
-		//message("The molecule arglist "+moleculearglist);
+		// message("The molecule arglist "+moleculearglist);
 		// create a reverse order list checking with the String inputs lengths
 		ArrayList<String> reverselist = sortListByLength(moleculearglist);
-		//message("The reverse order "+reverselist);
+		// message("The reverse order "+reverselist);
 		for (int i = 0; i < reverselist.size(); i++) {
 			String molecule_arg = reverselist.get(i);
-			 //message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
+			// message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
 			// Count matching "+
 			// StringUtils.countMatches(valuetomatch,molecule_arg));
 			// if (StringUtils.countMatches(valuetomatch, molecule_arg)==1) {
@@ -1424,8 +1430,25 @@ public class Controller extends Thread {
 		if (argnotfound) {
 			throw new Exception("Argument not present in Molecule Definition");
 		}
-		//message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
+		// message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
 		return moleculearglist.indexOf(reverselist.get(count_index));
+	}
+
+	private boolean checkArgumentDefinition(ArrayList<String> arguments,
+			String moleculearg)
+
+	{
+		boolean result = false;
+		for (String mol_arg : arguments) {
+			if (mol_arg.toLowerCase().startsWith(moleculearg.toLowerCase())) {
+
+				result = true;
+				break;
+			}
+		}
+
+		// System.out.println("THe value "+result);
+		return result;
 	}
 
 	/***
@@ -1650,7 +1673,7 @@ public class Controller extends Thread {
 						isThisContextVarTypeAtom = true;
 						// message("Action Name "+action.actionName+" The boolean "+isThisAppenToContextVarAtom);
 					}
-					// message("The action Name "+action.actionName+" Runabstract:: Actionss--"+actionVal+" Arguments list "+argumentValues);
+					// message("The action Name "+action.actionName+" Runabstract:: ActionssVal --"+actionVal+" Arguments list "+argumentValues);
 					// Checking for the arguments if they are consistent
 					if (isParameterPassingConsistent(argumentValues, test)) {
 
@@ -1664,20 +1687,26 @@ public class Controller extends Thread {
 							token = actionVal;
 							value = actionVal.toLowerCase();
 						}
-						//message("RUNABSTRACT::-1 Key value- " + key);
+						// message("RUNABSTRACT::-1 Key value- " + key);
 						if (value.startsWith("%") && value.endsWith("%")) {
 							value = value.replaceAll("%", "");
 							isThisAContextVar = true;
 						}
 
-						 //message("RUNABSTRACT::1a Key value- " + value +"\targumentss " + argumentValues);
-						if (argumentValues.get(0).contains("=")) {
+						// message("RUNABSTRACT::1a Key value- " + value
+						// +"\targumentss " + argumentValues);
+						// if (argumentValues.get(0).contains("=")) {
+						if (checkArgumentDefinition(argumentValues,
+								value.replaceAll("#", ""))) {
 							value = value.replaceAll("#", "");
 							for (String molecule_arg : argumentValues) {
+								// if(molecule_arg.equalsIgnoreCase(value))
 								String temp_value_split[] = Excel
 										.SplitOnFirstEquals(molecule_arg);
-								//message("RUNABSTRACT::2 split value- " + temp_value_split[0] + "\tValue " + value);
-								//message("RUNABSTRACT::2-d" + molecule_arg + " 1->" + temp_value_split.length);
+								// message("RUNABSTRACT::2 split value- " +
+								// temp_value_split[0] + "\tValue " + value);
+								// message("RUNABSTRACT::2-d" + molecule_arg +
+								// " 1->" + temp_value_split.length);
 								//
 								if (StringUtils.countMatches(
 										value.toLowerCase(),
@@ -1720,8 +1749,10 @@ public class Controller extends Thread {
 
 									} else {
 										// message("action value "+value+" tempv0 "+temp_value_split[0]+" tempv1 "+temp_value_split[1]+" token "+token);
-										// message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value, temp_value_split[0],temp_value_split[1]));
-										if (token.startsWith("#")||token.startsWith("$$%#")) {
+										// message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value,
+										// temp_value_split[0],temp_value_split[1]));
+										if (token.startsWith("#")
+												|| token.startsWith("$$%#")) {
 											token = token.replace("#", "");
 										}
 										actionVal = replaceStringOnly(token,
@@ -1759,7 +1790,7 @@ public class Controller extends Thread {
 										// //break;
 										//
 										// }
-										 //message("RUNABSTRACT final result : "+actionVal);
+										// message("RUNABSTRACT final result : "+actionVal);
 									}
 
 								}
@@ -1818,7 +1849,7 @@ public class Controller extends Thread {
 								// message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())));
 							}
 
-							///message("ABS: The action value is "+actionVal);
+							// /message("ABS: The action value is "+actionVal);
 
 						}
 
@@ -1836,7 +1867,7 @@ public class Controller extends Thread {
 					// /TODO Find a better solution
 					// message("RUNABSTRACT:: The Action Valuee "+actionVal+" the key "+key);
 				}
-				//message("RUNABSTRACT: The MOlecule-Atom args lvl 2 "+actionVal);
+				// message("RUNABSTRACT: The MOlecule-Atom args lvl 2 "+actionVal);
 				try {
 
 					if (action.actionArguments.get(i).toString().toLowerCase()
@@ -1853,7 +1884,7 @@ public class Controller extends Thread {
 							+ action.actionName);
 
 					tempAction.actionArguments.add(actionVal);
-					 //message("After The Argument List for Molecule "+tempAction.actionArguments);
+					// message("After The Argument List for Molecule "+tempAction.actionArguments);
 				} catch (Exception e) {
 					// Log.Error("Controller/RunAbstractTestCase: "+e.getMessage());
 					throw new Exception("Controller/RunAbstractTestCase: "
@@ -2069,7 +2100,8 @@ public class Controller extends Thread {
 							}
 							value = value.replaceAll("#", "");
 							// message("RUNABSTRACT::1a Key value- "+value+"\targumentss "+argumentValues);
-							if (argumentValues.get(0).contains("=")) {
+							if (checkArgumentDefinition(argumentValues,
+									value.replaceAll("#", ""))) {
 								for (String molecule_arg : argumentValues) {
 									String temp_value_split[] = Excel
 											.SplitOnFirstEquals(molecule_arg);
@@ -2336,74 +2368,75 @@ public class Controller extends Thread {
 
 		return checkMVM;
 	}
+
 	/**
 	 * Method to remove the duplicate mvm variables
-	 * @param Action action
-	 * refines the Action object to remove the  
-	 * @return Action 
+	 * 
+	 * @param Action
+	 *            action refines the Action object to remove the
+	 * @return Action
 	 */
-private Action removeDuplicateMVMVariables(Action action)
-{
-	Action refinedAction=new Action();
-	refinedAction.actionName=action.actionName;
-	refinedAction.actionProperty=action.actionProperty;
-	refinedAction.actionDescription=action.actionDescription;
-	//TODO the checking for duplicacy using Hasmap and Set
-	message("the elements "+action.actionActualArguments);
-	int count=0;
-	for(String tmparg:action.actionActualArguments)
-	{
-		if(tmparg.startsWith("$$"))
-		{
-			message(tmparg+" = "+new Integer(count).toString() );
-			refinedAction._mvmmap.put(tmparg+" "+count, new Integer(count).toString());
+	private Action removeDuplicateMVMVariables(Action action) {
+		Action refinedAction = new Action();
+		refinedAction.actionName = action.actionName;
+		refinedAction.actionProperty = action.actionProperty;
+		refinedAction.actionDescription = action.actionDescription;
+		// TODO the checking for duplicacy using Hasmap and Set
+		message("the elements " + action.actionActualArguments);
+		int count = 0;
+		for (String tmparg : action.actionActualArguments) {
+			if (tmparg.startsWith("$$")) {
+				message(tmparg + " = " + new Integer(count).toString());
+				refinedAction._mvmmap.put(tmparg + " " + count, new Integer(
+						count).toString());
+			}
+			count++;
 		}
-		count++;
+		message("The refined map is " + refinedAction._mvmmap);
+		return refinedAction;
 	}
-	message("The refined map is "+refinedAction._mvmmap);
-	return refinedAction;
-}
-/**
- * method for adding extra action in testcase
- * @throws Exception 
- */
-private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
-{
-	
-	ArrayList<Action> tempActions=new ArrayList<Action>();
-	Excel er= new Excel();
-	for(Action act:tes.actions)
-	{
-		
-		for(int i=0;i<act.actionActualArguments.size();i++)
-		{
-			String arg=act.actionActualArguments.get(i);
-			String value=act.actionArguments.get(i);
-			if(arg.startsWith("$$"))
-			{
-				Action tempaction=new Action();
-				tempaction.nameSpace=act.nameSpace;
-				tempaction.testCaseID=act.testCaseID;
-				tempaction.stackTrace=act.testCaseID;
-				tempaction.parentTestCaseID=act.parentTestCaseID;
-				tempaction.actionName="SetContextVar";
-				//String ctxvarname=tempaction.testCaseID+"_"+arg;
-				tempaction.actionActualArguments.add(tempaction.testCaseID+"_"+arg+"="+value);
-				tempaction.actionActualArguments.add(er.FindInMacroAndEnvTable(arg.replace("$","" ), act.nameSpace));
-				tempActions.add(tempaction);
-//				act.actionArguments.remove(i);
-//				act.actionArguments.add(i, "%"+ctxvarname+"%");
+
+	/**
+	 * method for adding extra action in testcase
+	 * 
+	 * @throws Exception
+	 */
+	private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception {
+
+		ArrayList<Action> tempActions = new ArrayList<Action>();
+		Excel er = new Excel();
+		for (Action act : tes.actions) {
+
+			for (int i = 0; i < act.actionActualArguments.size(); i++) {
+				String arg = act.actionActualArguments.get(i);
+				String value = act.actionArguments.get(i);
+				if (arg.startsWith("$$")) {
+					Action tempaction = new Action();
+					tempaction.nameSpace = act.nameSpace;
+					tempaction.testCaseID = act.testCaseID;
+					tempaction.stackTrace = act.testCaseID;
+					tempaction.parentTestCaseID = act.parentTestCaseID;
+					tempaction.actionName = "SetContextVar";
+					// String ctxvarname=tempaction.testCaseID+"_"+arg;
+					tempaction.actionActualArguments.add(tempaction.testCaseID
+							+ "_" + arg + "=" + value);
+					tempaction.actionActualArguments.add(er
+							.FindInMacroAndEnvTable(arg.replace("$", ""),
+									act.nameSpace));
+					tempActions.add(tempaction);
+					// act.actionArguments.remove(i);
+					// act.actionArguments.add(i, "%"+ctxvarname+"%");
 				}
-			
+
+			}
+
 		}
-				
-		
+		System.out.println("TempAction generated " + tempActions.size());
+		tes.actions.addAll(tempActions);
+		return tes;
+
 	}
-	System.out.println("TempAction generated "+tempActions.size());
-	tes.actions.addAll(tempActions);
-	return tes;
-	
-}
+
 	/***
 	 * Function to Expand the TestCases
 	 * 
@@ -2420,8 +2453,8 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 		// HashMap<String, String> mvm_vector_map = new HashMap<String,
 		// String>();
 		// message("THE testcase coming1a " + test.testCaseID);
-//write the subroutine here.
-		//test=addSetContextVarMVMAction(test);
+		// write the subroutine here.
+		// test=addSetContextVarMVMAction(test);
 		ArrayList<ArrayList<String>> allActionVerificationArgs = new ArrayList<ArrayList<String>>();
 		Action[] allActions = new Action[test.actions.size()];
 		// message("THE testcase coming 1b" + test.testCaseID);
@@ -2439,10 +2472,10 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 					+ action.actionName);
 			// //TODO put checking if testcase have no actio argument then at
 			// least print any message or put the exception
-			//message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
-			
+			// message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
+
 			if (action.actionArguments.size() > 0) {
-				//removeDuplicateMVMVariables(action);
+				// removeDuplicateMVMVariables(action);
 				for (int i = 0; i < action.actionArguments.size(); ++i) {
 
 					// /In case of Molecule the actual value is not coming ?
@@ -2504,13 +2537,13 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 										+ " NullValueException \n In TesrCaseId: "
 										+ action.testCaseID);
 					}
-					String tempindexcheckin[]=Excel.SplitOnFirstEquals(tempVal);
-					if(tempindexcheckin.length==2)
-					{
-						if(tempindexcheckin[1].startsWith("$~$")&&tempindexcheckin[1].endsWith("$~$"))
-						{
-							//message("indexmacro checking: from "+tempVal+" to "+tempindexcheckin[1]);
-							tempVal=tempindexcheckin[1];
+					String tempindexcheckin[] = Excel
+							.SplitOnFirstEquals(tempVal);
+					if (tempindexcheckin.length == 2) {
+						if (tempindexcheckin[1].startsWith("$~$")
+								&& tempindexcheckin[1].endsWith("$~$")) {
+							// message("indexmacro checking: from "+tempVal+" to "+tempindexcheckin[1]);
+							tempVal = tempindexcheckin[1];
 						}
 					}
 					if ((tempVal.startsWith("$~$"))
@@ -2655,7 +2688,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 			}
 
 		}
-		//message("EXZPANDSS:: the arguments are "+allActionVerificationArgs+" multivalued macro position "+multiValuedVariablePosition);
+		// message("EXZPANDSS:: the arguments are "+allActionVerificationArgs+" multivalued macro position "+multiValuedVariablePosition);
 
 		List<Tuple<String>> resultAfterIndexed = CartesianProduct
 				.indexedProduct(allActionVerificationArgs);
@@ -2672,7 +2705,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 			for (int q = 0; q < actualValue.length; ++q) {
 				tempResultList.add((String) actualValue[q]);
 			}
-//message("temp result list "+tempResultList);
+			// message("temp result list "+tempResultList);
 			count1 = -1;
 			try {
 				for (String tempVal : tempResultList) {
@@ -2794,14 +2827,14 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 						if (multiValuedVariablePosition.containsKey(count)) {
 							String testcase_partial_id = tempTestCaseVar[count]
 									.toLowerCase();
-							
-														
-							 //message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i)+" "+action.actionArguments.get(i));
+
+							// message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i)+" "+action.actionArguments.get(i));
 
 							if (action.actionName
 									.equalsIgnoreCase("appendtocontextvar")
 									|| action.actionName
-											.equalsIgnoreCase("setcontextvar")|action.actionName.startsWith("&")) {
+											.equalsIgnoreCase("setcontextvar")
+									|| action.actionName.startsWith("&")) {
 								// message("Coming to this end. 10 "+action.actionName);
 								String real_value[] = Excel
 										.SplitOnFirstEquals(testcase_partial_id);
@@ -2818,9 +2851,9 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 												.replace(testcase_partial_id,
 														actual_value[0] + "=",
 														"");
-										if(testcase_partial_id.contains("="))
-										{
-											testcase_partial_id=Excel.SplitOnFirstEquals(testcase_partial_id)[1];
+										if (testcase_partial_id.contains("=")) {
+											testcase_partial_id = Excel
+													.SplitOnFirstEquals(testcase_partial_id)[1];
 										}
 										// message("After change "+tempTestCaseVar[count]+" ID "+testcase_partial_id);
 
@@ -3064,20 +3097,20 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 			// test.testCaseID);
 			return new TestCase[] { test };
 		}
-//		ArrayList<TestCase> removemulticases=new ArrayList<TestCase>();
-//		//Write a method which removes the similar mvm values.
-//		for(TestCase tmp:tempTestCases)
-//		{
-//		
-//			
-//			//message("temn  "+tmp.testCaseID);
-//			removemulticases=removeSimilarTestCases(tmp,removemulticases);
-//		}
-//		tempTestCases.removeAll(removemulticases);
-//for(TestCase dd:removemulticases)
-//{
-//	message("The ids "+dd.testCaseID);
-//}
+		// ArrayList<TestCase> removemulticases=new ArrayList<TestCase>();
+		// //Write a method which removes the similar mvm values.
+		// for(TestCase tmp:tempTestCases)
+		// {
+		//
+		//
+		// //message("temn  "+tmp.testCaseID);
+		// removemulticases=removeSimilarTestCases(tmp,removemulticases);
+		// }
+		// tempTestCases.removeAll(removemulticases);
+		// for(TestCase dd:removemulticases)
+		// {
+		// message("The ids "+dd.testCaseID);
+		// }
 		if (excludeTestCaseID != null) {
 			ArrayList<TestCase> removeTestCase = new ArrayList<TestCase>();
 			if (excludeTestCaseID.contains(",")) {
@@ -3113,57 +3146,56 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 		TestCase[] tempT = new TestCase[tempTestCases.size()];
 		return tempTestCases.toArray(tempT);
 	}
-	
-	
-/**
- * Method to remove Similar MVM combination testcases
- * 
- */
+
+	/**
+	 * Method to remove Similar MVM combination testcases
+	 * 
+	 */
 	@Deprecated
-	private ArrayList<TestCase> removeSimilarTestCases(TestCase mvmtest,ArrayList<TestCase> toRemove)
-	{
-		ArrayList<TestCase> removingTestCase=toRemove;
-		//message("Method is starting to execute ... with "+mvmtest.testCaseID);
-		
-		Action[] cc=new Action[mvmtest.actions.size()];
-		//message("Action array created "+cc.length);
+	private ArrayList<TestCase> removeSimilarTestCases(TestCase mvmtest,
+			ArrayList<TestCase> toRemove) {
+		ArrayList<TestCase> removingTestCase = toRemove;
+		// message("Method is starting to execute ... with "+mvmtest.testCaseID);
+
+		Action[] cc = new Action[mvmtest.actions.size()];
+		// message("Action array created "+cc.length);
 		mvmtest.actions.toArray(cc);
-		for(int k=0;k<cc.length;++k)
-		{
-			
-			Action aa=cc[k];
-			//message("Every Action to be checked "+aa.actionName);
-			for(int i=0;i<aa.actionActualArguments.size();i++)
-			{
-				//message("Every action argumemts "+aa.actionArguments.get(i));
-				int nextElm=i+1;
-				//message("Previous element "+i +" The element comes "+nextElm+" " +aa.actionActualArguments.size());
-				if(nextElm!=aa.actionActualArguments.size()){
-				if(aa.actionActualArguments.get(i).equals(aa.actionActualArguments.get(nextElm)))
-			{
-					//message("Matching args "+aa.actionActualArguments.get(i));
-					String[] tempBreak=mvmtest.testCaseID.split("_");
-					for(String ss:tempBreak)
-					{
-						//message("count matching... "+StringUtils.countMatches(mvmtest.testCaseID,ss));
-						if(StringUtils.countMatches(mvmtest.testCaseID,ss)>1)
-						{
-							removingTestCase.add(mvmtest);
+		for (int k = 0; k < cc.length; ++k) {
+
+			Action aa = cc[k];
+			// message("Every Action to be checked "+aa.actionName);
+			for (int i = 0; i < aa.actionActualArguments.size(); i++) {
+				// message("Every action argumemts "+aa.actionArguments.get(i));
+				int nextElm = i + 1;
+				// message("Previous element "+i
+				// +" The element comes "+nextElm+" "
+				// +aa.actionActualArguments.size());
+				if (nextElm != aa.actionActualArguments.size()) {
+					if (aa.actionActualArguments.get(i).equals(
+							aa.actionActualArguments.get(nextElm))) {
+						// message("Matching args "+aa.actionActualArguments.get(i));
+						String[] tempBreak = mvmtest.testCaseID.split("_");
+						for (String ss : tempBreak) {
+							// message("count matching... "+StringUtils.countMatches(mvmtest.testCaseID,ss));
+							if (StringUtils
+									.countMatches(mvmtest.testCaseID, ss) > 1) {
+								removingTestCase.add(mvmtest);
+							}
 						}
+
 					}
-					
-			}
-			}
-//				else
-//				{
-//					message("Out of index");
-//				}
-//				
+				}
+				// else
+				// {
+				// message("Out of index");
+				// }
+				//
 			}
 		}
-		
+
 		return removingTestCase;
 	}
+
 	/**
 	 * Check the command line Testcase contains ,
 	 * 
@@ -5411,18 +5443,18 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 									inprocess_jar_xml_tag_path,
 									inprocess_jar_xml_tag_attribute_name)) {
 						if (pkg_name.equalsIgnoreCase(package_struct[0])) {
-							//if (!builtin_atom_package_name.equalsIgnoreCase(pkg_name)) {
-								//builtin_atom_package_name = pkg_name;
-								//invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
-							//}
+							// if
+							// (!builtin_atom_package_name.equalsIgnoreCase(pkg_name))
+							// {
+							// builtin_atom_package_name = pkg_name;
+							// invokeAtoms.get(builtin_atom_package_name).loadInstance(builtin_atom_package_name);
+							// }
 
 							try {
 								// message("The Values "+verification.isNegative);
-								invokeAtoms
-										.get(pkg_name)
-										.invokeMethod(
-												package_struct[1].trim(),
-												verification.verificationArguments);
+								invokeAtoms.get(pkg_name).invokeMethod(
+										package_struct[1].trim(),
+										verification.verificationArguments);
 								// message("what is condition " +
 								// verification.isRowNegative);
 								exception_occured = true;
@@ -5823,7 +5855,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 				}
 			} else if (action.actionName.trim().compareToIgnoreCase(
 					"setcontextvar") == 0) {
-				if (action.actionArguments.size() >= 1) {
+				if (action.actionArguments.size() == 1) {
 					try {
 						String arg = NormalizeVariable(
 								(String) action.actionArguments.get(0),
@@ -5856,6 +5888,53 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 										action.lineNumber + 1,
 										action.sheetName, ex.getMessage()));
 					}
+				} else if (action.actionArguments.size() > 1) {
+
+					try {
+						StringBuilder executionlist = new StringBuilder();
+
+						executionlist.append("[");
+						int cnt = 0;
+						for (String argument : action.actionArguments) {
+							cnt++;
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+							executionlist.append(ctx_arg);
+							if (cnt == action.actionArguments.size()) {
+								break;
+							} else {
+								executionlist.append(",");
+							}
+
+						}
+						executionlist.append("]");
+						message(String
+								.format("\n[%s] Action %s Execution STARTED With Arguments %s",
+										action.stackTrace.toUpperCase(),
+										action.actionName.toUpperCase(),
+										executionlist.toString()));
+						for (String argument : action.actionArguments) {
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+
+							CreateContextVariable(ctx_arg);
+
+							Log.Debug(String
+									.format("Controller/RunAction : Calling RunVerification for action %s....",
+											action.actionName));
+						}
+						message(String.format(
+								"\n[%s] Action %s SUCCESSFULLY Executed",
+								action.stackTrace.toUpperCase(),
+								action.actionName.toUpperCase()));
+					} catch (Exception ex) {
+						throw new Exception(
+								String.format(
+										"\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
+										action.actionName,
+										action.lineNumber + 1,
+										action.sheetName, ex.getMessage()));
+					}
 				} else {
 					message(String.format(
 							"\n[%s] Action %s Executed With NO Arguments",
@@ -5865,7 +5944,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 			} else if (action.actionName.trim().compareToIgnoreCase(
 					"unsetcontextvar") == 0) {
-				if (action.actionArguments.size() >= 1) {
+				if (action.actionArguments.size() == 1) {
 					try {
 						String arg = NormalizeVariable(
 								(String) action.actionArguments.get(0),
@@ -5888,6 +5967,54 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 								.format("Controller/RunAction : SUCCESSFULLY Executed  RunVerification for action %s....",
 										action.actionName));
 
+					}
+					catch (Exception ex) {
+						throw new Exception(
+								String.format(
+										"\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
+										action.actionName,
+										action.lineNumber + 1,
+										action.sheetName, ex.getMessage()));
+					}
+				}else if (action.actionArguments.size() > 1) {
+
+					try {
+						StringBuilder executionlist = new StringBuilder();
+
+						executionlist.append("[");
+						int cnt = 0;
+						for (String argument : action.actionArguments) {
+							cnt++;
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+							executionlist.append(ctx_arg);
+							if (cnt == action.actionArguments.size()) {
+								break;
+							} else {
+								executionlist.append(",");
+							}
+
+						}
+						executionlist.append("]");
+						message(String
+								.format("\n[%s] Action %s Execution STARTED With Arguments %s",
+										action.stackTrace.toUpperCase(),
+										action.actionName.toUpperCase(),
+										executionlist.toString()));
+						for (String argument : action.actionArguments) {
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+
+							DestroyContextVariable(ctx_arg);
+
+							Log.Debug(String
+									.format("Controller/RunAction : Calling RunVerification for action %s....",
+											action.actionName));
+						}
+						message(String.format(
+								"\n[%s] Action %s SUCCESSFULLY Executed",
+								action.stackTrace.toUpperCase(),
+								action.actionName.toUpperCase()));
 					} catch (Exception ex) {
 						throw new Exception(
 								String.format(
@@ -5896,7 +6023,8 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 										action.lineNumber + 1,
 										action.sheetName, ex.getMessage()));
 					}
-				} else {
+				}
+				else {
 					message(String.format(
 							"\n[%s] Action %s Executed With NO Arguments",
 							action.stackTrace.toUpperCase(),
@@ -6312,8 +6440,9 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 						}
 
 					}
-					
-					//TODO need to make the builtin_atom_package_name as threadsafe....
+
+					// TODO need to make the builtin_atom_package_name as
+					// threadsafe....
 					message(String.format(
 							"[%s] Execution Started Action %s with values %s ",
 							action.stackTrace.toUpperCase(), action.actionName,
@@ -6323,30 +6452,30 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 									inprocess_jar_xml_tag_path,
 									inprocess_jar_xml_tag_attribute_name)) {
 						if (pkg_name.equalsIgnoreCase(package_struct[0])) {
-//							if (!builtin_atom_package_name
-//									.equalsIgnoreCase(pkg_name)) {
-//								builtin_atom_package_name = pkg_name;
-//								if (invokeAtoms.get(pkg_name).native_flag) {
-//									// message("This is native Dll Calling");
-//								} else if (invokeAtoms.get(pkg_name).com_flag) {
-//									// message("Com Jacob Calling");
-//								} else {
-//									invokeAtoms.get(builtin_atom_package_name)
-//											.loadInstance(
-//													builtin_atom_package_name);
-//								}
-//							}
-							//Need Work on this
+							// if (!builtin_atom_package_name
+							// .equalsIgnoreCase(pkg_name)) {
+							// builtin_atom_package_name = pkg_name;
+							// if (invokeAtoms.get(pkg_name).native_flag) {
+							// // message("This is native Dll Calling");
+							// } else if (invokeAtoms.get(pkg_name).com_flag) {
+							// // message("Com Jacob Calling");
+							// } else {
+							// invokeAtoms.get(builtin_atom_package_name)
+							// .loadInstance(
+							// builtin_atom_package_name);
+							// }
+							// }
+							// Need Work on this
 							invokeAtoms.get(pkg_name)
 									.setInprocessAction(action);
 							// try {
-							
+
 							isActionPassing = true;
-							//try{
-							invokeAtoms.get(pkg_name)
-									.invokeMethod(package_struct[1].trim(),
-											action.actionArguments);
-							
+							// try{
+							invokeAtoms.get(pkg_name).invokeMethod(
+									package_struct[1].trim(),
+									action.actionArguments);
+
 							if (action.isNegative) {
 								isActionPassing = false;
 								throw new Exception(
@@ -6942,10 +7071,10 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 				 */
 				// System.out.println("FindWorkingDir-?\t"+workingDirectory+"\nCommand-?\t"+command);
 				File f = new File(workingDirectory + SLASH + command);// Changed
-																		// from
-																		// "\\"
-																		// to
-																		// "/"
+				// from
+				// "\\"
+				// to
+				// "/"
 				if (f.exists()) {
 					Log.Debug(String
 							.format("Controller/FindWorkingDirectory: Found with argument as %s when Working Directory value is %s",
@@ -7000,10 +7129,10 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 				}
 			} else {
 				File f = new File(workingDirectory + SLASH + command);// Changed
-																		// from
-																		// "\\"
-																		// to
-																		// "/"
+				// from
+				// "\\"
+				// to
+				// "/"
 				if (!f.exists()) {
 
 					Log.Debug(String
@@ -7972,7 +8101,8 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 			if (StringUtils.isBlank(tData.testcasedescription)) {
 				tData.testcasedescription = "";
 			}
-			ContextVar.setContextVar("ZUG_TCYCLENAME", "");
+			ContextVar.setContextVar("ZUG_TCYCLENAME",
+					davosclient.getTestCycleDescriptionByID(testCycleId));
 			testexecutiondetailid = davosclient.testExecutionDetails_write(
 					testCaseResult.get_testCaseId(), tData.testcasedescription,
 					testCycleId, testCaseResult.get_status(), buildNumber,
@@ -8186,9 +8316,9 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 			Log.Debug("Controller/ListenToPrimitive : Server Socket Created on port "
 					+ Integer.toString(iPORT));
-//			System.out
-//					.println("Controller/ListenToPrimitive : Server Socket Created on port "
-//							+ Integer.toString(iPORT));
+			// System.out
+			// .println("Controller/ListenToPrimitive : Server Socket Created on port "
+			// + Integer.toString(iPORT));
 			while (true) {
 
 				conn = sock.accept();
@@ -8214,9 +8344,9 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 						// message("The Length of The param is\t"+ParamFromClient.length());
 
 						if (ParamFromClient.length() != 0) // Checking for
-															// if the
-															// Content is
-															// null or not.
+						// if the
+						// Content is
+						// null or not.
 						{
 							LogPrimitiveMessage(ParamFromClient);
 						}
@@ -8241,7 +8371,7 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 	private void ListenToPrimitives() {
 		int iPORT = 8245;
-		
+
 		String ParamFromClient = StringUtils.EMPTY;
 		Socket conn = null;
 		ServerSocket sock = null;
@@ -8265,9 +8395,9 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 				Log.Debug("Controller/ListenToPrimitive : Server Socket Created on port "
 						+ Integer.toString(iPORT));
-//				System.out
-//						.println("Controller/ListenToPrimitive : Server Socket Created on port "
-//								+ Integer.toString(iPORT));
+				// System.out
+				// .println("Controller/ListenToPrimitive : Server Socket Created on port "
+				// + Integer.toString(iPORT));
 				while (true) {
 
 					conn = sock.accept();
@@ -8293,9 +8423,9 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 							// message("The Length of The param is\t"+ParamFromClient.length());
 
 							if (ParamFromClient.length() != 0) // Checking for
-																// if the
-																// Content is
-																// null or not.
+							// if the
+							// Content is
+							// null or not.
 							{
 								LogPrimitiveMessage(ParamFromClient);
 							}
@@ -8312,16 +8442,16 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 				}
 
 			} catch (Exception e) {
-//				Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
-//						+ e.getMessage());
+				// Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
+				// + e.getMessage());
 				iPORT++;
-				if(iPORT==8256)
-				{
-					Log.Error("Controller/ListenToPrimitive: Only ten zug instances can run simultaneously "+iPORT);
+				if (iPORT == 8256) {
+					Log.Error("Controller/ListenToPrimitive: Only ten zug instances can run simultaneously "
+							+ iPORT);
 					System.exit(1);
 				}
 				ListenToPrimitives(iPORT);
-				//System.exit(1);
+				// System.exit(1);
 			} finally {
 				try {
 					conn.close();
@@ -8789,11 +8919,24 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 							SaveTestCaseResultEveryTime(tData);
 
+						} catch (DavosExecutionException de) {
+							Log.Error(String
+									.format("Failure in sending request to Davos.\n Davos Call: testexecutiondetail/write \nRequests sent: testcaseid=%s,testcasedescription=%s,testcycleid=%s,testcaseresult=%s ..... topologysetid=%s \nError Message: %s",
+											tData.testCaseID,
+											tData.testcasedescription,
+											testCycleId, tData.testCaseStatus,
+											topologySetId, de.getMessage()));
+							System.exit(1);
+						}
+						try {
 							saveTestCaseVariables(
 									findVariablesValueForTestCase(test),
 									test.testCaseID, testSuitName);
 						} catch (DavosExecutionException de) {
-							Log.Error("Failure:: " + de.getMessage());
+							Log.Error(String
+									.format("Failure in sending request to Davos.\n Davos Call: variables/write \nRequests sent: testsuitename=%s,testcaseidentifier=%s .... \nError Message: %s ",
+											testSuitName, test.testCaseID,
+											de.getMessage()));
 							System.exit(1);
 						}
 					} else {
@@ -9070,11 +9213,11 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 								+ test.testCaseID);
 
 						if (!action.step.endsWith("c") && cleanupActionStarted) {// changes
-																					// done
-																					// from
-																					// cleanupActionStarted
-																					// from
-																					// !cleanupActionStarted
+							// done
+							// from
+							// cleanupActionStarted
+							// from
+							// !cleanupActionStarted
 							try {
 								Log.Debug("Controller/RunExpandedTestCase - Finally/Cleanup:  Calling RunAction for Action : "
 										+ action.actionName
@@ -9464,7 +9607,43 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 		} catch (LoginException e) { // Login failed } }
 		}
 	}
-	
+
+	public String validateTestCycle(String testplan, String testCycle)
+			throws DavosExecutionException, InterruptedException {
+		String testcylepresent = null;
+		// String
+		// testplandavos=davosclient.getTestplanFromTestCycleID(testCycleId);
+		// Integer davostestplanid=Integer.valueOf(testplandavos);
+		// Integer cmdlinetestplanid=Integer.valueOf(TestPlanId);
+		// Log.Debug("Controller/Main:: Testplan from davos:"+davostestplanid+". Testplan provided in command line:"+cmdlinetestplanid+".");
+		// Log.Debug("Controller/Main:: Comparison:"+davostestplanid.compareTo(cmdlinetestplanid));
+		//
+		// if(davostestplanid.compareTo(cmdlinetestplanid)==0)
+		// {
+		// Log.Debug(String.format("Controller/Main: The testplan id is %s specific to the testcycle id is %s Matched",testplandavos,testCycleId));
+		// //
+		// }
+		// else
+		// {
+		// Log.Error(String.format("Testcycle: %s is not mapped to Testplan: %s",testCycleId,TestPlanId));
+		// System.exit(1);
+		// }
+		try {
+
+			testcylepresent = davosclient.validate_TestCycleByTestPlanID(
+					testplan, testCycle);
+
+		} catch (DavosExecutionException de) {
+			Log.Error("Davos execution Exception " + de.getMessage());
+			System.exit(1);
+		} catch (Exception e) {
+			Log.Error("Controller/validatetestcycleid:: Exception occured "
+					+ e.getMessage());
+		}
+
+		return testcylepresent;
+	}
+
 	/**
 	 * main method for Harness. Entry point to the Controller
 	 * 
@@ -9532,25 +9711,25 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 			for (String package_names : new ExtensionInterpreterSupport()
 					.reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path,
 							inprocess_jar_xml_tag_attribute_name)) {
-				if(StringUtils.isNotBlank(package_names)||StringUtils.isNotEmpty(package_names))
-				{
+				if (StringUtils.isNotBlank(package_names)
+						|| StringUtils.isNotEmpty(package_names)) {
 					AtomInvoker ai = new AtomInvoker(package_names);
-				
-				if (ai.native_flag) {
-				 //controller.message("This is native Dll Calling");
-				} else if (ai.com_flag) {
-					// controller.message("Com Jacob Calling");
-			} else {
-				//controller.message("invoking jar instance "+package_names);
-					ai.loadInstance(package_names);
+
+					if (ai.native_flag) {
+						// controller.message("This is native Dll Calling");
+					} else if (ai.com_flag) {
+						// controller.message("Com Jacob Calling");
+					} else {
+						// controller.message("invoking jar instance "+package_names);
+						ai.loadInstance(package_names);
+					}
+					invokeAtoms.put(package_names, ai);
+				} else {
+					controller
+							.message("[Warning] ZugINI.xml contains blank inprocess package definition. Please refer to the readme.txt or Zug User Manual");
 				}
-				invokeAtoms.put(package_names, ai);
-			}else
-			{
-				controller.message("[Warning] ZugINI.xml contains blank inprocess package definition. Please refer to the readme.txt or Zug User Manual");
 			}
-			}
-			
+
 			// invokeAtoms.loadJarFile(new
 			// ExtensionInterpreterSupport().readExternalJarFilePath().get(0));
 		} else {
@@ -9632,7 +9811,6 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 
 			Log.Debug("Controller/Main : Getting and Validating Command Line Arguments.");
 
-			
 			if (!controller.GetOptions()) {
 
 				return;
@@ -9700,9 +9878,11 @@ private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception
 			// Now reading the Excel object.
 			controller.readExcel = new Excel();
 			controller.readExcel.setXlsFilePath(controller.inputFile);
-			
-controller.CreateContextVariable("ZUG_BWD="+new File(controller.readExcel.getXlsFilePath()).getParent());
-//System.out.println("The base working directory "+ContextVar.getContextVar("ZUG_PWD"));
+
+			controller.CreateContextVariable("ZUG_BWD="
+					+ new File(controller.readExcel.getXlsFilePath())
+							.getParent());
+			// System.out.println("The base working directory "+ContextVar.getContextVar("ZUG_PWD"));
 			controller.readExcel.ReadExcel(controller.inputFile,
 					verificationSwitching, compileMode);
 			controller.message("SUCCESSFULLY Read the TestCases Input Sheet "
@@ -9789,42 +9969,20 @@ controller.CreateContextVariable("ZUG_BWD="+new File(controller.readExcel.getXls
 					controller.BuildNo = controller.saveBuildTag(
 							controller.TestPlanId, controller.BuildTag);
 				}
-				try{
+				try {
 					davosclient.validate_Testplan(controller.TestPlanId);
 					davosclient.validate_Topologyset(controller.topologySetId);
-				}catch(DavosExecutionException e)
-				{
-					Log.Error("Error in Validating Data: "+e.getMessage());
+					if (StringUtils.isNotBlank(controller.testCycleId)
+							|| StringUtils.isNotEmpty(controller.testCycleId)) {
+						controller.validateTestCycle(controller.TestPlanId,
+								controller.testCycleId);
+
+					}
+				} catch (DavosExecutionException e) {
+					Log.Error("Error in Validating Data: " + e.getMessage());
 					System.exit(1);
 				}
-				
-				
-				
-				if(StringUtils.isNotBlank(controller.testCycleId)||StringUtils.isNotEmpty(controller.testCycleId))
-				{
-					String testplandavos=davosclient.getTestplanFromTestCycleID(controller.testCycleId);
-					Integer davostestplanid=Integer.valueOf(testplandavos);
-					Integer cmdlinetestplanid=Integer.valueOf(controller.TestPlanId);
-					Log.Debug("Controller/Main:: Testplan from davos:"+davostestplanid+". Testplan provided in command line:"+cmdlinetestplanid+".");
-					Log.Debug("Controller/Main:: Comparison:"+davostestplanid.compareTo(cmdlinetestplanid));
-					
-					if(davostestplanid.compareTo(cmdlinetestplanid)==0)
-					{
-						Log.Debug(String.format("Controller/Main: The testplan id is %s specific to the testcycle id is %s Matched",testplandavos,controller.testCycleId));	
-//							
-					}
-					else
-					{
-						Log.Error(String.format("Testcycle: %s is not mapped to Testplan: %s",controller.testCycleId,controller.TestPlanId));
-						System.exit(1);
-					}
-//					if(davosclient.getTestplanFromTestCycleID(controller.testCycleId)!=controller.TestPlanId)
-//					{
-//						Log.Error(String.format("Testcycle: %s is not mapped to Testplan: %s",controller.testCycleId,controller.TestPlanId));
-//					System.exit(1);
-//					
-//					}
-				}
+
 			}
 
 			// Now run the test-case one by one -
@@ -9920,35 +10078,34 @@ controller.CreateContextVariable("ZUG_BWD="+new File(controller.readExcel.getXls
 
 					}
 
-					
 					controller
 							.message("\n\nSUCCESSFULLY Stored the TestCase Result to "
 									+ controller.dBHostName
 									+ "\\"
 									+ controller.dBName + " Davos.....");
-					
+
 				}
-				else
-				{
-					controller.message("\n\n Updating testcycle data with no test execution data");
-					try{
-						controller.SaveTestCaseResult();
-						controller.message("\n\nSUCCESSFULLY Stored the TestCycle Result to "
-								+ controller.dBHostName
-								+ "\\"
-								+ controller.dBName + " Davos.....");
-			
-					}catch(DavosExecutionException de)
-					{
-						Log.Error(de.getMessage());
-						System.exit(1);
-					}
-					
-					
-					}
+				// else
+				// {
+				// controller.message("\n\n Updating testcycle data with no test execution data");
+				// try{
+				// controller.SaveTestCaseResult();
+				// controller.message("\n\nSUCCESSFULLY Stored the TestCycle Result to "
+				// + controller.dBHostName
+				// + "\\"
+				// + controller.dBName + " Davos.....");
+				//
+				// }catch(DavosExecutionException de)
+				// {
+				// Log.Error(de.getMessage());
+				// System.exit(1);
+				// }
+				//
+				//
+				// }
 			} else // / Even if the DB reporting is FALSE, still we should
 					// actually
-			// show the statistics.
+					// show the statistics.
 			{
 				controller.ShowTestCaseResultONConsole();
 
