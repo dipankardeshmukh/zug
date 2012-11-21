@@ -14,8 +14,15 @@ import java.io.OutputStream;
 import com.sun.management.OperatingSystemMXBean;
 //import sun.management.ManagementFactory;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import com.automature.zug.util.Log;
@@ -40,6 +47,10 @@ public class Utility {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         return sdf.format(cal.getTime());
     }
+    /**
+     * 
+     * @return date as string
+     */
 public static String getCurrentDateAsString()
 {
     Calendar cal = Calendar.getInstance();
@@ -51,6 +62,66 @@ public static String getCurrentDateAsString()
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         return cal.getTime();
+    }
+    
+    public static List<String> removeDuplicatesFromArrayList(List<String> duplicateList)
+    {
+    	//System.out.println("duplicate list "+duplicateList);
+    	int size=duplicateList.size();
+    	int out=0;
+    	final Set<String> encountered=new HashSet<String>();
+    	for(Iterator<String> iter=duplicateList.iterator();iter.hasNext();)
+     	{
+final String obj = iter.next();
+    		final boolean first=encountered.add(obj);
+    		if(!first)
+        	{
+        		iter.remove();
+        	}
+        
+    	}
+    	List<String> uniqueList=new ArrayList<String>();
+    	for (Iterator iterator = encountered.iterator(); iterator.hasNext();) {
+			String element = (String) iterator.next();
+			uniqueList.add(element);
+			
+		}
+    	
+    	//System.out.println("unique list "+uniqueList);
+    	return uniqueList;
+    	
+    }
+    /**
+     * 
+     * @param list
+     * @param elemnt
+     * @param pos_index
+     * @return final arraylist
+     */
+    public static ArrayList<?> addingElementToArrayList(ArrayList<?> list,Object elemnt,int pos_index)
+    {
+    	
+    	ArrayList<Object> finalList=new ArrayList<Object>();
+//Implementing the arraylist addition code.
+    	Object temstorelm=list.get(pos_index);
+    	
+    	System.out.println("The total size is "+list.size());
+    	for(int i=0;i<list.size();i++)
+    	{
+    		
+    		if(i==pos_index)
+    		{
+    		finalList.add(pos_index, elemnt);
+    		finalList.add(pos_index+1, temstorelm);
+    		}
+    		else{
+    		finalList.add(list.get(i));
+    		}
+    		
+    	}
+    	
+    	
+    	return finalList;
     }
 
     /**
@@ -417,4 +488,20 @@ if(physical_free_memory_bytes>MEM_1MB_bytes && physical_free_memory_bytes<MEM_1G
         
         return physical_free_memory;
     }
+    /**
+     * get numeric match from String  
+     */
+    public static String getNumericMatch(String content)
+    {
+    	Pattern patner=Pattern.compile("[0-9]");
+    	Matcher matcher = patner.matcher(content);
+    	String matching="";
+    	if(matcher.find())
+    	{
+    		matching=content.substring(matcher.start(),matcher.regionEnd());
+    		//System.out.println("Matched "+matcher.group() + " "+content.substring(matcher.start(),matcher.regionEnd()));
+    	}
+    	return matching;
+    }
+
 }
