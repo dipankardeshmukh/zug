@@ -193,6 +193,8 @@ class Action
     public UserData userObj;
     //Molecule argument Definition
     public ArrayList<String> _actionmoleculeArgDefn=new ArrayList<String>();
+    public ArrayList<String> actionActualargsDuplicateRemoved=new ArrayList<String>();
+    public HashMap<String,String> _mvmmap=new HashMap<String,String>();
     //public HashMap<String,String>_actionmoleculekeyvalueDefn=new HashMap<String, String>();
   }
 
