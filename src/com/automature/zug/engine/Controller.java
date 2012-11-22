@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -87,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121121" + ".115";
+	private static String Version = "ZUG Premium 5.6." + "20121123" + ".116";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -4784,7 +4785,7 @@ public class Controller extends Thread {
 				}
 			} else if (verification.verificationName.trim()
 					.compareToIgnoreCase("setcontextvar") == 0) {
-				if (verification.verificationArguments.size() >= 1) {
+				if (verification.verificationArguments.size() == 1) {
 					try {
 						String arg = NormalizeVariable(
 								(String) verification.verificationArguments
@@ -4809,7 +4810,58 @@ public class Controller extends Thread {
 										verification.lineNumber + 1,
 										verification.sheetName, ex.getMessage()));
 					}
-				} else {
+				} else if (verification.verificationArguments.size() > 1) {
+
+					try {
+						StringBuilder executionlist = new StringBuilder();
+
+						executionlist.append("[");
+						int cnt = 0;
+						for (String argument : verification.verificationArguments) {
+							cnt++;
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+							executionlist.append(ctx_arg);
+							if (cnt == verification.verificationArguments
+									.size()) {
+								break;
+							} else {
+								executionlist.append(",");
+							}
+
+						}
+						executionlist.append("]");
+						message(String
+								.format("\n[%s] Action %s Execution STARTED With Arguments %s",
+										verification.stackTrace.toUpperCase(),
+										verification.verificationName
+												.toUpperCase(), executionlist
+												.toString()));
+						for (String argument : verification.verificationArguments) {
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+
+							CreateContextVariable(ctx_arg);
+
+							Log.Debug(String
+									.format("Controller/RunAction : Calling RunVerification for action %s....",
+											action.actionName));
+						}
+						message(String.format(
+								"\n[%s] Action %s SUCCESSFULLY Executed",
+								verification.stackTrace.toUpperCase(),
+								verification.verificationName.toUpperCase()));
+					} catch (Exception ex) {
+						throw new Exception(
+								String.format(
+										"\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
+										verification.verificationName,
+										verification.lineNumber + 1,
+										verification.sheetName, ex.getMessage()));
+					}
+				}
+
+				else {
 					message(String
 							.format("\n[%s] Verification %s Executed With NO Arguments ",
 									verification.stackTrace.toUpperCase(),
@@ -4818,7 +4870,7 @@ public class Controller extends Thread {
 
 			} else if (verification.verificationName.trim()
 					.compareToIgnoreCase("unsetcontextvar") == 0) {
-				if (verification.verificationArguments.size() >= 1) {
+				if (verification.verificationArguments.size() == 1) {
 					try {
 						String arg = NormalizeVariable(
 								(String) verification.verificationArguments
@@ -4839,6 +4891,55 @@ public class Controller extends Thread {
 						throw new Exception(
 								String.format(
 										"Exception Happened while executing Verification %s which is located at Line %s of Sheet %s. Exception Message is %s",
+										verification.verificationName,
+										verification.lineNumber + 1,
+										verification.sheetName, ex.getMessage()));
+					}
+				} else if (verification.verificationArguments.size() > 1) {
+
+					try {
+						StringBuilder executionlist = new StringBuilder();
+
+						executionlist.append("[");
+						int cnt = 0;
+						for (String argument : verification.verificationArguments) {
+							cnt++;
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+							executionlist.append(ctx_arg);
+							if (cnt == verification.verificationArguments
+									.size()) {
+								break;
+							} else {
+								executionlist.append(",");
+							}
+
+						}
+						executionlist.append("]");
+						message(String
+								.format("\n[%s] Action %s Execution STARTED With Arguments %s",
+										verification.stackTrace.toUpperCase(),
+										verification.verificationName
+												.toUpperCase(), executionlist
+												.toString()));
+						for (String argument : verification.verificationArguments) {
+							String ctx_arg = NormalizeVariable(
+									(String) argument, threadID);
+
+							DestroyContextVariable(ctx_arg);
+
+							Log.Debug(String
+									.format("Controller/RunAction : Calling RunVerification for action %s....",
+											action.actionName));
+						}
+						message(String.format(
+								"\n[%s] Action %s SUCCESSFULLY Executed",
+								verification.stackTrace.toUpperCase(),
+								verification.verificationName.toUpperCase()));
+					} catch (Exception ex) {
+						throw new Exception(
+								String.format(
+										"\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
 										verification.verificationName,
 										verification.lineNumber + 1,
 										verification.sheetName, ex.getMessage()));
@@ -5094,7 +5195,7 @@ public class Controller extends Thread {
 									verification.verificationName));
 				}
 
-			}	 else if (verification.verificationName.trim()
+			} else if (verification.verificationName.trim()
 					.compareToIgnoreCase("appendtocontextvar") == 0) {
 				if (verification.verificationArguments.size() >= 2) {
 
@@ -5771,8 +5872,7 @@ public class Controller extends Thread {
 								.format("Controller/RunAction : SUCCESSFULLY Executed  RunVerification for action %s....",
 										action.actionName));
 
-					}
-					catch (Exception ex) {
+					} catch (Exception ex) {
 						throw new Exception(
 								String.format(
 										"\n\nException Happened while executing Action %s which is located at Line %s of Sheet %s. Exception Message is %s",
@@ -5780,7 +5880,7 @@ public class Controller extends Thread {
 										action.lineNumber + 1,
 										action.sheetName, ex.getMessage()));
 					}
-				}else if (action.actionArguments.size() > 1) {
+				} else if (action.actionArguments.size() > 1) {
 
 					try {
 						StringBuilder executionlist = new StringBuilder();
@@ -5827,8 +5927,7 @@ public class Controller extends Thread {
 										action.lineNumber + 1,
 										action.sheetName, ex.getMessage()));
 					}
-				}
-				else {
+				} else {
 					message(String.format(
 							"\n[%s] Action %s Executed With NO Arguments",
 							action.stackTrace.toUpperCase(),
@@ -9508,13 +9607,14 @@ public class Controller extends Thread {
 		// System.out.println(System.getProperty("java.library.path"));
 
 		// Checking for jar file entry in ZugINI.xml
-		if (new ExtensionInterpreterSupport().reteriveXmlTagAttributeValue(
-				inprocess_jar_xml_tag_path,
+		ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
+		Set<Set> errorSet = new HashSet<Set>();
+		if (testINI.reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path,
 				inprocess_jar_xml_tag_attribute_name).length > 0) {
 			int c = 0;
-			for (String package_names : new ExtensionInterpreterSupport()
-					.reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path,
-							inprocess_jar_xml_tag_attribute_name)) {
+			for (String package_names : testINI.reteriveXmlTagAttributeValue(
+					inprocess_jar_xml_tag_path,
+					inprocess_jar_xml_tag_attribute_name)) {
 				if (StringUtils.isNotBlank(package_names)
 						|| StringUtils.isNotEmpty(package_names)) {
 					AtomInvoker ai = new AtomInvoker(package_names);
@@ -9526,6 +9626,11 @@ public class Controller extends Thread {
 					} else {
 						// controller.message("invoking jar instance "+package_names);
 						ai.loadInstance(package_names);
+
+						if (ai.interpreter.inprocesspackageError.size() > 0) {
+							errorSet.add(ai.interpreter.inprocesspackageError);
+
+						}
 					}
 					invokeAtoms.put(package_names, ai);
 				} else {
@@ -9533,6 +9638,16 @@ public class Controller extends Thread {
 							.message("[Warning] ZugINI.xml contains blank inprocess package definition. Please refer to the readme.txt or Zug User Manual");
 				}
 			}
+
+			if (errorSet.size() > 0) {
+
+				Log.Error(String
+						.format("[Warning] %s has duplicate and incorrect xml definition: 'language' attribute is not defined in ZugINI.xml",
+								errorSet));
+
+			}
+
+			// find the errored tags. from atominvoker
 
 			// invokeAtoms.loadJarFile(new
 			// ExtensionInterpreterSupport().readExternalJarFilePath().get(0));

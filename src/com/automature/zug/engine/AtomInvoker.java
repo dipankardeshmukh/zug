@@ -38,6 +38,7 @@ public class AtomInvoker {
     private static final String JAVA = "Java";
     private static final String DLL = ".dll";
     public static final String DELIMITER = "^";
+    
     private boolean method_found_flag;
     public boolean native_flag;
     public boolean com_flag;
@@ -60,12 +61,13 @@ public class AtomInvoker {
         Set<String> attribute_keys = interpreter.reteriveXmlTagAttributeValuesPair(Controller.inprocess_jar_xml_tag_path).keySet();
         Iterator<String> key_iter = attribute_keys.iterator();
         // debugMessage("AtomInvoker--"+pkg_name);
-
+//debugMessage("Atom Invoker"+ interpreter.reteriveXmlTagAttributeValue(Controller.native_inprocess_xml_tag_path, Controller.inprocess_xml_tag_attribute_language).length);
 
         if (interpreter.reteriveXmlTagAttributeValue(Controller.native_inprocess_xml_tag_path, Controller.inprocess_xml_tag_attribute_language).length > 0) {
 
             while (key_iter.hasNext()) {
                 String pkg_name = key_iter.next();
+               
                 if (inprocesspackagename.equalsIgnoreCase(pkg_name)) {
                     if (interpreter.reteriveXmlTagAttributeValuesPair(Controller.native_inprocess_xml_tag_path).get(pkg_name).equalsIgnoreCase(JAVA)) {
                         this.getFilePath(inprocesspackagename);
@@ -118,9 +120,12 @@ public class AtomInvoker {
 
     private void getFilePath(String inprocesspackagename) {
         try {
+        	//debugMessage(" printing method ");
+        	//debugMessage(" the hashmap "+interpreter.readExternalJarFileArchitecture(inprocesspackagename));
+        	if(interpreter.readExternalJarFileArchitecture(inprocesspackagename).size()>0)
             this.QUALIFED_JAR_FILE_PATH = interpreter.readExternalJarFileArchitecture(inprocesspackagename).get(inprocesspackagename).get(0);
         } catch (Exception ex) {
-            Log.Error("Error in Interpreting ZugINI.xml  " + ex.getMessage() + ex.getCause());
+            Log.Error("Error in Interpreting ZugINI.xml for getting jar file path  " + ex.getMessage() +" "+ ex.getCause());
         }
     }
     /*
@@ -129,9 +134,10 @@ public class AtomInvoker {
 
     private void getNativeFilePath(String nativeinprocesspackagename) {
         try {
+        	
             this.NATIVE_DLL_FILE_PATH = interpreter.readNativePackageArchitecture(nativeinprocesspackagename).get(nativeinprocesspackagename).get(0);
         } catch (Exception ex) {
-            Log.Error("Error in Interpreting ZugINI.xml  " + ex.getMessage() + ex.getCause());
+            Log.Error("Error in Interpreting ZugINI.xml for Native DLL Path  " + ex.getMessage()+"  " + ex.getCause());
         }
     }
 
@@ -140,9 +146,10 @@ public class AtomInvoker {
      */
     private void getPackageArchitechure(String inprocesspackagename) {
         try {
+if(interpreter.readExternalJarFileArchitecture(inprocesspackagename).get(inprocesspackagename).size()>0)
             this.EXTERNAL_PACKAGE_NAME = interpreter.readExternalJarFileArchitecture(inprocesspackagename).get(inprocesspackagename).get(1);
         } catch (Exception ex) {
-            Log.Error("Error in Interpreting ZugINI.xml  " + ex.getMessage() + ex.getCause());
+            Log.Error("Error in Interpreting ZugINI.xml for Jar package " + ex.getMessage()+" " + ex.getCause());
         }
     }
     /*
@@ -151,13 +158,15 @@ public class AtomInvoker {
 
     private void getClassName(String inprocesspackagename) {
         try {
+        	if(interpreter.readExternalJarFileArchitecture(inprocesspackagename).get(inprocesspackagename).size()>0)
             this.ATOM_CLASS_NAME = interpreter.readExternalJarFileArchitecture(inprocesspackagename).get(inprocesspackagename).get(2);
 
 
         } catch (Exception ex) {
-            Log.Error("Error in Interpreting ZugINI.xml  " + ex.getMessage() + ex.getCause());
+            Log.Error("Error in Interpreting ZugINI.xml for Class instance " + ex.getMessage()+"  " + ex.getCause());
 
         }
+        
     }
     /*
      * retreving the dll name of the package
@@ -169,7 +178,7 @@ public class AtomInvoker {
 
 
         } catch (Exception ex) {
-            Log.Error("Error in Interpreting ZugINI.xml  " + ex.getMessage() + ex.getCause());
+            Log.Error("Error in Interpreting ZugINI.xml for Native Dll name " + ex.getMessage()+" " + ex.getCause());
 
         }
     }
@@ -181,7 +190,7 @@ public class AtomInvoker {
         try {
             this.COM_PROG_ID = interpreter.readCOMPackageArchitecture(COMinprocesspackagename).get(COMinprocesspackagename).get(0);
         } catch (Exception e) {
-            Log.Error("Error in Interpreting ZugINI.xml for COM " + e.getMessage() + e.getCause());
+            Log.Error("Error in Interpreting ZugINI.xml for COM progam ID " + e.getMessage() +" "+ e.getCause());
         }
     }
     /*
@@ -207,6 +216,7 @@ public class AtomInvoker {
 
             } catch (Exception ex) {
                 Log.Error("Error in Interpreting ZugINI.xml " + libDir + "::JarFile not loaded from directory. Please refer to the README.txt for more information " + ex.getMessage());
+            throw new Exception("Error in Interpreting ZugINI.xml " + libDir + "::JarFile not loaded from directory. Please refer to the README.txt for more information " + ex.getMessage());    
             }
         }
     }
@@ -229,11 +239,20 @@ public class AtomInvoker {
             this.getClassName(inprocesspackagename);
 
 
+if(EXTERNAL_PACKAGE_NAME==null||ATOM_CLASS_NAME==null||ATOM_CLASS_NAME.isEmpty()||EXTERNAL_PACKAGE_NAME.isEmpty())
+{
+	
+}else{
+	//System.out.println("EXTERNAL_PACKAGE_NAME "+EXTERNAL_PACKAGE_NAME);
+	//System.out.println("ATOM_CLASS_NAME "+ATOM_CLASS_NAME);
             external_class_map.put(inprocesspackagename, this.loader.loadClass(EXTERNAL_PACKAGE_NAME + "." + ATOM_CLASS_NAME));
+            //System.out.println("Problem Start 2");
 
+//Find out from here as it tries get null values and fails
             external_methods = external_class_map.get(inprocesspackagename).getMethods();
 
             external_class_object = external_class_map.get(inprocesspackagename).newInstance();
+}            
 
         } catch (ClassNotFoundException ce) {
             Log.Error("Exception for Class not found::" + ATOM_CLASS_NAME + "\nMessage::" + ce.getMessage());
