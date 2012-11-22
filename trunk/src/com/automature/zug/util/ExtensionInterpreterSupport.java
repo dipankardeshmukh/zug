@@ -1,8 +1,10 @@
 package com.automature.zug.util;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Set;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ public class ExtensionInterpreterSupport {
     Boolean optionPrecedence; // This flag is set when option preceds the script filename
     //List of mvm configuration java max memory size
     public static List<Double> jvm_max_memory_list=new ArrayList<Double>();
+    public Set<String> inprocesspackageError = new HashSet<String>();
 
     private static ArrayList<ExtensionInterpreterSupport> readConfigFile() throws Exception {
         String Pathlist = new String(System.getenv(Controller.PATH_CHECK));
@@ -272,8 +275,11 @@ public class ExtensionInterpreterSupport {
 
         for (int i = 0; i < locationList.getLength(); i++) {
             Element pathElement = (Element) locationList.item(i);
-            if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)&&pathElement.getAttribute("language").equalsIgnoreCase("Java")) {
-                Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
+            if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)) {
+                
+            	if(pathElement.getAttribute("language").equalsIgnoreCase("Java"))
+            	{
+            		Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
                 jarinterpreter.jarfilepath = path_node.getTextContent();
 
                 forJar.add(jarinterpreter.jarfilepath);
@@ -286,8 +292,30 @@ public class ExtensionInterpreterSupport {
                 builtinpackagemap.put(pathElement.getAttribute("name"), forJar);
 //System.out.println("HASHMAP\t"+builtinpackagemap);
                 break;
+            	}
+            	else{
+            		inprocesspackageError.add(attributeValue);
+            		
+//            		Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
+//                    jarinterpreter.jarfilepath = path_node.getTextContent();
+//
+//                    forJar.add(jarinterpreter.jarfilepath);
+//                    Node jar_package_arch = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "jar-package");
+//                    jarinterpreter.jarpackage = jar_package_arch.getTextContent();
+//                    forJar.add(jarinterpreter.jarpackage);
+//                    Node class_name = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "class-name");
+//                    jarinterpreter.classname = class_name.getTextContent();
+//                    forJar.add(jarinterpreter.classname);
+            		
+                    builtinpackagemap.put(pathElement.getAttribute("name"), forJar);
+                    //break;
+            	}
+
             }
+          
+          
             forJar.clear();
+          
         }
 
         return builtinpackagemap;
@@ -414,7 +442,7 @@ public class ExtensionInterpreterSupport {
             document.getDocumentElement().normalize();
         } catch (Exception fileLoadException) {
             Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + filename);
-//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
+			//Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
             throw fileLoadException;
         }
         //System.out.println("The Zug INI "+filename+" document "+document.getDocumentURI());
@@ -426,8 +454,8 @@ public class ExtensionInterpreterSupport {
 
         for (int i = 0; i < locationList.getLength(); i++) {
             Element pathElement = (Element) locationList.item(i);
-            //System.out.println("The elementss "+pathElement.getAttribute("language")+"The name "+pathElement.getAttribute("name"));
-            if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)&&pathElement.getAttribute("language").equalsIgnoreCase("jni")) {
+           // System.out.println("The elementss "+pathElement.getAttribute("language")+"The name "+pathElement.getAttribute("name"));
+            if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)&&pathElement.getAttribute("language").equalsIgnoreCase("dll")) {
                 Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
                 nativeinterpreter.nativefilepath = path_node.getTextContent();
 
