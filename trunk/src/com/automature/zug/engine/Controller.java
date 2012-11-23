@@ -9642,7 +9642,7 @@ public class Controller extends Thread {
 			if (errorSet.size() > 0) {
 
 				Log.Error(String
-						.format("[Warning] %s has duplicate and incorrect xml definition: 'language' attribute is not defined in ZugINI.xml",
+						.format("[Warning] %s has duplicate and incorrect for inprocess packages xml definition: 'language' attribute is not defined in ZugINI.xml",
 								errorSet));
 
 			}
