@@ -9655,6 +9655,10 @@ public class Controller extends Thread {
 			controller
 					.message("No Inprocess Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
 		}
+		//System.out.println("ZUG LOG location --> "+ZUG_LOGFILENAME);
+		ContextVar.setContextVar("ZUG_LOGFILENAME",ZUG_LOGFILENAME);
+		//System.out.println("contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
+		//System.out.println("contextvar of LOG -- LOGLOC "+LOGLOCATION);
 
 		Controller.harnessPIDValue = Integer
 				.parseInt((java.lang.management.ManagementFactory

@@ -17,7 +17,7 @@ public class ContextVar {
     
     //private static final String _dbPath = System.getenv("APPDATA") + "/Biel Logs";  
     
-    private static final String _dbPath =com.automature.zug.engine.Controller.LOGLOCATION+com.automature.zug.engine.Controller.SLASH+"Automature/ZUG Logs";
+    private static final String _dbPath =com.automature.zug.engine.Controller.LOGLOCATION+com.automature.zug.engine.Controller.SLASH+"ZUG Logs";
     private static String justForLock = "";
 	
 	private static final ContextVar INSTANCE = new ContextVar();
