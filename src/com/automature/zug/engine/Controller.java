@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121123" + ".116";
+	private static String Version = "ZUG Premium 5.6." + "20121130" + ".116";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1249,16 +1249,16 @@ public class Controller extends Thread {
 		// Looping to get every arguments from the arraylist
 		for (String args : arguments) {
 			// Checking every argument if it contains any = or not
-			// message("args are "+args);
+		 //message("args are "+args);
 			if (args.contains("=")) {
-				// message("Coming here?? = check");
+				//message("Coming here?? = check");
 				// Putting the proposition logic Boolean AND operation
 				equalsPresent = true && equalsPresent;
 				equalsNotPresent = false && equalsNotPresent;
 
 			} else {
 				// message("argument length "+arguments.size());
-				// message("The definitions "+temp._testcasemoleculeArgDefn+"\nLength "+temp._testcasemoleculeArgDefn.size());
+				 //message("The definitions "+temp._testcasemoleculeArgDefn+"\nLength "+temp._testcasemoleculeArgDefn.size());
 				if (arguments.size() != temp._testcasemoleculeArgDefn.size()) {
 					throw new Exception(
 							"Named Argument size mismatch between pass by value and the definition :\n\tNo of Arguments in Molecule Definition: "
@@ -1271,7 +1271,7 @@ public class Controller extends Thread {
 			}
 
 		}
-		// message("last answer "+equalsNotPresent+" and "+equalsPresent);
+		 //message("last answer "+equalsNotPresent+" and "+equalsPresent);
 		// Boolean OR Operation
 		return equalsPresent || equalsNotPresent;
 	}
@@ -1307,9 +1307,7 @@ public class Controller extends Thread {
 	 */
 	private boolean checkIfNamedArgument(String actionValue) {
 		boolean namedArgFlag = false;
-		// message("the count " + StringUtils.countMatches(actionValue, "#") +
-		// " for " + actionValue + " String char length " +
-		// actionValue.toCharArray().length);
+		//message("the count " + StringUtils.countMatches(actionValue, "#") + " for " + actionValue + " String char length " + actionValue.toCharArray().length);
 		if (actionValue.toLowerCase().startsWith("#")
 				|| actionValue.toLowerCase().startsWith("%#")) {
 			namedArgFlag = true;
@@ -1320,8 +1318,8 @@ public class Controller extends Thread {
 				|| actionValue.toLowerCase().contains("=%#")) {
 			namedArgFlag = true;
 		} else if (StringUtils.countMatches(actionValue, "#") >= 1
-				&& !actionValue.endsWith("##")) {
-
+				&& !actionValue.endsWith("##")&&!actionValue.endsWith("##%")) {
+//message(" checkIfNamedArgument:: This is where its coming "+actionValue);
 			if (actionValue.toCharArray().length > 1) {
 				namedArgFlag = true;
 			} else {
@@ -1672,9 +1670,9 @@ public class Controller extends Thread {
 							|| action.actionName
 									.equalsIgnoreCase("setcontextvar")) {
 						isThisContextVarTypeAtom = true;
-						// message("Action Name "+action.actionName+" The boolean "+isThisAppenToContextVarAtom);
+						// message("Action Name "+action.actionName+" The boolean "+isThisContextVarTypeAtom);
 					}
-					// message("The action Name "+action.actionName+" Runabstract:: ActionssVal --"+actionVal+" Arguments list "+argumentValues);
+					//message("The action Name "+action.actionName+" Runabstract:: ActionssVal --"+actionVal+" Arguments list "+argumentValues);
 					// Checking for the arguments if they are consistent
 					if (isParameterPassingConsistent(argumentValues, test)) {
 
@@ -1688,14 +1686,13 @@ public class Controller extends Thread {
 							token = actionVal;
 							value = actionVal.toLowerCase();
 						}
-						// message("RUNABSTRACT::-1 Key value- " + key);
+						//message("RUNABSTRACT::-1 Key value- " + key);
 						if (value.startsWith("%") && value.endsWith("%")) {
 							value = value.replaceAll("%", "");
 							isThisAContextVar = true;
 						}
 
-						// message("RUNABSTRACT::1a Key value- " + value
-						// +"\targumentss " + argumentValues);
+						//message("RUNABSTRACT::1a Key value- " + value +"\targumentss " + argumentValues);
 						// if (argumentValues.get(0).contains("=")) {
 						if (checkArgumentDefinition(argumentValues,
 								value.replaceAll("#", ""))) {
@@ -1810,10 +1807,8 @@ public class Controller extends Thread {
 							// }
 						} else {
 							// value = value.replaceAll("#", "");
-							// message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
-							// message("RUNABSTRACT:: " + value +
-							// " The index no " +
-							// test._testcasemoleculeArgDefn);
+							 //message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
+							 //message("RUNABSTRACT:: " + value + " The index no " + test._testcasemoleculeArgDefn);
 							// int
 							// indexNo=test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())+1;
 							int indexNo = getMoleculeDefinitionIndex(
@@ -2585,7 +2580,7 @@ public class Controller extends Thread {
 					// }
 				}
 			} else {
-				// message("No Arguments : Molecule called then "+action.actionName);
+				//message("No Arguments : Molecule called then "+action.actionName);
 				allActionVerificationArgs.add(new ArrayList<String>(Arrays
 						.asList(new String[] { "Somevalue" })));
 
@@ -2689,7 +2684,9 @@ public class Controller extends Thread {
 			}
 
 		}
-		// message("EXZPANDSS:: the arguments are "+allActionVerificationArgs+" multivalued macro position "+multiValuedVariablePosition);
+		
+		
+		//message("EXZPANDSS:: the arguments are "+allActionVerificationArgs+" multivalued macro position "+multiValuedVariablePosition);
 
 		List<Tuple<String>> resultAfterIndexed = CartesianProduct
 				.indexedProduct(allActionVerificationArgs);
@@ -2706,7 +2703,7 @@ public class Controller extends Thread {
 			for (int q = 0; q < actualValue.length; ++q) {
 				tempResultList.add((String) actualValue[q]);
 			}
-			// message("temp result list "+tempResultList);
+			 //message("temp result list "+tempResultList);
 			count1 = -1;
 			try {
 				for (String tempVal : tempResultList) {
@@ -2717,7 +2714,7 @@ public class Controller extends Thread {
 					// testcase
 					count1++;
 
-					// message("Comming to Cartesian Product ");
+					//message("Comming to Cartesian Product ");
 					// //if ((tempVal.startsWith("{")) &&
 					// (tempVal.endsWith("}"))) {
 					// boolean checkMVM=checkIfMVM(test, tempVal);
@@ -2739,11 +2736,12 @@ public class Controller extends Thread {
 						multiValuedVariablePosition.put(count1,
 								StringUtils.EMPTY);
 					} else {
-						if (!tempVal.equalsIgnoreCase("somevalue")) {
+						//message("is it comming to this place??? ");
+//						if (!tempVal.equalsIgnoreCase("somevalue")) {
 							allActionVerificationArgs
 									.add(new ArrayList<String>(Arrays
 											.asList(new String[] { tempVal })));
-						}
+						//}
 					}
 
 					// }
@@ -2765,7 +2763,7 @@ public class Controller extends Thread {
 		}
 
 		ArrayList<TestCase> tempTestCases = new ArrayList<TestCase>();
-		// message("Coming to this end. 7 ");
+	 //message("Coming to this end. 7 "+result);
 		if (result != null) {
 			int size = result.size();
 			Object[] tempResult = result.toArray();
@@ -2774,7 +2772,7 @@ public class Controller extends Thread {
 				Tuple<String> subList = (Tuple<String>) tempResult[p];
 				// ArrayList<BusinessLayer.Variable> variables = new
 				// ArrayList<BusinessLayer.Variable>();
-				// message("Coming to this end. 8 ");
+				 //message("Coming to this end. 8 "+test.testCaseID);
 				TestCase tempTestCase = new TestCase();
 
 				tempTestCase.testCaseID = test.testCaseID;
@@ -2820,9 +2818,10 @@ public class Controller extends Thread {
 				Log.Debug("Controller/ExpandTestCase: Number of Actions are : "
 						+ actions.length + " for testcase : "
 						+ tempTestCase.testCaseID);
-
+				
 				for (int j = 0; j < actions.length; ++j) {
 					Action action = actions[j];
+					//message("action arguments "+action.actionArguments);
 					for (int i = 0; i < action.actionArguments.size(); ++i) {
 
 						if (multiValuedVariablePosition.containsKey(count)) {
@@ -2952,8 +2951,7 @@ public class Controller extends Thread {
 						}
 					}
 				}
-				// message("EXPANDTESTCASE THE testcase coming 1f " +
-				// tempTestCase.testCaseID);
+				//message("EXPANDTESTCASE THE testcase coming 1f " + tempTestCase.testCaseID);
 
 				tempTestCase.stackTrace = test.stackTrace;
 				tempTestCase.threadID = test.threadID;
@@ -9591,6 +9589,7 @@ public class Controller extends Thread {
 			System.exit(1);
 		}
 		LOGLOCATION = System.getenv(LOG_DIR);
+		//System.out.println("LogLocation is  "+LOGLOCATION);
 		if (LOGLOCATION == null) {
 			LOGLOCATION = System.getProperty("user.dir") + "/log";
 		}
