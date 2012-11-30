@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121130" + ".116";
+	private static String Version = "ZUG Premium 5.6." + "20121201" + ".117";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1317,13 +1317,21 @@ public class Controller extends Thread {
 				|| actionValue.toLowerCase().contains("=##")
 				|| actionValue.toLowerCase().contains("=%#")) {
 			namedArgFlag = true;
-		} else if (StringUtils.countMatches(actionValue, "#") >= 1
-				&& !actionValue.endsWith("##")&&!actionValue.endsWith("##%")) {
-//message(" checkIfNamedArgument:: This is where its coming "+actionValue);
+		}// else if (StringUtils.countMatches(actionValue, "#") >= 1 && !actionValue.endsWith("##")&&!actionValue.endsWith("##%")) {
+		else if(StringUtils.countMatches(actionValue, "#")>=1){
+			if(StringUtils.endsWith(actionValue.trim(), "##")||StringUtils.endsWith(actionValue.trim(), "##%"))
+			{
+				namedArgFlag=false;
+				Log.Debug("checkIfNamedArgument: These are ThreadSafe Context Variable "+actionValue);
+				
+			}
+			else{
+				
 			if (actionValue.toCharArray().length > 1) {
 				namedArgFlag = true;
 			} else {
 				namedArgFlag = false;
+			}
 			}
 		}
 		return namedArgFlag;
