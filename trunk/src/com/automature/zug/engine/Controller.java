@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121201" + ".117";
+	private static String Version = "ZUG Premium 5.6." + "20121203" + ".118";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -2406,11 +2406,12 @@ public class Controller extends Thread {
 	 * @throws Exception
 	 */
 	private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception {
+		System.out.println("The value of testcaseid "+tes.testCaseID);
 
 		ArrayList<Action> tempActions = new ArrayList<Action>();
-		Excel er = new Excel();
+		Excel er = new Excel();int act_count=0;
 		for (Action act : tes.actions) {
-
+act_count++;
 			for (int i = 0; i < act.actionActualArguments.size(); i++) {
 				String arg = act.actionActualArguments.get(i);
 				String value = act.actionArguments.get(i);
@@ -2421,14 +2422,15 @@ public class Controller extends Thread {
 					tempaction.stackTrace = act.testCaseID;
 					tempaction.parentTestCaseID = act.parentTestCaseID;
 					tempaction.actionName = "SetContextVar";
-					// String ctxvarname=tempaction.testCaseID+"_"+arg;
+					//String ctxvarname=tempaction.testCaseID+"_"+arg;
 					tempaction.actionActualArguments.add(tempaction.testCaseID
 							+ "_" + arg + "=" + value);
 					tempaction.actionActualArguments.add(er
 							.FindInMacroAndEnvTable(arg.replace("$", ""),
 									act.nameSpace));
-					tempActions.add(tempaction);
-					// act.actionArguments.remove(i);
+					//tempActions.add(tempaction);
+					//Utility.addingElementToArrayList(tempActions, tempaction, act_count);
+					//act.actionArguments.remove(i);
 					// act.actionArguments.add(i, "%"+ctxvarname+"%");
 				}
 
@@ -2458,10 +2460,10 @@ public class Controller extends Thread {
 		// String>();
 		// message("THE testcase coming1a " + test.testCaseID);
 		// write the subroutine here.
-		// test=addSetContextVarMVMAction(test);
+		//TestCase test=addSetContextVarMVMAction(test1);
 		ArrayList<ArrayList<String>> allActionVerificationArgs = new ArrayList<ArrayList<String>>();
 		Action[] allActions = new Action[test.actions.size()];
-		// message("THE testcase coming 1b" + test.testCaseID);
+		//message("THE testcase coming 1b" + test.testCaseID);
 		test.actions.toArray(allActions);
 		Log.Debug("Controller/ExpandTestCase: Number of Actions are : "
 				+ allActions.length + " for testcase : " + test.testCaseID);
@@ -2470,14 +2472,14 @@ public class Controller extends Thread {
 		Hashtable<Integer, String> multiValuedVariablePosition = new Hashtable<Integer, String>();
 
 		for (int j = 0; j < allActions.length; j++) {
-			// message("THE testcase coming 1d " + test.testCaseID);
+			//message("THE testcase coming 1d " + test.testCaseID);
 			Action action = allActions[j];
 			Log.Debug("Controller/ExpandTestCase: Working on Action  : "
 					+ action.actionName);
 			// //TODO put checking if testcase have no actio argument then at
 			// least print any message or put the exception
 			// message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
-
+//message("The Action names "+action.actionName+" having testcaseid "+action.parentTestCaseID);
 			if (action.actionArguments.size() > 0) {
 				// removeDuplicateMVMVariables(action);
 				for (int i = 0; i < action.actionArguments.size(); ++i) {
@@ -2590,7 +2592,7 @@ public class Controller extends Thread {
 			} else {
 				//message("No Arguments : Molecule called then "+action.actionName);
 				allActionVerificationArgs.add(new ArrayList<String>(Arrays
-						.asList(new String[] { "Somevalue" })));
+						.asList(new String[] { "~$Somevalue$~" })));
 
 			}
 			// message("Expands :: action arguments "+action.actionArguments);
@@ -2687,7 +2689,7 @@ public class Controller extends Thread {
 					}
 				} else {
 					allActionVerificationArgs.add(new ArrayList<String>(Arrays
-							.asList(new String[] { "somevalue" })));
+							.asList(new String[] { "~$Somevalue$~" })));
 				}
 			}
 
@@ -2745,11 +2747,11 @@ public class Controller extends Thread {
 								StringUtils.EMPTY);
 					} else {
 						//message("is it comming to this place??? ");
-//						if (!tempVal.equalsIgnoreCase("somevalue")) {
+						if (!tempVal.equalsIgnoreCase("~$Somevalue$~")) {
 							allActionVerificationArgs
 									.add(new ArrayList<String>(Arrays
 											.asList(new String[] { tempVal })));
-						//}
+						}
 					}
 
 					// }
@@ -2829,7 +2831,7 @@ public class Controller extends Thread {
 				
 				for (int j = 0; j < actions.length; ++j) {
 					Action action = actions[j];
-					//message("action arguments "+action.actionArguments);
+					
 					for (int i = 0; i < action.actionArguments.size(); ++i) {
 
 						if (multiValuedVariablePosition.containsKey(count)) {
