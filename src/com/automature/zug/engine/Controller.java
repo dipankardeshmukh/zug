@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121203" + ".118";
+	private static String Version = "ZUG Premium 5.6." + "20121204" + ".118";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -2409,40 +2409,53 @@ public class Controller extends Thread {
 		System.out.println("The value of testcaseid "+tes.testCaseID);
 
 		ArrayList<Action> tempActions = new ArrayList<Action>();
-		Excel er = new Excel();int act_count=0;
+		Excel er = new Excel();
+		//int act_count=0;
 		for (Action act : tes.actions) {
-act_count++;
+//act_count++;
+Action tempaction = new Action();
 			for (int i = 0; i < act.actionActualArguments.size(); i++) {
 				String arg = act.actionActualArguments.get(i);
 				String value = act.actionArguments.get(i);
-				if (arg.startsWith("$$")) {
-					Action tempaction = new Action();
+				if (arg.startsWith("$$MMV")) {
+					
 					tempaction.nameSpace = act.nameSpace;
 					tempaction.testCaseID = act.testCaseID;
 					tempaction.stackTrace = act.testCaseID;
 					tempaction.parentTestCaseID = act.parentTestCaseID;
+					tempaction.step=act.step;
 					tempaction.actionName = "SetContextVar";
-					//String ctxvarname=tempaction.testCaseID+"_"+arg;
+					String ctxvarname=tempaction.testCaseID+"_"+arg;
 					tempaction.actionActualArguments.add(tempaction.testCaseID
-							+ "_" + arg + "=" + value);
-					tempaction.actionActualArguments.add(er
-							.FindInMacroAndEnvTable(arg.replace("$", ""),
-									act.nameSpace));
-					//tempActions.add(tempaction);
+							+ "_" + arg + "=" + arg);
+					tempaction.actionArguments.add(ctxvarname+"="+value);
+					tempActions.add(tempaction);
 					//Utility.addingElementToArrayList(tempActions, tempaction, act_count);
-					//act.actionArguments.remove(i);
-					// act.actionArguments.add(i, "%"+ctxvarname+"%");
+					act.actionArguments.remove(i);
+					act.actionArguments.add(i, "%"+ctxvarname+"%");
+					act.actionActualArguments.remove(i);
+					act.actionActualArguments.add(i, "%"+ctxvarname+"%");
 				}
-
+//Build up the variable mapping with action in separate class for working properly
 			}
 
 		}
-		System.out.println("TempAction generated " + tempActions.size());
-		tes.actions.addAll(tempActions);
+		//System.out.println("TempAction generated " + tempActions.size());
+		//tes.actions.addAll(tempActions);
+//		if(tes.testCaseID.equalsIgnoreCase("init")||tes.testCaseID.equalsIgnoreCase("cleanup"))
+//		{
+//		System.out.println("Nothing happens ");	
+//		}else
+//		{
+		for(Action evract:tempActions)
+		{
+			tes.actions=(ArrayList<Action>)Utility.addingElementToArrayList(tes.actions, evract, 0);
+		}
+		//}
 		return tes;
 
 	}
-
+	
 	/***
 	 * Function to Expand the TestCases
 	 * 
@@ -2455,31 +2468,32 @@ act_count++;
 			throws Exception {
 		Log.Debug("Controller/ExpandTestCase: Start of function with TestCase ID is "
 				+ test.testCaseID);
-
+//TODO work on this part change utility addingelement in arraylist method .. its not using action class objects
 		// HashMap<String, String> mvm_vector_map = new HashMap<String,
 		// String>();
-		// message("THE testcase coming1a " + test.testCaseID);
+		
 		// write the subroutine here.
 		//TestCase test=addSetContextVarMVMAction(test1);
 		ArrayList<ArrayList<String>> allActionVerificationArgs = new ArrayList<ArrayList<String>>();
 		Action[] allActions = new Action[test.actions.size()];
-		//message("THE testcase coming 1b" + test.testCaseID);
-		test.actions.toArray(allActions);
+		
+		//test.actions.toArray(allActions);
+		
 		Log.Debug("Controller/ExpandTestCase: Number of Actions are : "
 				+ allActions.length + " for testcase : " + test.testCaseID);
-		// message("EXPANDTESTCASE THE testcase coming 1c " + test.testCaseID);
+		
 		int count1 = -1;
 		Hashtable<Integer, String> multiValuedVariablePosition = new Hashtable<Integer, String>();
 
-		for (int j = 0; j < allActions.length; j++) {
-			//message("THE testcase coming 1d " + test.testCaseID);
-			Action action = allActions[j];
+		for (int j = 0; j <test.actions.size(); j++) {
+		
+			Action action = test.actions.get(j);
 			Log.Debug("Controller/ExpandTestCase: Working on Action  : "
 					+ action.actionName);
 			// //TODO put checking if testcase have no actio argument then at
 			// least print any message or put the exception
 			// message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
-//message("The Action names "+action.actionName+" having testcaseid "+action.parentTestCaseID);
+//message("The Action names "+action.actionName+" having testcaseid "+action.parentTestCaseID +" Arguments "+action.actionArguments);
 			if (action.actionArguments.size() > 0) {
 				// removeDuplicateMVMVariables(action);
 				for (int i = 0; i < action.actionArguments.size(); ++i) {
@@ -2495,7 +2509,7 @@ act_count++;
 					// action.actionArguments);
 					String tempVal = GetTheActualValue((String) (action.actionArguments
 							.get(i)));
-					// message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
+					 //message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
 					// message("Expandtest:/lengths " +
 					// action.actionArguments.size()+"\n\t"+action.actionActualArguments.size());
 					if (action.actionActualArguments.size() == action.actionArguments
@@ -2525,7 +2539,7 @@ act_count++;
 					}
 					// mvm_vector_map.put(
 					// tempVal,action.actionActualArguments.get(i).trim());
-					// message("THE vector map only action " + tempVal);
+					//message("THE vector map only action " + tempVal);
 					// message("EXPANDED TESTCASE:: cheks to Macro exp\t" +
 					// tempVal);
 
@@ -2696,7 +2710,7 @@ act_count++;
 		}
 		
 		
-		//message("EXZPANDSS:: the arguments are "+allActionVerificationArgs+" multivalued macro position "+multiValuedVariablePosition);
+		///message("EXZPANDSS:: the arguments are "+allActionVerificationArgs+" multivalued macro position "+multiValuedVariablePosition);
 
 		List<Tuple<String>> resultAfterIndexed = CartesianProduct
 				.indexedProduct(allActionVerificationArgs);
@@ -2713,7 +2727,7 @@ act_count++;
 			for (int q = 0; q < actualValue.length; ++q) {
 				tempResultList.add((String) actualValue[q]);
 			}
-			 //message("temp result list "+tempResultList);
+			// message("temp result list "+tempResultList);
 			count1 = -1;
 			try {
 				for (String tempVal : tempResultList) {
@@ -2994,7 +3008,7 @@ act_count++;
 				}
 
 				count = 0;
-				// message("EXPNDD:: arguments .. "+actions[1].actionArguments);
+				//message("EXPNDD:: arguments .. "+actions[1].actionArguments);
 				for (int cnt = 0; cnt < actions.length; ++cnt) {
 					Action action = actions[cnt];
 					Action tempAction = new Action();
@@ -3016,14 +3030,14 @@ act_count++;
 					tempAction.actionDescription = action.actionDescription;
 					tempAction.isNegative = action.isNegative;
 					tempAction.isActionNegative = action.isActionNegative;
-					// message("EXXCC: argsss " + action.actionArguments);
+			//	message("EXXCC: argsss " + action.actionArguments);
 					for (int i = 0; i < action.actionArguments.size(); ++i) {
 						tempAction.actionArguments.add(GetActualCombination(
 								(String) action.actionArguments.get(i),
 								tempTestCaseVar[count++]));
 
 					}
-					// message("EXPANDSS args "+tempAction.actionArguments);
+			//	 message("EXPANDSS args "+tempAction.actionArguments);
 					Verification[] verifications = new Verification[action.verification
 							.size()];
 					action.verification.toArray(verifications);
@@ -6271,7 +6285,8 @@ act_count++;
 				}
 			} else if (action.actionName.trim().toLowerCase().contains("print")) {
 				if (action.actionArguments.size() > 0) {
-					// message("THe Args "+action.actionArguments);
+					//message("The Args for print "+action.actionArguments);
+					//message("The ZUG log filename "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 					for (int i = 0; i < action.actionArguments.size(); i++) {
 
 						if (!action.actionArguments.get(i).isEmpty()) {
@@ -8767,7 +8782,7 @@ act_count++;
 			// when Test Case execution started
 			ContextVar.setContextVar("ZUG_TCSTARTTIME", Utility.dateAsString());
 			// Method Return Variable names and Values.
-
+//message("Testcase is coming to RunExpandTestCase:"+ContextVar.getContextVar("ZUG_TCSTARTTIME") );
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
 			if (!(baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || baseTestCaseID
@@ -8872,6 +8887,7 @@ act_count++;
 			// After getting the Actions Store the Steps somewhere...
 			for (int i = 0; i < actions.length; i++) {
 				Action action = actions[i];
+				//message("Actions are coming "+action.actionName+" with argument "+action.actionArguments+" action step "+action.step);
 				Log.Debug(String
 						.format("Controller/RunExpandedTestCase: Storing the Steps in a HashTable. Step Number = "
 								+ action.step));
@@ -8889,6 +8905,7 @@ act_count++;
 			ArrayList<Thread> ThreadPool = new ArrayList<Thread>();
 			String stepNumber = StringUtils.EMPTY;
 			if (actions.length > 0) {
+				//message("what are the steps "+actions[0].step);
 				stepNumber = actions[0].step;
 			}
 
@@ -9601,9 +9618,13 @@ act_count++;
 		LOGLOCATION = System.getenv(LOG_DIR);
 		//System.out.println("LogLocation is  "+LOGLOCATION);
 		if (LOGLOCATION == null) {
-			LOGLOCATION = System.getProperty("user.dir") + "/log";
+			LOGLOCATION = System.getProperty("user.dir") +SLASH+"log";
 		}
+		
+		
 		final Controller controller = new Controller();
+		//controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
+		//System.out.println(Controller.ZUG_LOGFILENAME+ " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		StringBuilder cmdinputsargs = new StringBuilder();
 		for (String cmdinputs : args) {
 			cmdinputsargs.append(cmdinputs);
@@ -9665,10 +9686,8 @@ act_count++;
 					.message("No Inprocess Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
 		}
 		//System.out.println("ZUG LOG location --> "+ZUG_LOGFILENAME);
-		ContextVar.setContextVar("ZUG_LOGFILENAME",ZUG_LOGFILENAME);
-		//System.out.println("contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		//System.out.println("contextvar of LOG -- LOGLOC "+LOGLOCATION);
-
+		//System.out.println("2nd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		Controller.harnessPIDValue = Integer
 				.parseInt((java.lang.management.ManagementFactory
 						.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
@@ -9689,7 +9708,14 @@ act_count++;
 
 			}
 		}
-
+		try{
+			ContextVar.setContextVar("ZUG_LOGFILENAME",Controller.ZUG_LOGFILENAME);
+		
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		//System.out.println(Controller.ZUG_LOGFILENAME+" 3rd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		try {
 			// controller.message("\n\nValidating Command Line Arguments");
 			// Jacob Test
@@ -9841,7 +9867,7 @@ act_count++;
 				controller.DoHarnessCleanup();
 				return;
 			}
-
+			//System.out.println("4th level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 			// Initializing some of these Variables so that the controller can
 			// do useful work
 			Log.Debug("Controller/Main : Initializing the Controller Variables after reading the Excel sheet. Calling controller.InitializeVariables");
