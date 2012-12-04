@@ -2417,6 +2417,8 @@ Action tempaction = new Action();
 			for (int i = 0; i < act.actionActualArguments.size(); i++) {
 				String arg = act.actionActualArguments.get(i);
 				String value = act.actionArguments.get(i);
+				
+				//Call the method which makes the hashmnap of testcase having variables and corresponding action and index
 				if (arg.startsWith("$$MMV")) {
 					
 					tempaction.nameSpace = act.nameSpace;
@@ -8626,8 +8628,14 @@ Action tempaction = new Action();
 							.get(j);
 					// message("the varabless are "+variable_name);
 					if (variable_name.startsWith("$$")) {
+						if(variable_name.startsWith("$$%")&&variable_name.endsWith("%"))
+						{
+							//dont do any thing
+						}
+						else{
 						variablevalueMap.put(variable_name,
 								testcase_actions.actionArguments.get(j));
+						}
 					} else if (variable_name.contains("=")) {
 						// variable_name =
 						// Excel.SplitOnFirstEquals(variable_name)[1];
@@ -8636,8 +8644,13 @@ Action tempaction = new Action();
 								.SplitOnFirstEquals(variable_name)[1]
 								: variable_name;
 						if (variable_name.startsWith("$$")) {
+							if(variable_name.startsWith("$$%")&&variable_name.endsWith("%"))
+							{
+								//dont do any thing
+							}else{
 							variablevalueMap.put(variable_name,
 									testcase_actions.actionArguments.get(j));
+							}
 						}
 					}
 				}
