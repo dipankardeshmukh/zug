@@ -100,12 +100,13 @@ final String obj = iter.next();
      */
     public static ArrayList<?> addingElementToArrayList(ArrayList<?> list,Object elemnt,int pos_index)
     {
-    	
+    	//System.out.println("Method is called with "+pos_index);
     	ArrayList<Object> finalList=new ArrayList<Object>();
 //Implementing the arraylist addition code.
+    	//System.out.println("The total size is "+list.size());
     	Object temstorelm=list.get(pos_index);
     	
-    	System.out.println("The total size is "+list.size());
+    	
     	for(int i=0;i<list.size();i++)
     	{
     		
@@ -120,7 +121,7 @@ final String obj = iter.next();
     		
     	}
     	
-    	
+    	//System.out.println("Final List size is "+finalList.size());
     	return finalList;
     }
 
@@ -503,5 +504,60 @@ if(physical_free_memory_bytes>MEM_1MB_bytes && physical_free_memory_bytes<MEM_1G
     	}
     	return matching;
     }
+    /**
+     * 
+     * @param list
+     * @param elemnt
+     * @param pos_index
+     * @return finalList
+     */
+    
+    public static ArrayList<?> insertElementToArrayList(ArrayList<?> list,Object elemnt,int pos_index)
+    {
 
+    	ArrayList<Object> finalList=new ArrayList<Object>();
+//Implementing the arraylist addition code.
+    	Object temstorelm=list.get(pos_index);
+
+    	System.out.println("The total size is "+list.size());
+    	for(int i=0;i<list.size();i++)
+    	{
+
+    		if(i==pos_index)
+    		{
+    		finalList.add(pos_index, elemnt);
+    		finalList.add(pos_index+1, temstorelm);
+    		}
+    		else{
+    		finalList.add(list.get(i));
+    		}
+
+    	}
+
+
+    	return finalList;
+    }
+    /**
+     * 
+     * @param list
+     * @param pos_index
+     * @return finalList
+     */
+public static ArrayList<?> deleteElementFromArrayList(ArrayList<?> list,int pos_index)
+    {
+    ArrayList<Object> finalList=new ArrayList<Object>();
+    Object tempobjelemt=list.get(pos_index);
+    System.out.println("The Total size is "+list.size());
+    for(int i=0;i<list.size();i++)
+    {
+        if(i==pos_index)
+        {
+
+        }else
+        {
+            finalList.add(list.get(i));
+        }
+    }
+    return  finalList;
+}
 }

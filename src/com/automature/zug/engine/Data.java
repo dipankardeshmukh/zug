@@ -138,6 +138,7 @@ class TestCase
 //    //Molecule argument Definition
   public ArrayList<String> _testcasemoleculeArgDefn=new ArrayList<String>();
    //public HashMap<String,String>_testcasemoleculekeyvalueDefn=new HashMap<String, String>();
+  public HashMap<String,ArrayList<MultiValuedMacro>> mvm_macro_variable_map = new HashMap<String,ArrayList<MultiValuedMacro>>();
  }	
 
   
@@ -234,4 +235,17 @@ public Boolean isVerifyNegative=false;
 //Is this Row negative
 public Boolean isRowNegative=false;
 	public UserData userObj;
+	
 }
+/**
+ * Class for storing multivaluedmacrovariables
+ * @author Sankho
+ *
+ */
+class MultiValuedMacro
+{
+	public String action_name=null;
+	public String action_arg_index=null;
+	
+}
+

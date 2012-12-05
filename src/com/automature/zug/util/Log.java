@@ -44,10 +44,10 @@ import com.automature.zug.engine.Controller;
 			 
 			 String userDir=System.getProperty("user.dir");
 			 
-			fullFilePath=com.automature.zug.engine.Controller.LOGLOCATION+com.automature.zug.engine.Controller.SLASH+"Automature"+com.automature.zug.engine.Controller.SLASH+ "ZUG Logs"+com.automature.zug.engine.Controller.SLASH + Utility.dateAsString();
+			fullFilePath=com.automature.zug.engine.Controller.LOGLOCATION+com.automature.zug.engine.Controller.SLASH+"ZUG Logs"+com.automature.zug.engine.Controller.SLASH + Utility.dateAsString();
 			Controller.ZUG_LOGFILENAME=fullFilePath;
 //try {
-//	ContextVar.setContextVar("ZUG_LOGFILENAME", fullFilePath);
+	//ContextVar.setContextVar("ZUG_LOGFILENAME", fullFilePath);
 //	System.out.println("Context  from log var set "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 //} catch (Exception e) {
 //	
@@ -62,7 +62,8 @@ import com.automature.zug.engine.Controller;
 			//URL url = Loader.getResource(logConfigPath);
 			DOMConfigurator.configure(logConfigPath);
 			
-			setFileName(fullFilePath);	   
+			setFileName(fullFilePath);	  
+			
 	}
 		 /***
 		  * puts logging message in result log file 
