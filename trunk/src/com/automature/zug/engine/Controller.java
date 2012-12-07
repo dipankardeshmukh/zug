@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121204" + ".118";
+	private static String Version = "ZUG Premium 5.6." + "20121207" + ".119";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1305,7 +1305,7 @@ public class Controller extends Thread {
 	 * @param actionVal
 	 *            String.
 	 */
-	private boolean checkIfNamedArgument(String actionValue) {
+	private boolean checkIfNamedArgument(String actionValue,String actionname) {
 		boolean namedArgFlag = false;
 		//message("the count " + StringUtils.countMatches(actionValue, "#") + " for " + actionValue + " String char length " + actionValue.toCharArray().length);
 		if (actionValue.toLowerCase().startsWith("#")
@@ -1319,12 +1319,36 @@ public class Controller extends Thread {
 			namedArgFlag = true;
 		}// else if (StringUtils.countMatches(actionValue, "#") >= 1 && !actionValue.endsWith("##")&&!actionValue.endsWith("##%")) {
 		else if(StringUtils.countMatches(actionValue, "#")>=1){
-			if(StringUtils.endsWith(actionValue.trim(), "##")||StringUtils.endsWith(actionValue.trim(), "##%"))
+			
+			//message("checkIfNamedArgument:: The action values are "+actionValue);
+				if(actionname.equalsIgnoreCase("SetContextVar")||actionname.equalsIgnoreCase("AppendToContextVar"))
+			{
+				String argmntvalarr[]=Excel.SplitOnFirstEquals(actionValue);
+				if(argmntvalarr.length==2)
+				{
+					if(argmntvalarr[0].trim().endsWith("##"))
+					{
+						namedArgFlag=false;
+						Log.Debug("checkIfNamedArgument: These are ThreadSafe Context Variable Initiation "+actionValue);
+					}
+					if(argmntvalarr[1].trim().endsWith("##%"))
+					{
+						namedArgFlag=false;
+						Log.Debug("checkIfNamedArgument: These are ThreadSafe Context Variable call in a BuiltInAtom(SetContextVar or AppendToContextVar) "+actionValue);
+					}
+					
+				}
+				
+				}
+				if(StringUtils.endsWith(actionValue.trim(), "##")||StringUtils.endsWith(actionValue.trim(), "##%"))
 			{
 				namedArgFlag=false;
 				Log.Debug("checkIfNamedArgument: These are ThreadSafe Context Variable "+actionValue);
 				
 			}
+		
+				
+			
 			else{
 				
 			if (actionValue.toCharArray().length > 1) {
@@ -1376,24 +1400,24 @@ public class Controller extends Thread {
 		Comparator compr = Collections.reverseOrder();
 		Collections.sort(lengthlist, compr);
 		ArrayList<String> sortedlist = new ArrayList<String>();
-		// for (int i = 0; i < lengthlist.size(); i++) {
-		// int count_string = lengthlist.get(i);
-		// for (int j = 0; j < unsortedList.size(); j++) {
-		// String tempstring = unsortedList.get(j);
-		// if (tempstring.length() == count_string) {
-		// sortedlist.add(tempstring);
-		// break;
-		// }
-		// }
-		//
-		// }
-		String tempArray[] = new String[unsortedList.size()];
-		unsortedList.toArray(tempArray);
-		Arrays.sort(tempArray);
-		for (int i = 0; i < tempArray.length; i++) {
-			// System.out.println("The values "+tempArray[i]);
-			sortedlist.add(tempArray[i]);
-		}
+		 for (int i = 0; i < lengthlist.size(); i++) {
+		 int count_string = lengthlist.get(i);
+		 for (int j = 0; j < unsortedList.size(); j++) {
+		 String tempstring = unsortedList.get(j);
+		 if (tempstring.length() == count_string) {
+		 sortedlist.add(tempstring);
+		 break;
+		 }
+		 }
+		
+		 }
+//		String tempArray[] = new String[unsortedList.size()];
+//		unsortedList.toArray(tempArray);
+//		Arrays.sort(tempArray);
+//		for (int i = 0; i < tempArray.length; i++) {
+//			// System.out.println("The values "+tempArray[i]);
+//			sortedlist.add(tempArray[i]);
+//		}
 		return sortedlist;
 	}
 
@@ -1412,7 +1436,7 @@ public class Controller extends Thread {
 		// message("The molecule arglist "+moleculearglist);
 		// create a reverse order list checking with the String inputs lengths
 		ArrayList<String> reverselist = sortListByLength(moleculearglist);
-		// message("The reverse order "+reverselist);
+	// message("The reverse order "+reverselist);
 		for (int i = 0; i < reverselist.size(); i++) {
 			String molecule_arg = reverselist.get(i);
 			// message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
@@ -1440,21 +1464,28 @@ public class Controller extends Thread {
 		// message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
 		return moleculearglist.indexOf(reverselist.get(count_index));
 	}
-
+/**
+ * 
+ * @param arguments
+ * @param moleculearg
+ * @return flag
+ */
 	private boolean checkArgumentDefinition(ArrayList<String> arguments,
 			String moleculearg)
 
 	{
 		boolean result = false;
 		for (String mol_arg : arguments) {
-			if (mol_arg.toLowerCase().startsWith(moleculearg.toLowerCase())) {
-
+			
+		
+			//if (mol_arg.toLowerCase().startsWith(moleculearg.toLowerCase())) {
+			if (mol_arg.toLowerCase().startsWith(moleculearg.toLowerCase()+"=")) {
 				result = true;
 				break;
 			}
 		}
 
-		// System.out.println("THe value "+result);
+	//	System.out.println("THE Flag "+result);
 		return result;
 	}
 
@@ -1666,7 +1697,7 @@ public class Controller extends Thread {
 					// actionVal.toLowerCase().contains("=#") ||
 					// actionVal.toLowerCase().contains("=##") ||
 					// actionVal.toLowerCase().contains("=%#")) {
-				else if (checkIfNamedArgument(actionVal)) {
+				else if (checkIfNamedArgument(actionVal,action.actionName)) {
 					// check for firstoccurrance of # string
 
 					String key = null, value = null;
@@ -1815,14 +1846,13 @@ public class Controller extends Thread {
 							// }
 						} else {
 							// value = value.replaceAll("#", "");
-							 //message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
-							 //message("RUNABSTRACT:: " + value + " The index no " + test._testcasemoleculeArgDefn);
+						//	 message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size());
+						//	 message("RUNABSTRACT:: " + value + " The index no " + test._testcasemoleculeArgDefn);
 							// int
 							// indexNo=test._testcasemoleculeArgDefn.indexOf(value.trim().toLowerCase())+1;
 							int indexNo = getMoleculeDefinitionIndex(
 									test._testcasemoleculeArgDefn, value);
-							// message("Indexno " + indexNo +" RUNABSTRACT:: " +
-							// argumentValues.get(indexNo));
+							 //message("Indexno " + indexNo +" RUNABSTRACT:: " + argumentValues.get(indexNo));
 							if (indexNo < 0) {
 								throw new Exception(
 										String.format(
@@ -1853,7 +1883,7 @@ public class Controller extends Thread {
 								// message("RUNABSTRACT:: The Action Valuee "+actionVal+"\nThe args is "+argumentValues.get(test._testcasemoleculeArgDefn.indexOf(value.toLowerCase())));
 							}
 
-							// /message("ABS: The action value is "+actionVal);
+						//	message("ABS Lastly: The action value is "+actionVal);
 
 						}
 
@@ -2078,10 +2108,9 @@ public class Controller extends Thread {
 
 							}
 						}
-					} else if (verificationVal.toLowerCase().startsWith("#")
-							|| verificationVal.toLowerCase().startsWith("%#")
-							|| verificationVal.toLowerCase().contains("=#")
-							|| verificationVal.toLowerCase().contains("=%#")) {
+					} 
+					//else if (verificationVal.toLowerCase().startsWith("#")|| verificationVal.toLowerCase().startsWith("%#")|| verificationVal.toLowerCase().contains("=#")|| verificationVal.toLowerCase().contains("=%#")) {
+					else if(checkIfNamedArgument(verificationVal, verification.verificationName)){
 						String key = null, value = null;
 
 						boolean isThisAContextVar = false, foundFormalArg = false, isKeyEnabled = false;
@@ -8630,9 +8659,13 @@ Action tempaction = new Action();
 					if (variable_name.startsWith("$$")) {
 						if(variable_name.startsWith("$$%")&&variable_name.endsWith("%"))
 						{
+							//System.out.println("Variable name "+variable_name+" value "+testcase_actions.actionArguments.get(j));
+							String contextvar_name=variable_name.replaceAll("%","");
+							variablevalueMap.put(contextvar_name,testcase_actions.actionArguments.get(j));
 							//dont do any thing
 						}
 						else{
+							
 						variablevalueMap.put(variable_name,
 								testcase_actions.actionArguments.get(j));
 						}
@@ -8647,9 +8680,52 @@ Action tempaction = new Action();
 							if(variable_name.startsWith("$$%")&&variable_name.endsWith("%"))
 							{
 								//dont do any thing
+								String contextvar_name=variable_name.replaceAll("%","");
+								variablevalueMap.put(contextvar_name,testcase_actions.actionArguments.get(j));
 							}else{
 							variablevalueMap.put(variable_name,
 									testcase_actions.actionArguments.get(j));
+							}
+						}
+					}
+				}
+			}
+			
+			for(Verification verify:testcase_actions.verification)
+			{
+				if(verify.verificationArguments.size()==verify.verificationActualArguments.size())
+				{
+					for(int k=0;i<verify.verificationActualArguments.size();k++)
+					{
+						String variable_name=verify.verificationActualArguments.get(k);
+						if (variable_name.startsWith("$$")) {
+							if(variable_name.startsWith("$$%")&&variable_name.endsWith("%"))
+							{
+								//dont do any thing
+								String contextvar_name=variable_name.replaceAll("%","");
+								variablevalueMap.put(contextvar_name,verify.verificationArguments.get(k));
+							}
+							else{
+							variablevalueMap.put(variable_name,
+									verify.verificationArguments.get(k));
+							}
+						} else if (variable_name.contains("=")) {
+							// variable_name =
+							// Excel.SplitOnFirstEquals(variable_name)[1];
+							// message("The value variable "+Excel.SplitOnFirstEquals(variable_name).length);
+							variable_name = Excel.SplitOnFirstEquals(variable_name).length > 1 ? Excel
+									.SplitOnFirstEquals(variable_name)[1]
+									: variable_name;
+							if (variable_name.startsWith("$$")) {
+								if(variable_name.startsWith("$$%")&&variable_name.endsWith("%"))
+								{
+									//dont do any thing
+									String contextvar_name=variable_name.replaceAll("%","");
+									variablevalueMap.put(contextvar_name,verify.verificationArguments.get(k));
+								}else{
+								variablevalueMap.put(variable_name,
+										verify.verificationArguments.get(k));
+								}
 							}
 						}
 					}

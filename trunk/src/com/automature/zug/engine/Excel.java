@@ -3469,7 +3469,7 @@ catch(Exception e)
                 }
                 if(!macroFoundFlag)
                 {
-                    Log.Error(String.format("The Macro: %s is not defined ",variableToFind));
+                    Log.Error(String.format("[Warning]The Macro: %s is not defined ",variableToFind));
                 }
                 tempValue=_macroSheetHashTable.get(tempValue);
                 
