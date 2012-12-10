@@ -1,13 +1,13 @@
 ZUG Release Notes.
 
-The Following has been Introduced in V5.6 SP1
+The Following has been Introduced in V5.6 SP2
 
 
 Bug Fixes:
  
- * Bug #668 - Multi level Namespace not working.
- * Bug #663 - Indexed MVM results are not correct.
- * Bug #677 - Testcase reports: Argument not present in Molecule Definition.
+ * Bug #685 - Exception while running Test suites of zug
+ * Bug #686 - Formal argument value is empty.
+ * Bug #688 - Formal argument dose not work if actual argument name and passed argument name is same
 
 Known Issues:
  
