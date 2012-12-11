@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121207" + ".119";
+	private static String Version = "ZUG Premium 5.6." + "20121211" + ".118";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1392,32 +1392,23 @@ public class Controller extends Thread {
 	 * @retrun sortedlist ArrayList<String>
 	 */
 	private ArrayList<String> sortListByLength(ArrayList<String> unsortedList) {
-		ArrayList<Integer> lengthlist = new ArrayList<Integer>();
-		for (String elemnt : unsortedList) {
-			Integer length = elemnt.length();
-			lengthlist.add(length);
-		}
-		Comparator compr = Collections.reverseOrder();
-		Collections.sort(lengthlist, compr);
+
 		ArrayList<String> sortedlist = new ArrayList<String>();
-		 for (int i = 0; i < lengthlist.size(); i++) {
-		 int count_string = lengthlist.get(i);
-		 for (int j = 0; j < unsortedList.size(); j++) {
-		 String tempstring = unsortedList.get(j);
-		 if (tempstring.length() == count_string) {
-		 sortedlist.add(tempstring);
-		 break;
-		 }
-		 }
+		sortedlist=unsortedList;
+		//This logic is failing if argument length are similar
+		Comparator<String> reverseLengthCompare = new Comparator<String>() {
+			@Override
+			public int compare(String string1, String string2) {
+				
+				Integer s1len=string1.length();
+				Integer s2len=string2.length();
+				return s2len.compareTo(s1len);
+			}
+			
+		};
+		Collections.sort(sortedlist, reverseLengthCompare);
 		
-		 }
-//		String tempArray[] = new String[unsortedList.size()];
-//		unsortedList.toArray(tempArray);
-//		Arrays.sort(tempArray);
-//		for (int i = 0; i < tempArray.length; i++) {
-//			// System.out.println("The values "+tempArray[i]);
-//			sortedlist.add(tempArray[i]);
-//		}
+
 		return sortedlist;
 	}
 
@@ -1433,13 +1424,16 @@ public class Controller extends Thread {
 			String valuetomatch) throws Exception {
 		int count_index = 0;
 		boolean argnotfound = true;
-		// message("The molecule arglist "+moleculearglist);
+		//message("The molecule arglist "+moleculearglist);
 		// create a reverse order list checking with the String inputs lengths
-		ArrayList<String> reverselist = sortListByLength(moleculearglist);
-	// message("The reverse order "+reverselist);
-		for (int i = 0; i < reverselist.size(); i++) {
-			String molecule_arg = reverselist.get(i);
-			// message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
+		ArrayList<String> sortedbylenlist = new ArrayList<String>();
+		sortedbylenlist.addAll(moleculearglist);
+		sortedbylenlist=sortListByLength(sortedbylenlist);
+	//message("The sorted order "+sortedbylenlist+" actual list "+moleculearglist);
+		String molecule_arg=null;
+		for (int i = 0; i < sortedbylenlist.size(); i++) {
+			molecule_arg = sortedbylenlist.get(i);
+			 //message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
 			// Count matching "+
 			// StringUtils.countMatches(valuetomatch,molecule_arg));
 			// if (StringUtils.countMatches(valuetomatch, molecule_arg)==1) {
@@ -1459,10 +1453,12 @@ public class Controller extends Thread {
 
 		}
 		if (argnotfound) {
-			throw new Exception("Argument not present in Molecule Definition");
+			throw new Exception("Argument not present in Molecule Definition:: "+molecule_arg);
 		}
-		// message("Count Index from getMolIndex "+moleculearglist.indexOf(reverselist.get(count_index)));
-		return moleculearglist.indexOf(reverselist.get(count_index));
+		//String finalValueIndexToRetrive=sortedbylenlist.get(count_index);
+		//message("the argument from sorted list "+finalValueIndexToRetrive+" index is "+moleculearglist.indexOf(finalValueIndexToRetrive));
+		//message("Count Index from getMolIndex "+moleculearglist.indexOf(finalValueIndexToRetrive));
+		return moleculearglist.indexOf(sortedbylenlist.get(count_index));
 	}
 /**
  * 
@@ -2428,7 +2424,29 @@ public class Controller extends Thread {
 		message("The refined map is " + refinedAction._mvmmap);
 		return refinedAction;
 	}
-
+	/**
+	 * 
+	 * @param mvmname
+	 * @param value
+	 */
+private TestCase setMultiValuedMacroVariableMap(TestCase case_test)
+{
+	ArrayList<MultiValuedMacro> mvm_variable_list=new ArrayList<MultiValuedMacro>();
+	for(Action actn:case_test.actions)
+	{
+		MultiValuedMacro mac = new MultiValuedMacro();
+		mac.action_name=actn.actionName;
+	for(int i=0;i<actn.actionArguments.size();i++)
+	{
+		
+	}
+	
+	
+	
+	}
+	
+	return case_test;
+}
 	/**
 	 * method for adding extra action in testcase
 	 * 
@@ -2436,12 +2454,13 @@ public class Controller extends Thread {
 	 */
 	private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception {
 		System.out.println("The value of testcaseid "+tes.testCaseID);
-
+		tes=setMultiValuedMacroVariableMap(tes);
 		ArrayList<Action> tempActions = new ArrayList<Action>();
 		Excel er = new Excel();
 		//int act_count=0;
 		for (Action act : tes.actions) {
 //act_count++;
+			
 Action tempaction = new Action();
 			for (int i = 0; i < act.actionActualArguments.size(); i++) {
 				String arg = act.actionActualArguments.get(i);
