@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121212" + ".119";
+	private static String Version = "ZUG Premium 5.6." + "20121212" + ".120";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1555,6 +1555,7 @@ catch(Exception e)
 
 		tempTestCase.user = test.user;
 		tempTestCase.userObj = test.userObj;
+		tempTestCase._testcasemoleculeArgDefn=test._testcasemoleculeArgDefn;
 
 		Action[] actions = new Action[test.actions.size()];
 		test.actions.toArray(actions);
@@ -1581,6 +1582,7 @@ catch(Exception e)
 			tempAction.actionActualArguments = action.actionActualArguments;
 			tempAction.isNegative = action.isNegative;
 			tempAction.isActionNegative = action.isActionNegative;
+			tempAction._actionmoleculeArgDefn=action._actionmoleculeArgDefn;
 
 			Log.Debug("Controller/RunAbstractTestCase: Working on Action "
 					+ action.actionName + " with Step Number as  "
@@ -3297,13 +3299,14 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 
 	private boolean checkIfMoleculeNeedToBeExpanded(String molcallarg,
 			ArrayList<String> moldeflist) {
-		
+		Log.Debug(String.format("Controller/ExpandTestCase/checkIfMoleculeNeedToBeExpanded:: Molecule named argument definition list %s, variable called %s",moldeflist,molcallarg ));
 		boolean moldefexists=false;
 		//if(molcallarg.toLowerCase().contains("##")&&(!molcallarg.endsWith("##")||!molcallarg.endsWith("##%")||!molcallarg.endsWith("#")))
 		if(molcallarg.startsWith("##")){
 		for(String moldefarg:moldeflist)
 		{
 			//if(moldefarg.toLowerCase().contains(molcallarg))
+		
 			if(moldefarg.equalsIgnoreCase(molcallarg.replaceAll("##","")))
 			{
 				moldefexists=true;
@@ -3311,6 +3314,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 			}
 		}
 		}
+		Log.Debug(String.format("Controller/ExpandTestCase/checkIfMoleculeNeedToBeExpanded:: final return : %s",moldefexists));
 		return moldefexists;
 	}
 
