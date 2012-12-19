@@ -139,6 +139,7 @@ class TestCase
   public ArrayList<String> _testcasemoleculeArgDefn=new ArrayList<String>();
    //public HashMap<String,String>_testcasemoleculekeyvalueDefn=new HashMap<String, String>();
   public HashMap<String,ArrayList<MultiValuedMacro>> mvm_macro_variable_map = new HashMap<String,ArrayList<MultiValuedMacro>>();
+  public HashMap<String,String> mvm_value_map=new HashMap<String,String>(); 
  }	
 
   
@@ -245,7 +246,9 @@ public Boolean isRowNegative=false;
 class MultiValuedMacro
 {
 	public String action_name=null;
-	public String action_arg_index=null;
+	public int action_index=0;
+	//public ArrayList<String> action_arg_index_list=new ArrayList<String>();
+	public int action_arg_index=0;
 	
 	
 }
