@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20121212" + ".120";
+	private static String Version = "ZUG Premium 5.6." + "20121219" + ".121";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1371,7 +1371,7 @@ public class Controller extends Thread {
 	private String replaceStringOnly(String source, String searchS,
 			String replaceS)throws Exception {
 		StringBuffer bufferString = new StringBuffer();
-		// message("Source: "+source+" Search: "+searchS+" Replace: "+replaceS);
+		 //message("Source: "+source+" Search: "+searchS+" Replace: "+replaceS);
 		 
 try{
 		Pattern pattrn = Pattern.compile("(\\b" + searchS.toLowerCase()
@@ -1435,7 +1435,7 @@ catch(Exception e)
 			String valuetomatch) throws Exception {
 		int count_index = 0;
 		boolean argnotfound = true;
-		// message("The molecule arglist "+moleculearglist);
+		 //message("The molecule arglist "+moleculearglist);
 		// create a reverse order list checking with the String inputs lengths
 		Log.Debug(String.format("Controller/RunAbstractTestCase/getMoleculeDefinitionIndex:: method started with %s , %s",moleculearglist,valuetomatch));
 		ArrayList<String> sortedbylenlist = new ArrayList<String>();
@@ -1445,18 +1445,19 @@ catch(Exception e)
 		String molecule_arg = null;
 		for (int i = 0; i < sortedbylenlist.size(); i++) {
 			molecule_arg = sortedbylenlist.get(i);
-			// message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
+		 //message("moleculearg "+molecule_arg+" values to match "+valuetomatch);//\n
 			// Count matching "+
 			// StringUtils.countMatches(valuetomatch,molecule_arg));
 			// if (StringUtils.countMatches(valuetomatch, molecule_arg)==1) {
 			if (valuetomatch.contains("#" + molecule_arg)) {
 				// if(molecule_arg.matches("("+valuetomatch+")")){
 
-				// message("count matching "+molecule_arg+" index "+i);
+			//message("count matching "+molecule_arg+" index "+i);
 				count_index = i;
 				argnotfound = false;
 				break;
 			}
+			
 
 			else {
 				argnotfound = true;
@@ -1467,11 +1468,11 @@ catch(Exception e)
 		if (argnotfound) {
 			throw new Exception(
 					"Argument not present in Molecule Definition:: "
-							+ molecule_arg);
+							+ valuetomatch.replaceAll("#",""));
 		}
-		// String finalValueIndexToRetrive=sortedbylenlist.get(count_index);
-		// message("the argument from sorted list "+finalValueIndexToRetrive+" index is "+moleculearglist.indexOf(finalValueIndexToRetrive));
-		// message("Count Index from getMolIndex "+moleculearglist.indexOf(finalValueIndexToRetrive));
+		 String finalValueIndexToRetrive=sortedbylenlist.get(count_index);
+		//message("the argument from sorted list "+finalValueIndexToRetrive+" index is "+moleculearglist.indexOf(finalValueIndexToRetrive));
+		//message("Count Index from getMolIndex "+moleculearglist.indexOf(finalValueIndexToRetrive));
 		Log.Debug(String.format("Controller/RunAbstractTestCase/getMoleculeDefinitionIndex:: method execution ended index no. %s",moleculearglist.indexOf(sortedbylenlist.get(count_index))));
 		return moleculearglist.indexOf(sortedbylenlist.get(count_index));
 	}
@@ -1492,18 +1493,27 @@ catch(Exception e)
 
 			// if (mol_arg.toLowerCase().startsWith(moleculearg.toLowerCase()))
 			// {
-			// message("Molecule arg "+mol_arg.toLowerCase()+" to match "+moleculearg);
+			 //message("Molecule arg "+mol_arg.toLowerCase()+" to match "+moleculearg);
+			 if(StringUtils.countMatches(mol_arg, "=")>0)
+			 {
 			if (mol_arg.toLowerCase().startsWith(
 					moleculearg.toLowerCase() + "=")) {
 				result = true;
 				break;
 			}
-
+			
+			else if(StringUtils.countMatches(moleculearg,Excel.SplitOnFirstEquals(mol_arg)[0])>0) 
+			{
+				
+				result=true;
+				break;
+			}
+			 }
 			// Find a elegant logic to check if the argument name is not present
 			// it silently pass the #arg to molecule
 		}
 
-		// System.out.println("THE Flag "+result);
+		//System.out.println("THE Flag "+result);
 		Log.Debug(String.format("Controller/RunAbstractTestCase/checkArgumentDefinition:: method execution ended result %s",result));
 		return result;
 	}
@@ -1730,7 +1740,7 @@ catch(Exception e)
 							|| action.actionName
 									.equalsIgnoreCase("setcontextvar")) {
 						isThisContextVarTypeAtom = true;
-						// message("Action Name "+action.actionName+" The boolean "+isThisContextVarTypeAtom);
+						//message("Action Name "+action.actionName+" The boolean "+isThisContextVarTypeAtom);
 					}
 					Log.Debug(String.format("Controller/RunAbstractTestCase:: Action Name %s , Action value %s, Argument list %s",action.actionName,actionVal,argumentValues));
 					//message("The action Name "+action.actionName+" Runabstract:: ActionssVal --"+actionVal+" Arguments list "+argumentValues);
@@ -1777,8 +1787,7 @@ catch(Exception e)
 													"Controller/RunAbstractTestCase: Formal argument value is Empty:: "
 															+ temp_value_split[0]);
 										}
-										// message("RUNABSTRACT::3EqualMatchingDone "
-										// + value + " keyen " + isKeyEnabled);
+					//message("RUNABSTRACT::3EqualMatchingDone " + value + " keyen " + isKeyEnabled);
 										if (isKeyEnabled) {
 											if (isThisAContextVar) {
 
@@ -1807,16 +1816,22 @@ catch(Exception e)
 										break;
 
 									} else {
-										// message("action value "+value+" tempv0 "+temp_value_split[0]+" tempv1 "+temp_value_split[1]+" token "+token);
-										// message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value,
-										// temp_value_split[0],temp_value_split[1]));
+										//message("action value "+value+" tempv0 "+temp_value_split[0]+" tempv1 "+temp_value_split[1]+" token "+token);
+										// message("RUNABSTRACT:: String Replacement "+replaceStringOnly(value, temp_value_split[0],temp_value_split[1]));
+										//message("the token is "+token+" is this context var type atom "+isThisContextVarTypeAtom+" key is "+key);
+										
 										if (token.startsWith("#")
 												|| token.startsWith("$$%#")) {
 											token = token.replace("#", "");
 										}
 										actionVal = replaceStringOnly(token,
 												temp_value_split[0],
-												temp_value_split[1]);
+												temp_value_split[1]).replace("#", "");
+										if(isThisContextVarTypeAtom&&(StringUtils.isNotBlank(key)||StringUtils.isNotEmpty(key)))
+										{
+											//message("The key is "+key+" and value "+actionVal);
+											actionVal=key+"="+actionVal;
+										}
 										// if (isKeyEnabled) {
 										// if (isThisAContextVar) {
 										// actionVal = key + "=%" +
@@ -1868,7 +1883,7 @@ catch(Exception e)
 							// }
 						} else if(checkIfPositionalArgument(argumentValues,test._testcasemoleculeArgDefn,value.replaceAll("#", ""))) {
 							// value = value.replaceAll("#", "");
-							// message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size()+" print value "+value);
+							//message("RUNABSTRACT::: The length argss: "+argumentValues.size()+" molecuel "+test._testcasemoleculeArgDefn.size()+" print value "+value);
 					//message("RUNABSTRACT:: " + value + " The index no " + test._testcasemoleculeArgDefn);
 							
 							// int
@@ -2210,9 +2225,12 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 									throw new Exception(
 											"Formal Argument Not found");
 								}
-							} else if(checkIfPositionalArgument(argumentValues, test._testcasemoleculeArgDefn, value.replaceAll("##", ""))) {
+							} else if(checkIfPositionalArgument(argumentValues, test._testcasemoleculeArgDefn, value.replaceAll("#", ""))) {
+								
+								//message("the verification args "+argumentValues+" verivals "+verificationVal+" value "+value);
+								
 								int indexNo = getMoleculeDefinitionIndex(
-										test._testcasemoleculeArgDefn, value);
+										test._testcasemoleculeArgDefn, "#"+value);
 								Log.Debug(String.format("Controller/RunAbstractTestCase:: Index No. %s for argument Values %s",indexNo,argumentValues.get(indexNo)));
 								//message("Indexno " + indexNo +" RUNABSTRACT:: " + );
 								if (indexNo < 0) {
@@ -2340,10 +2358,16 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 				moldefncontainscallarg=true;
 				break;
 			}
+			else if(callarg.toLowerCase().contains(molargs.toLowerCase()))
+			{
+				moldefncontainscallarg=true;
+				break;
+			}
 			
 		}
 		}
 		//message("The flags are 1)"+argdontcontainsequals+" 2)"+moldefncontainscallarg);
+		Log.Debug(String.format("Controller/RunAbstractTestCase/checkIfPositionalArgument:: moleculedefinition flag %s , argument dont contain equals %s , molecule defintion list %s , argument passing list %s ",moldefncontainscallarg,argdontcontainsequals,moleculeDefn,argumentValues));
 		return argdontcontainsequals&&moldefncontainscallarg;
 	}
 
@@ -2510,16 +2534,55 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 	 * @param value
 	 */
 	private TestCase setMultiValuedMacroVariableMap(TestCase case_test) {
-		ArrayList<MultiValuedMacro> mvm_variable_list = new ArrayList<MultiValuedMacro>();
+		
+		
+		int actindex=0;
 		for (Action actn : case_test.actions) {
-			MultiValuedMacro mac = new MultiValuedMacro();
-			mac.action_name = actn.actionName;
-			for (int i = 0; i < actn.actionArguments.size(); i++) {
+			
+			//MultiValuedMacro mac = new MultiValuedMacro();
+			//mac.action_name = actn.actionName;
+			//mac.action_arg_index_list=new ArrayList<String>();
+			for (int i = 0; i < actn.actionActualArguments.size(); i++) {
+				String actactlarg=actn.actionActualArguments.get(i);
+				String actnorarg=actn.actionArguments.get(i);
+				if(Excel.SplitOnFirstEquals(actactlarg).length==2&&Excel.SplitOnFirstEquals(actnorarg).length==2)
+				{
+					actactlarg=Excel.SplitOnFirstEquals(actactlarg)[1];
+					actnorarg=Excel.SplitOnFirstEquals(actnorarg)[1];
+				}
+				int argindex=i;
+				if(actnorarg.startsWith("$~$")&&actnorarg.endsWith("$~$"))
+				{
+					
+				}
+				else{
+if(actactlarg.startsWith("$$"))
+{
+	MultiValuedMacro mac = new MultiValuedMacro();
+	mac.action_index =actindex;
+	mac.action_arg_index=argindex;
+	if(case_test.mvm_macro_variable_map.containsKey(actactlarg))
+	{
+		case_test.mvm_macro_variable_map.get(actactlarg).add(mac);
+	}
+	else
+	{
+		ArrayList<MultiValuedMacro> mvm_variable_list = new ArrayList<MultiValuedMacro>();
+		mvm_variable_list.add(mac);
+		
+		case_test.mvm_macro_variable_map.put(actactlarg, mvm_variable_list);
+		case_test.mvm_value_map.put(actactlarg, actnorarg);
+	}
+	
+	
+	
+}
 
+	
 			}
-
+actindex++;
 		}
-
+		}
 		return case_test;
 	}
 
@@ -2531,14 +2594,63 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 	private TestCase addSetContextVarMVMAction(TestCase tes) throws Exception {
 		System.out.println("The value of testcaseid " + tes.testCaseID);
 		tes = setMultiValuedMacroVariableMap(tes);
+		System.out.println("The mvmmap is "+tes.mvm_macro_variable_map);
+		System.out.println("MVM value map "+tes.mvm_value_map);
+		
 		ArrayList<Action> tempActions = new ArrayList<Action>();
 		Excel er = new Excel();
 		// int act_count=0;
-		for (Action act : tes.actions) {
+		//for (Action act : tes.actions) {
 			// act_count++;
 
 			Action tempaction = new Action();
-			for (int i = 0; i < act.actionActualArguments.size(); i++) {
+			Set<String> mapkeys=tes.mvm_macro_variable_map.keySet();
+			Iterator<String> mvm_map_key=mapkeys.iterator();
+			while(mvm_map_key.hasNext())
+			{
+				String mvm_arg_name=mvm_map_key.next();
+				ArrayList<MultiValuedMacro> tempmvmvarlist=tes.mvm_macro_variable_map.get(mvm_arg_name);
+				message("MVM map key: "+mvm_arg_name+" arraylist: "+tempmvmvarlist);
+				tempaction.nameSpace = tes.nameSpace;
+				tempaction.testCaseID = tes.testCaseID;
+				tempaction.stackTrace = tes.testCaseID;
+				tempaction.parentTestCaseID = tes.parentTestCaseID;
+				tempaction.step="";
+				tempaction.actionName = "SetContextVar";
+				String ctxvarname = tempaction.testCaseID + "_" + mvm_arg_name;
+				tempaction.actionActualArguments.add(tempaction.testCaseID
+						+ "_" + mvm_arg_name + "=" + mvm_arg_name);
+				String value=tes.mvm_value_map.get(mvm_arg_name);
+//				for (int i = 0; i < act.actionActualArguments.size(); i++) {
+//					if(mvm_arg_name.equalsIgnoreCase(act.actionActualArguments.get(i)))
+//					{
+//						value=act.actionArguments.get(i);
+//						break;
+//					}
+//				}
+				if(StringUtils.isNotBlank(value)||StringUtils.isNotEmpty(value))
+				{
+					tempaction.actionArguments.add(ctxvarname + "=" + value);
+				}
+				message("tempaction arguments "+tempaction.actionArguments);
+				tempActions.add(tempaction);
+				Action reqAct=null;
+				for(MultiValuedMacro tempMac:tempmvmvarlist)
+				{
+					message("action index "+tempMac.action_index+" argument index "+tempMac.action_arg_index);
+					 reqAct=tes.actions.get(tempMac.action_index);
+					reqAct.actionArguments.remove(tempMac.action_arg_index);
+					reqAct.actionArguments.add(tempMac.action_arg_index, "%" + ctxvarname + "%");
+					reqAct.actionActualArguments.remove(tempMac.action_arg_index);
+					reqAct.actionActualArguments.add(tempMac.action_arg_index, "%" + ctxvarname + "%");
+					System.out.println("Action arguments after changing "+reqAct.actionArguments);
+				}
+			
+			//tempaction.step = reqAct.step;
+				//tempActions.add(tempaction);
+			}
+	//	}
+		/*	for (int i = 0; i < act.actionActualArguments.size(); i++) {
 				String arg = act.actionActualArguments.get(i);
 				String value = act.actionArguments.get(i);
 
@@ -2569,16 +2681,21 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 			}
 
 		}
-		// System.out.println("TempAction generated " + tempActions.size());
+		*/
+		System.out.println("TempAction generated " + tempActions.size());
 		// tes.actions.addAll(tempActions);
-		// if(tes.testCaseID.equalsIgnoreCase("init")||tes.testCaseID.equalsIgnoreCase("cleanup"))
-		// {
-		// System.out.println("Nothing happens ");
-		// }else
-		// {
+		 //if(tes.testCaseID.equalsIgnoreCase("init")||tes.testCaseID.equalsIgnoreCase("cleanup"))
+		 //{
+//		 System.out.println("Nothing happens ");
+	//	 }
+	//else
+	//	 {
 		for (Action evract : tempActions) {
-			tes.actions = (ArrayList<Action>) Utility.addingElementToArrayList(
-					tes.actions, evract, 0);
+			//message("parent tid : "+evract.parentTestCaseID+" testid : "+evract.testCaseID);
+			if(evract.parentTestCaseID.equalsIgnoreCase(evract.testCaseID))
+			tes.actions = (ArrayList<Action>) Utility.addingElementToArrayList(tes.actions, evract, 0);
+			else
+				tes.actions = (ArrayList<Action>) Utility.addingElementToArrayList(tes.actions, evract, 1);
 		}
 		// }
 		return tes;
@@ -2603,7 +2720,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 		// String>();
 
 		// write the subroutine here.
-		// TestCase test=addSetContextVarMVMAction(test1);
+		//TestCase test=addSetContextVarMVMAction(test1);
 		ArrayList<ArrayList<String>> allActionVerificationArgs = new ArrayList<ArrayList<String>>();
 		Action[] allActions = new Action[test.actions.size()];
 
@@ -2636,8 +2753,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 					// " Action Actual Arguments " +
 					// action.actionActualArguments);
 					count1++;
-					// message("ExpandTest:/cheks to Macro action args exp\t" +
-					// action.actionArguments);
+					//message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments);
 					String tempVal = GetTheActualValue((String) (action.actionArguments
 							.get(i)));
 					// message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
@@ -2765,10 +2881,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 								.size()) {
 							// put in a hashmap
 							// key=tempval value=actlArg
-							if (verification.verificationActualArguments.get(l)
-									.startsWith("$$")
-									|| verification.verificationActualArguments
-											.get(l).startsWith("##")) {
+							if (verification.verificationActualArguments.get(l).startsWith("$$")|| checkIfMoleculeNeedToBeExpanded(verification.verificationActualArguments.get(l), test._testcasemoleculeArgDefn)) {
 								tempVal2 = tempVal2 + "$~$";
 							} else if (verification.verificationActualArguments
 									.get(l).contains("=")) {
@@ -2777,8 +2890,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 												.get(l));
 								if (split_actual_arg.length > 1
 										&& (split_actual_arg[1]
-												.startsWith("$$") || split_actual_arg[1]
-												.startsWith("##"))) {
+												.startsWith("$$") || checkIfMoleculeNeedToBeExpanded(split_actual_arg[1], test._testcasemoleculeArgDefn))) {
 									tempVal2 = tempVal2 + "$~$";
 								}
 							}
@@ -2978,7 +3090,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 							String testcase_partial_id = tempTestCaseVar[count]
 									.toLowerCase();
 
-							// message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i)+" "+action.actionArguments.get(i));
+							//message("Index "+testcase_partial_id+" "+action.actionActualArguments.get(i)+" "+action.actionArguments.get(i));
 
 							if (action.actionName
 									.equalsIgnoreCase("appendtocontextvar")
@@ -3157,14 +3269,15 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 					tempAction.actionDescription = action.actionDescription;
 					tempAction.isNegative = action.isNegative;
 					tempAction.isActionNegative = action.isActionNegative;
-					// message("EXXCC: argsss " + action.actionArguments);
+					tempAction._actionmoleculeArgDefn=action._actionmoleculeArgDefn;
+					 //message("EXXCC: argsss " + action.actionArguments);
 					for (int i = 0; i < action.actionArguments.size(); ++i) {
 						tempAction.actionArguments.add(GetActualCombination(
 								(String) action.actionArguments.get(i),
 								tempTestCaseVar[count++]));
 
 					}
-					// message("EXPANDSS args "+tempAction.actionArguments);
+					//message("EXPANDSS args "+tempAction.actionArguments);
 					Verification[] verifications = new Verification[action.verification
 							.size()];
 					action.verification.toArray(verifications);
@@ -5125,14 +5238,13 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 				if (verification.verificationArguments.size() > 0) {
 					for (int i = 0; i < verification.verificationArguments
 							.size(); i++) {
-						if (!verification.verificationArguments.get(i)
-								.isEmpty()) {
+						if (StringUtils.isNotBlank(verification.verificationArguments.get(i))||StringUtils.isEmpty(verification.verificationArguments.get(i))) {
 
 							if (verification.verificationArguments.get(i)
 									.startsWith("$$%")
 									&& verification.verificationArguments
 											.get(i).endsWith("%")) {
-								// message("The values are "+action.actionArguments.get(i));
+								
 								String action_args = StringUtils.removeStart(
 										verification.verificationArguments
 												.get(i), "$$");
@@ -5156,7 +5268,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 							verification.stackTrace.toUpperCase(),
 							verification.verificationName,
 							verification.verificationArguments));
-					RunVerification(action, threadID);
+					
 				} else {
 					message(String.format(
 							"[%s] Executed Action %s with No Values %s ",
@@ -6322,15 +6434,13 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 
 			} else if (action.actionName.trim().compareToIgnoreCase(
 					"appendtocontextvar") == 0) {
-				// message("appendtocontextvar Argument list " +
-				// action.actionArguments + " \n actual " +
-				// action.actionActualArguments);
+				//message("appendtocontextvar Argument list " + action.actionArguments + " \n actual " + action.actionActualArguments);
 
 				if (action.actionArguments.size() >= 2) {
 					try {
 
 						// TODO NIIISH Check context var exists or not
-						// message("Appened to contervar value "+action.actionArguments);
+						//message("Appened to contexvar value "+action.actionArguments);
 						String contextVarName = StringUtils.EMPTY;
 						StringBuilder appendValueBuilder = new StringBuilder();
 						if (action.actionActualArguments.get(0).toLowerCase()
@@ -7755,6 +7865,7 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 		// After getting the Actions Store the Steps somewhere...
 		for (int i = 0; i < actions.length; i++) {
 			Action action = actions[i];
+			
 			Log.Debug("Controller/RunExpandedTestCaseForMolecule: Storing the Steps in a HashTable. Step Number = "
 					+ action.step);
 			stepsKeys.put(action.step, StringUtils.EMPTY);
