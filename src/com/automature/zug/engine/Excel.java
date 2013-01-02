@@ -1734,6 +1734,14 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
     }// ExpandValue
 
     // Function to append a namespace for the Macro/Molecule
+   /**
+    * 
+    * @param name
+    * @param nameSpace
+    * @return macro key
+    * @throws Exception
+    */
+    		
     public static String AppendNamespace(String name, String nameSpace)
             throws Exception {
 
@@ -3447,14 +3455,14 @@ catch(Exception e)
             else if(variableToFind.startsWith("$$")&&!variableToFind.endsWith("%")) {
                 boolean macroFoundFlag=false;
                 tempValue=Utility.TrimStartEnd(tempValue, '$',1);
-                //System.out.println("FindMacro 2a->"+tempValue);
+               // System.out.println("FindMacro 2a->"+tempValue+" the namespace "+nameSpace);
                 tempValue=AppendNamespace(tempValue, nameSpace);
                 tempValue="$"+tempValue;
-                //System.out.println("2b The ValueToFind -> "+variableToFind+" The Value is -> "+tempValue);
+               // System.out.println("2b The ValueToFind -> "+variableToFind+" The Value is -> "+tempValue);
                 while(_keyIterate.hasNext())
                 {
                     String _keyToSearch=_keyIterate.next();
-                    //System.out.println("Iteterator -> "+_keyToSearch+" TempValue "+tempValue);
+                 //   System.out.println("Iteterator -> "+_keyToSearch+" TempValue "+tempValue);
                     if(tempValue.equalsIgnoreCase(_keyToSearch))
                     {          
                         macroFoundFlag=true;
@@ -3681,7 +3689,7 @@ catch(Exception e)
             }
 
             if (property != null
-                    && (property.contains("comment") || property.contains("rem"))) {
+                    && (property.toLowerCase().contains("comment") || property.toLowerCase().contains("rem"))) {
                 // /Action is a Comment.
                 Log.Debug("Excel/ReadActionSection : Action is a Comment");
                 Log.Debug("Excel/ReadActionSection : End of the Function.");
@@ -3790,7 +3798,7 @@ catch(Exception e)
 
             actionObj.userObj = userObj;
             if (property != null
-                    && (property.contains("comment") || property.contains("rem"))) {
+                    && (property.toLowerCase().contains("comment") || property.toLowerCase().contains("rem"))) {
                 actionObj.isComment = true;
             }   
             if(property!=null&&property.toLowerCase().equalsIgnoreCase(NEGATIVE))
