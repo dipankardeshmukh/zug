@@ -817,6 +817,7 @@ else
                 }
             }
             _macroSheetHashTable.putAll(Controller.macrocommandlineinputs);
+            
             readHashTable(_macroSheetHashTable);
             //System.out.println("EXCEL/READ:: The Cardinality is " + getCardinality(_macroSheetHashTable));
             //System.out.println("The Macrosheet Hash\t" + _macroSheetHashTable);
@@ -1028,6 +1029,7 @@ else
         }
         if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK
                 || cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) {
+        	        	//System.out.println(" get cell value "+cell.getCellType());
             return StringUtils.EMPTY;
         }
 
@@ -1215,7 +1217,7 @@ else
             Iterator rowIter = worksheet.rowIterator();
 
             do {
-
+boolean keyflag=false,valueflag=false;
                 HSSFRow myRow = (HSSFRow) rowIter.next();
                 Iterator cellIter = myRow.cellIterator();
 
@@ -1224,20 +1226,36 @@ else
                     HSSFCell myCell = (HSSFCell) cellIter.next();
 
                     if (myCell.getCellNum() == key) {
+                    	keyflag=true;
                         strKey = GetCellValueAsString(myCell);
                     }
 
                     if (myCell.getCellNum() == value) {
+                    	valueflag=true;
+                    	//System.out.println("The value of cell "+GetCellValueAsString(myCell));
                         strValue = GetCellValueAsString(myCell);
                     }
                 }
+                
                 // / If this is a Macros sheet then Expand the Value before
                 // adding it to the Hashtable..
                 if (sheetname.equals("macros")) {
                     // / If this is a Macros Sheet, then, append the name space
                     // for the Macro
+                	//System.out.println("the flags are "+keyflag+"  "+valueflag);
+                	if(keyflag)
+                	{
+                		if(!valueflag)
+                		{
+                			ContextVar.setContextVar(strKey, StringUtils.EMPTY);
+                			strValue="%"+strKey+"%";
+                			
+                		}
+                	}
+                	//System.out.println("strkey coming "+strKey+" strkey value "+strValue);
                     strKey = AppendNamespace(strKey, nameSpace);
                     strValue = ExpandMacrosValue(strValue.trim(), strKey.trim(), nameSpace); // modify
+                    //}
                     // strkey
                     // and
                     // strvalue
@@ -3479,10 +3497,12 @@ catch(Exception e)
                 {
                     Log.Error(String.format("[Warning]The Macro: %s is not defined ",variableToFind));
                 }
+                
                 tempValue=_macroSheetHashTable.get(tempValue);
                 
                 
             }
+            // System.out.println("The tempValue from macro table"+tempValue);
 //            else{
 //                throw new Exception("Excel/FindInMacroAndEnvTable : Exception occured, exception mesasge is  : No Macro Definition found : NoMacroDefinitionFoundExcetion");
 //            }
