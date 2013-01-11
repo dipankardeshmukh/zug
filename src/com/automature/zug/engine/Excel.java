@@ -1252,6 +1252,12 @@ boolean keyflag=false,valueflag=false;
                 			
                 		}
                 	}
+                	if(StringUtils.isBlank(strValue)||StringUtils.isEmpty(strValue)&&keyflag)
+                	{
+                		//System.out.println("This is blank value but contains a key "+strValue+" "+strKey);
+                		ContextVar.setContextVar(strKey, StringUtils.EMPTY);
+            			strValue="%"+strKey+"%";
+                	}
                 	//System.out.println("strkey coming "+strKey+" strkey value "+strValue);
                     strKey = AppendNamespace(strKey, nameSpace);
                     strValue = ExpandMacrosValue(strValue.trim(), strKey.trim(), nameSpace); // modify
@@ -1750,7 +1756,19 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
         return Utility.join(",", stringsToCompare, 0, stringsToCompare.length - 1);
 
     }// ExpandValue
-
+    /**
+     * 
+     * @param name
+     * @return result as boolean
+     */
+    private static boolean checkExternalIndexMacro(String name)
+    {
+    	boolean result=false;
+    	//System.out.println("the name:- "+ name+" contains # "+name.contains("#")+" contains '.' "+name.contains("."));
+    	if(name.contains("#")&&name.contains("."))
+    		result=true;
+    	return result;
+    }
     // Function to append a namespace for the Macro/Molecule
    /**
     * 
@@ -1775,7 +1793,7 @@ String newMacroKey = macroKey + "#"+ tempStringToExpand.substring(1);
             }
             // Dont append namespace, if this already contains a "." or a
             // namespace.
-            if (name.indexOf(".") >= 0) {
+            if (name.indexOf(".") >= 0&&!checkExternalIndexMacro(name)) {
                 Log.Debug(String.format("Excel/AppendNamespace : End of the Function with name = %s and namespace = %s returnValue = %s",
                         name, nameSpace, returnValue));
 
@@ -3356,7 +3374,7 @@ catch(Exception e)
         String tempValue = variableToFind;
         Log.Debug("Excel/FindInMacroAndEnvTable : Start of function with variableToFind = "
                 + variableToFind);
-        //System.out.println("The variable to find "+variableToFind+" Macro Table coming "+_macroSheetHashTable+" namespace "+nameSpace);
+       // System.out.println("The variable to find "+variableToFind+" Macro Table coming "+_macroSheetHashTable+" namespace "+nameSpace);
         try {
             //Getting keys of macro hash table
             Set<String> _macroKeys=_macroSheetHashTable.keySet();
@@ -3458,12 +3476,13 @@ catch(Exception e)
                 }
                 tempValue = tempValPrefix + "=" + tempValue;
             } // / First Check in the Macro Sheet
+           // System.out.println("The temp value "+tempValue+" namespace "+nameSpace);
              if (_macroSheetHashTable.get(AppendNamespace(tempValue,
                     nameSpace)) != null) {
-                //System.out.println("The value comming action "+tempValue);
+               // System.out.println("The value comming action "+tempValue);
                 tempValue = (String) _macroSheetHashTable.get(AppendNamespace(
                         tempValue, nameSpace));
-                //System.out.println(tempValue+" THE macro hashtable "+_macroSheetHashTable);
+               // System.out.println(tempValue+" THE macro hashtable "+_macroSheetHashTable);
                 Log.Debug("\n"
                         + String.format(
                         "Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , variableToFind = %s ",
