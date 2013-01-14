@@ -6,7 +6,11 @@
  */
 package com.automature.zug.engine;
 
+//import Excel;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Hashtable;
 import jline.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +43,7 @@ public class ProgramOptions {
      * @return ProgramOptions Object
      * @throws Exception On occurrence of any error.
      */
+   
     public static ProgramOptions parse(String[] args) throws Exception {
 
         Hashtable<String, String> ht = new Hashtable<String, String>();
@@ -122,6 +127,82 @@ public class ProgramOptions {
                     Log.Debug("Command Line Path Showing the Current Directory:\t" + nv[1]);
                 }
             }
+			if (opt.contains("-macrofile")) {
+				Controller.macroentry = true;
+				String file[] = opt.split("=", 2);
+				String macro, namespaces = "";
+				
+				if(!file[1].substring(file[1].lastIndexOf(".")+1).trim().equalsIgnoreCase("txt")){
+					System.out.println(file[1]+" is not a text file");
+					continue;
+				}
+				System.out.println("External macro file:"+file[1]);
+				try {
+					File macrofile = new File(file[1]);
+					if(macrofile==null ||!macrofile.exists()){
+						System.out.println("Could not found the macro file specified");
+					}
+					BufferedReader br = new BufferedReader(new FileReader(
+							macrofile));
+					//String line;
+					String fileArr[] = null;
+					String tempPath = ht.get("inputfile").replaceAll(
+							"\\\\", "/");
+
+					fileArr = tempPath.split("/");
+					for (String filename : fileArr) {
+
+						if (filename.endsWith(".xls")) {
+
+							filename = filename.replaceAll(".xls", "");
+							namespaces = filename.toLowerCase();
+							// System.out.println("Namespace "+namespaces);
+							Log.Debug(String.format(
+									"The Namespace is Created  %s",
+									namespaces));
+							// macrokey+=filename.toLowerCase();
+						}
+
+					}
+					while ((macro = br.readLine()) != null) {
+						macro = macro.trim();
+						if(!macro.startsWith("$")){
+							Log.Error(macro+" is not a macro.Program will skip this macro substitution");
+							continue;
+						}
+						String temp[] = macro.split("=");
+						if (temp.length == 2) {
+							String macroKey = temp[0];
+							String macroValue = temp[1];
+							Excel ee = new Excel();
+							macroKey = ee.AppendNamespace(macroKey, namespaces);
+							if ((macroValue.contains("$$") || macroValue
+									.contains("$"))
+									&& (macroValue.startsWith("{") && macroValue
+											.endsWith("}"))) {
+								macroValue = macroValue;
+							} else {
+								macroValue = ee.ExpandMacrosValue(macroValue,
+										macroKey, namespaces);
+							}
+							// ht.put(macrokey, macrovalue);
+							// Creating the command line Macro hashmap
+							Controller.macrocommandlineinputs.put(macroKey,
+									macroValue);
+							// System.out.println("The Command line changing "+Controller.macrocommandlineinputs);
+
+						} else {
+							// controller.message(macro+"-->The Value Assigned contains more than one =");
+							Log.Error(macro
+									+ "->The Value Assigned Contains More Than One '=' ");
+						}
+					}
+					
+				} catch (Exception e) {
+					System.out.println("Error in macro file parsing from command line argument");
+				}
+				ht.put(nv[0], nv[1].trim().replaceAll("\"", "").replaceAll("'", "").trim());
+			}
             if (opt.contains("-$") || opt.contains("-$$")) {
                 Controller.macroentry = true;
                 //controller.message("Macro Command Line Arguments\t"+macroentry);
