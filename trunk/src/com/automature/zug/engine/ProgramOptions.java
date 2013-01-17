@@ -32,6 +32,27 @@ public class ProgramOptions {
         _opts = opts;
     }
 
+    public static void populateMacroColumnValue(String str){
+    	String fileArr[] = str.split(",");
+    	for(String temp:fileArr){
+    		String value[]=temp.split(":");
+    		if(value.length!=2){
+    			Log.Error("\n"+temp
+						+ "->  Contains More Than One ':' .This file's default macro values will be used");
+    			continue;
+    		}
+    		String filename=value[0];
+    		String columnValue=value[1];
+    		String nameSpace=null;
+    		if (filename.endsWith(".xls")) {
+				filename = filename.replaceAll(".xls", "");
+				
+    		}
+    		nameSpace= filename.toLowerCase();
+    		Controller.macroColumnValue.put(nameSpace, columnValue);
+    	}    	
+    }
+    
     /**
      * Parses args into a table of switches or name/value pairs.
      * Each String in args must be of the form 'name=value' or
@@ -126,6 +147,18 @@ public class ProgramOptions {
                     //System.out.println("The Path \t"+nv[1]);
                     Log.Debug("Command Line Path Showing the Current Directory:\t" + nv[1]);
                 }
+            }//-topologyset  -macrocolumn
+            if(opt.contains("-macrocolumn")){
+            	String temp[]=opt.split("=");
+            	if(temp.length==2){
+            		populateMacroColumnValue(temp[1]);
+            	}
+            	else{
+            		Log.Error("\n"+opt
+							+ "-> The Value  Contains More Than One '=' .Program will skip the macro value column switch feature");
+            	//	System.out.println("The Value  Contains More Than One '='.Program will skip the macro value column switch feature");
+            	}
+            	ht.put(nv[0], nv[1].trim().replaceAll("\"", "").replaceAll("'", "").trim());
             }
 			if (opt.contains("-macrofile")) {
 				Controller.macroentry = true;
@@ -136,11 +169,12 @@ public class ProgramOptions {
 					System.out.println(file[1]+" is not a text file");
 					continue;
 				}
-				System.out.println("External macro file:"+file[1]);
+				Log.Debug("\nExternal macro file : "+file[1]);
+				System.out.println("\nExternal macro file:"+file[1]);
 				try {
 					File macrofile = new File(file[1]);
 					if(macrofile==null ||!macrofile.exists()){
-						System.out.println("Could not found the macro file specified");
+						Log.Error("Could not found the macro file specified");
 					}
 					BufferedReader br = new BufferedReader(new FileReader(
 							macrofile));
@@ -167,7 +201,7 @@ public class ProgramOptions {
 					while ((macro = br.readLine()) != null) {
 						macro = macro.trim();
 						if(!macro.startsWith("$")){
-							Log.Error(macro+" is not a macro.Program will skip this macro substitution");
+							Log.Error(macro+" is not a macro.Program will skip this macro's substitution");
 							continue;
 						}
 						String temp[] = macro.split("=");
@@ -199,7 +233,7 @@ public class ProgramOptions {
 					}
 					
 				} catch (Exception e) {
-					System.out.println("Error in macro file parsing from command line argument");
+					Log.Error("Error in macro file parsing from command line argument");
 				}
 				ht.put(nv[0], nv[1].trim().replaceAll("\"", "").replaceAll("'", "").trim());
 			}

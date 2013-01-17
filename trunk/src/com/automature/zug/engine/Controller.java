@@ -129,6 +129,7 @@ public class Controller extends Thread {
 	private String TestPlanId = StringUtils.EMPTY;
 	private String TestPlanPath = StringUtils.EMPTY;
 	private String BuildTag = StringUtils.EMPTY;
+	private String BuildId=StringUtils.EMPTY;
 	private String TopologySetName = StringUtils.EMPTY;
 	private String BuildNo = StringUtils.EMPTY;
 	private String testCycleId = StringUtils.EMPTY;
@@ -404,7 +405,7 @@ public class Controller extends Thread {
 		boolean topologysetXMLVal = false;
 		boolean topologysetid = false;
 		boolean topologysetname = false;
-
+		boolean testcycleidflag=false;
 		try {
 			// check if debug mode is set to true. else default value is True
 			if ((debugModeVal = opts.getString("debug", null)) == "true") {
@@ -712,7 +713,7 @@ public class Controller extends Thread {
 			} else {
 				// Harness Specific ContextVariable to store TestCycle ID
 				ContextVar.setContextVar("ZUG_TCYCID", testCycleId);
-
+testcycleidflag=true;
 				Log.Debug("Controller/GetOptions: testcycleid = " + testCycleId);
 			}
 
@@ -724,6 +725,25 @@ public class Controller extends Thread {
 			// {
 
 			dbReporting = false;
+			if ((BuildTag = opts.getString("buildtag", null)) == null) {
+
+				Log.Debug("Controller/GetOptions: buildtag not specified. dbreporting os OFF");
+			} else {
+				ContextVar.setContextVar("ZUG_BUILDTAG", BuildTag);
+				Log.Debug("Controller/GetOptions: BuildTag = " + BuildTag);
+				// message("The testplanpath is "+TestPlanPath
+				// message("ContextVar set "+ContextVar.getContextVar("ZUG_TESTPLANPATH"));
+
+			}
+			if((BuildId=opts.getString("buildid",null))==null)
+			{
+				Log.Debug("Controller/GetOptions: buildid not specified. dbreporting os OFF");
+				
+			}
+			else{
+				ContextVar.setContextVar("ZUG_BUILDID", BuildId);
+				Log.Debug("Controller/GetOptions: BuildTag = " + BuildTag);
+			}
 			if ((TestPlanId = opts.getString("testplanid", null)) == null) {
 				// TODO here put checking for testplanid=product:sprint:
 				/*
@@ -792,7 +812,30 @@ public class Controller extends Thread {
 						topologysetid = true;
 						dbReporting = true;
 					}
-				} else {
+				} else if (testcycleidflag){
+					if(compileMode)
+					{
+						Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
+						dbReporting = false;
+						}
+					else
+					{
+						if(topologysetname)
+						{
+							Log.Error("Controller/GetOptions: Error: Toplogy name is already used.");
+							System.out
+									.println("\n\nToplogy name is already used. "
+											+ "\n Use -help/-h for Usage Information\n\n");
+							Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+							return false;
+						}
+						Log.Debug("Controller/GetOptions: dbReportingVal ON.");
+						topologysetid = true;
+						dbReporting = true;
+					}
+					
+					}
+					else {
 					Log.Error("Controller/GetOptions: Error: missing testplanid or testplan.");
 					System.out
 							.println("\n\nMissing required value: testplanid or testplanid"
@@ -881,7 +924,30 @@ public class Controller extends Thread {
 						topologysetid = true;
 						dbReporting = true;
 					}
-				} else {
+				}else if(testcycleidflag)
+				{
+					if(compileMode)
+					{
+						Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
+						dbReporting = false;
+					} else {
+						if (topologysetname) {
+							Log.Error("Controller/GetOptions: Error: Toplogy name is already used.");
+							System.out
+									.println("\n\nToplogy name is already used. "
+											+ "\n Use -help/-h for Usage Information\n\n");
+							Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+							return false;
+						}
+						// dbReporting option is ON as both testplanID and
+						// topologysetXML is specified
+						Log.Debug("Controller/GetOptions: dbReportingVal ON.");
+						topologysetid = true;
+						dbReporting = true;
+				}
+					}
+				
+				else {
 					Log.Error("Controller/GetOptions: Error: missing testplanid or testplan.");
 					System.out
 							.println("\n\nMissing required value: testplanid or testplanid"
@@ -890,16 +956,8 @@ public class Controller extends Thread {
 					return false;
 				}
 			}
-			if ((BuildTag = opts.getString("buildtag", null)) == null) {
-
-				Log.Debug("Controller/GetOptions: buildtag not specified. dbreporting os OFF");
-			} else {
-				ContextVar.setContextVar("ZUG_BUILDTAG", BuildTag);
-				Log.Debug("Controller/GetOptions: BuildTag = " + BuildTag);
-				// message("The testplanpath is "+TestPlanPath
-				// message("ContextVar set "+ContextVar.getContextVar("ZUG_TESTPLANPATH"));
-
-			}
+			
+		
 			/*
 			 * if ((topologySetXMLFile = opts.getString("topologysetXML", null))
 			 * == null) { if(testplanidVal) { Log.Error(
@@ -1153,11 +1211,20 @@ public class Controller extends Thread {
 						+ " and Comments = "
 						+ testCaseResult.get_comments() + " will be saved.");
 				// topologyResultData.get_testCaseResultList().add(testCaseResult);
+				if(StringUtils.isNotBlank(TestPlanId)||StringUtils.isNotEmpty(TestPlanId))
 				testCycleId = davosclient.testCycle_write(TestPlanId,
 						ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "",
 						new Integer(initializationTime).toString(),
 						new Integer(testCaseResult.get_testExecution_Time())
 								.toString());
+				else
+					testCycleId=davosclient.testCycle_write(davosclient.getTestplanFromTestCycleID(testCycleId),
+							ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "",
+							new Integer(initializationTime).toString(),
+							new Integer(testCaseResult.get_testExecution_Time())
+									.toString());
+				//TODO testcycle checking.
+				
 				message("\n" + testCaseResult.get_testCaseId() + "\t"
 						+ testCaseResult.get_status() + "\t"
 						+ testCaseResult.get_testExecution_Time() + "\t"
@@ -10260,14 +10327,23 @@ actindex++;
 					controller.BuildNo = controller.saveBuildTag(
 							controller.TestPlanId, controller.BuildTag);
 				}
+				if (StringUtils.isNotEmpty(controller.BuildId)) {
+
+					//controller.BuildNo = controller.saveBuildTag(controller.TestPlanId, controller.BuildTag);
+				}
 				try {
+					if(StringUtils.isNotBlank(controller.TestPlanId)||StringUtils.isNotEmpty(controller.TestPlanId))
 					davosclient.validate_Testplan(controller.TestPlanId);
 					davosclient.validate_Topologyset(controller.topologySetId);
-					if (StringUtils.isNotBlank(controller.testCycleId)
-							|| StringUtils.isNotEmpty(controller.testCycleId)) {
+					if (StringUtils.isNotBlank(controller.testCycleId)	|| StringUtils.isNotEmpty(controller.testCycleId)) {
+						if(StringUtils.isNotBlank(controller.TestPlanId)||StringUtils.isNotEmpty(controller.TestPlanId))
 						controller.validateTestCycle(controller.TestPlanId,
 								controller.testCycleId);
 
+					}
+					else
+					{
+						//TODO validate testcycle without testplan
 					}
 				} catch (DavosExecutionException e) {
 					Log.Error("Error in Validating Data: " + e.getMessage());
