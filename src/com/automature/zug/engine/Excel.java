@@ -75,6 +75,7 @@ public class Excel {
 	// Sheet
 	private Hashtable<String, String> _configSheetHashTable = new Hashtable<String, String>();
 	private List<String> _externalSheets = new ArrayList<String>();
+	private static HashMap<String,String> externalSheets=new HashMap<String,String>();
 	// A hashtable to store the Values(Name/Value pair) from the Macro Sheet
 	private Hashtable<String, String> _macroSheetHashTable = new Hashtable<String, String>();
 	public static Hashtable<String, String> _indexedMacroTable = new Hashtable<String, String>();
@@ -439,7 +440,17 @@ public class Excel {
 		_externalSheets.toArray(externalSheetArray);
 		return externalSheetArray;
 	}
-
+	
+	public static String[] getExternalSheets(){
+		String[] externalSheetArray =new String[externalSheets.size()]; 
+		int i=0;
+		for(String key:externalSheets.keySet()){
+			String ele=externalSheets.get(key);
+		//	System.out.println(ele);
+			externalSheetArray[i++]=ele;
+		}
+		return externalSheetArray;
+	}
 	// / Returns Valid Topo detail.
 	public String ValidTopoDetail() {
 		if (_configSheetHashTable.get(_configSheetKeys[11]) == null) {
@@ -768,14 +779,17 @@ public class Excel {
 			// / After Reading the Configuration Sheet, we need to read all the
 			// External Molecule Sheet
 			//System.out.println("External sheet before removing duplicates "+_externalSheets);
-			_externalSheets=Utility.removeDuplicatesFromArrayList(_externalSheets);
+			//_externalSheets=Utility.removeDuplicatesFromArrayList(_externalSheets);
 			//System.out.println("External sheet after removing duplicates "+_externalSheets);
-			for (Iterator iterator = _externalSheets.iterator(); iterator.hasNext();) {
-				String type_element = (String)iterator.next();
-				System.out.println("\nExternal sheets : " + type_element);
-				ReadExternalMacros(type_element);
+		//	for (Iterator iterator = _externalSheets.iterator(); iterator.hasNext();) {
+			for(String externalSheet: Excel.getExternalSheets()){
+				//String type_element = (String)iterator.next();
+			//	System.out.println("\nExternal sheets : " + type_element);
+				//ReadExternalMacros(type_element);
+				System.out.println("\nExternal sheets : " +externalSheet);
+				ReadExternalMacros(externalSheet);
 			}
-			for (String externalSheet : _externalSheets) {
+			for (String externalSheet : Excel.getExternalSheets()) {
 				Log.Debug(String.format("Excel/ReadExcel : Reading the External INCLUDE Sheet %s",
 						externalSheet));
 				//System.out.println(String.format("Reading the External INCLUDE  FILE : %s", externalSheet));
@@ -971,7 +985,7 @@ public class Excel {
 			Log.Debug("Excel/ReadConfigSheet : The values from the Config sheet is read successfully.");
 			String _nested_include_list = "", _nested_scriptlocation_list = "";
 
-			for (String nested : _externalSheets) {
+			for (String nested : Excel.getExternalSheets()) {
 				//System.out.println("Excel/ReadConfigSheet : the nested includes " + readNestedIncludes(nested));
 				_nested_include_list += readNestedIncludes(nested);
 
@@ -979,7 +993,7 @@ public class Excel {
 			//forDebug("Excel/ReadConfigSheet : the nested includes "+_nested_include_list);
 			Log.Debug("Excel/ReadConfigSheet : The values from the Config sheet is read successfully.");
 			AddToExternalSheets("Include", _nested_include_list);
-			for (String nested : _externalSheets) {
+			for (String nested : Excel.getExternalSheets()) {
 				//System.out.println("Excel/ReadConfigSheet : the nested includes " + readNestedIncludes(nested));
 				_nested_scriptlocation_list += readNestedScriptLocations(nested);
 
@@ -1296,40 +1310,7 @@ public class Excel {
 						&& ((_configSheetKeys[10].compareTo(strKey) == 0))) {
 					// /Don't insert in hash table if sheet is config and key is
 					// INCLUDE
-					if (Controller.includeFlag  || !Controller.includeFlag) {
-						Log.Debug("No Command Line Executions switch Given\t"
-								+ Controller.includeFlag);
-						if (strValue.isEmpty()) {
-
-							break;
-						} else {
-							String[] includeValues = strValue.split(",");
-							String inlcudelist = "";
-							for (String Path : includeValues) {
-
-								if (Path.contains(":") || Path.startsWith("/")) {
-									inlcudelist += Path + ",";
-									//AddToExternalSheets(strKey, strValue);
-								} else {
-
-									if (Path.isEmpty()) {
-										continue;
-									} else {
-										String actualPath = "";
-
-										File inputxlsfile=new File(this.getXlsFilePath());
-										//actualPath += ProgramOptions.workingDirectory+ Controller.SLASH + Path + ",";
-										actualPath+=inputxlsfile.getParent()+Controller.SLASH+Path+",";
-										//System.out.println(Path+" This the actual Path\t"+actualPath);
-										inlcudelist += actualPath;
-									}   //AddToExternalSheets(strKey, actualPath);
-								}
-							}
-							//forDebug("GetKeyValuePair:: The full path ---> " + inlcudelist);
-							AddToExternalSheets(strKey, inlcudelist);
-
-						}
-					} if( !Controller.includeFlag){
+					if( !Controller.includeFlag){
 						Log.Debug("Command Line Executions switch Given\t"
 								+ Controller.includeFlag);
 						String[] include_commandlist = Controller.includeMolecules.split(",");
@@ -1339,7 +1320,7 @@ public class Excel {
 							if(commandline_include.contains("#")==true){
 								String temp[]=commandline_include.split("#");
 								if(temp.length!=2){
-									Log.Error(commandline_include+" contains "+temp.length+" numbers of #.It should contains 2 #.Its default macro column will be selected");
+									Log.Error("Excel/GetKeyValuePair :"+commandline_include+" contains "+temp.length+" numbers of #.It should contains 2 #.Its default macro column will be selected");
 								}
 								else{
 									nSMkey=temp[0];
@@ -1376,12 +1357,46 @@ public class Excel {
 						// line
 						// argument
 					}
+					if (Controller.includeFlag  || !Controller.includeFlag) {
+						Log.Debug("No Command Line Executions switch Given\t"
+								+ Controller.includeFlag);
+						if (strValue.isEmpty()) {
+
+							break;
+						} else {
+							String[] includeValues = strValue.split(",");
+							String inlcudelist = "";
+							for (String Path : includeValues) {
+
+								if (Path.contains(":") || Path.startsWith("/")) {
+									inlcudelist += Path + ",";
+									//AddToExternalSheets(strKey, strValue);
+								} else {
+
+									if (Path.isEmpty()) {
+										continue;
+									} else {
+										String actualPath = "";
+
+										File inputxlsfile=new File(this.getXlsFilePath());
+										//actualPath += ProgramOptions.workingDirectory+ Controller.SLASH + Path + ",";
+										actualPath+=inputxlsfile.getParent()+Controller.SLASH+Path+",";
+										//System.out.println(Path+" This the actual Path\t"+actualPath);
+										inlcudelist += actualPath;
+									}   //AddToExternalSheets(strKey, actualPath);
+								}
+							}
+							//forDebug("GetKeyValuePair:: The full path ---> " + inlcudelist);
+							AddToExternalSheets(strKey, inlcudelist);
+
+						}
+					} 
 					//System.out.println("GetKeyPairValue:: key iserted->"+strKey+"\tvalue given--->"+strValue);
 					// System.out.println("key iserted->"+strKey+"\tvalue given--->"+ProgramOptions.workingDirectory+"\\"+strValue);
 
 					if (Controller.nyonserver) {
 						//System.out.println("Molecule to be parsed "+_externalSheets);
-						for (String moleculefile : _externalSheets) {
+						for (String moleculefile : Excel.getExternalSheets()) {
 							// System.out.println("Molecule files "+moleculefile);
 							System.out.println(xmlfile.genarateXML(moleculefile)+" Molecule file: "+moleculefile);
 						}
@@ -2088,11 +2103,22 @@ public class Excel {
 			Log.Debug("\nPath length : " + qualifiedPaths.length);
 			// /////////TODO : add ";" as a separator as well
 			for (int i = 0; i < qualifiedPaths.length; i++) {
-				if (new File(qualifiedPaths[i]).exists()) {
-					Log.Debug("\nExternal sheets : " + qualifiedPaths[i]);
+				File f=new File(qualifiedPaths[i]);
+				if (f.exists()) {
+					String fileKey=f.getName();
+					if(Excel.externalSheets.containsKey(fileKey)){
+						Log.Error(fileKey+" is already included \t");
+						String filepath=externalSheets.get(fileKey);
+						if(!filepath.equals(qualifiedPaths[i]))
+							Log.Error(qualifiedPaths[i]+" will not be included");
+					}else{
+						Excel.externalSheets.put(fileKey, qualifiedPaths[i]);
+						Log.Debug("\nExternal sheets : " + qualifiedPaths[i]);
+					}
 					//System.out.println("\nExternal sheets : " + qualifiedPaths[i]);
-					_externalSheets.add(qualifiedPaths[i]);
+					//_externalSheets.add(qualifiedPaths[i]);
 				}
+			
 			}
 		}
 
