@@ -165,6 +165,8 @@ public class Controller extends Thread {
 	static DavosClient davosclient = null;
 	private boolean testcasenotfoundflag = false;
 	private static String testcasenotran;
+	// Hashtable to store the file name as key and its desired macro column as value;
+	public static HashMap<String,String> macroColumnValue=new HashMap<String, String>();
 
 	/*
 	 * Constructor that initializes the program options.
