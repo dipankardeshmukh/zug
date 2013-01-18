@@ -27,7 +27,6 @@ public class ProgramOptions {
      * 
      * @param opts: A hashtable containing name/value pairs or switches
      */
-
     ProgramOptions(Hashtable<String, String> opts) {
         _opts = opts;
     }
