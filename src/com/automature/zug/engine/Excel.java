@@ -64,13 +64,7 @@ public class Excel {
 			"Test Suite Name", "Test Suite Role", "TestPlan Id",
 			"Test Cycle Id", "ProductLogLocations", "Include", "ValidTopos"};
 
-	/**
-	 *
-	 * @return array of configuration keys
-	 */
-	public String[] ConfigSheetKeys() {
-		return _configSheetKeys;
-	}
+	
 	// A hash table to store the Values(Name/Value pair) from the Configuration
 	// Sheet
 	private Hashtable<String, String> _configSheetHashTable = new Hashtable<String, String>();
@@ -92,6 +86,14 @@ public class Excel {
 	private Hashtable<String, Prototype> protoTypesHT = new Hashtable<String, Prototype>();
 	List<String> _productLogFiles = new ArrayList<String>();
 
+	/**
+	 *
+	 * @return array of configuration keys
+	 */
+	public String[] ConfigSheetKeys() {
+		return _configSheetKeys;
+	}
+	
 	// /returns array of test case's objects
 	public TestCase[] TestCases() {
 		if (testCases.size() == 0) {
