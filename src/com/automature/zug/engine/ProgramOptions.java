@@ -45,7 +45,6 @@ public class ProgramOptions {
     		String nameSpace=null;
     		if (filename.endsWith(".xls")) {
 				filename = filename.replaceAll(".xls", "");
-				
     		}
     		nameSpace= filename.toLowerCase();
     		Controller.macroColumnValue.put(nameSpace, columnValue);
@@ -146,8 +145,20 @@ public class ProgramOptions {
                     //System.out.println("The Path \t"+nv[1]);
                     Log.Debug("Command Line Path Showing the Current Directory:\t" + nv[1]);
                 }
-            }//-topologyset  -macrocolumn
-            if(opt.contains("-macrocolumn")){
+            }
+            //checking for log file name 
+        /*    if(opt.toLowerCase().contains("-logfile")){
+            	String temp[]=opt.split("=");
+            	if(temp.length==2){
+            		Controller.logFileName=temp[1];
+            	}
+            	else{
+            		Log.Error("\n"+opt
+							+ "-> The Value  Contains More Than One '=' .Log file names will be default log names ");
+            	//	System.out.println("The Value  Contains More Than One '='.Program will skip the macro value column switch feature");
+            	}
+            }*/
+            if(opt.toLowerCase().contains("-macrocolumn")){
             	String temp[]=opt.split("=");
             	if(temp.length==2){
             		populateMacroColumnValue(temp[1]);
@@ -159,7 +170,7 @@ public class ProgramOptions {
             	}
             	ht.put(nv[0], nv[1].trim().replaceAll("\"", "").replaceAll("'", "").trim());
             }
-			if (opt.contains("-macrofile")) {
+			if (opt.toLowerCase().contains("-macrofile")) {
 				Controller.macroentry = true;
 				String file[] = opt.split("=", 2);
 				String macro, namespaces = "";
