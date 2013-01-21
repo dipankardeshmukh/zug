@@ -79,7 +79,7 @@ public class Controller extends Thread {
 	// By default we will assume that the Longevity is OFF
 	// and will ON this when there is a Longevity test going on..
 	public static boolean isLongevityOn = false;
-
+//	public static String logFileName=StringUtils.EMPTY;
 	// / By Default the Repeat Count is 1
 	private static int repeatCount = 1;
 	private static String testsToRepeat = StringUtils.EMPTY;
@@ -88,7 +88,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.6." + "20130111" + ".123";
+	private static String Version = "ZUG Premium 5.7." + "20130118" + ".124";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
