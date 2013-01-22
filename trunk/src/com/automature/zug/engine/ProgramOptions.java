@@ -24,7 +24,7 @@ public class ProgramOptions {
     public static String filelocation = null;
     private Hashtable<String, String> _opts;
     protected static String currentPath, workingDirectory;
-    private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn"));
+    private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename"));
     /*
      * Creates a new instance.
      * 
@@ -37,9 +37,13 @@ public static void checkCommandLineArgs(String...args) throws Exception
 {
 	for(String arg:args)
 	{
-		if(!commandLineSwitchList.contains(arg))
+		if(arg.toLowerCase().startsWith("-"))
+		{
+			String argarr[]=arg.split("=");
+		if(!commandLineSwitchList.contains(argarr[0].toLowerCase()))
 		{
 			throw new Exception("ProgramOptions/checkCommandLineArgs:: command line switch "+arg+" is not a valid switch. Please refer to Zug User Manual.");
+		}
 		}
 	}
 	
