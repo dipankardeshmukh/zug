@@ -10004,7 +10004,7 @@ actindex++;
 				// controller.message("The argumentss "+arg);
 				if(arg.toLowerCase().startsWith("-logfilename="))
 				{
-					
+										
 					String logfile[]=arg.split("=");
 					if(logfile.length==2)
 					{
@@ -10043,15 +10043,14 @@ actindex++;
 		}
 		LOGLOCATION = System.getenv(LOG_DIR);
 		
-		// System.out.println("LogLocation is  "+LOGLOCATION);
+		 System.out.println("LogLocation is  "+LOGLOCATION+" logfilename "+logfilename);
 		if (LOGLOCATION == null) {
 			LOGLOCATION = System.getProperty("user.dir") + SLASH + "log";
 		}
 
 		final Controller controller = new Controller();
 		// controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
-		// System.out.println(Controller.ZUG_LOGFILENAME+
-		// " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
+		//System.out.println(Controller.ZUG_LOGFILENAME+ " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		StringBuilder cmdinputsargs = new StringBuilder();
 		for (String cmdinputs : args) {
 			cmdinputsargs.append(cmdinputs);
