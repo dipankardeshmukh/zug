@@ -79,6 +79,9 @@ public class Controller extends Thread {
 	// By default we will assume that the Longevity is OFF
 	// and will ON this when there is a Longevity test going on..
 	public static boolean isLongevityOn = false;
+	public static boolean isLogFileName=false;
+	public static String logfilename="";
+	
 //	public static String logFileName=StringUtils.EMPTY;
 	// / By Default the Repeat Count is 1
 	private static int repeatCount = 1;
@@ -88,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130118" + ".124";
+	private static String Version = "ZUG Premium 5.7." + "20130121" + ".125";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -9982,7 +9985,7 @@ actindex++;
 	 */
 	public static void main(String[] args) throws InterruptedException,
 			Exception, DavosExecutionException, MoleculeDefinitionException {
-
+ProgramOptions.checkCommandLineArgs(args);
 		// Getting Operating System Information
 		OS_NAME = System.getProperty("os.name");
 		OS_ARCH = System.getProperty("os.arch");
@@ -9996,7 +9999,28 @@ actindex++;
 		mvmconfiguration = Utility.getMaxJVMMemorySize(Runtime.getRuntime())
 				.split("\\.")[0];
 		// System.out.println("The config "+mvmconfiguration);
+		if (args.length > 1) {
+			for (String arg : args) {
+				// controller.message("The argumentss "+arg);
+				if(arg.toLowerCase().startsWith("-logfilename="))
+				{
+					
+					String logfile[]=arg.split("=");
+					if(logfile.length==2)
+					{
+						isLogFileName=true;
+						logfilename=logfile[1];
+						break;
+					}
+					else
+					{
+						System.out.println("[Error] Incorrect usage of -logfilename switch.");
+						System.exit(1);
+					}
 
+			}
+		}
+		}
 		if (OS_NAME.toLowerCase().contains("windows")) {
 			PATH_CHECK = "Path";
 			SEPARATOR = ";";
@@ -10018,6 +10042,7 @@ actindex++;
 			System.exit(1);
 		}
 		LOGLOCATION = System.getenv(LOG_DIR);
+		
 		// System.out.println("LogLocation is  "+LOGLOCATION);
 		if (LOGLOCATION == null) {
 			LOGLOCATION = System.getProperty("user.dir") + SLASH + "log";
@@ -10095,21 +10120,7 @@ actindex++;
 						.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
 
 		// First Validate the Command Line Arguments
-		if (args.length > 1) {
-			for (String arg : args) {
-				// controller.message("The argumentss "+arg);
-				if (arg.equalsIgnoreCase("-nyon")) {
-					nyonserver = true;
-					controller.message("Nyon-Server executions\t" + nyonserver);
-				} else if (arg.toLowerCase().contains("-mvmconfiguration=")) {
-					String mvmconfig_arr[] = arg.split("=");
-					mvmconfiguration = mvmconfig_arr[1].toLowerCase();
-					controller.message("MVM Configuration is set to "
-							+ mvmconfiguration);
-				}
-
-			}
-		}
+	
 		try {
 			ContextVar.setContextVar("ZUG_LOGFILENAME",
 					Controller.ZUG_LOGFILENAME);
@@ -10117,7 +10128,8 @@ actindex++;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// System.out.println(Controller.ZUG_LOGFILENAME+" 3rd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
+		
+		 //System.out.println(Controller.ZUG_LOGFILENAME+" 3rd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		try {
 			// controller.message("\n\nValidating Command Line Arguments");
 			// Jacob Test

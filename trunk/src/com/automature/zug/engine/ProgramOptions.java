@@ -11,6 +11,8 @@ package com.automature.zug.engine;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import jline.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +24,7 @@ public class ProgramOptions {
     public static String filelocation = null;
     private Hashtable<String, String> _opts;
     protected static String currentPath, workingDirectory;
+    private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn"));
     /*
      * Creates a new instance.
      * 
@@ -30,7 +33,17 @@ public class ProgramOptions {
     ProgramOptions(Hashtable<String, String> opts) {
         _opts = opts;
     }
-
+public static void checkCommandLineArgs(String...args) throws Exception
+{
+	for(String arg:args)
+	{
+		if(!commandLineSwitchList.contains(arg))
+		{
+			throw new Exception("ProgramOptions/checkCommandLineArgs:: command line switch "+arg+" is not a valid switch. Please refer to Zug User Manual.");
+		}
+	}
+	
+}
     public static void populateMacroColumnValue(String str){
     	String fileArr[] = str.split(",");
     	for(String temp:fileArr){
