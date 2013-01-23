@@ -320,16 +320,16 @@ public class Controller extends Thread {
 		helpMessagebuf
 				.append("\n\n\n\n\t -Buildtag=[Build Tag] : The tag used to identify the build of the product being tested. If the build tag does not exist in Zermatt (for the applicable sprint), a new record will be created. Note that if tag has spaces, then the entire string must be enclosed in quotes.\n\n\n\n\tExample: -Buildtag=\"Zug V4.3 - rc2 build 4035\"");
 		helpMessagebuf
-				.append("\n\n\n\n\t -include=[location] :This option specifies the location from where ZUG will pick up molecules and macros for Test Automation/Execution. The location can be a file name residing in the same directory of that of the test suite or fully qualified location of the file but it should not be a relative path.We can give multiple locations by comma separator.\n\n\t Example: -include=C:\\Tests\\Molecules"+
+				.append("\n\n\n\n\t -Include=[location] :This option specifies the location from where ZUG will pick up molecules and macros for Test Automation/Execution. The location can be a file name residing in the same directory of that of the test suite or fully qualified location of the file but it should not be a relative path.We can give multiple locations by comma separator.\n\n\t Example: -include=C:\\Tests\\Molecules"+
 		"\n\n\t We can also provide name spaces to the test suite included from command line.The syntax for giving name space in the -include option is\n\n\t -include=namespace1#filename1,namespace2#filename2");
 		helpMessagebuf
-			.append("\n\n\n\n\t -macrocolumn=[file identifier:column value] :This option let us select a particular macro value column for a test suite.The syntax for -macrocolumn is \n\n\t -macrocolumn=file identifier:column number, file identifier:column number."+
+			.append("\n\n\n\n\t -MacroColumn=[file identifier:column value] :This option let us select a particular macro value column for a test suite.The syntax for -macrocolumn is \n\n\t -macrocolumn=file identifier:column number, file identifier:column number."+
 		"\n\n\t The file identifier is the file name,default name space or the optional name space provided in the -include option.If we have provided any optional name space in the -include option  then it should be the file identifier in the -macrocolumn.If any cell of the selected column is empty then it takes the value of the default column cell(1st column i.e, the “value” column).");
 		helpMessagebuf
-		.append("\n\n\n\n\t -macrofile=[file location] :This option is used to include a macro text file from command line.The text file contains macro in the format $macro=value.Each macro should begin in a new line.At run time ZUG treats these macros as it belongs to the main test suite.The syntax is -macrofile=filelocation."+
+		.append("\n\n\n\n\t -MacroFile=[file location] :This option is used to include a macro text file from command line.The text file contains macro in the format $macro=value.Each macro should begin in a new line.At run time ZUG treats these macros as it belongs to the main test suite.The syntax is -macrofile=filelocation."+
 		"\n\n\t Example: - macrofile=D:\\Files\\macroFile.txt");
-		
-		
+		helpMessagebuf
+		.append("\n\n\n\n\t -LogFileName=[AlphaNumeric] :This is required by Zug to change the logfile names where zug logs the execution messages(error,debug). The logfile name will be created as <logfilename>-Atom.log , <logfilename>-Debug.log.");
 		/*
 		 * dbreporting switch is taken out and is implicitly understoods by the
 		 * testplanid and topologysetXML options which trivially follows that
@@ -10054,7 +10054,7 @@ actindex++;
 		}
 		LOGLOCATION = System.getenv(LOG_DIR);
 		
-		 System.out.println("LogLocation is  "+LOGLOCATION+" logfilename "+logfilename);
+		// System.out.println("LogLocation is  "+LOGLOCATION+" logfilename "+logfilename);
 		if (LOGLOCATION == null) {
 			LOGLOCATION = System.getProperty("user.dir") + SLASH + "log";
 		}
