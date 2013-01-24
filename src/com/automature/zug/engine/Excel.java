@@ -1345,8 +1345,11 @@ public class Excel {
 					HSSFCell myCell = (HSSFCell) cellIter.next();
 
 					if (myCell.getCellNum() == key) {
-						keyflag = true;
+						
 						strKey = GetCellValueAsString(myCell);
+						//if(StringUtils.isNotEmpty(strKey)||StringUtils.isNotBlank(strKey))
+							keyflag = true;
+						
 					}
 					if (myCell.getColumnIndex() == defValue
 							&& defValue != value) {
@@ -1372,7 +1375,6 @@ public class Excel {
 						}
 					}
 				}
-
 				// / If this is a Macros sheet then Expand the Value before
 				// adding it to the Hashtable..
 				if (sheetname.equals("macros")) {
@@ -1392,10 +1394,14 @@ public class Excel {
 						ContextVar.setContextVar(strKey, StringUtils.EMPTY);
 						strValue = "%" + strKey + "%";
 					}
-					// System.out.println("strkey coming "+strKey+" strkey value "+strValue);
-					strKey = AppendNamespace(strKey, nameSpace);
+					//System.out.println("strkey coming "+strKey+" strkey value "+strValue);
+					if(!strKey.isEmpty())
+					{
+				//		System.out.println("The key is not empty "+strKey);
+						strKey = AppendNamespace(strKey, nameSpace);
 					strValue = ExpandMacrosValue(strValue.trim(),
 							strKey.trim(), nameSpace); // modify
+					}
 					// }
 					// strkey
 					// and
@@ -3707,7 +3713,10 @@ public class Excel {
 
 				String tempValPrefix = splitVariableToFind[0].trim();
 				// / First Check in the Macro Sheet
-				if (_macroSheetHashTable.get(AppendNamespace(tempValPrefix,
+				if(StringUtils.isNotBlank(tempValPrefix)||StringUtils.isNotEmpty(tempValPrefix))
+				{
+					
+					if (_macroSheetHashTable.get(AppendNamespace(tempValPrefix,
 						nameSpace)) != null) {
 					tempValPrefix = (String) _macroSheetHashTable
 							.get(AppendNamespace(tempValPrefix, nameSpace));
@@ -3715,6 +3724,7 @@ public class Excel {
 							+ String.format(
 									"Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , tempValPrefix = %s ",
 									tempValPrefix));
+				}
 				}
 				tempValue = splitVariableToFind[1];
 				Log.Debug("Excel/FindInMacroAndEnvTable : variableToFind = "
@@ -4225,9 +4235,13 @@ public class Excel {
 						actionObj.actionActualArguments.add(argumentValue);
 						// system.out.print("\nAction ArgValue " +
 						// argumentValue);
-						// System.out.println("THE Argument sent "+argumentValue+" namt "+nameSpace);
+						 //System.out.println("THE Argument sent "+argumentValue+" namt "+nameSpace);
+						if(actionObj.actionName.equalsIgnoreCase("AppendToContextVar")&&actionObj.testCaseID.equalsIgnoreCase("CV002"))
+System.out.println("Action after reading argument actionarg_"+i+" value "+argumentValue);
 						argumentValue = FindInMacroAndEnvTable(argumentValue,
 								nameSpace);
+						if(actionObj.actionName.equalsIgnoreCase("AppendToContextVar")&&actionObj.testCaseID.equalsIgnoreCase("CV002"))
+System.out.println("Action after finding macro reading argument actionarg_"+i+" value "+argumentValue);
 						Log.Debug("Excel/ReadActionSection : AFTER CALLING FindInMacroAndEnvTable -> Row["
 								+ index
 								+ "] ...actionArgument "
@@ -4250,7 +4264,7 @@ public class Excel {
 								+ " = NULL/EMPTY. So not inserting the value to the actionObj.actionArguments Arraylist. ");
 					}
 				}
-				// System.out.println("The action argument "+actionObj.actionArguments);
+				 //System.out.println("The action argument "+actionObj.actionArguments);
 			}
 
 			// / If Compilation is ON THEN Check in more detail...

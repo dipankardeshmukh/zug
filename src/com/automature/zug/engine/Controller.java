@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130121" + ".124";
+	private static String Version = "ZUG Premium 5.7." + "20130124" + ".124";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -2836,10 +2836,10 @@ actindex++;
 					// " Action Actual Arguments " +
 					// action.actionActualArguments);
 					count1++;
-					//message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments);
+				//message("ExpandTest:/cheks to Macro action args exp\t" + action.actionArguments);
 					String tempVal = GetTheActualValue((String) (action.actionArguments
 							.get(i)));
-					// message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
+				//	 message("EXPANDEDTESTCASE:: The Temp Val "+tempVal);
 					// message("Expandtest:/lengths " +
 					// action.actionArguments.size()+"\n\t"+action.actionActualArguments.size());
 					if (action.actionActualArguments.size() == action.actionArguments
@@ -6571,6 +6571,7 @@ actindex++;
 							contextVarName = NormalizeVariable(
 									action.actionArguments.get(0), threadID);
 							for (int i = 1; i < action.actionArguments.size(); ++i) {
+								System.out.println(" before arg value="+action.actionArguments.get(i));
 								String arg_value = NormalizeVariable(
 										action.actionArguments.get(i), threadID);
 								// if (arg_value.startsWith("%") &&
@@ -6579,6 +6580,7 @@ actindex++;
 								// ContextVar.getContextVar(arg_value.replaceAll("%",
 								// ""));
 								// }
+								System.out.println("Arg value="+arg_value);
 								appendValueBuilder.append(arg_value);
 							}
 						}
@@ -7935,8 +7937,8 @@ actindex++;
 		String jointVarComb = test.testCaseID.replace("_", " ");
 		if (StringUtils.isNotBlank(jointVarComb)) {
 			message("******************************************************************************** ");
-			message("\nWorking on Test Case Variable Combination "
-					+ jointVarComb);
+		//	message("\nWorking on Test Case Variable Combination "
+		//			+ jointVarComb);
 		}
 		// Now run each of the Actions mentioned here...and try running it.
 		Action[] actions = new Action[test.actions.size()];
@@ -9303,7 +9305,7 @@ actindex++;
 			// After getting the Actions Store the Steps somewhere...
 			for (int i = 0; i < actions.length; i++) {
 				Action action = actions[i];
-				// message("Actions are coming "+action.actionName+" with argument "+action.actionArguments+" action step "+action.step);
+				//message("Actions are coming "+action.actionName+" with argument "+action.actionArguments+" action step "+action.step);
 				Log.Debug(String
 						.format("Controller/RunExpandedTestCase: Storing the Steps in a HashTable. Step Number = "
 								+ action.step));
