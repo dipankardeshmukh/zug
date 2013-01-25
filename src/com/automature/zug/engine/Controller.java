@@ -6571,7 +6571,7 @@ actindex++;
 							contextVarName = NormalizeVariable(
 									action.actionArguments.get(0), threadID);
 							for (int i = 1; i < action.actionArguments.size(); ++i) {
-								System.out.println(" before arg value="+action.actionArguments.get(i));
+								//System.out.println(" before arg value="+action.actionArguments.get(i));
 								String arg_value = NormalizeVariable(
 										action.actionArguments.get(i), threadID);
 								// if (arg_value.startsWith("%") &&
@@ -6580,7 +6580,7 @@ actindex++;
 								// ContextVar.getContextVar(arg_value.replaceAll("%",
 								// ""));
 								// }
-								System.out.println("Arg value="+arg_value);
+								//System.out.println("Arg value="+arg_value);
 								appendValueBuilder.append(arg_value);
 							}
 						}
