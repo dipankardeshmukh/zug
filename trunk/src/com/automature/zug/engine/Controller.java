@@ -6011,7 +6011,7 @@ actindex++;
 		String[] st;
 		try {
 			UserData user = action.userObj;
-			message("the threadId hash "+threadIdForTestCases);
+			//message("the threadId hash "+threadIdForTestCases);
 			String threadID = (String) threadIdForTestCases.get(action.stackTrace);
 			Log.Debug("Controller/RunAction : Start of function with TestCaseID as : "
 					+ testCaseID);
