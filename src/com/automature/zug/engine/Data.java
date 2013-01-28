@@ -131,6 +131,7 @@ class TestCase
     2. On Expansion, whether we need to run the test cases in paralle.
     By default the test case will be automated unless until it is marked as a Manual Test Case.*/
     public Boolean automated = true;
+    public Boolean isConcurrentMoleculeCall=false;
     public Boolean concurrentExecutionOnExpansion = false;
     
     //This is the thread ID of the Test Case or the parent Process
