@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130128" + ".124";
+	private static String Version = "ZUG Premium 5.7." + "20130129" + ".125";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -2387,6 +2387,8 @@ Log.Debug("Controller/RunAbstractTestCase:: Named Argument Verification Molecule
 					+ tempTestCase.stackTrace
 					+ " ***************************\n");
 			// Now everything is ready. Call the RunTestCase Function.
+			tempTestCase.isConcurrentMoleculeCall=test.isConcurrentMoleculeCall;
+			//message("The molecu flag from temp "+tempTestCase.isConcurrentMoleculeCall+" and from actual " +test.isConcurrentMoleculeCall);
 			RunTestCaseForMolecule(tempTestCase);
 		} catch (Exception ex) {
 			Log.Error("Exception while running Abstract Test Case "
@@ -3171,8 +3173,19 @@ actindex++;
 
 				for (int j = 0; j < actions.length; ++j) {
 					Action action = actions[j];
-
-					for (int i = 0; i < action.actionArguments.size(); ++i) {
+try{
+	int val=Integer.valueOf(action.step);
+	//message("Integer Value Step "+val);
+	if(action.actionName.startsWith("&"))
+	{
+		//message("flag value changing "+action.actionName);
+		test.isConcurrentMoleculeCall=true;
+	}
+}catch(NumberFormatException ne)
+{
+	//do nothing
+}
+		for (int i = 0; i < action.actionArguments.size(); ++i) {
 
 						if (multiValuedVariablePosition.containsKey(count)) {
 							String testcase_partial_id = tempTestCaseVar[count]
@@ -3306,6 +3319,7 @@ actindex++;
 
 				tempTestCase.stackTrace = test.stackTrace;
 				tempTestCase.threadID = test.threadID;
+				tempTestCase.isConcurrentMoleculeCall=test.isConcurrentMoleculeCall;
 
 				if (fromTestCaseSheet) {
 					// If this is from the Test Case Sheet, then add the Test
@@ -3410,6 +3424,7 @@ actindex++;
 					tempTestCase.actions.add(tempAction);
 					// message("The testcase id is "+tempTestCase.testCaseID);
 				}
+				//message("tempo flag "+tempTestCase.isConcurrentMoleculeCall);
 				// message("Expndd:: The Action arguments "+tempTestCase.actions.get(1).actionArguments);
 				// message("Testcase ID "+tempTestCase.testCaseID);
 
@@ -3432,7 +3447,8 @@ actindex++;
 						// message("Tempo Test Case is "+tempTestCase.testCaseID);
 						// continue;
 					} else {
-						// message("Temp case added "+tempTestCase.testCaseID);
+						//message("Temp case added "+tempTestCase.testCaseID);
+						//message("Temp case flag "+tempTestCase.isConcurrentMoleculeCall);
 						tempTestCases
 								.add(checkWithCommandLineInput(tempTestCase));
 					}
@@ -3891,13 +3907,26 @@ actindex++;
 				threadIdForTestCases.put(test.stackTrace, "" + thread.getId());
 
 				ThreadPool.add(thread);
+				//message("RunTestCaseForMolecule: the thread id in concurrentexec "+thread.getId()+" the parent "+test.parentTestCaseID+" tId "+test.testCaseID);
+				//message("The thread dump "+thread.getStackTrace());
 			} else {
 				if (StringUtils.isBlank(test.threadID)) {
 					threadIdForTestCases
 							.put(test.stackTrace, StringUtils.EMPTY);
 				} else // Assign the Parent Test Case Thread.
 				{
-					threadIdForTestCases.put(test.stackTrace, test.threadID);
+					String tid="";
+					//message("the moleculecall flag "+test1.isConcurrentMoleculeCall);
+					if(test1.isConcurrentMoleculeCall)
+					{
+						Thread thread = new Thread();
+						tid=""+thread.getId();
+					}else
+					{
+						tid=test.threadID;
+					}
+					//message("RunTestCaseForMolecule: the thread id is not concurrentexec "+tid+" the parent "+test.parentTestCaseID+" tId "+test.testCaseID);
+					threadIdForTestCases.put(test.stackTrace, tid);
 				}
 
 				RunExpandedTestCaseForMolecule(test);
@@ -5034,6 +5063,7 @@ actindex++;
 			} else {
 				if (StringUtils.isNotBlank(test.threadID)) {
 					threadIdForTestCases.put(test.stackTrace, test.threadID);
+					
 				} else // Assigning the Parent Test Case Thread.
 				{
 					threadIdForTestCases
@@ -6098,11 +6128,19 @@ actindex++;
 					// abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace)),
 					// tempList, action.parentTestCaseID,
 					// action.stackTrace,isMoleculeActionNegative);
-					message("Thread ID comes here "+threadID);
-					RunAbstractTestCase((TestCase) abstractTestCase.get(Excel
-							.AppendNamespace(abstractTestCaseName,
-									action.nameSpace)), tempList,
-							action.parentTestCaseID, action.stackTrace);
+					//message("Thread ID comes here "+threadID);
+					//message("Before RunAbstract... "+abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace)).isConcurrentMoleculeCall);
+					TestCase tempActntestcase=abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace));
+					try{
+						Integer.parseInt(action.step);
+						tempActntestcase.isConcurrentMoleculeCall=true;
+						}catch(NumberFormatException ne)
+						{
+							//Do nothing
+						}
+				
+					RunAbstractTestCase(tempActntestcase, tempList,action.parentTestCaseID, action.stackTrace);
+					
 					Log.Debug(String
 							.format("Controller/RunAction: Successfully executed  RunAbstractTestCase for Abstract TestCase ID as : %s ",
 									abstractTestCaseName));

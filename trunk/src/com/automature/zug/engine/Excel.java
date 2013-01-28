@@ -4192,6 +4192,7 @@ public class Excel {
 			} else if (col.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
 				actionObj.step = Integer.toString((int) col
 						.getNumericCellValue());
+				
 			} else {
 				actionObj.step = GetCellValueAsString(col);
 			}
@@ -4236,12 +4237,11 @@ public class Excel {
 						// system.out.print("\nAction ArgValue " +
 						// argumentValue);
 						 //System.out.println("THE Argument sent "+argumentValue+" namt "+nameSpace);
-						if(actionObj.actionName.equalsIgnoreCase("AppendToContextVar")&&actionObj.testCaseID.equalsIgnoreCase("CV002"))
-System.out.println("Action after reading argument actionarg_"+i+" value "+argumentValue);
+
 						argumentValue = FindInMacroAndEnvTable(argumentValue,
 								nameSpace);
-						if(actionObj.actionName.equalsIgnoreCase("AppendToContextVar")&&actionObj.testCaseID.equalsIgnoreCase("CV002"))
-System.out.println("Action after finding macro reading argument actionarg_"+i+" value "+argumentValue);
+						
+
 						Log.Debug("Excel/ReadActionSection : AFTER CALLING FindInMacroAndEnvTable -> Row["
 								+ index
 								+ "] ...actionArgument "
@@ -4703,6 +4703,7 @@ System.out.println("Action after finding macro reading argument actionarg_"+i+" 
 								_mapHashTable, index, actionIndex,
 								TestCaseSheetName, null, testCaseIndex,
 								nameSpace);
+						
 					} else {
 						actionObj = ReadActionSection(worksheet, labelIndex,
 								_mapHashTable, index, actionIndex,
