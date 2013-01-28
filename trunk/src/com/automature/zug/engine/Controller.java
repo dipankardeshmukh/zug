@@ -1228,17 +1228,22 @@ testcycleidflag=true;
 						+ testCaseResult.get_comments() + " will be saved.");
 				// topologyResultData.get_testCaseResultList().add(testCaseResult);
 				if(StringUtils.isNotBlank(TestPlanId)||StringUtils.isNotEmpty(TestPlanId))
+				{	Log.Debug("Controller/SaveTestCaseResult : Sending test data to Davos with testplanid="+TestPlanId+" testcycledescription="+ContextVar.getContextVar("ZUG_TCYCLENAME")+" initializationtime="+initializationTime+" testexecutiontime="+testCaseResult.get_testExecution_Time());
 				testCycleId = davosclient.testCycle_write(TestPlanId,
 						ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "",
 						new Integer(initializationTime).toString(),
 						new Integer(testCaseResult.get_testExecution_Time())
 								.toString());
+				}
 				else
+				{
+					Log.Debug("Controller/SaveTestCaseResult : Sending test data to Davos with testplanid="+TestPlanId+" testcycledescription="+ContextVar.getContextVar("ZUG_TCYCLENAME")+" initializationtime="+initializationTime+" testexecutiontime="+testCaseResult.get_testExecution_Time());
 					testCycleId=davosclient.testCycle_write(davosclient.getTestplanFromTestCycleID(testCycleId),
 							ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "",
 							new Integer(initializationTime).toString(),
 							new Integer(testCaseResult.get_testExecution_Time())
 									.toString());
+				}
 				//TODO testcycle checking.
 				
 				message("\n" + testCaseResult.get_testCaseId() + "\t"
@@ -6006,8 +6011,8 @@ actindex++;
 		String[] st;
 		try {
 			UserData user = action.userObj;
-			String threadID = (String) threadIdForTestCases
-					.get(action.stackTrace);
+			message("the threadId hash "+threadIdForTestCases);
+			String threadID = (String) threadIdForTestCases.get(action.stackTrace);
 			Log.Debug("Controller/RunAction : Start of function with TestCaseID as : "
 					+ testCaseID);
 
@@ -6093,6 +6098,7 @@ actindex++;
 					// abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,action.nameSpace)),
 					// tempList, action.parentTestCaseID,
 					// action.stackTrace,isMoleculeActionNegative);
+					message("Thread ID comes here "+threadID);
 					RunAbstractTestCase((TestCase) abstractTestCase.get(Excel
 							.AppendNamespace(abstractTestCaseName,
 									action.nameSpace)), tempList,
@@ -10417,6 +10423,7 @@ actindex++;
 							controller.RunTestCaseForMain(testcases);
 							if (controller.dbReporting == true) {
 								davosclient.heartBeat(sessionid);
+								Log.Debug("Controller/Davos heartbeat method Invoked with session Id: "+sessionid);		
 							}
 						} catch (DavosExecutionException ex) {
 							String error = "Davos Exception occured during running test cases for main, exception is\n"
