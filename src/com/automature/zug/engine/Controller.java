@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130129" + ".125";
+	private static String Version = "ZUG Premium 5.7." + "20130129" + ".126";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -730,7 +730,20 @@ public class Controller extends Thread {
 				// Harness Specific ContextVariable to store TestCycle ID
 				ContextVar.setContextVar("ZUG_TCYCID", testCycleId);
 testcycleidflag=true;
-				Log.Debug("Controller/GetOptions: testcycleid = " + testCycleId);
+if(opts.getString("topologysetid", null)==null)
+{
+	Log.Error("Controller/GetOptions: Error : missing Topology Set Id.");
+	System.out
+			.println("\n\nMissing required value : Topology Set Id. With testcycleid topologysetid is mandatory."
+					+ "\n Use -help/-h for Usage information\n\n");
+	Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+	return false;
+}
+else{
+	dbReporting=true;
+	Log.Debug("Controller/GetOptions: testcycleid = " + testCycleId);
+}
+	
 			}
 
 			/*
@@ -741,25 +754,7 @@ testcycleidflag=true;
 			// {
 
 			dbReporting = false;
-			if ((BuildTag = opts.getString("buildtag", null)) == null) {
-
-				Log.Debug("Controller/GetOptions: buildtag not specified. dbreporting os OFF");
-			} else {
-				ContextVar.setContextVar("ZUG_BUILDTAG", BuildTag);
-				Log.Debug("Controller/GetOptions: BuildTag = " + BuildTag);
-				// message("The testplanpath is "+TestPlanPath
-				// message("ContextVar set "+ContextVar.getContextVar("ZUG_TESTPLANPATH"));
-
-			}
-			if((BuildId=opts.getString("buildid",null))==null)
-			{
-				Log.Debug("Controller/GetOptions: buildid not specified. dbreporting os OFF");
-				
-			}
-			else{
-				ContextVar.setContextVar("ZUG_BUILDID", BuildId);
-				Log.Debug("Controller/GetOptions: BuildTag = " + BuildTag);
-			}
+		
 			if ((TestPlanId = opts.getString("testplanid", null)) == null) {
 				// TODO here put checking for testplanid=product:sprint:
 				/*
@@ -807,7 +802,8 @@ testcycleidflag=true;
 
 				Log.Debug("Controller/GetOptions: topologySetId = "
 						+ topologySetId);
-				if (testplanidVal || testplanpathVal) {// put or checking for
+				//if (testplanidVal || testplanpathVal) {// put or checking for
+				if(testplanidVal){
 					// the new value
 					// testplanpathvalue=true
 					if (compileMode) {
@@ -815,7 +811,7 @@ testcycleidflag=true;
 						dbReporting = false;
 					} else {
 						if (topologysetname) {
-							Log.Error("Controller/GetOptions: Error: Toplogy name is already used.");
+							Log.Error("Controller/GetOptions: Error: Topology name is already used.");
 							System.out
 									.println("\n\nToplogy name is already used. "
 											+ "\n Use -help/-h for Usage Information\n\n");
@@ -852,9 +848,9 @@ testcycleidflag=true;
 					
 					}
 					else {
-					Log.Error("Controller/GetOptions: Error: missing testplanid or testplan.");
+					Log.Error("Controller/GetOptions: Error: missing testplanid or testcycleid.");
 					System.out
-							.println("\n\nMissing required value: testplanid or testplanid"
+							.println("\n\nMissing required value: testplanid or testcycleid. With topologysetid only testplanid or testcycleid can be used."
 									+ "\n Use -help/-h for Usage Information\n\n");
 					Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
 					return false;
@@ -876,7 +872,8 @@ testcycleidflag=true;
 				Log.Debug("Controller/GetOptions: topologySet = "
 						+ TopologySetName);
 				// message("The topologyset is "+TopologySetName);
-				if (testplanidVal || testplanpathVal) {// put or checking for
+				//if (testplanidVal || testplanpathVal) {// put or checking for
+				if(testplanpathVal){
 					// the new value
 					// testplanpathvalue=true
 					if (compileMode) {
@@ -898,15 +895,54 @@ testcycleidflag=true;
 						dbReporting = true;
 					}
 				} else {
-					Log.Error("Controller/GetOptions: Error: missing testplan or testplanid.");
+					Log.Error("Controller/GetOptions: Error: missing testplan.");
 					System.out
-							.println("\n\nMissing required value: testplan or testplanid "
+							.println("\n\nMissing required value: testplan. With topologyset only testplan can be used."
 									+ "\n Use -help/-h for Usage Information\n\n");
 					Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
 					return false;
 				}
 			}
-			if ((topologySetId = opts.getString("topologysetid", null)) == null) {
+			
+			if ((BuildTag = opts.getString("buildtag", null)) == null) {
+
+				Log.Debug("Controller/GetOptions: buildtag not specified. dbreporting os OFF");
+			} else {
+				if(testplanpathVal && topologysetname)
+				{ContextVar.setContextVar("ZUG_BUILDTAG", BuildTag);
+				Log.Debug("Controller/GetOptions: BuildTag = " + BuildTag);}
+				else{
+					Log.Error("\nController/GetOptions: Error: missing testplan and topologyset.");
+					System.out
+							.println("\n\nMissing required value: testplan and topologyset. With buildtag both testplan and topologyset need to be used."
+									+ "\n Use -help/-h for Usage Information\n\n");
+					Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+					return false;
+				}
+				// message("The testplanpath is "+TestPlanPath
+				// message("ContextVar set "+ContextVar.getContextVar("ZUG_TESTPLANPATH"));
+
+			}
+			if((BuildId=opts.getString("buildid",null))==null)
+			{
+				Log.Debug("Controller/GetOptions: buildid not specified. dbreporting os OFF");
+				
+			}
+			else{
+				if(testplanidVal&&topologysetid)
+				{ContextVar.setContextVar("ZUG_BUILDID", BuildId);
+				Log.Debug("Controller/GetOptions: BuildId = " + BuildId);
+				}
+				else{
+					Log.Error("\nController/GetOptions: Error: missing testplanid and topologysetid.");
+					System.out
+							.println("\n\nMissing required value: testplanid and topologysetid. With buildid both testplanid and topologysetid need to be used."
+									+ "\n Use -help/-h for Usage Information\n\n");
+					Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
+					return false;
+				}
+			}
+		/*	if ((topologySetId = opts.getString("topologysetid", null)) == null) {
 				if (testplanidVal && !topologysetname) {
 					Log.Error("Controller/GetOptions: Error : missing Topology Set Id.");
 					System.out
@@ -971,7 +1007,8 @@ testcycleidflag=true;
 					Log.Debug("Controller/GetOptions: Function returns FALSE. End of Function.");
 					return false;
 				}
-			}
+				
+			}*/
 			
 		
 			/*
@@ -3919,13 +3956,15 @@ try{
 					//message("the moleculecall flag "+test1.isConcurrentMoleculeCall);
 					if(test1.isConcurrentMoleculeCall)
 					{
-						Thread thread = new Thread();
-						tid=""+thread.getId();
+						
+						//Thread thread = new Thread();
+						//tid=""+thread.getId();
+						tid=""+Thread.currentThread().getId();
 					}else
 					{
 						tid=test.threadID;
 					}
-					//message("RunTestCaseForMolecule: the thread id is not concurrentexec "+tid+" the parent "+test.parentTestCaseID+" tId "+test.testCaseID);
+					
 					threadIdForTestCases.put(test.stackTrace, tid);
 				}
 
