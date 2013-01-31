@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
-	<!-- <appender name="Debug" class="org.apache.log4j.RollingFileAppender">
+	<appender name="Debug" class="org.apache.log4j.RollingFileAppender">
 		<param name="File" value="log/Debug.txt"/>
 		<param name="Append" value="true"/>
 		<param name="maxBackupIndex" value="10"/>
@@ -10,7 +10,7 @@
 			<param name="conversionPattern" value="%d{hh:mm:ss} [%t] %-5p %C - %m%n" />
 		</layout>
 	</appender>
--->
+
 	<appender name="Error" class="org.apache.log4j.RollingFileAppender">
 		<param name="File" value="log/Error.txt" />
 		<param name="maxBackupIndex" value="10" />
@@ -54,7 +54,7 @@
 		</layout>
 	</appender>
 
-<!--	<appender name="AtomResults" class="org.apache.log4j.RollingFileAppender">
+	<appender name="AtomResults" class="org.apache.log4j.RollingFileAppender">
 		<param name="File" value="log/AtomResults.txt"/>
 		<param name="maxBackupIndex" value="10"/>
 		<param name="Append" value="true"/>
@@ -64,7 +64,6 @@
 			<param name="conversionPattern" value="%d{hh:mm:ss} [%t] %-5p %C - %m%n" />
 		</layout>
 	</appender>
--->
 
 	<logger name="org.hibernate">
     	<level value="info" />
@@ -72,11 +71,11 @@
 	
 	<root>
 		<level value="ALL" />
-<!--		<appender-ref ref="Debug" /> -->
+		<appender-ref ref="Debug" />
 		<appender-ref ref="Result" />
 		<appender-ref ref="Error" />
 		<appender-ref ref="Atom" />
-<!--		<appender-ref ref="AtomResults" /> -->
+		<appender-ref ref="AtomResults" />
 	</root>
 
 
