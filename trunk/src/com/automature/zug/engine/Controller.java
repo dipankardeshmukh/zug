@@ -5964,6 +5964,7 @@ try{
 
 			Log.Debug("Controller/ExecuteVerificationCommand : Number of Arguments are : "
 					+ verification.verificationArguments.size());
+			ArrayList<String> arg=new ArrayList<String>(); 
 			for (int i = 0; i < verification.verificationArguments.size(); ++i) {
 				Log.Debug(String
 						.format("Controller/ExecuteVerificationCommand : Working on verification.verificationArguments[%s] = %s",
@@ -5972,6 +5973,8 @@ try{
 				arguments.append("\""
 						+ NormalizeVariable(verification.verificationArguments
 								.get(i).toString(), threadID) + "\"");
+				arg.add( NormalizeVariable(verification.verificationArguments.get(i)
+						.toString(), threadID));
 				arguments.append(" ");
 			}
 
@@ -6005,7 +6008,7 @@ try{
 					// command, arguments.toString());
 				} else {
 					// Verification is out-of-process
-					ExecuteCommand(command, arguments.toString(),
+					ExecuteCommand(command, arg,
 							scriptLocation, user,
 							verification.parentTestCaseID, StringUtils.EMPTY);
 				}
@@ -6013,7 +6016,7 @@ try{
 				// To support old input sheet where Prototype sheet is not
 				// define. So all Verification primitive are
 				// out-of process.
-				ExecuteCommand(command, arguments.toString(), scriptLocation,
+				ExecuteCommand(command, arg, scriptLocation,
 						user, verification.parentTestCaseID, StringUtils.EMPTY);
 			}
 			message(String.format(
@@ -7047,6 +7050,7 @@ try{
 							command));
 
 			StringBuilder arguments = new StringBuilder();
+			ArrayList<String> arg=new ArrayList<String>();
 
 			Log.Debug("Controller/ExecuteActionCommand : Number of Arguments are : "
 					+ action.actionArguments.size());
@@ -7057,6 +7061,8 @@ try{
 				arguments.append("\""
 						+ NormalizeVariable(action.actionArguments.get(i)
 								.toString(), threadID) + "\"");
+				arg.add( NormalizeVariable(action.actionArguments.get(i)
+						.toString(), threadID));
 				arguments.append(" ");
 			}
 			Log.Debug(String
@@ -7091,7 +7097,7 @@ try{
 					// command, arguments.toString());
 				} else {
 					// Action is out-of-process.
-					ExecuteCommand(command, arguments.toString(),
+					ExecuteCommand(command, arg,
 							scriptLocation, user, action.parentTestCaseID,
 							action.step);
 
@@ -7099,7 +7105,7 @@ try{
 			} else {
 				// To support old input sheet where Prototype sheet is not
 				// define. So all primitive are out-of process.
-				ExecuteCommand(command, arguments.toString(), scriptLocation,
+				ExecuteCommand(command, arg, scriptLocation,
 						user, action.parentTestCaseID, action.step);
 			}
 			message(String.format("\n[%s] Action %s SUCCESSFULLY Executed",
@@ -7461,12 +7467,12 @@ try{
 	 *            Working Directory from where one would like to execute the
 	 *            command. workingDirectory can be list of directory
 	 */
-	private void ExecuteCommand(String command, String arguments,
+	private void ExecuteCommand(String command, ArrayList<String> argument,
 			String workingDirectoryList, UserData data,
 			String parentTestCaseId, String step) throws Exception {
 		Log.Debug(String
 				.format("Controller/ExecuteCommand : Start of function with command = %s, Arguments = %s and Working Directory = %s & parentTestCaseID = %s ",
-						command, arguments, workingDirectoryList,
+						command, argument.toString(), workingDirectoryList,
 						parentTestCaseId));
 
 		String actualCommand = command;
@@ -7486,7 +7492,7 @@ try{
 					ExecuteDefaultCommand(command, parentTestCaseId);
 					Log.Debug(String
 							.format("Controller/ExecuteCommand : End of function with command = %s, Arguments = %s and Working Directory = %s ",
-									command, arguments, workingDirectory));
+									command, argument.toString(), workingDirectory));
 					return;
 				}
 			} else {
@@ -7497,13 +7503,13 @@ try{
 				// "/"
 				if (!f.exists()) {
 
-					Log.Debug(String
+					/*Log.Debug(String
 							.format("Controller/ExecuteCommand : Calling ExecuteDefaultCommand with argument as %s when Working Directory value is %s",
-									command, workingDirectory));
+									command, workingDirectory));*/
 					ExecuteDefaultCommand(command, parentTestCaseId);
-					Log.Debug(String
+				/*	Log.Debug(String
 							.format("Controller/ExecuteCommand : End of function with command = %s, Arguments = %s and Working Directory = %s ",
-									command, arguments, workingDirectory));
+									command, arguments, workingDirectory));*/
 					return;
 				}
 
@@ -7543,16 +7549,17 @@ try{
 			FileName = actualCommand;
 		}
 		
-		String Arguments = arguments;
+	//	String Arguments = arguments;
 		ProcessBuilder pr = new ProcessBuilder();
 		String commandValue[];
-
+		
+/*
 		if (arguments == null || StringUtils.isEmpty(arguments)) {
 			commandValue = new String[0];
 		} else {
 			commandValue = arguments.split("\" \""); // splits the Argument
 		} // string on
-			// " "(<quote><space><quote>)
+	*/		// " "(<quote><space><quote>)
 		Process process = null;
 		ArrayList<String> commandparam = new ArrayList<String>(); // ArrayList
 		// to hold
@@ -7628,10 +7635,23 @@ try{
 		 * , command, arguments, workingDirectory)); return; } }
 		 */
 		commandparam.add(FileName.trim());
-
+		int size=argument.size();
+		if(size>0){
+			String tmp=argument.get(size-1);
+			tmp=fineTuneArgument(actualCommand,tmp);
+			argument.remove(size-1);
+			argument.add(tmp);
+		}
+			commandparam.addAll(argument);
 		// Add the Command param to arrayList
-
-		for (int i = 0; i < commandValue.length; i++) {
+	/*	Iterator it=argument.listIterator();
+		while(it.hasNext()){
+			String str=(String)it.next();
+			commandparam.add(str);
+			System.out.println("Str");
+		}*/
+		
+	/*	for (int i = 0; i < commandValue.length; i++) {
 			String tmp="";
 		//	System.out.println("command value"+commandValue[i]);
 			if (i == 0) {
@@ -7647,10 +7667,10 @@ try{
 				tmp=commandValue[i].trim();
 			}
 			//System.out.println("before calling fine tune"+tmp);
-			//commandparam.add(tmp);//
-			commandparam.add(fineTuneArgument(actualCommand,tmp));
+			commandparam.add(tmp);//
+			//commandparam.add(fineTuneArgument(actualCommand,tmp));
 		}
-
+*/
 		try {
 			pr.command(commandparam);
 			//System.out.println("cmd param"+commandparam);
@@ -7663,13 +7683,13 @@ try{
 								command, workingDirectory));
 			}
 
-			Log.Debug(String
+				Log.Debug(String
 					.format("Controller/ExecuteCommand  :Arguments for the Command %s is %s . ",
-							command, arguments));
+							command, argument.toString()));
 
 			Log.Debug(String
 					.format("Controller/ExecuteCommand :Started the Process for the Command %s with Arguments as %s . ",
-							command, arguments));
+							command, argument.toString()));
 
 			/*
 			 * process= Runtime.getRuntime().exec(new String[] { "cmd", "/c",
@@ -7711,7 +7731,7 @@ try{
 			}
 			Log.Debug(String
 					.format("Controller/ExecuteCommand  :Waiting for the Process to Exit for the Command %s with Arguments as %s . ",
-							command, arguments));
+							command, argument.toString()));
 
 			if (debugMode || (doCleanupOnTimeout && step.endsWith("c"))) {
 				exitValue = process.waitFor();
@@ -7795,7 +7815,7 @@ try{
 
 			Log.Debug(String
 					.format("Controller/ExecuteCommand :Process Exited Gracefully for the Command %s with Arguments as %s . ",
-							command, arguments));
+							command, argument.toString()));
 
 			if (!(process.exitValue() == 0)) {
 				// Log.Error(String.format("Controller/ExecuteCommand : Exit Status for %s Command is %s",
@@ -7831,7 +7851,7 @@ try{
 		}
 		Log.Debug(String
 				.format("Controller/ExecuteCommand : End of function with command = %s, Arguments = %s and Working Directory = %s ",
-						command, arguments, workingDirectory));
+						command,argument.toString(), workingDirectory));
 	}
 
 	/***
