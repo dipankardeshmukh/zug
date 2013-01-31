@@ -7439,7 +7439,17 @@ try{
 		return StringUtils.EMPTY;
 
 	}
-
+	
+	private String fineTuneArgument(String fileName,String argument){
+		if(fileName.contains(".bat")){
+		//	System.out.println("Its a bat file");
+			if(argument.contains(" ")){
+				argument=argument+"\"";
+			}
+		}
+		return argument;
+	}
+	
 	/***
 	 * Function to Execute the command on the Command Prompt.
 	 * 
@@ -7532,7 +7542,7 @@ try{
 		} else {
 			FileName = actualCommand;
 		}
-
+		
 		String Arguments = arguments;
 		ProcessBuilder pr = new ProcessBuilder();
 		String commandValue[];
@@ -7622,22 +7632,30 @@ try{
 		// Add the Command param to arrayList
 
 		for (int i = 0; i < commandValue.length; i++) {
-
+			String tmp="";
+		//	System.out.println("command value"+commandValue[i]);
 			if (i == 0) {
-
-				commandparam.add(commandValue[i].substring(1));
+			//	commandparam.add(commandValue[i].substring(1));
+				tmp=commandValue[i].substring(1);
 			} else if (i == commandValue.length - 1) {
-				commandparam.add(commandValue[i].substring(0,
-						commandValue[i].length() - 2).trim());
+			//	commandparam.add(commandValue[i].substring(0,
+			//			commandValue[i].length() - 2).trim());
+				tmp=commandValue[i].substring(0,
+						commandValue[i].length() - 2).trim();
 			} else {
-				commandparam.add(commandValue[i].trim());
+			//	commandparam.add(commandValue[i].trim());
+				tmp=commandValue[i].trim();
 			}
+			//System.out.println("before calling fine tune"+tmp);
+			//commandparam.add(tmp);//
+			commandparam.add(fineTuneArgument(actualCommand,tmp));
 		}
 
 		try {
 			pr.command(commandparam);
+			//System.out.println("cmd param"+commandparam);
 			// System.out.println("Command Param is-?\t"+commandparam+"File-?\n"+FileName);
-			// message("The List"+commandparam);
+		//	 message("The List"+commandparam);
 			if (StringUtils.isNotBlank(workingDirectory)) {
 				pr.directory(new File(workingDirectory));
 				Log.Debug(String
@@ -7677,7 +7695,7 @@ try{
 			while ((primitiveStreams = stdInput.readLine()) != null) {
 				Log.Debug("Controller/ExecuteCommand : [AtomLog/" + FileName
 						+ "] - " + primitiveStreams);
-				// System.out.println("OUTPUT->\t"+primitiveStreams);
+			//	 System.out.println("OUTPUT->\t"+primitiveStreams);
 			}
 
 			// read any errors from the attempted command
