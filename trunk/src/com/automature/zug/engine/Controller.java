@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130201" + ".127";
+	private static String Version = "ZUG Premium 5.7." + "20130201" + ".128";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -4259,26 +4259,32 @@ try{
 
 		if (dbReporting) {
 			dBHostName = readExcel.DBHostName();
+			ContextVar.setContextVar("ZUG_DBHOSTNAME",dBHostName);
 			// message("The DBHOST NAME "+dBHostName);
 			Log.Debug("Controller/InitializeVariables : DBHostName = "
 					+ dBHostName);
 			// dBName = readExcel.DBName();
 			// Log.Debug("Controller/InitializeVariables : dBName = " + dBName);
 			dbUserName = readExcel.DBUserName();
+			ContextVar.setContextVar("ZUG_DBUSERNAME",dbUserName);
 			Log.Debug("Controller/InitializeVariables : dbUserName = "
 					+ dbUserName);
 			dbUserPassword = readExcel.DBUserPassword();
+			ContextVar.setContextVar("ZUG_DBPASSWORD",dbUserPassword);
 			Log.Debug("Controller/InitializeVariables : dbUserPassword = "
 					+ dbUserPassword);
 			testSuitName = readExcel.TestSuitName();
+			ContextVar.setContextVar("ZUG_TESTSUITENAME",testSuitName);
 			// ZUG Specific ContextVariable to store ZUG_TESTSUITEID
 			ContextVar.setContextVar("ZUG_TESTSUITEID", testSuitName);
 			Log.Debug("Controller/InitializeVariables : testPlanName = "
 					+ testSuitName);
 			testSuitRole = readExcel.TestSuitRole();
+			ContextVar.setContextVar("ZUG_TESTSUITEROLE",testSuitRole);
 			Log.Debug("Controller/InitializeVariables : testPlanRole = "
 					+ testSuitRole);
 		}
+		ContextVar.setContextVar("ZUG_SCRIPTLOCATION", readExcel.ScriptLocation());
 		Log.Debug("Controller/InitializeVariables :End of Function");
 	}
 
@@ -4647,12 +4653,10 @@ try{
 										.compareToIgnoreCase("init") == 0)) {
 									TestCase tempTest = GenerateNewTestCaseID(
 											test, count);
-									message("The generated Id 0a "
-											+ tempTest.testCaseID);
+									
 									RunTestCase(tempTest);
 								} else {
-									message("The generated Id 0b "
-											+ test.testCaseID);
+									
 									RunTestCase(test);
 								}
 
@@ -8547,6 +8551,7 @@ try{
 						testCaseResult.get_comments(), testexecutiondetailid));
 		// // Harness Specific ContextVariable to store TestCycle ID
 		ContextVar.setContextVar("ZUG_TCYCID", testCycleId);
+		ContextVar.setContextVar("ZUG_TESTCYCLEID", testCycleId);
 		// // Harness Specific ContextVariable to store TestExecutionDetail ID
 		ContextVar.setContextVar("ZUG_TSEXDID", testexecutiondetailid);
 		// Harness Specific Topologysetid
@@ -10475,6 +10480,8 @@ try{
 					//controller.BuildNo = controller.saveBuildTag(controller.TestPlanId, controller.BuildTag);
 				}
 				try {
+					ContextVar.setContextVar("ZUG_TESTPLANID",controller.TestPlanId);
+					ContextVar.setContextVar("ZUG_TOPOLOGYSETID",controller.topologySetId);
 					if(StringUtils.isNotBlank(controller.TestPlanId)||StringUtils.isNotEmpty(controller.TestPlanId))
 					davosclient.validate_Testplan(controller.TestPlanId);
 					davosclient.validate_Topologyset(controller.topologySetId);
