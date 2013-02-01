@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130131" + ".127";
+	private static String Version = "ZUG Premium 5.7." + "20130201" + ".127";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -7634,6 +7634,7 @@ try{
 		 * "Controller/ExecuteCommand : End of function with command = %s, Arguments = %s and Working Directory = %s "
 		 * , command, arguments, workingDirectory)); return; } }
 		 */
+		// Add the Command param to arrayList
 		commandparam.add(FileName.trim());
 		int size=argument.size();
 		if(size>0){
@@ -7643,13 +7644,8 @@ try{
 			argument.add(tmp);
 		}
 			commandparam.addAll(argument);
-		// Add the Command param to arrayList
-	/*	Iterator it=argument.listIterator();
-		while(it.hasNext()){
-			String str=(String)it.next();
-			commandparam.add(str);
-			System.out.println("Str");
-		}*/
+
+
 		
 	/*	for (int i = 0; i < commandValue.length; i++) {
 			String tmp="";
@@ -7675,7 +7671,7 @@ try{
 			pr.command(commandparam);
 			//System.out.println("cmd param"+commandparam);
 			// System.out.println("Command Param is-?\t"+commandparam+"File-?\n"+FileName);
-		//	 message("The List"+commandparam);
+			// message("The List"+commandparam);
 			if (StringUtils.isNotBlank(workingDirectory)) {
 				pr.directory(new File(workingDirectory));
 				Log.Debug(String
