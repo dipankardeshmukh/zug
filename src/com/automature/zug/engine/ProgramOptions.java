@@ -42,7 +42,11 @@ public static void checkCommandLineArgs(String...args) throws Exception
 			String argarr[]=arg.split("=");
 		if(!commandLineSwitchList.contains(argarr[0].toLowerCase()))
 		{
-			throw new Exception("ProgramOptions/checkCommandLineArgs:: command line switch "+arg+" is not a valid switch. Please refer to Zug User Manual.");
+			if(!argarr[0].contains("-$")&&!argarr[0].contains("-$$")){
+				
+			
+				throw new Exception("ProgramOptions/checkCommandLineArgs:: command line switch "+arg+" is not a valid switch. Please refer to Zug User Manual.");
+			}
 		}
 		}
 	}
