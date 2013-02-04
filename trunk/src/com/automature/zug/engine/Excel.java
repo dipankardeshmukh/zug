@@ -1457,24 +1457,9 @@ public class Excel {
 									// ProgramOptions.workingDirectory+
 									// Controller.SLASH + commandline_include +
 									// ",";
-									if(commandline_include.contains("..")){
-										int lastIndex=commandline_include.lastIndexOf("..")+1;
-										String temp[]=commandline_include.split("\\..");
-										int upperH=temp.length;	
-										String p=inputxlsfile.getParent();
-										for(int i=1;i<upperH-1;i++){
-											p=p.substring(0, p.lastIndexOf(Controller.SLASH));		//		System.out.println("p="+p);
-										}
-										commandline_include=p+commandline_include.substring(lastIndex+1,commandline_include.length());
-										actualPath +=commandline_include;
-									//	System.out.println("IF/Command Line Include:"+commandline_include);
-									}
-									else{
-											actualPath += inputxlsfile.getParent()
+									actualPath += inputxlsfile.getParent()
 											+ Controller.SLASH
 											+ commandline_include;
-								//			System.out.println("ELse/Command Line Include:"+commandline_include);
-									}
 									if (!nSMkey.isEmpty())
 										namespaceMap.put(actualPath, nSMkey);
 									actualPath += ",";
@@ -1519,23 +1504,10 @@ public class Excel {
 										// actualPath +=
 										// ProgramOptions.workingDirectory+
 										// Controller.SLASH + Path + ",";
-										if(Path.contains("..")){
-											int lastIndex=Path.lastIndexOf("..")+1;
-											String temp[]=Path.split("\\..");
-											int upperH=temp.length;	
-											String p=inputxlsfile.getParent();
-											for(int i=1;i<upperH-1;i++){
-												p=p.substring(0, p.lastIndexOf(Controller.SLASH));		//		System.out.println("p="+p);
-											}
-											Path=p+Path.substring(lastIndex+1,Path.length());
-											actualPath +=Path;
-										//	System.out.println("IF/Command Line Include:"+commandline_include);
-										}else{
 										actualPath += inputxlsfile.getParent()
 												+ Controller.SLASH + Path + ",";
-										}// System.out.println(Path+" This the actual Path\t"+actualPath);
-								//		System.out.println("Files:"+actualPath);
-										inlcudelist += actualPath+",";
+										// System.out.println(Path+" This the actual Path\t"+actualPath);
+										inlcudelist += actualPath;
 									} // AddToExternalSheets(strKey,
 										// actualPath);
 								}
