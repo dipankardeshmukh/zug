@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130201" + ".128";
+	private static String Version = "ZUG Premium 5.7." + "20130204" + ".129";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -4434,6 +4434,7 @@ try{
 			davosclient = new DavosClient(readExcel.DBHostName(),
 					readExcel.DBUserName(), readExcel.DBUserPassword());
 			sessionid = davosclient.getSessionId();
+			ContextVar.setContextVar("ZUG_DBSESSIONID",sessionid);
 			Log.Debug("Davos Connection Successful. Session ID: " + sessionid);
 			// TODO create DavosClient instance global variable.dbHOst dbname
 			// Session id for Davos connection
@@ -8698,7 +8699,16 @@ try{
 		try {
 
 			// Server Socket initialization with iPORT=8245
-			sock = new ServerSocket(iPORT);
+			boolean sockCreated=false;
+			while(!sockCreated){
+				 try{
+			     sock = new ServerSocket(iPORT);
+			    sockCreated=true;
+			  }catch(Exception e){
+			     iPORT++;
+			    }
+			   }
+			
 			if (sock != null) {
 				Log.Debug("Socket created successfully!!!!!!! ->  " + sock);
 			}
@@ -8837,7 +8847,7 @@ try{
 				// Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
 				// + e.getMessage());
 				iPORT++;
-				if (iPORT == 8256) {
+				if (iPORT == 65535) {
 					Log.Error("Controller/ListenToPrimitive: Only ten zug instances can run simultaneously "
 							+ iPORT);
 					System.exit(1);
