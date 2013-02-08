@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130208" + ".130";
+	private static String Version = "ZUG Premium 5.7." + "20130208" + ".131";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -7995,7 +7995,7 @@ try{
 				// .getContextVar(tempVariable))) {
 				isContextVar = true;
 				// }
-				if(tempVariable.equals("ZUG_TCID"))
+				if(tempVariable.equals("ZUG_TSSTARTTIME")||tempVariable.equals("ZUG_TCID")||tempVariable.equals("ZUG_TCSTARTTIME"))
 				{
 					tempVariable+=threadID;
 				}
@@ -9334,7 +9334,7 @@ try{
 			// Harness Specific ContextVariable to store AH_TCSTARTTIME
 			// ZUG Specific ContextVariable to store ZUG_TCSTARTTIME = Timestamp
 			// when Test Case execution started
-			ContextVar.setContextVar("ZUG_TCSTARTTIME", Utility.dateAsString());
+			ContextVar.setContextVar("ZUG_TCSTARTTIME"+Thread.currentThread().getId(), Utility.dateAsString());
 			// Method Return Variable names and Values.
 			// message("Testcase is coming to RunExpandTestCase:"+ContextVar.getContextVar("ZUG_TCSTARTTIME")
 			// );
@@ -9533,7 +9533,7 @@ try{
 
 						// Context Variable to store Timestamp when Test Step
 						// execution started
-						ContextVar.setContextVar("ZUG_TSSTARTTIME",
+						ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
 								Utility.dateAsString());
 						thread.start();
 
@@ -9600,7 +9600,7 @@ try{
 
 						// Context Variable to store Timestamp when Test Step
 						// execution started
-						ContextVar.setContextVar("ZUG_TSSTARTTIME",
+						ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
 								Utility.dateAsString());
 
 						thread.start();
@@ -9747,7 +9747,7 @@ try{
 
 									// Context Variable to store Timestamp when
 									// Test Step execution started
-									ContextVar.setContextVar("ZUG_TSSTARTTIME",
+									ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
 											Utility.dateAsString());
 
 									thread.start();
@@ -9797,7 +9797,7 @@ try{
 
 									// Context Variable to store Timestamp when
 									// Test Step execution started
-									ContextVar.setContextVar("ZUG_TSSTARTTIME",
+									ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
 											Utility.dateAsString());
 									thread.start();
 									ThreadPool.add(thread);
@@ -9860,7 +9860,7 @@ try{
 
 									// Context Variable to store Timestamp when
 									// Test Step execution started
-									ContextVar.setContextVar("ZUG_TSSTARTTIME",
+									ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
 											Utility.dateAsString());
 
 									thread.start();
@@ -9909,7 +9909,7 @@ try{
 
 									// Context Variable to store Timestamp when
 									// Test Step execution started
-									ContextVar.setContextVar("ZUG_TSSTARTTIME",
+									ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
 											Utility.dateAsString());
 									thread.start();
 									ThreadPool.add(thread);
@@ -10197,7 +10197,9 @@ try{
 		if (LOGLOCATION == null) {
 			LOGLOCATION = System.getProperty("user.dir") + SLASH + "log";
 		}
-
+		Controller.harnessPIDValue = Integer
+				.parseInt((java.lang.management.ManagementFactory
+						.getRuntimeMXBean().getName().split("@"))[0]);
 		final Controller controller = new Controller();
 		// controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
 		//System.out.println(Controller.ZUG_LOGFILENAME+ " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
@@ -10264,9 +10266,7 @@ try{
 		// System.out.println("ZUG LOG location --> "+ZUG_LOGFILENAME);
 		// System.out.println("contextvar of LOG -- LOGLOC "+LOGLOCATION);
 		// System.out.println("2nd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
-		Controller.harnessPIDValue = Integer
-				.parseInt((java.lang.management.ManagementFactory
-						.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
+		 // ProcessMonitorThread.currentThread().getId();
 
 		// First Validate the Command Line Arguments
 	
