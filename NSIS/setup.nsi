@@ -13,6 +13,8 @@ SetCompressor lzma
 
 XPStyle on
 
+var /global IsSilent
+var /global Update
 var /global JavaSOURCE
 var /global JavaBROWSESOURCE
 var /global JavaSOURCETEXT
@@ -25,6 +27,9 @@ var dialog
 !include "MUI.nsh"
 !include nsDialogs.nsh
 !include "ZipDLL.nsh"
+!include "functions.nsi"
+!define /date NOW "%H:%M:%S %d %b, %Y"
+
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "Zug.ico"
@@ -37,6 +42,7 @@ var dialog
 ; Directory page
 ;Java Directory Page
 Page custom JavaPage JavaPageLeave
+!define MUI_PAGE_CUSTOMFUNCTION_PRE CheckInstDirReg
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -61,12 +67,49 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
+
+Function CheckInstDirReg
+
+${If} $Update == "TRUE"
+    Abort
+${EndIf}
+
+FunctionEnd
+
+
 Function .onInit
-  IfFileExists $windir\Microsoft.NET\Framework\v3.5 +3 0
-  MessageBox MB_OK "You do not have DotNet Framework 3.5 or higher.Please install and then run ZugSetup"
-  quit
-  ReadRegStr $R1 HKLM "Software\JavaSoft\Java Runtime Environment" "CurrentVersion"
-  ReadRegStr $R2 HKLM "Software\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+
+  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Automature-ZUG" "Zugpath"
+  
+  IfFileExists $R0\ZUG\ZUG.exe 0 FirstTimeInstall
+     StrCpy $INSTDIR "$R0"
+     StrCpy $Update "TRUE"
+     IfSilent J1 0 
+        MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Upgrading ZUG, keeping your previous settings. Do you want to continue?" IDYES +2
+        quit
+     Goto J1
+  
+  FirstTimeInstall: 
+      IfFileExists $windir\Microsoft.NET\Framework\v3.5 +3 0
+        MessageBox MB_OK "You do not have DotNet Framework 3.5 or higher.Please install and then run ZugSetup"
+        quit
+        ReadRegStr $R1 HKLM "Software\JavaSoft\Java Runtime Environment" "CurrentVersion"
+        ReadRegStr $R2 HKLM "Software\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+  
+  J1:
+      IfSilent 0 Jend
+        SetSilent silent  
+        CreateDirectory '$APPDATA\ZUG Logs'
+        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__}  ${__TIME__} ::  ${PRODUCT_NAME} - ${PRODUCT_VERSION} $\r$\n`  
+        StrCmp $Update "TRUE" 0 Jerror
+            StrCpy $IsSilent "TRUE"
+            Goto Jend
+        Jerror:
+            ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Please do not use /S option for first time installation.$\r$\n`
+            MessageBox MB_OK "Please do not use /S option for first time installation."
+            quit
+        
+  Jend:
 FunctionEnd
 
 
@@ -74,6 +117,11 @@ FunctionEnd
 
 
 Function JavaPage
+
+  ${If} $Update == "TRUE"
+    Abort
+  ${EndIf}
+  
   !insertmacro MUI_HEADER_TEXT "Java Install Directory" "Choose Install Location of Java in your machine."
 	#Create Dialog and quit if error
 	nsDialogs::Create 1018
@@ -117,29 +165,51 @@ Section "MainSection" SEC01
   SetOutPath "$TEMP"
   SetOverwrite on
   File "ZUG.zip"
-  IfFileExists $INSTDIR\ZUG\ZugINI.xml backup donot_backup
-  backup: 
-  Delete "$INSTDIR\ZUG\ZugINI.xml.bak"
-  Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.temp"
-  donot_backup:  
-  !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
-  IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
-  interchange: 
-  Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
-  Rename "$INSTDIR\ZUG\ZugINI.xml.temp" "$INSTDIR\ZUG\ZugINI.xml"
-  donot_interchange:  
-  ExecWait '"$INSTDIR\ZUG\Setup.cmd" "$R2\lib\ext\"'
-  AccessControl::GrantOnFile \
-  "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
-  CopyFiles `$Java_SOURCE_TEXT\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
-  ReadRegStr $R0 HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "PROCESSOR_ARCHITECTURE"
-  ${If} $R0 == "x86"
-  CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x86\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
+  
+  ${If} $Update == "TRUE"
+  
+    IfFileExists $INSTDIR\ZUG\ZugINI.xml backup donot_backup
+    backup: 
+      ${If} $IsSilent == "TRUE"
+        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Backing up existing ZugINI.xml file.$\r$\n`
+      ${EndIf}
+      Delete "$INSTDIR\ZUG\ZugINI.xml.bak"
+      Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.temp"
+    donot_backup:  
+      ${If} $IsSilent == "TRUE"
+        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Extracting ZUG.zip file in $INSTDIR .$\r$\n`
+      ${EndIf}
+      !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
+      IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
+    interchange: 
+      Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
+      Rename "$INSTDIR\ZUG\ZugINI.xml.temp" "$INSTDIR\ZUG\ZugINI.xml"
+    donot_interchange:  
+      ExecWait "$INSTDIR\ZUG\Setup.cmd"
+      AccessControl::GrantOnFile \
+      "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
+     ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__} ::  ${PRODUCT_NAME} - ${PRODUCT_VERSION} installed successfully. $\r$\n` 
   ${Else}
-  CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x64\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
+ 
+      !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
+      ExecWait "$INSTDIR\ZUG\Setup.cmd"
+      AccessControl::GrantOnFile \
+      "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
+      
+      CopyFiles `$Java_SOURCE_TEXT\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
+      CopyFiles `$INSTDIR\ZUG\lib\sqlitejdbc-v056.jar` `$Java_SOURCE_TEXT\lib\ext\`
+      
+      ReadRegStr $R0 HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "PROCESSOR_ARCHITECTURE"
+      ${If} $R0 == "x86"
+      CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x86\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
+      ${Else}
+      CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x64\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
+      ${EndIf}
+      nsExec::ExecToStack '"$INSTDIR\ZUG\runzug.Bat"'
+      Delete "$TEMP\ZUG.zip"
+  
   ${EndIf}
-  nsExec::ExecToStack '"$INSTDIR\ZUG\runzug.Bat"'
-  Delete "$TEMP\ZUG.zip"
+
 SectionEnd
 
 
@@ -171,13 +241,15 @@ Section Uninstall
   SetOutPath "$TEMP"
   SetOverwrite ifnewer
   File "DeleteZug.cmd"
-  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\ZUG" "Zugpath"
+  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Automature-ZUG" "Zugpath"
  IfFileExists $R0\ZUG\ZUG.exe 0 +3
   Execwait '"$TEMP\DeleteZug.cmd" "$R0\ZUG"'
   Goto +2
     MessageBox MB_OK "Cannot find Zug path in the registry. Please delete the folder ZUG manually"
+  Delete "$R0\ZUG\ZUG.exe"
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  Delete "$R0\*.*"
   Delete "$INSTDIR\uninstZUG.exe"
   SetAutoClose true
 SectionEnd
