@@ -60,15 +60,6 @@ rem if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC64
 EditSystemPathVariable.exe
 if %errorlevel% NEQ 0 goto EndNotAbleToEditSystemPathVariable
 
-::copy sqlitejdbc-v056.jar inside jre\lib\ext\ directory
-copy lib\sqlitejdbc-v056.jar %1\lib\ext\ /y
-if %errorlevel% NEQ 0 goto FailToCopy
-
-::Make Zug.exe from java.exe inside Automature\Zug directory
-copy %1\bin\java.exe 
-rename java.exe ZUG.exe
-if %errorlevel% NEQ 0 goto FailToMake
-
 
 Echo.
 Echo. ---------------------------------------------------
