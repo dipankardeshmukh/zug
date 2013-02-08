@@ -113,8 +113,12 @@ public class ContextVar {
               Log.Debug("SetContextVar: Firing Command = " + "Insert Into  " + _tableName + "  (ProcessId, Name, Value) values (" + Quotedstring(Integer.toString(parentPId))
                       + ", " + Quotedstring(name) + ", " + Quotedstring(value) + ")");
               synchronized (justForLock) {
-              stat.executeUpdate("Insert Into  " + _tableName + "  (ProcessId, Name, Value) values (" + Quotedstring(Integer.toString(parentPId))
+             try{ stat.executeUpdate("Insert Into  " + _tableName + "  (ProcessId, Name, Value) values (" + Quotedstring(Integer.toString(parentPId))
                       + ", " + Quotedstring(name) + ", " + Quotedstring(value) + ")");
+             }catch(Exception e)
+             {
+            	 Log.Debug("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "+name+" \nmessage:"+e.getMessage()+"\ncausing class: "+e.getClass());
+             }
               conn.close();
               }
              // Log.Debug("SetContextVar: Executed Command = " + "Insert Into  " + _tableName + "  (ProcessId, Name, Value) values (" + Quotedstring(Integer.toString(parentPId)) + ", " + Quotedstring(name) + ", " + Quotedstring(value) + ")");
@@ -123,7 +127,7 @@ public class ContextVar {
 		 }
 		 catch(Exception ex)
 		 {
-             Log.Error("ContextVar/SetContextVar: Exception is : " + ex.getMessage() + ex.getStackTrace());  
+             Log.Debug("ContextVar/SetContextVar: Exception is : " + ex.getMessage() + ex.getStackTrace());  
              throw ex;
 		 }
 		 finally

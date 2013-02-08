@@ -1383,16 +1383,16 @@ public class Excel {
 					// System.out.println("the flags are "+keyflag+"  "+valueflag);
 					if (keyflag) {
 						if (!valueflag) {
-							ContextVar.setContextVar(strKey, StringUtils.EMPTY);
-							strValue = "%" + strKey + "%";
+							ContextVar.setContextVar(strKey+Thread.currentThread().getId(), StringUtils.EMPTY);
+							strValue = "%" + strKey+Thread.currentThread().getId() + "%";
 
 						}
 					}
 					if (StringUtils.isBlank(strValue)
 							|| StringUtils.isEmpty(strValue) && keyflag) {
 						// System.out.println("This is blank value but contains a key "+strValue+" "+strKey);
-						ContextVar.setContextVar(strKey, StringUtils.EMPTY);
-						strValue = "%" + strKey + "%";
+						ContextVar.setContextVar(strKey+Thread.currentThread().getId(), StringUtils.EMPTY);
+						strValue = "%" + strKey+Thread.currentThread().getId() + "%";
 					}
 					//System.out.println("strkey coming "+strKey+" strkey value "+strValue);
 					if(!strKey.isEmpty())

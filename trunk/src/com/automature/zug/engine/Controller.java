@@ -91,7 +91,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130204" + ".129";
+	private static String Version = "ZUG Premium 5.7." + "20130208" + ".130";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -1275,7 +1275,7 @@ else{
 				else
 				{
 					Log.Debug("Controller/SaveTestCaseResult : Sending test data to Davos with testplanid="+TestPlanId+" testcycledescription="+ContextVar.getContextVar("ZUG_TCYCLENAME")+" initializationtime="+initializationTime+" testexecutiontime="+testCaseResult.get_testExecution_Time());
-					testCycleId=davosclient.testCycle_write(davosclient.getTestplanFromTestCycleID(testCycleId),
+					testCycleId=davosclient.testCycle_write(TestPlanId,
 							ContextVar.getContextVar("ZUG_TCYCLENAME"), "", "",
 							new Integer(initializationTime).toString(),
 							new Integer(testCaseResult.get_testExecution_Time())
@@ -7995,6 +7995,10 @@ try{
 				// .getContextVar(tempVariable))) {
 				isContextVar = true;
 				// }
+				if(tempVariable.equals("ZUG_TCID"))
+				{
+					tempVariable+=threadID;
+				}
 				tempVariable = ReadContextVariable(tempVariable);
 
 				Log.Debug(String
@@ -9310,7 +9314,8 @@ try{
 		Log.Debug("Controller/RunExpandedTestCase : Setting ZUG_TCID as ->"
 				+ test.testCaseID);
 		// Harness Specific ContextVariable to store Generated TestCase ID
-		ContextVar.setContextVar("ZUG_TCID", test.testCaseID);
+		//ContextVar.setContextVar("ZUG_TCID", test.testCaseID);
+		ContextVar.setContextVar("ZUG_TCID"+Thread.currentThread().getId(), test.testCaseID);
 		Log.Debug("Controller/RunExpandedTestCase : Successfully SET ZUG_TCID as ->"
 				+ test.testCaseID);
 
