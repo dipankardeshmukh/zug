@@ -13,8 +13,7 @@ import com.automature.zug.util.Log;
 
 public class ContextVar {
 
-	private static final String _dbName = "sqlite.db3-"
-			+ Controller.harnessPIDValue;
+	private static final String _dbName = "sqlite-"+ Controller.harnessPIDValue+".db3";
 	private static final String _tableName = "ContextVariable";
 	private static final int LOOP_NUM=5;
 
