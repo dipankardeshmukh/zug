@@ -64,7 +64,8 @@ public class Controller extends Thread {
 	private static boolean compileMode = false;
 	private static boolean verificationSwitching = true;
 	private static boolean doCleanupOnTimeout = false;
-	private static boolean forceExecution = false;
+	private static boolean retrycountflag = false;
+	private static boolean retrytimeoutflag = false;
 	public static boolean nyonserver = false; // Flag which checks whether its
 	// needed to generate the XML
 	// file or not.
@@ -81,6 +82,8 @@ public class Controller extends Thread {
 	public static boolean isLongevityOn = false;
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
+	public static String CONTEXTVARRETRYCOUNT="5",CONTEXTVARRETRYTIMEOUT="1";
+	
 	
 //	public static String logFileName=StringUtils.EMPTY;
 	// / By Default the Repeat Count is 1
@@ -91,7 +94,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130208" + ".131";
+	private static String Version = "ZUG Premium 5.7." + "20130212" + ".132";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -423,6 +426,41 @@ public class Controller extends Thread {
 		boolean topologysetname = false;
 		boolean testcycleidflag=false;
 		try {
+			//check if retrycount and retrytimeout both flag exists
+			if((CONTEXTVARRETRYCOUNT=opts.getString("retrycount", null))==null)
+			{
+				Log.Debug("Controller/GetOptions: -retrycount is not specified. By Default its value is 5.");
+
+				retrycountflag=false;
+			}
+			else
+			{
+				if((CONTEXTVARRETRYTIMEOUT=opts.getString("retrytimeout", null))==null)
+				{
+					Log.Error("Controller/GetOptions: Invalid Options Specified.... retrycount must have retrytimeout");
+					Log.Error("Controller/GetOptions: Use -help for usage option.");
+					return false;
+				}
+				retrytimeoutflag=true;
+				
+			}
+			if((CONTEXTVARRETRYTIMEOUT=opts.getString("retrytimeout", null))==null)
+			{
+				Log.Debug("Controller/GetOptions: -retrytimeout is not specified. By Default its value is 1 sec.");
+
+				retrytimeoutflag=false;
+			}
+			else
+			{
+				if((CONTEXTVARRETRYCOUNT=opts.getString("retrycount", null))==null)
+				{
+					Log.Error("Controller/GetOptions: Invalid Options Specified.... retrytimeout must have retrycount ");
+					Log.Error("Controller/GetOptions: Use -help for usage option.");
+					return false;
+				}
+				retrycountflag=true;
+				
+			}
 			// check if debug mode is set to true. else default value is True
 			if ((debugModeVal = opts.getString("debug", null)) == "true") {
 				Log.Debug("Controller/GetOptions: Debug switch Mode is specified.");
@@ -10270,13 +10308,7 @@ try{
 
 		// First Validate the Command Line Arguments
 	
-		try {
-			ContextVar.setContextVar("ZUG_LOGFILENAME",
-					Controller.ZUG_LOGFILENAME);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	
 		
 		 //System.out.println(Controller.ZUG_LOGFILENAME+" 3rd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		try {
@@ -10335,6 +10367,13 @@ try{
 			if (!controller.GetOptions()) {
 
 				return;
+			}	
+			try {
+				ContextVar.setContextVar("ZUG_LOGFILENAME",
+						Controller.ZUG_LOGFILENAME);
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			controller.message("\n\nCommand Line Arguments Validated \n");
 		} catch (Exception e) {

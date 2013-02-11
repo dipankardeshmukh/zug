@@ -15,7 +15,8 @@ public class ContextVar {
 
 	private static final String _dbName = "sqlite-"+ Controller.harnessPIDValue+".db3";
 	private static final String _tableName = "ContextVariable";
-	private static final int LOOP_NUM=5;
+	private static int LOOP_NUM;
+	private static int LOOP_TIMEOUT;
 
 	// private static final String _dbPath = System.getenv("APPDATA") +
 	// "/Biel Logs";
@@ -34,6 +35,14 @@ public class ContextVar {
 
 	private ContextVar() {
 		Log.Debug("ContextVar: Start of Static Constructor");
+		try{
+			LOOP_NUM=Integer.parseInt(Controller.CONTEXTVARRETRYCOUNT);
+			LOOP_TIMEOUT=Integer.parseInt(Controller.CONTEXTVARRETRYTIMEOUT)*1000;
+			//System.out.println("The counts are "+LOOP_NUM+"  "+LOOP_TIMEOUT);
+		}catch(NumberFormatException nfe)
+		{
+			Log.Error("ContextVar:: [Error] Exception while parsing string "+nfe.getMessage());
+		}
 		Connection conn = null;
 		try {
 			Log.Debug("ContextVar: Checking if Directory Exists");
@@ -129,18 +138,18 @@ public class ContextVar {
 					
 				} catch (SQLException e) {
 					numtoloop--;
-					Thread.sleep(100);
+					Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
 							+ e.getMessage()
 							+ "\ncausing class: " + e.getClass());
-					System.out
-							.println("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "
-									+ name
-									+ " \nmessage:"
-									+ e.getMessage()
-									+ "\ncausing class: " + e.getClass());
+//					System.out
+//							.println("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "
+//									+ name
+//									+ " \nmessage:"
+//									+ e.getMessage()
+//									+ "\ncausing class: " + e.getClass());
 				}
 			}
 			conn.close();
@@ -180,6 +189,9 @@ public class ContextVar {
 			// Quotedstring( Integer.toString(parentPId) ) + " And " + "Name=" +
 			// Quotedstring(name) + "");
 			String value = null;
+			int numtoloop=LOOP_NUM;
+			while (numtoloop>0) {
+				try {
 			synchronized (justForLock) {
 				ResultSet rs = stat.executeQuery("Select value From "
 						+ _tableName + " Where ProcessId="
@@ -190,9 +202,28 @@ public class ContextVar {
 					value = rs.getString("value");
 				}
 				rs.close();
-
-				conn.close();
+			break;
+				
 			}
+				}catch(SQLException sq)
+				{
+					numtoloop--;
+					Thread.sleep(LOOP_TIMEOUT);
+					Log.Debug("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
+							+ name
+							+ " \nmessage:"
+							+ sq.getMessage()
+							+ "\ncausing class: " + sq.getClass());
+//					System.out
+//							.println("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
+//									+ name
+//									+ " \nmessage:"
+//									+ sq.getMessage()
+//									+ "\ncausing class: " + sq.getClass());
+				}
+			}
+			
+			conn.close();
 			Log.Debug("getContextVar: Executed Command = "
 					+ "Select value From " + _tableName + " Where ProcessId="
 					+ Quotedstring(Integer.toString(parentPId)) + " And "
@@ -310,18 +341,18 @@ public class ContextVar {
 				}catch(SQLException se)
 				{
 					numtoloop--;
-					Thread.sleep(100);
+					Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/alterContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
 							+ se.getMessage()
 							+ "\ncausing class: " + se.getClass());
-					System.out
-							.println("ContextVar/alterContextVar:: [WARN] exception occured while setting the contextvar "
-									+ name
-									+ " \nmessage:"
-									+ se.getMessage()
-									+ "\ncausing class: " + se.getClass());
+//					System.out
+//							.println("ContextVar/alterContextVar:: [WARN] exception occured while setting the contextvar "
+//									+ name
+//									+ " \nmessage:"
+//									+ se.getMessage()
+//									+ "\ncausing class: " + se.getClass());
 				}
 			}
 			conn.close();
