@@ -99,7 +99,7 @@ public class ContextVar {
 		try {
 			// Log.Debug("SetContextVar: Calling GetContextVar with name = " +
 			// name);
-			if (getContextVar(name) != null) {
+		/*	if (getContextVar(name) != null) {
 				// Log.Debug("SetContextVar: Calling AlterContextVar with name = "
 				// + name + " and value as : " + value);
 				// Update context variable
@@ -108,7 +108,7 @@ public class ContextVar {
 				// + name + " and value as : " + value);
 				return;
 			}
-
+*/
 			Class.forName("org.sqlite.JDBC");
 			conn = DriverManager.getConnection("jdbc:sqlite:" + _dbPath + "/"
 					+ _dbName);
@@ -117,41 +117,64 @@ public class ContextVar {
 
 			int parentPId = (int) Controller.harnessPIDValue;
 			// Log.Debug("SetContextVar: Parent ID = " + parentPId);
+			String test_value=null;
+			synchronized (justForLock) {
+			Statement statcheck=conn.createStatement();
+			
+			ResultSet rs = statcheck.executeQuery("Select value From "
+					+ _tableName + " Where ProcessId="
+					+ Quotedstring(Integer.toString(parentPId)) + " And "
+					+ "Name=" + Quotedstring(name) + "");
 
+			if (rs.next()) {
+				test_value = rs.getString("value");
+			}
+			rs.close();
+			if(test_value!=null)
+			{
+				Statement statupdate=conn.createStatement();
+				statupdate.executeUpdate("Update " + _tableName + " Set Value="
+						+ Quotedstring(value) + " Where " + "ProcessId="
+						+ Quotedstring(Integer.toString(parentPId))
+						+ " And Name=" + Quotedstring(name) + "");
+				
+			}else{
 			Statement stat = conn.createStatement();
 			Log.Debug("SetContextVar: Firing Command = " + "Insert Into  "
 					+ _tableName + "  (ProcessId, Name, Value) values ("
 					+ Quotedstring(Integer.toString(parentPId)) + ", "
 					+ Quotedstring(name) + ", " + Quotedstring(value) + ")");
 			int numtoloop=LOOP_NUM;
-			while (numtoloop>0) {
+			//while (numtoloop>0) {
 				try {
-					synchronized (justForLock) {
+					
 						stat.executeUpdate("Insert Into  " + _tableName
 								+ "  (ProcessId, Name, Value) values ("
 								+ Quotedstring(Integer.toString(parentPId))
 								+ ", " + Quotedstring(name) + ", "
 								+ Quotedstring(value) + ")");
 						
-						break;
-					}
+						//break;
+					
 					
 				} catch (SQLException e) {
-					numtoloop--;
-					Thread.sleep(LOOP_TIMEOUT);
+					//numtoloop--;
+					//Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
 							+ e.getMessage()
 							+ "\ncausing class: " + e.getClass());
-//					System.out
-//							.println("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "
-//									+ name
-//									+ " \nmessage:"
-//									+ e.getMessage()
-//									+ "\ncausing class: " + e.getClass());
+					System.out
+							.println("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "
+									+ name
+									+ " \nmessage:"
+									+ e.getMessage()
+									+ "\ncausing class: " + e.getClass());
 				}
 			}
+			}
+		//	}
 			conn.close();
 			// Log.Debug("SetContextVar: Executed Command = " + "Insert Into  "
 			// + _tableName + "  (ProcessId, Name, Value) values (" +
@@ -161,6 +184,7 @@ public class ContextVar {
 		} catch (Exception ex) {
 			Log.Debug("ContextVar/SetContextVar: Exception is : "
 					+ ex.getMessage() + ex.getStackTrace());
+			ex.printStackTrace();
 			throw ex;
 		} finally {
 			// Log.Debug("ContextVar/SetContextVar: Connection is getting closed ");
@@ -190,7 +214,7 @@ public class ContextVar {
 			// Quotedstring(name) + "");
 			String value = null;
 			int numtoloop=LOOP_NUM;
-			while (numtoloop>0) {
+			//while (numtoloop>0) {
 				try {
 			synchronized (justForLock) {
 				ResultSet rs = stat.executeQuery("Select value From "
@@ -202,26 +226,26 @@ public class ContextVar {
 					value = rs.getString("value");
 				}
 				rs.close();
-			break;
+			//break;
 				
 			}
 				}catch(SQLException sq)
 				{
-					numtoloop--;
-					Thread.sleep(LOOP_TIMEOUT);
+					//numtoloop--;
+					//Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
 							+ sq.getMessage()
 							+ "\ncausing class: " + sq.getClass());
-//					System.out
-//							.println("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
-//									+ name
-//									+ " \nmessage:"
-//									+ sq.getMessage()
-//									+ "\ncausing class: " + sq.getClass());
+					System.out
+							.println("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
+									+ name
+									+ " \nmessage:"
+									+ sq.getMessage()
+									+ "\ncausing class: " + sq.getClass());
 				}
-			}
+		//	}
 			
 			conn.close();
 			Log.Debug("getContextVar: Executed Command = "
@@ -320,8 +344,8 @@ public class ContextVar {
 			// "ProcessId=" + Quotedstring(Integer.toString(parentPId)) +
 			// " And Name=" + Quotedstring(name) + "");
 			int numtoloop=LOOP_NUM;
-			while(numtoloop>0)
-			{
+			//while(numtoloop>0)
+			//{
 				try{
 			
 			synchronized (justForLock) {
@@ -337,24 +361,24 @@ public class ContextVar {
 					+ " Where " + "ProcessId="
 					+ Quotedstring(Integer.toString(parentPId)) + " And Name="
 					+ Quotedstring(name) + "");
-			break;
+			//break;
 				}catch(SQLException se)
 				{
-					numtoloop--;
-					Thread.sleep(LOOP_TIMEOUT);
+					//numtoloop--;
+					//Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/alterContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
 							+ se.getMessage()
 							+ "\ncausing class: " + se.getClass());
-//					System.out
-//							.println("ContextVar/alterContextVar:: [WARN] exception occured while setting the contextvar "
-//									+ name
-//									+ " \nmessage:"
-//									+ se.getMessage()
-//									+ "\ncausing class: " + se.getClass());
+					System.out
+							.println("ContextVar/alterContextVar:: [WARN] exception occured while setting the contextvar "
+									+ name
+									+ " \nmessage:"
+									+ se.getMessage()
+									+ "\ncausing class: " + se.getClass());
 				}
-			}
+		//	}
 			conn.close();
 		} catch (Exception ex) {
 			Log.Error("ContextVar/alterContextVar: Exception is : "
