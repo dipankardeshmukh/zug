@@ -1,6 +1,6 @@
 :: Automation - It contains command to install ZUG.
 :: Author : Gurpreet Anand
-:: Modiied by : Nitish Rawat on 23-07-2010,Sankha on 05-01-2012,Chayan on 08-07-2011,Sankha on 12-06-2012
+:: Modiied by : Nitish Rawat on 23-07-2010,Sankha on 05-01-2012,Chayan on 08-07-2011,Sankha on 12-06-2012,Sankha on 18-02-2013
 :: © Copyright 2009 Automature Inc.. All Rights Reserved.
 
 cls
@@ -31,29 +31,29 @@ set processorType=%PROCESSOR_ARCHITECTURE%
 if %errorlevel% NEQ 0 goto EndProcessorArchNotFound
 
 ::Install HarnessAPI.dll COM dll
-%windir%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe .\COM\ZugAPI.dll /codebase /tlb
-if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness
+rem %windir%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe .\COM\ZugAPI.dll /codebase /tlb
+rem if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness
 
 ::Add .Net dll in GAC
-.\GAC\gacutil32Bit.exe /i System.Data.SQLite.DLL
-if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGac
+rem .\GAC\gacutil32Bit.exe /i System.Data.SQLite.DLL
+rem if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGac
 
 ::Install HarnessAPI.dll COM dll for 32Bit
-rem IF %PROCESSOR_ARCHITECTURE%==x86 %windir%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe .\COM\ZugAPI.dll /codebase /tlb
-rem if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness32
+IF %PROCESSOR_ARCHITECTURE%==x86 %windir%\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe .\COM\x86\ZugAPI.dll /codebase /tlb
+if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness32
 
 
 ::Add .Net dll in GAC for 32Bit
-rem IF %PROCESSOR_ARCHITECTURE%==x86 .\GAC\gacutil32Bit.exe /i System.Data.SQLite.DLL
-rem if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC32
+IF %PROCESSOR_ARCHITECTURE%==x86 .\GAC\gacutil32Bit.exe /i System.Data.SQLite.DLL
+if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC32
 
 ::Install HarnessAPI.dll COM dll for 64Bit
-rem IF NOT %PROCESSOR_ARCHITECTURE%==x86 %windir%\Microsoft.NET\Framework64\v2.0.50727\RegAsm.exe .\COM\ZugAPI.dll /codebase /tlb
-rem if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness64
+IF NOT %PROCESSOR_ARCHITECTURE%==x86 %windir%\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe .\COM\x64\ZugAPI.dll /codebase /tlb
+if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness64
 
 ::Add .Net dll in GAC for 64Bit
-rem IF NOT %PROCESSOR_ARCHITECTURE%==x86 .\GAC\gacutil64Bit.exe /i .\GAC\System.Data.SQLite.DLL
-rem if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC64
+IF NOT %PROCESSOR_ARCHITECTURE%==x86 .\GAC\gacutil64Bit.exe /i .\GAC\System.Data.SQLite.DLL
+if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC64
 
 
 ::setting runZUG.bat in path variables. EditSystemPathVariable.exe 
