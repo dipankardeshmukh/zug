@@ -59,11 +59,11 @@ public class Controller extends Thread {
 	public static long harnessPIDValue = 0;
 	ProgramOptions opts = null;
 	public static boolean verbose = true;
-	private static boolean debugMode = true;
+	 static boolean debugMode = true;
 	public static boolean dbReporting = true;
 	private static boolean compileMode = false;
 	private static boolean verificationSwitching = true;
-	private static boolean doCleanupOnTimeout = false;
+	 static boolean doCleanupOnTimeout = false;
 	private static boolean retrycountflag = false;
 	private static boolean retrytimeoutflag = false;
 	public static boolean nyonserver = false; // Flag which checks whether its
@@ -94,11 +94,11 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130213" + ".133";
-	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
-	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
-	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
-	private static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
+	private static String Version = "ZUG Premium 5.7." + "20130218" + ".134";
+	static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
+	static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
+	static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
+	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 	// Assuming that the Test Plan Initialization will Work Fine.
 	boolean initWorkedFine = true;
 	private static String manualTestCaseID = StringUtils.EMPTY;
@@ -110,7 +110,7 @@ public class Controller extends Thread {
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
 	// Hashtable to store the Abstract TestCase Name as KEY and the TestCase
 	// Object as Value.
-	private Hashtable<String, TestCase> abstractTestCase = new Hashtable<String, TestCase>();
+	static Hashtable<String, TestCase> abstractTestCase = new Hashtable<String, TestCase>();
 	TopologySet[] TopologySet = null;
 	// Some Internal Variables of the Controller.
 	// Path of the Input TestCase Excel sheet
@@ -119,7 +119,7 @@ public class Controller extends Thread {
 	private String inputFile = StringUtils.EMPTY; // @"C:\Documents and
 	// Settings\gurpreet_anand\Desktop\CPAPI_PrimaryTestCases
 	// WithFilePath.xls"; //
-	private String scriptLocation = StringUtils.EMPTY;
+	static String scriptLocation = StringUtils.EMPTY;
 	public static String includeMolecules = StringUtils.EMPTY;
 	public static String pwd = StringUtils.EMPTY;
 	@SuppressWarnings("unused")
@@ -140,9 +140,9 @@ public class Controller extends Thread {
 	private String BuildNo = StringUtils.EMPTY;
 	private String testCycleId = StringUtils.EMPTY;
 	private String[] productLogFiles = null;
-	private Hashtable<String, Prototype> prototypeHashTable = null;
-	private static Boolean _testPlanStopper = false;
-	private static Hashtable _testStepStopper = new Hashtable();
+	static Hashtable<String, Prototype> prototypeHashTable = null;
+	 static Boolean _testPlanStopper = false;
+	 static Hashtable _testStepStopper = new Hashtable();
 	// variable to store context variable for archiving
 	public static String TOPOSET = null;
 	// private String TPID = null;
@@ -401,7 +401,7 @@ public class Controller extends Thread {
 
 	}
 
-	public void message(String msg) {
+	public static void message(String msg) {
 		Log.Result(msg);
 
 		if (verbose) {
@@ -1744,10 +1744,8 @@ catch(Exception e)
 			tempAction.parentTestCaseID = parentTestCaseID;
 			Log.Debug("Controller/RunAbstractTestCase: tempAction.parentTestCaseID =  : "
 					+ tempAction.parentTestCaseID);
-
 			tempAction.stackTrace = tempTestCase.stackTrace;
 			tempAction.nameSpace = action.nameSpace;
-
 			tempAction.userObj = action.userObj;
 			tempAction.step = action.step;
 			tempAction.lineNumber = action.lineNumber;
@@ -1764,13 +1762,11 @@ catch(Exception e)
 					+ action.actionArguments.size()
 					+ " for action : "
 					+ action.actionName);
-
 			ArrayList<String> tempActionArguments = new ArrayList<String>();
 			for (int i = 0; i < action.actionArguments.size(); ++i) {
 				Log.Debug("Controller/RunAbstractTestCase: Working on Action Argument : "
 						+ i + " for action : " + action.actionName);
 				String actionVal = action.actionArguments.get(i).toString();
-				// message("RUNABSTRACT: The MOlecule-Atom args lvl 0 "+actionVal);
 				Log.Debug("Controller/RunAbstractTestCase: actionVal[" + i
 						+ "] = " + actionVal + " for action : "
 						+ action.actionName);
@@ -1790,7 +1786,6 @@ catch(Exception e)
 								.SplitOnFirstEquals(actionVal);
 
 						String tempActionVal = splitActionVal[1];
-
 						try {
 							if (tempActionVal.startsWith("%")
 									&& tempActionVal.endsWith("%")) {
@@ -4333,7 +4328,7 @@ try{
 	 *            Variable along with its Value separated by = sign. For Example
 	 *            : PATH="C:\test"
 	 */
-	private void CreateContextVariable(String variableAndValue)
+	static void CreateContextVariable(String variableAndValue)
 			throws Exception {
 
 		Log.Debug("Controller/CreateContextVariable : Start of function with variableAndValue = ."
@@ -5240,10 +5235,22 @@ try{
 					// abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,
 					// verification.nameSpace)), tempList,
 					// action.parentTestCaseID,
-					// action.stackTrace,isMoleculeVerificationNegative);
-					RunAbstractTestCase((TestCase) abstractTestCase.get(Excel
+
+					TestCase testcase=abstractTestCase.get(Excel
 							.AppendNamespace(abstractTestCaseName,
-									verification.nameSpace)), tempList,
+									verification.nameSpace));
+					Action a=testcase.actions.get(0);
+					if(a.actionName.equalsIgnoreCase("#define_args")){
+						if(a.actionArguments.size()!=tempList.size()){
+							throw new Exception("No of arguments Mismatched.The molecule "+testcase.testCaseID+" takes "+a.actionArguments.size()+" arguments\nNumber of arguments passed is "+tempList.size());
+						}
+					}
+					// RunAbstractTestCase((TestCase)
+					// abstractTestCase.get(Excel.AppendNamespace(abstractTestCaseName,
+					// verification.nameSpace)), tempList,
+					// action.parentTestCaseID,
+					// action.stackTrace,isMoleculeVerificationNegative);
+					RunAbstractTestCase(testcase , tempList,
 							action.parentTestCaseID, action.stackTrace);
 					Log.Debug(String
 							.format("Controller/RunVerification: Successfully executed  RunAbstractTestCase for Abstract TestCase ID as : %s ",
@@ -6223,6 +6230,13 @@ try{
 						{
 							//Do nothing
 						}
+					Action a=tempActntestcase.actions.get(0);
+					if(a.actionName.equalsIgnoreCase("#define_args")){
+						if(a.actionArguments.size()!=tempList.size()){
+							throw new Exception("No of arguments Mismatched.The molecule "+tempActntestcase.testCaseID+" takes "+a.actionArguments.size()+" arguments\nNumber of arguments passed is "+tempList.size());
+						}
+					}
+
 				
 					RunAbstractTestCase(tempActntestcase, tempList,action.parentTestCaseID, action.stackTrace);
 					
@@ -7220,7 +7234,7 @@ try{
 	 *            Name of the VAriable to remove from the List of Environment
 	 *            Variable.
 	 */
-	private void DestroyContextVariable(String variableName) throws Exception {
+	static void DestroyContextVariable(String variableName) throws Exception {
 		Log.Debug(String
 				.format("Controller/DestroyContextVariable : Start of function with variableName = %s.",
 						variableName));
