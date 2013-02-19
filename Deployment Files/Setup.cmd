@@ -24,7 +24,7 @@ set SAMPLE_ROOT=%~dp0.
 pushd "%~dp0."
 
 :: Checking the .net Framework v3.5 installation
-if not exist %windir%\Microsoft.NET\Framework\v3.5 goto EndNotAbleToFindNetFramework
+if not exist %windir%\Microsoft.NET\Framework\v4.0.30319 goto EndNotAbleToFindNetFramework
 
 :: Get processor type
 set processorType=%PROCESSOR_ARCHITECTURE%
