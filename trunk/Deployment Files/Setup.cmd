@@ -55,6 +55,13 @@ if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness64
 IF NOT %PROCESSOR_ARCHITECTURE%==x86 .\GAC\gacutil64Bit.exe /i .\GAC\System.Data.SQLite.DLL
 if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC64
 
+::Copy Specific ZugUtility.exe for 32Bit
+IF %PROCESSOR_ARCHITECTURE%==x86 COPY .\ZugUtilityExe\x86\ZugUtility.exe .\
+if %errorlevel% NEQ 0 goto EndNotAbleToCopyZugUtility
+
+::Copy Specific ZugUtility.exe for 64Bit
+IF NOT %PROCESSOR_ARCHITECTURE%==x86 COPY .\ZugUtilityExe\x64\ZugUtility.exe .\
+if %errorlevel% NEQ 0 goto EndNotAbleToCopyZugUtility
 
 ::setting runZUG.bat in path variables. EditSystemPathVariable.exe 
 EditSystemPathVariable.exe
@@ -108,6 +115,10 @@ EXIT /B 6
 :EndNotAbleToEditSystemPathVariable
 Echo Error MESSAGE : Not able to set runZUG.bat in path variables
 EXIT /B 7
+
+:EndNotAbleToCopyZugUtility
+Echo Error MESSAGE: Not able to Copy ZugUtility.exe
+EXIT /B 8
 
 :EndNotAbleToFindNetFramework
 Echo Error Message : Not able to find .Net Framework v3.5 installed on system
