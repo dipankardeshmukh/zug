@@ -9202,7 +9202,7 @@ try{
 			for (Verification verify : testcase_actions.verification) {
 				if (verify.verificationArguments.size() == verify.verificationActualArguments
 						.size()) {
-					for (int k = 0; i < verify.verificationActualArguments
+					for (int k = 0; k < verify.verificationActualArguments
 							.size(); k++) {
 						String variable_name = verify.verificationActualArguments
 								.get(k);
