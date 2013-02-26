@@ -1658,9 +1658,17 @@ public class Excel {
 							_macroSheetHashTable.put(newMacroKey.toLowerCase(),
 									newMacroValue);
 							String indexMacroKey[] = newMacroKey.split("\\.");
+						if(indexMacroKey[0].substring(1).equalsIgnoreCase(mainNameSpace))
+						{
 							_indexedMacroTable.put(
 									indexMacroKey[1].toLowerCase(),
 									newMacroValue.trim());
+						}
+						else{
+							_indexedMacroTable.put(newMacroKey.toLowerCase(), newMacroValue.trim());
+						}
+							
+							
 							count++;
 
 						} else {
@@ -3766,26 +3774,15 @@ public class Excel {
 					tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
 					tempValue = AppendNamespace(tempValue, nameSpace);
 					tempValue = "$" + tempValue;
-					// while(_keyIterate.hasNext())
-					// {
-					// String _keyToSearch=_keyIterate.next();
-					// if(tempValue.equalsIgnoreCase(_keyToSearch))
-					// {
-					// macroFound=true;
-					// break;
-					// }
-					// else
-					// {
-					// macroFound=false;
-					// }
-					//
-					// }
-					// if(!macroFound)
-					// {
-					// Log.Error(String.format("The Macro: %s is not defined.",variableToFind));
-					// }
+					
 					tempValue = _macroSheetHashTable.get(tempValue);
 
+				}
+				if(tempValue==null)
+				{
+					tempValue=splitVariableToFind[1];
+						
+					
 				}
 				tempValue = tempValPrefix + "=" + tempValue;
 			} // / First Check in the Macro Sheet
@@ -3828,7 +3825,10 @@ public class Excel {
 				}
 
 				tempValue = _macroSheetHashTable.get(tempValue);
-
+if(tempValue==null)
+{
+	tempValue=variableToFind;
+}
 			}
 			// System.out.println("The tempValue from macro table"+tempValue);
 			// else{
