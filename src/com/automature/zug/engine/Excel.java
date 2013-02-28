@@ -3778,12 +3778,7 @@ public class Excel {
 					tempValue = _macroSheetHashTable.get(tempValue);
 
 				}
-				if(tempValue==null)
-				{
-					tempValue=splitVariableToFind[1];
-						
-					
-				}
+				
 				tempValue = tempValPrefix + "=" + tempValue;
 			} // / First Check in the Macro Sheet
 				// System.out.println("The temp value "+tempValue+" namespace "+nameSpace);
@@ -3825,11 +3820,7 @@ public class Excel {
 				}
 
 				tempValue = _macroSheetHashTable.get(tempValue);
-if(tempValue==null)
-{
-	tempValue=variableToFind;
-}
-			}
+	}
 			// System.out.println("The tempValue from macro table"+tempValue);
 			// else{
 			// throw new
@@ -3843,6 +3834,15 @@ if(tempValue==null)
 			throw new Exception(
 					"\nExcel/FindInMacroAndEnvTable : Exception occured, exception mesasge is  : "
 							+ e.getMessage());
+		}
+		finally
+		{
+			if(tempValue==null)
+			{
+				tempValue=variableToFind;
+					
+				
+			}
 		}
 		return tempValue;
 	}// FindInMacroAndEnvTable

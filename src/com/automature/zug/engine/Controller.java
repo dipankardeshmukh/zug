@@ -94,7 +94,7 @@ public class Controller extends Thread {
 	private static int repeatDuration = 0;
 	private static double repeatDurationLong = 0;
 	// Change this Number every time the Harness is Released.
-	private static String Version = "ZUG Premium 5.7." + "20130226" + ".134";
+	private static String Version = "ZUG Premium 5.7." + "20130228" + ".135";
 	private static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	private static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
@@ -3892,9 +3892,14 @@ try{
 				// message("GetValue:/This is Indexed = " + tempValue);
 				//tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
 				tempValue = Excel._indexedMacroTable.get(tempValue.substring(1).toLowerCase());
+				
 				// message("GetValue:/This is Indexed The Value = " +
 				// tempValue);
-			} else {
+			}else if(tempValue.startsWith("$") & tempValue.contains("#"))
+			{
+				tempValue=Excel._indexedMacroTable.get(tempValue.toLowerCase());
+			}
+			else {
 				// message("The entire value unchanged "+entireValue);
 				tempValue = entireValue;
 			}
@@ -3907,7 +3912,11 @@ try{
 			tempValue = Excel._indexedMacroTable.get(entireValue.substring(1).toLowerCase());
 			// /message("GetValue:/This is a Indexed\t" + tempValue);
 
-		} else if (entireValue.startsWith("$$%") && entireValue.endsWith("%")) {
+		}else if(entireValue.startsWith("$") & entireValue.contains("#"))
+		{
+			tempValue=Excel._indexedMacroTable.get(entireValue.toLowerCase());
+		}
+		else if (entireValue.startsWith("$$%") && entireValue.endsWith("%")) {
 			entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
 			entireValue = entireValue.replaceAll("%", "");
 			tempValue = ContextVar.getContextVar(entireValue);
