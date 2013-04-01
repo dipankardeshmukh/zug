@@ -61,7 +61,7 @@ public class Excel {
 	private String[] _configSheetKeys = new String[] { "ScriptLocation",
 			"DBHostName", "DBName", "DBUserName", "DBUserPassword",
 			"Test Suite Name", "Test Suite Role", "TestPlan Id",
-			"Test Cycle Id", "ProductLogLocations", "Include", "ValidTopos" };
+			"Test Cycle Id", "ProductLogLocations", "Include", "ValidTopos","TestFramework"};
 
 	// A hash table to store the Values(Name/Value pair) from the Configuration
 	// Sheet
@@ -69,7 +69,7 @@ public class Excel {
 	private List<String> _externalSheets = new ArrayList<String>();
 	private static HashMap<String, String> externalSheets = new HashMap<String, String>();
 	// A hashtable to store the Values(Name/Value pair) from the Macro Sheet
-	private Hashtable<String, String> _macroSheetHashTable = new Hashtable<String, String>();
+	private static Hashtable<String, String> _macroSheetHashTable = new Hashtable<String, String>();
 	public static Hashtable<String, String> _indexedMacroTable = new Hashtable<String, String>();
 	// A hashtable to store the UserName and its Object contain its credentials
 	// from the User Sheet
@@ -79,11 +79,15 @@ public class Excel {
 	// Execute.
 	private ArrayList<TestCase> testCases = new ArrayList<TestCase>();
 	// Hashtable to store the "testcase name/id" and "The testcase Object"
-	private Hashtable<String, TestCase> abstractTestCase = new Hashtable<String, TestCase>();
+	private Hashtable<String, Molecule> abstractTestCase = new Hashtable<String, Molecule>();
 	// / Hashtable to store the "prototype name" and "The Prototype Object"
 	private Hashtable<String, Prototype> protoTypesHT = new Hashtable<String, Prototype>();
 	List<String> _productLogFiles = new ArrayList<String>();
 
+	public Excel(){
+		
+	}
+	
 	/**
 	 * 
 	 * @return array of configuration keys
@@ -113,7 +117,7 @@ public class Excel {
 	/**
 	 * @return the Abstract TestCases.
 	 */
-	public Hashtable<String, TestCase> AbstractTestCases() {
+	public Hashtable<String, Molecule> AbstractTestCases() {
 		return abstractTestCase;
 	}
 
@@ -208,7 +212,7 @@ public class Excel {
 						.get(_configSheetKeys[1]);
 			}
 
-			if (Controller.dbReporting) {
+			if (Controller.opts.dbReporting) {
 
 				up: while (true) {
 
@@ -229,6 +233,38 @@ public class Excel {
 		return dbHostName;
 	}
 
+	public String DBName() {
+		String dbName = null;
+		try {
+			ConsoleReader reader = new ConsoleReader();
+			// System.out.println("The DBKEY "+_configSheetKeys[1]+" Hashtable "+_configSheetHashTable.get("DBHostName"));
+			if (_configSheetHashTable.get(_configSheetKeys[2]) != null) {
+				dbName = (String) _configSheetHashTable
+						.get(_configSheetKeys[2]);
+			}else if(_configSheetHashTable.get(_configSheetKeys[_configSheetKeys.length-1]) != null) {
+				dbName = (String) _configSheetHashTable
+						.get(_configSheetKeys[_configSheetKeys.length-1]);
+			}
+			if (Controller.opts.dbReporting) {
+
+				up: while (true) {
+
+					if (StringUtils.isBlank(dbName)) {
+						dbName = reader
+								.readLine("\nEnter the DBName : ");
+						continue up;
+					} else {
+						_configSheetHashTable.put(_configSheetKeys[2],
+								dbName.trim());
+						break up;
+					}
+				}
+			}
+		} catch (IOException e) {
+		}
+
+		return dbName;
+	}
 	/**
 	 * @return the value of Database Name
 	 */
@@ -695,12 +731,14 @@ public class Excel {
 					"Excel/FindInMacroAndEnvTableForSingleVector : Exception occured,message is : "
 							+ e.getMessage());
 		}
+		
 
 		Log.Debug("Excel/FindInMacroAndEnvTableForSingleVector : End of function with variableToFind = "
 				+ variableToFind + " and its value is -> " + tempValue);
-
+		
 		return tempValue;
 	}// FindInMacroAndEnvTableForSingleVector
+
 
 	/**
 	 * Function to read the Excel file. This function will read the different
@@ -811,19 +849,7 @@ public class Excel {
 					e.getMessage()), e);
 		}
 		try {
-			// //system.out.println(String.format("READING ALL EXTERNAL SHEETS OF %s"
-			// , inputFileName));
-			// / After Reading the Configuration Sheet, we need to read all the
-			// External Molecule Sheet
-			// System.out.println("External sheet before removing duplicates "+_externalSheets);
-			// _externalSheets=Utility.removeDuplicatesFromArrayList(_externalSheets);
-			// System.out.println("External sheet after removing duplicates "+_externalSheets);
-			// for (Iterator iterator = _externalSheets.iterator();
-			// iterator.hasNext();) {
 			for (String externalSheet : Excel.getExternalSheets()) {
-				// String type_element = (String)iterator.next();
-				// System.out.println("\nExternal sheets : " + type_element);
-				// ReadExternalMacros(type_element);
 				System.out.println("\nExternal sheets : " + externalSheet);
 				ReadExternalMacros(externalSheet);
 			}
@@ -881,40 +907,15 @@ public class Excel {
 			_macroSheetHashTable.putAll(Controller.macrocommandlineinputs);
 
 			readHashTable(_macroSheetHashTable);
-			// System.out.println("EXCEL/READ:: The Cardinality is " +
-			// getCardinality(_macroSheetHashTable));
-			// System.out.println("The Macrosheet Hash\t" +
-			// _macroSheetHashTable);
-
-			// if
-			// (!checkOptimalityForCartesianProduct(Utility.getMaxJVMMemorySize(Runtime.getRuntime()),
-			// new
-			// Integer(getCardinalityForMVM(_macroSheetHashTable)).toString()))
-			// {
-			// throw new
-			// Exception("\nCombination Of MVM values Exceeded permisible limit :: Not Comapatibile \nPlease Contact Automature Support Team. Email: support@automature.com");
-			// }
-
 			Log.Debug(String
 					.format("Excel/ReadExcel : The Macro Sheet - %s of Excel Sheet %s read successfully.",
 							MacroSheetName, inputFileName));
 			Log.Debug(String.format(
 					"Excel/ReadExcel: The New CommandLine - %s",
 					_macroSheetHashTable));
-
-			// Log.Debug(String.format("Excel/ReadExcel : Reading the User Sheet %s",UserSheetName));
-			// system.out.println(String.format("READING User SHEET OF %s",inputFileName));
-
-			// ReadUserSheet(_workBook);
-			// readHashTable(_userSheetHashTable);
-
-			// Log.Debug(String.format("Excel/ReadExcel : The User Sheet - %s of Excel Sheet %s read successfully.",UserSheetName,inputFileName));
-
 			Log.Debug(String.format(
 					"Excel/ReadExcel : Reading the Prototypes Sheet %s",
 					PrototypeSheetName));
-			// system.out.println(String.format("READING prototype SHEET OF %s",
-			// inputFileName));
 
 			ReadPrototypesSheet(_workBook, mainNameSpace);
 
@@ -1076,7 +1077,7 @@ public class Excel {
 			}
 			// //System.out.println("Excel/ReadConfigSheet : the nested includes "
 			// +_externalSheets);
-			if (Controller.nyonserver) {
+			if (Controller.opts.nyonserver) {
 				System.out.println(xmlfile.createXMLFile()); // creates a XML
 			} // file is
 				// Generated for
@@ -1111,6 +1112,7 @@ public class Excel {
 			return Double.toString(cell.getNumericCellValue());
 		}
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+			
 			return cell.getStringCellValue();
 		}
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK
@@ -1184,7 +1186,7 @@ public class Excel {
 								} else {
 									String actualPath = "";
 									actualPath += ProgramOptions.workingDirectory
-											+ Controller.SLASH + Path + ";";
+											+ SysEnv.SLASH + Path + ";";
 									ScriptLocationPathList += actualPath;
 								}
 							}
@@ -1281,7 +1283,7 @@ public class Excel {
 								// ProgramOptions.workingDirectory+
 								// Controller.SLASH + Path + ",";
 								actualPath += inputxlsfile.getParent()
-										+ Controller.SLASH + Path + ",";
+										+ SysEnv.SLASH + Path + ",";
 								// System.out.println("This is the file location of include "+actualPath);
 								includePathList += actualPath;
 							}
@@ -1384,7 +1386,7 @@ public class Excel {
 					if (keyflag) {
 						if (!valueflag) {
 							ContextVar.setContextVar(strKey+Thread.currentThread().getId(), StringUtils.EMPTY);
-							strValue = "%" + strKey+Thread.currentThread().getId() + "%";
+							strValue = "%" + strKey + "%";
 
 						}
 					}
@@ -1392,7 +1394,7 @@ public class Excel {
 							|| StringUtils.isEmpty(strValue) && keyflag) {
 						// System.out.println("This is blank value but contains a key "+strValue+" "+strKey);
 						ContextVar.setContextVar(strKey+Thread.currentThread().getId(), StringUtils.EMPTY);
-						strValue = "%" + strKey+Thread.currentThread().getId() + "%";
+						strValue = "%" + strKey + "%";
 					}
 					//System.out.println("strkey coming "+strKey+" strkey value "+strValue);
 					if(!strKey.isEmpty())
@@ -1402,24 +1404,17 @@ public class Excel {
 					strValue = ExpandMacrosValue(strValue.trim(),
 							strKey.trim(), nameSpace); // modify
 					}
-					// }
-					// strkey
-					// and
-					// strvalue
-					// for
-					// indexed
-					// MVM
-					// implement indexed MVM evaluation method
+				
 				}
 
 				if (sheetname.equals("config")
 						&& ((_configSheetKeys[10].compareTo(strKey) == 0))) {
 					// /Don't insert in hash table if sheet is config and key is
 					// INCLUDE
-					if (!Controller.includeFlag) {
+					if (!Controller.opts.includeFlag) {
 						Log.Debug("Command Line Executions switch Given\t"
-								+ Controller.includeFlag);
-						String[] include_commandlist = Controller.includeMolecules
+								+ Controller.opts.includeFlag);
+						String[] include_commandlist = Controller.opts.includeMolecules
 								.split(",");
 						String commmandline_includelist = "";
 						for (String commandline_include : include_commandlist) {// System.out.println("This the include files\t"+Controller.includeMolecules);
@@ -1435,6 +1430,8 @@ public class Excel {
 								} else {
 									nSMkey = temp[0];
 									commandline_include = temp[1];
+								//	System.out.println("Name space"+nSMkey);
+								//	System.out.println("File:"+commandline_include);
 								}
 							}
 							if (commandline_include.contains(":")
@@ -1457,12 +1454,29 @@ public class Excel {
 									// ProgramOptions.workingDirectory+
 									// Controller.SLASH + commandline_include +
 									// ",";
-									actualPath += inputxlsfile.getParent()
-											+ Controller.SLASH
+									
+									if(commandline_include.contains("..")){
+										int lastIndex=commandline_include.lastIndexOf("..")+1;
+										String temp[]=commandline_include.split("\\..");
+										int upperH=temp.length;	
+										String p=inputxlsfile.getParent();
+										for(int i=1;i<upperH-1;i++){
+											p=p.substring(0, p.lastIndexOf(SysEnv.SLASH));		//		System.out.println("p="+p);
+										}
+										commandline_include=p+commandline_include.substring(lastIndex+1,commandline_include.length());
+										actualPath +=commandline_include;
+									//	System.out.println("IF/Command Line Include:"+commandline_include);
+									}
+									else{
+											actualPath += inputxlsfile.getParent()
+											+ SysEnv.SLASH
 											+ commandline_include;
+								//			System.out.println("ELse/Command Line Include:"+commandline_include);
+									}
 									if (!nSMkey.isEmpty())
 										namespaceMap.put(actualPath, nSMkey);
 									actualPath += ",";
+								//	System.out.println("Command Line Include:"+commandline_include);
 								}
 								// System.out.println(actualPath+":"+nSMkey);
 								// namespaceMap.put(actualPath,nSMkey);
@@ -1478,9 +1492,9 @@ public class Excel {
 						// line
 						// argument
 					}
-					if (Controller.includeFlag || !Controller.includeFlag) {
+					if (Controller.opts.includeFlag || !Controller.opts.includeFlag) {
 						Log.Debug("No Command Line Executions switch Given\t"
-								+ Controller.includeFlag);
+								+ Controller.opts.includeFlag);
 						if (strValue.isEmpty()) {
 
 							break;
@@ -1504,10 +1518,23 @@ public class Excel {
 										// actualPath +=
 										// ProgramOptions.workingDirectory+
 										// Controller.SLASH + Path + ",";
+										if(Path.contains("..")){
+											int lastIndex=Path.lastIndexOf("..")+1;
+											String temp[]=Path.split("\\..");
+											int upperH=temp.length;	
+											String p=inputxlsfile.getParent();
+											for(int i=1;i<upperH-1;i++){
+												p=p.substring(0, p.lastIndexOf(SysEnv.SLASH));		//		System.out.println("p="+p);
+											}
+											Path=p+Path.substring(lastIndex+1,Path.length());
+											actualPath +=Path;
+										//	System.out.println("IF/Command Line Include:"+commandline_include);
+										}else{
 										actualPath += inputxlsfile.getParent()
-												+ Controller.SLASH + Path + ",";
-										// System.out.println(Path+" This the actual Path\t"+actualPath);
-										inlcudelist += actualPath;
+												+ SysEnv.SLASH + Path + ",";
+										}// System.out.println(Path+" This the actual Path\t"+actualPath);
+								//		System.out.println("Files:"+actualPath);
+										inlcudelist += actualPath+",";
 									} // AddToExternalSheets(strKey,
 										// actualPath);
 								}
@@ -1521,7 +1548,7 @@ public class Excel {
 					// System.out.println("GetKeyPairValue:: key iserted->"+strKey+"\tvalue given--->"+strValue);
 					// System.out.println("key iserted->"+strKey+"\tvalue given--->"+ProgramOptions.workingDirectory+"\\"+strValue);
 
-					if (Controller.nyonserver) {
+					if (Controller.opts.nyonserver) {
 						// System.out.println("Molecule to be parsed "+_externalSheets);
 						for (String moleculefile : Excel.getExternalSheets()) {
 							// System.out.println("Molecule files "+moleculefile);
@@ -1570,7 +1597,7 @@ public class Excel {
 	public String ExpandMacrosValue(String macroValue, String macroKey,
 			String nameSpace) throws Exception {
 		try {
-
+		//	System.out.println("Macro value :"+macroValue+"\tmacroKey:"+macroKey+"\tnameSpace:"+nameSpace);
 			String macroValExpander = "..";
 			Log.Debug(String
 					.format("Excel/ExpandMacrosValue : Start of the Function with macroValue = %s",
@@ -1657,18 +1684,21 @@ public class Excel {
 									+ "'");
 							_macroSheetHashTable.put(newMacroKey.toLowerCase(),
 									newMacroValue);
+					//		System.out.println("value in macro table"+newMacroKey.toLowerCase()+"-"+newMacroValue);
 							String indexMacroKey[] = newMacroKey.split("\\.");
-						if(indexMacroKey[0].substring(1).equalsIgnoreCase(mainNameSpace))
-						{
-							_indexedMacroTable.put(
+							if(indexMacroKey[0].substring(1).equalsIgnoreCase(mainNameSpace)){
+                                _indexedMacroTable.put(
+                                        indexMacroKey[1].toLowerCase(),
+                                        newMacroValue.trim());
+                               // System.out.println("\nExcel/putting the value in inedexed table"+indexMacroKey[1].toLowerCase().toLowerCase()+","+newMacroValue.trim());
+                            }else{
+                                _indexedMacroTable.put(newMacroKey.toLowerCase(),newMacroValue.trim());
+                              //  System.out.println(newMacroKey+":"+newMacroValue);
+                            //    System.out.println("\nExcel/putting the value in inedexed table"+newMacroKey.toLowerCase()+","+newMacroValue.trim());
+                            }
+						/*	_indexedMacroTable.put(
 									indexMacroKey[1].toLowerCase(),
-									newMacroValue.trim());
-						}
-						else{
-							_indexedMacroTable.put(newMacroKey.toLowerCase(), newMacroValue.trim());
-						}
-							
-							
+									newMacroValue.trim());*/
 							count++;
 
 						} else {
@@ -1679,14 +1709,17 @@ public class Excel {
 
 					} else if (tempStringToExpand.startsWith("$")
 							&& !tempStringToExpand.startsWith("$$")) {
+						
 						String tempMacroToExpand = AppendNamespace(
 								tempStringToExpand, nameSpace);
 						String newMacroKey = macroKey + "#"
 								+ tempStringToExpand.substring(1);
+					//	System.out.println("tempMacroToExpand "+tempMacroToExpand+"\tnewMacroKey"+newMacroKey);
 						if (_macroSheetHashTable.containsKey(tempMacroToExpand)) {
 							Log.Debug("Excel/ExpandMacrosValue : Index Macro key found");
 							String newMacroValue = _macroSheetHashTable
 									.get(tempMacroToExpand);
+					//		System.out.println("New macro value:"+newMacroValue);
 							Log.Debug("Excel/ExpandMacrosValue : Comparing indexes of Macros");
 							_macroSheetHashTable.put(newMacroKey.toLowerCase(),
 									newMacroValue);
@@ -2129,10 +2162,6 @@ public class Excel {
 		File inputFile = null;
 		FileInputStream inFile = null;
 		try {
-			// System.Threading.Thread.CurrentThread.CurrentCulture = new
-			// System.Globalization.CultureInfo("en-US");
-			// system.out.println("READING EXTERNAL SHEET " + inputFileName+
-			// "\n");
 
 			Log.Debug("Excel/ReadExternalSheets : Start of the function with Excel sheet name as : "
 					+ inputFileName);
@@ -3107,33 +3136,7 @@ public class Excel {
 					Log.Debug("Excel/GetAbstractTestCaseSheetValues : Calling ReadVerificationSection with row index as : "
 							+ index);
 
-					if (StringUtils.isNotBlank(valueInTestCaseColumn)) /*
-																		 * verifyObj
-																		 * =
-																		 * ReadVerificationSection
-																		 * (
-																		 * worksheet
-																		 * ,
-																		 * labelIndex
-																		 * ,
-																		 * _mapHashTable
-																		 * ,
-																		 * index
-																		 * ,
-																		 * verifyIndex
-																		 * ,
-																		 * AbstractSheetName
-																		 * ,
-																		 * null,
-																		 * testCaseIndex
-																		 * ,
-																		 * AppendNamespace
-																		 * (
-																		 * valueInTestCaseColumn
-																		 * ,
-																		 * nameSpace
-																		 * ));
-																		 */{
+					if (StringUtils.isNotBlank(valueInTestCaseColumn)){
 						verifyObj = ReadVerificationSection(worksheet,
 								labelIndex, _mapHashTable, index, verifyIndex,
 								AbstractSheetName, null, testCaseIndex,
@@ -3194,7 +3197,7 @@ public class Excel {
 						// System.out.println("Test case object coming upto  "+_forTestcaseMolecule.get(actionObj.testCaseID));
 						abstractTestCase
 								.put(AppendNamespace(testCase.testCaseID,
-										nameSpace), testCase);
+										nameSpace),(Molecule) testCase);
 
 					}
 
@@ -3203,7 +3206,7 @@ public class Excel {
 							+ index);
 					// System.out.println("The description 1d "+description+" ---- "+worksheet+"++++++"+labelIndex+"_______"+index+"::::::::"+nameSpace);
 					testCase = ReadTestCase(worksheet, labelIndex, index,
-							testCaseIndex, description, nameSpace);
+							testCaseIndex, description, nameSpace,false);
 
 					// System.out.println("The control coming to 2d "+actionObj);
 					try {
@@ -3246,7 +3249,7 @@ public class Excel {
 					if (testCase != null) {
 						abstractTestCase
 								.put(AppendNamespace(testCase.testCaseID,
-										nameSpace), testCase);
+										nameSpace),(Molecule) testCase);
 
 					}
 				}
@@ -3312,7 +3315,7 @@ public class Excel {
 					&& property.toLowerCase().equalsIgnoreCase(NEGATIVE)) {
 				Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
 
-				verifyObj.isRowNegative = true;
+				verifyObj.isNegative = true;
 
 			}
 			if (property != null
@@ -3323,17 +3326,26 @@ public class Excel {
 				verifyObj.isVerifyNegative = true;
 
 			}
-			verifyObj.verificationName = GetCellValueAsString(worksheet.getRow(
+			else if (property != null
+					&& property.toLowerCase().equalsIgnoreCase("Ignore")) {
+				Log.Debug("Excel/ReadActionSection: Action(row) is Ignore ");
+				verifyObj.isIgnore = true;
+
+			}
+			
+			
+			verifyObj.name = GetCellValueAsString(worksheet.getRow(
 					index).getCell((short) (verifyIndex)));
 
-			if (verifyObj.verificationName == null) {
+			if (verifyObj.name == null) {
 				return null;
 			}
-			if (StringUtils.isNotBlank(verifyObj.verificationName)) // system.out.print("\nverification Name "
+			if (StringUtils.isNotBlank(verifyObj.name)) // system.out.print("\nverification Name "
 			// +verifyObj.verificationName);
 			{
+				//check if it is a action?
 				Log.Debug("Excel/ReadVerificationSection : Row[" + index
-						+ "] ...Verification = " + verifyObj.verificationName);
+						+ "] ...Verification = " + verifyObj.name);
 			}
 
 			String testCaseID = null;
@@ -3399,7 +3411,7 @@ public class Excel {
 					&& property.toLowerCase().equalsIgnoreCase(NEGATIVE)) {
 				Log.Debug("Excel/ReadActionSection: Verification(row) is Negative ");
 
-				verifyObj.isRowNegative = true;
+				verifyObj.isNegative = true;
 
 			}
 			if (property != null
@@ -3439,14 +3451,14 @@ public class Excel {
 			 * Log.Debug("Excel/ReadVerificationSection : Row["+index+
 			 * "] ...Expected Result = "+verifyObj.expectedResult); }
 			 */
-			if (verifyObj.verificationName != null
-					&& verifyObj.verificationName != " "
-					&& verifyObj.verificationName != "") {
+			if (verifyObj.name != null
+					&& verifyObj.name != " "
+					&& verifyObj.name != "") {
 				for (int i = 1; i <= TotalVerificationArgs; ++i) {
 					Log.Debug("Excel/ReadVerificationSection : Finding value for verificationArgument "
 							+ i
 							+ " for Verification "
-							+ verifyObj.verificationName + " of Index " + index);
+							+ verifyObj.name + " of Index " + index);
 
 					String argumentValue = null;
 					col = worksheet.getRow(index).getCell(
@@ -3466,7 +3478,7 @@ public class Excel {
 										index, i, argumentValue));
 					}
 					if (StringUtils.isNotBlank(argumentValue)) {
-						verifyObj.verificationActualArguments
+						verifyObj.actualArguments
 								.add(argumentValue);
 						// system.out.print("\nverification argumentValue "
 						// +argumentValue);
@@ -3487,7 +3499,7 @@ public class Excel {
 					}
 
 					if (StringUtils.isNotBlank(argumentValue)) {
-						verifyObj.verificationArguments.add(argumentValue);
+						verifyObj.arguments.add(argumentValue);
 					} else {
 						Log.Debug("Excel/ReadVerificationSection : Row["
 								+ index
@@ -3501,8 +3513,8 @@ public class Excel {
 
 			// If Compilation is ON THEN Check in more detail...
 			if (compileModeFlag) {
-				CheckIFSheetIsFine(verifyObj.verificationName,
-						verifyObj.verificationArguments, nameSpace,
+				CheckIFSheetIsFine(verifyObj.name,
+						verifyObj.arguments, nameSpace,
 						verifyObj.lineNumber, verifyObj.sheetName,
 						verifyObj.testCaseID);
 			}
@@ -3721,18 +3733,18 @@ public class Excel {
 
 				String tempValPrefix = splitVariableToFind[0].trim();
 				// / First Check in the Macro Sheet
-				if(StringUtils.isNotBlank(tempValPrefix)||StringUtils.isNotEmpty(tempValPrefix))
-				{
-					
+				if (StringUtils.isNotBlank(tempValPrefix)
+						|| StringUtils.isNotEmpty(tempValPrefix)) {
+
 					if (_macroSheetHashTable.get(AppendNamespace(tempValPrefix,
-						nameSpace)) != null) {
-					tempValPrefix = (String) _macroSheetHashTable
-							.get(AppendNamespace(tempValPrefix, nameSpace));
-					Log.Debug("\n"
-							+ String.format(
-									"Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , tempValPrefix = %s ",
-									tempValPrefix));
-				}
+							nameSpace)) != null) {
+						tempValPrefix = (String) _macroSheetHashTable
+								.get(AppendNamespace(tempValPrefix, nameSpace));
+						Log.Debug("\n"
+								+ String.format(
+										"Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , tempValPrefix = %s ",
+										tempValPrefix));
+					}
 				}
 				tempValue = splitVariableToFind[1];
 				Log.Debug("Excel/FindInMacroAndEnvTable : variableToFind = "
@@ -3747,25 +3759,7 @@ public class Excel {
 							+ String.format(
 									"Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , variableToFind = %s ",
 									tempValue));
-					// boolean macroFound=false;
-					// while(_keyIterate.hasNext())
-					// {
-					// String _keyToSearch=_keyIterate.next();
-					// if(tempValue.equalsIgnoreCase(_keyToSearch))
-					// {
-					// macroFound=true;
-					// break;
-					// }
-					// else
-					// {
-					// macroFound=false;
-					// }
-					//
-					// }
-					// if(!macroFound)
-					// {
-					// Log.Error(String.format("The Macro: %s is not defined.",variableToFind));
-					// }
+
 				}
 				// Checking for vector macro
 				else if (tempValue.startsWith("$$") && !tempValue.contains("%")) {
@@ -3774,14 +3768,29 @@ public class Excel {
 					tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
 					tempValue = AppendNamespace(tempValue, nameSpace);
 					tempValue = "$" + tempValue;
-					
+
 					tempValue = _macroSheetHashTable.get(tempValue);
 
-				}
-				
+				}/*
+				 * else if(tempValue.startsWith("$") && !tempValue.contains("%")
+				 * && tempValue.contains("#")){ if(tempValue.contains(".")){
+				 * System.out.println("IF:tempValue:"+tempValue); tempValue=
+				 * _macroSheetHashTable.get(tempValue);
+				 * System.out.println("tempValue after getting"+tempValue);
+				 * }else{ tempValue=AppendNamespace(tempValue, nameSpace);
+				 * System.out.println("ELSE:tempValue:"+tempValue); tempValue=
+				 * _macroSheetHashTable.get(tempValue);
+				 * System.out.println("tempValue after getting"+tempValue); } }
+				 */
+				/*
+				 * if(tempValue==null){ //
+				 * if(splitVariableToFind[1].startsWith("$$")){
+				 * tempValue=splitVariableToFind[1];//.substring(1); //
+				 * System.out.println("Excel/tempValue="+tempValue); // } }
+				 */
 				tempValue = tempValPrefix + "=" + tempValue;
 			} // / First Check in the Macro Sheet
-				// System.out.println("The temp value "+tempValue+" namespace "+nameSpace);
+			// System.out.println("The temp value "+tempValue+" namespace "+nameSpace);
 			if (_macroSheetHashTable.get(AppendNamespace(tempValue, nameSpace)) != null) {
 				// System.out.println("The value comming action "+tempValue);
 				tempValue = (String) _macroSheetHashTable.get(AppendNamespace(
@@ -3820,12 +3829,24 @@ public class Excel {
 				}
 
 				tempValue = _macroSheetHashTable.get(tempValue);
-	}
-			// System.out.println("The tempValue from macro table"+tempValue);
-			// else{
-			// throw new
-			// Exception("Excel/FindInMacroAndEnvTable : Exception occured, exception mesasge is  : No Macro Definition found : NoMacroDefinitionFoundExcetion");
-			// }
+				/*
+				 * if(tempValue==null){ //if(variableToFind.startsWith("$$")){
+				 * tempValue=variableToFind;//.substring(1);
+				 * 
+				 * // System.out.println("Excel/tempValue="+tempValue); //} }
+				 */
+
+			}/*
+			 * else if(tempValue.startsWith("$") && !tempValue.contains("%") &&
+			 * tempValue.contains("#")){ if(tempValue.contains(".")){
+			 * System.out.println("IF:tempValue:"+tempValue); tempValue=
+			 * _macroSheetHashTable.get(tempValue);
+			 * System.out.println("tempValue after getting"+tempValue); }else{
+			 * tempValue=AppendNamespace(tempValue, nameSpace);
+			 * System.out.println("ELSE:tempValue:"+tempValue); tempValue=
+			 * _macroSheetHashTable.get(tempValue);
+			 * System.out.println("tempValue after getting"+tempValue); } }
+			 */
 			Log.Debug("Excel/FindInMacroAndEnvTable : End of function with variableToFind = "
 					+ variableToFind + " and its value is -> " + tempValue);
 		} catch (Exception e) {
@@ -3834,18 +3855,51 @@ public class Excel {
 			throw new Exception(
 					"\nExcel/FindInMacroAndEnvTable : Exception occured, exception mesasge is  : "
 							+ e.getMessage());
-		}
-		finally
-		{
-			if(tempValue==null)
-			{
+		} finally {
+			/*if (tempValue == null
+					|| ((tempValue.contains("$$") || tempValue.contains("$"))
+							&& tempValue.contains("#") && !tempValue
+							.endsWith("%"))) {
+				System.out.println("calling check indexed macro method"
+						+ tempValue);
+				tempValue = checkForIndexedMacro(variableToFind, nameSpace);
+			}*/
+			if(tempValue==null){
 				tempValue=variableToFind;
-					
-				
 			}
+
 		}
 		return tempValue;
 	}// FindInMacroAndEnvTable
+
+	public String checkForIndexedMacro(String value, String nameSpace) {
+		String Ovalue = value;
+		String str[] = null;
+		if (value.contains("=")) {
+			str = value.split("=", 2);
+			value = str[1];
+		}
+		if ((value.startsWith("$$") || value.startsWith("$"))
+				&& value.contains("#") && !value.endsWith("%")) {
+			if (!value.contains(".")) {
+				try {
+					value = AppendNamespace(value, nameSpace);
+					// System.out.println("value after appending NS"+value);
+				} catch (Exception e) {
+					// System.out.println("Exception in appending name space");
+				}
+			}
+			value = _macroSheetHashTable.get(value.toLowerCase());
+		}
+
+		if (value == null) {
+			value = Ovalue;
+		} else if (Ovalue.contains("=")) {
+			value = str[0] + "=" + value;
+		}
+		// System.out.println("Ovalue :"+Ovalue+"\ttempvalue :"+value);
+		return value;
+	}
 
 	public static String[] SplitOnFirstEquals(String nameOfVariable) {
 		if (StringUtils.isBlank(nameOfVariable)) {
@@ -3859,16 +3913,7 @@ public class Excel {
 			String[] tempStringToReturn = new String[2];
 			tempStringToReturn[0] = stringToReturn[0];
 			String[] tempStringToJoin = new String[stringToReturn.length - 1];// Separately
-			// putting
-			// the
-			// string
-			// in
-			// another
-			// array
-			// of
-			// strings
-			// for
-			// joining
+			
 			for (int i = 1; i < stringToReturn.length; i++) {
 				tempStringToJoin[i - 1] = stringToReturn[i];// getting the
 			} // computed string
@@ -3880,16 +3925,10 @@ public class Excel {
 
 			return tempStringToReturn;
 		}
-	}// SplitOnFirstEquals
-
-	// / Function to reads the TestCase section of the TestCase sheet.
-	// / <param name="worksheet">Object of the Worksheet</param>
-	// / <param name="index">Row of the TestCase sheet that one is
-	// reading</param>
-	// / <param name="testCaseIndex">Index of the TestCase Column</param>
+	}
 	private TestCase ReadTestCase(HSSFSheet worksheet,
 			Hashtable<Short, String> labelIndex, int index, int testCaseIndex,
-			String description, String nameSpace) throws Exception {
+			String description, String nameSpace,boolean isTestCase) throws Exception {
 		Log.Debug("Excel/ReadTestCase : Start of the Function with Row Index = "
 				+ index
 				+ " and  Index of testCaseIndex column as : "
@@ -3898,7 +3937,13 @@ public class Excel {
 		// Same description comming for other testcases.....
 		// System.out.println("Testcaseid "+index
 		// +" TestcaseDescription->"+description+" Namespace "+nameSpace);
-		TestCase testCase = new TestCase();
+		TestCase testCase ;
+		if(isTestCase){
+			testCase= new TestCase();
+		}
+		else{
+			testCase= new Molecule();
+		}
 
 		try {
 			col = worksheet.getRow(index).getCell((short) (testCaseIndex));
@@ -4066,6 +4111,14 @@ public class Excel {
 				actionObj.isNegative = true;
 
 			}
+			else if (property != null
+					&& property.toLowerCase().equalsIgnoreCase("Ignore")) {
+				Log.Debug("Excel/ReadActionSection: Action(row) is Ignore ");
+				actionObj.actionProperty = property.toLowerCase();
+				actionObj.isIgnore = true;
+
+			}
+
 
 			if (property != null
 					&& (property.toLowerCase().contains("neg-action") || property
@@ -4091,16 +4144,16 @@ public class Excel {
 				return null;
 			}
 
-			actionObj.actionName = GetCellValueAsString(col);
+			actionObj.name = GetCellValueAsString(col);
 
-			if (actionObj.actionName != null && actionObj.actionName != " "
-					&& actionObj.actionName != "") // system.out.print("\nAction Name "
+			if (actionObj.name != null && actionObj.name != " "
+					&& actionObj.name != "") // system.out.print("\nAction Name "
 													// + actionObj.actionName);
 			{
 				Log.Debug("\n"
 						+ String.format(
 								"Excel/ReadActionSection : Row[%d] ...actionName = %s ",
-								index, actionObj.actionName));
+								index, actionObj.name));
 			}
 
 			String testCaseID = null;
@@ -4110,27 +4163,6 @@ public class Excel {
 				testCaseID = testCase.testCaseID;
 				userObj = testCase.userObj;
 			} else {
-				/*
-				 * String user=null; col
-				 * =worksheet.getRow(index).getCell(((short
-				 * )(getKey(labelIndex,"user"))));
-				 * 
-				 * if(col==null) user=""; else user = GetCellValueAsString(col);
-				 * Log.Debug(String.format(
-				 * "Excel/ReadActionSection : Row[%d] user = %s ", index,
-				 * user)); if (_macroSheetHashTable.get(AppendNamespace(user,
-				 * nameSpace)) != null) { user =
-				 * (String)_macroSheetHashTable.get(AppendNamespace(user,
-				 * nameSpace)); Log.Debug("\n"+String.format(
-				 * "Excel/ReadActionSection : Row[%d] Actual Value of  user from Macro sheet is = %s "
-				 * , index, user)); }
-				 * 
-				 * if (_userSheetHashTable.get(user) != null) {
-				 * Log.Debug("\n"+String.format(
-				 * "Excel/ReadActionSection : Row[%d] User Credentials and Information for User %s exists in the User Sheet"
-				 * , index, user)); userObj =
-				 * (UserData)_userSheetHashTable.get(user); }
-				 */
 				col = worksheet.getRow(index).getCell((short) (testcaseIndex));
 
 				if (col == null) {
@@ -4176,6 +4208,12 @@ public class Excel {
 
 				actionObj.isActionNegative = true;
 
+			}else if (property != null
+					&& property.toLowerCase().equalsIgnoreCase("Ignore")) {
+				Log.Debug("Excel/ReadActionSection: Action(row) is Ignore ");
+				actionObj.actionProperty = property.toLowerCase();
+				actionObj.isIgnore = true;
+
 			}
 
 			Log.Debug("\n"
@@ -4213,12 +4251,12 @@ public class Excel {
 							"Excel/ReadActionSection : Row[%d] ...sheetName = %s ",
 							index, actionObj.sheetName));
 
-			if (StringUtils.isNotBlank(actionObj.actionName)) {
+			if (StringUtils.isNotBlank(actionObj.name)) {
 				for (int i = 1; i <= TotalActionArgs; i++) {
 					Log.Debug("\n"
 							+ String.format(
 									"Excel/ReadActionSection : Finding value for actionArgument %d for Action %s of Index %s ",
-									i, actionObj.actionName, index));
+									i, actionObj.name, index));
 
 					String argumentValue = null;
 					col = worksheet.getRow(index).getCell(
@@ -4233,7 +4271,7 @@ public class Excel {
 										index, i, argumentValue));
 					}
 					if (StringUtils.isNotBlank(argumentValue)) {
-						actionObj.actionActualArguments.add(argumentValue);
+						actionObj.actualArguments.add(argumentValue);
 						// system.out.print("\nAction ArgValue " +
 						// argumentValue);
 						 //System.out.println("THE Argument sent "+argumentValue+" namt "+nameSpace);
@@ -4255,7 +4293,7 @@ public class Excel {
 					}
 
 					if (StringUtils.isNotBlank(argumentValue)) {
-						actionObj.actionArguments.add(argumentValue);
+						actionObj.arguments.add(argumentValue);
 					} else {
 						Log.Debug("Excel/ReadActionSection : Row["
 								+ index
@@ -4269,8 +4307,8 @@ public class Excel {
 
 			// / If Compilation is ON THEN Check in more detail...
 			if (compileModeFlag) {
-				CheckIFSheetIsFine(actionObj.actionName,
-						actionObj.actionArguments, nameSpace,
+				CheckIFSheetIsFine(actionObj.name,
+						actionObj.arguments, nameSpace,
 						actionObj.lineNumber, actionObj.sheetName,
 						actionObj.testCaseID);
 			}
@@ -4286,8 +4324,8 @@ public class Excel {
 				// System.out.println("Testcase id=" + testCase.testCaseID +
 				// "\n" + actionObj.actionArguments);
 				// System.out.println("the Action Name=="+actionObj.actionName+" action ID--"+actionObj.testCaseID+" negative "+actionObj.isNegative);
-				if (actionObj.actionName.startsWith("#define")) {
-					for (String var_key : actionObj.actionArguments) {
+				if (actionObj.name.startsWith("#define")) {
+					for (String var_key : actionObj.arguments) {
 						// System.out.println("mol args "+var_key.toLowerCase());
 						if (var_key.startsWith("#") || var_key.startsWith("$")) {
 							throw new MoleculeDefinitionException(
@@ -4539,7 +4577,11 @@ public class Excel {
 
 		try {
 			Log.Debug("Excel/ReadTestCaseSheet : Getting the values from the TestCase Sheet. Calling GetTestCaseSheetValues ......");
+			try{
 			GetTestCaseSheetValues(workSheet, nameSpace);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			Log.Debug("Excel/ReadTestCaseSheet : The values from the TestCase sheet is read successfully.");
 		} catch (Exception ex) {
 			String error = "Excel/ReadTestCaseSheet : Error occured while getting the values from TestCase Sheet "
@@ -4710,36 +4752,9 @@ public class Excel {
 								TestCaseSheetName, testCase, testCaseIndex,
 								nameSpace);
 					}
-
+					//System.out.println("Excel/"+actionObj.arguments);
 					ArrayList<Action> tempActions = new ArrayList<Action>();
-					//
-					// for(int i=0;i<actionObj.actionActualArguments.size();i++)
-					// {
-					// String arg=actionObj.actionActualArguments.get(i);
-					// String value=actionObj.actionArguments.get(i);
-					// if(arg.startsWith("$$"))
-					// {
-					// Action tempaction=new Action();
-					// tempaction.nameSpace=actionObj.nameSpace;
-					// tempaction.testCaseID=actionObj.testCaseID;
-					// tempaction.stackTrace=actionObj.testCaseID;
-					// tempaction.parentTestCaseID=actionObj.parentTestCaseID;
-					// tempaction.actionName="SetContextVar";
-					// //String ctxvarname=tempaction.testCaseID+"_"+arg;
-					// tempaction.actionActualArguments.add(tempaction.testCaseID+"_"+arg+"="+value);
-					// tempaction.actionActualArguments.add(FindInMacroAndEnvTable(arg.replace("$",""
-					// ), actionObj.nameSpace));
-					// tempActions.add(tempaction);
-					// // act.actionArguments.remove(i);
-					// // act.actionArguments.add(i, "%"+ctxvarname+"%");
-					// }
-					//
-					// System.out.println("action args "+arg+" value "+value);
-					// }
-					//
-					//
-					// System.out.println("TempAction generated "+tempActions.size());
-					// testCase.actions.addAll(tempActions);
+				
 				}
 				// Else if this is a new test case
 				if (StringUtils.isNotBlank(valueInTestCaseColumn)) {
@@ -4752,7 +4767,7 @@ public class Excel {
 							+ index);
 					// System.out.println("The Descriptions 3d"+description);
 					testCase = ReadTestCase(worksheet, labelIndex, index,
-							testCaseIndex, description, nameSpace);
+							testCaseIndex, description, nameSpace,true);
 					description = null;
 				}
 

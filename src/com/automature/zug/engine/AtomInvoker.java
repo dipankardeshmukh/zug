@@ -278,7 +278,7 @@ if(EXTERNAL_PACKAGE_NAME==null||ATOM_CLASS_NAME==null||ATOM_CLASS_NAME.isEmpty()
         try {
             //debugMessage("The Atom "+inprocess_atom_name);
             Action inpr_actn = getInprocessAction();
-            String inprocess_action_name = inpr_actn.actionName.split("\\.")[1];
+            String inprocess_action_name = inpr_actn.name.split("\\.")[1];
             //debugMessage("The action Name "+inprocess_action_name);
             if (inprocess_atom_name.equalsIgnoreCase(inprocess_action_name)) {
                 //debugMessage("The checks "+inpr_actn.isNegative+"The Only Action "+inpr_actn.isActionNegative);
@@ -311,7 +311,7 @@ if(EXTERNAL_PACKAGE_NAME==null||ATOM_CLASS_NAME==null||ATOM_CLASS_NAME.isEmpty()
 
                 dll_found = true;
                 
-                try{if (Controller.OS_ARCH.toLowerCase().contains("x86")) {
+                try{if (SysEnv.OS_ARCH.toLowerCase().contains("x86")) {
                     System.loadLibrary("JNILoader-x86");
                     jni_loaded=true;
                     break;
@@ -360,7 +360,7 @@ if(EXTERNAL_PACKAGE_NAME==null||ATOM_CLASS_NAME==null||ATOM_CLASS_NAME.isEmpty()
                     count++;
                 }
                 try {
-                    JNILoader(this.getInprocessAction().actionName.toLowerCase().trim(), input_list, this.NATIVE_DLL_FILE_PATH, this.NATIVE_DLL_NAME + DLL);
+                    JNILoader(this.getInprocessAction().name.toLowerCase().trim(), input_list, this.NATIVE_DLL_FILE_PATH, this.NATIVE_DLL_NAME + DLL);
                 } catch (UnsatisfiedLinkError e) {
                     debugMessage("Error in Loading JNILoader.dll " + e.getMessage());
                     
@@ -448,7 +448,7 @@ input_com_list=input_com_list.substring(0, input_com_list.length()-1);
 //            }else
 //            {
 //               //debugMessage("Comming to else Clause ");
-            if(Controller.verbose)
+            if(Controller.opts.verbose)
             Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
      
             throw new Exception(exception_message, e);

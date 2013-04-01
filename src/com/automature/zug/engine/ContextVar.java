@@ -15,14 +15,12 @@ public class ContextVar {
 
 	private static final String _dbName = "sqlite-"+ Controller.harnessPIDValue+".db3";
 	private static final String _tableName = "ContextVariable";
-	private static int LOOP_NUM;
-	private static int LOOP_TIMEOUT;
 
 	// private static final String _dbPath = System.getenv("APPDATA") +
 	// "/Biel Logs";
 
-	private static final String _dbPath = com.automature.zug.engine.Controller.LOGLOCATION
-			+ com.automature.zug.engine.Controller.SLASH + "ZUG Logs";
+	private static final String _dbPath = com.automature.zug.engine.SysEnv.LOGLOCATION
+			+ com.automature.zug.engine.SysEnv.SLASH + "ZUG Logs";
 	// private static String justForLock = "";
 	private static Integer justForLock = 0;
 
@@ -35,14 +33,7 @@ public class ContextVar {
 
 	private ContextVar() {
 		Log.Debug("ContextVar: Start of Static Constructor");
-		try{
-			LOOP_NUM=Integer.parseInt(Controller.CONTEXTVARRETRYCOUNT);
-			LOOP_TIMEOUT=Integer.parseInt(Controller.CONTEXTVARRETRYTIMEOUT)*1000;
-			//System.out.println("The counts are "+LOOP_NUM+"  "+LOOP_TIMEOUT);
-		}catch(NumberFormatException nfe)
-		{
-			Log.Error("ContextVar:: [Error] Exception while parsing string "+nfe.getMessage());
-		}
+		
 		Connection conn = null;
 		try {
 			Log.Debug("ContextVar: Checking if Directory Exists");
@@ -97,27 +88,11 @@ public class ContextVar {
 				+ name + " and Value as = " + value);
 		Connection conn = null;
 		try {
-			// Log.Debug("SetContextVar: Calling GetContextVar with name = " +
-			// name);
-		/*	if (getContextVar(name) != null) {
-				// Log.Debug("SetContextVar: Calling AlterContextVar with name = "
-				// + name + " and value as : " + value);
-				// Update context variable
-				alterContextVar(name, value);
-				// Log.Debug("SetContextVar: Successfully Executed AlterContextVar with name = "
-				// + name + " and value as : " + value);
-				return;
-			}
-*/
+	
 			Class.forName("org.sqlite.JDBC");
 			conn = DriverManager.getConnection("jdbc:sqlite:" + _dbPath + "/"
 					+ _dbName);
-
-			// Log.Debug("SetContextVar: Connection Opened .");
-
-			int parentPId = (int) Controller.harnessPIDValue;
-			// Log.Debug("SetContextVar: Parent ID = " + parentPId);
-			String test_value=null;
+			int parentPId = (int) Controller.harnessPIDValue;			String test_value=null;
 			synchronized (justForLock) {
 			Statement statcheck=conn.createStatement();
 			
@@ -144,8 +119,7 @@ public class ContextVar {
 					+ _tableName + "  (ProcessId, Name, Value) values ("
 					+ Quotedstring(Integer.toString(parentPId)) + ", "
 					+ Quotedstring(name) + ", " + Quotedstring(value) + ")");
-			int numtoloop=LOOP_NUM;
-			//while (numtoloop>0) {
+			
 				try {
 					
 						stat.executeUpdate("Insert Into  " + _tableName
@@ -153,13 +127,7 @@ public class ContextVar {
 								+ Quotedstring(Integer.toString(parentPId))
 								+ ", " + Quotedstring(name) + ", "
 								+ Quotedstring(value) + ")");
-						
-						//break;
-					
-					
 				} catch (SQLException e) {
-					//numtoloop--;
-					//Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/SetContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
@@ -174,23 +142,15 @@ public class ContextVar {
 				}
 			}
 			}
-		//	}
 			conn.close();
-			// Log.Debug("SetContextVar: Executed Command = " + "Insert Into  "
-			// + _tableName + "  (ProcessId, Name, Value) values (" +
-			// Quotedstring(Integer.toString(parentPId)) + ", " +
-			// Quotedstring(name) + ", " + Quotedstring(value) + ")");
-
 		} catch (Exception ex) {
 			Log.Debug("ContextVar/SetContextVar: Exception is : "
 					+ ex.getMessage() + ex.getStackTrace());
 			ex.printStackTrace();
 			throw ex;
 		} finally {
-			// Log.Debug("ContextVar/SetContextVar: Connection is getting closed ");
 			if (conn != null)
 				conn.close();
-			// Log.Debug("ContextVar/SetContextVar: Connection is closed. End of Function ");
 		}
 	}
 
@@ -201,20 +161,9 @@ public class ContextVar {
 			Class.forName("org.sqlite.JDBC");
 			conn = DriverManager.getConnection("jdbc:sqlite:" + _dbPath + "/"
 					+ _dbName);
-
-			// Log.Debug("getContextVar: Connection Opened .");
-
 			int parentPId = (int) Controller.harnessPIDValue;
-			// Log.Debug("getContextVar: Parent ID = " + parentPId);
-
 			Statement stat = conn.createStatement();
-			// Log.Debug("getContextVar: Firing Command = " +
-			// "Select value From " + _tableName + " Where ProcessId=" +
-			// Quotedstring( Integer.toString(parentPId) ) + " And " + "Name=" +
-			// Quotedstring(name) + "");
 			String value = null;
-			int numtoloop=LOOP_NUM;
-			//while (numtoloop>0) {
 				try {
 			synchronized (justForLock) {
 				ResultSet rs = stat.executeQuery("Select value From "
@@ -226,13 +175,10 @@ public class ContextVar {
 					value = rs.getString("value");
 				}
 				rs.close();
-			//break;
 				
 			}
 				}catch(SQLException sq)
 				{
-					//numtoloop--;
-					//Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
@@ -245,8 +191,6 @@ public class ContextVar {
 									+ sq.getMessage()
 									+ "\ncausing class: " + sq.getClass());
 				}
-		//	}
-			
 			conn.close();
 			Log.Debug("getContextVar: Executed Command = "
 					+ "Select value From " + _tableName + " Where ProcessId="
@@ -262,10 +206,8 @@ public class ContextVar {
 			throw new Exception("ContextVar/getContextVar: Exception is : "
 					+ ex.getMessage() + ex.getStackTrace());
 		} finally {
-			// Log.Debug("ContextVar/getContextVar: Connection is getting closed ");
 			if (conn != null)
 				conn.close();
-			// Log.Debug("ContextVar/getContextVar: Connection is closed. End of Function ");
 		}
 	}
 
@@ -332,20 +274,8 @@ public class ContextVar {
 			Class.forName("org.sqlite.JDBC");
 			conn = DriverManager.getConnection("jdbc:sqlite:" + _dbPath + "/"
 					+ _dbName);
-
-			// Log.Debug("alterContextVar: Connection Opened .");
-
 			int parentPId = (int) Controller.harnessPIDValue;
-			// Log.Debug("alterContextVar: Parent ID = " + parentPId);
-
 			Statement stat = conn.createStatement();
-			// Log.Debug("alterContextVar: Firing Command = " + "Update " +
-			// _tableName + " Set Value=" + Quotedstring(value) +" Where " +
-			// "ProcessId=" + Quotedstring(Integer.toString(parentPId)) +
-			// " And Name=" + Quotedstring(name) + "");
-			int numtoloop=LOOP_NUM;
-			//while(numtoloop>0)
-			//{
 				try{
 			
 			synchronized (justForLock) {
@@ -361,11 +291,9 @@ public class ContextVar {
 					+ " Where " + "ProcessId="
 					+ Quotedstring(Integer.toString(parentPId)) + " And Name="
 					+ Quotedstring(name) + "");
-			//break;
+
 				}catch(SQLException se)
 				{
-					//numtoloop--;
-					//Thread.sleep(LOOP_TIMEOUT);
 					Log.Debug("ContextVar/alterContextVar:: [WARN] exception occured while setting the contextvar "
 							+ name
 							+ " \nmessage:"
@@ -378,17 +306,14 @@ public class ContextVar {
 									+ se.getMessage()
 									+ "\ncausing class: " + se.getClass());
 				}
-		//	}
 			conn.close();
 		} catch (Exception ex) {
 			Log.Error("ContextVar/alterContextVar: Exception is : "
 					+ ex.getMessage() + ex.getStackTrace());
 			throw ex;
 		} finally {
-			// Log.Debug("ContextVar/alterContextVar: Connection is getting closed ");
 			if (conn != null)
 				conn.close();
-			// Log.Debug("ContextVar/alterContextVar: Connection is closed. End of Function ");
 		}
 	}
 

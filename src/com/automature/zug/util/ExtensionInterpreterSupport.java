@@ -20,6 +20,8 @@ import org.w3c.dom.NodeList;
 
 import com.automature.zug.util.Log;
 import com.automature.zug.engine.Controller;
+import com.automature.zug.engine.SysEnv;
+
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -51,7 +53,7 @@ public class ExtensionInterpreterSupport {
     public Set<String> inprocesspackageError = new HashSet<String>();
 
     private static ArrayList<ExtensionInterpreterSupport> readConfigFile() throws Exception {
-        String Pathlist = new String(System.getenv(Controller.PATH_CHECK));
+        String Pathlist = new String(System.getenv(SysEnv.PATH_CHECK));
         ArrayList<ExtensionInterpreterSupport> extensionList = new ArrayList<ExtensionInterpreterSupport>();
         String filename = "ZugINI.xml";
         Document document = null;
@@ -84,8 +86,8 @@ public class ExtensionInterpreterSupport {
 
     public static Hashtable<String, String> ReadFileExtension() {
         try {
-            String Path = new String(System.getenv(Controller.PATH_CHECK));
-            String[] PathList = Path.split(Controller.SEPARATOR);//changes from ";"
+            String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+            String[] PathList = Path.split(SysEnv.SEPARATOR);//changes from ";"
             Hashtable<String, String> fileExtensionSupport = new Hashtable<String, String>();
             String iniFileName = "Zug.ini";
             File iniFile = new File(iniFileName);
@@ -150,8 +152,8 @@ public class ExtensionInterpreterSupport {
 
     public static Hashtable<String, String[]> ReadFileExtensionXML() throws Exception {
 
-        String Path = new String(System.getenv(Controller.PATH_CHECK));
-        String[] PathList = Path.split(Controller.SEPARATOR);//Changed from ";"
+        String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+        String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
         Log.Debug("Environment variable Path + " + Path);
         String filename = "ZugINI.xml";
         File file = new File(filename);
@@ -253,8 +255,8 @@ public class ExtensionInterpreterSupport {
     }
 
     public HashMap<String, ArrayList<String>> readExternalJarFileArchitecture(String attributeValue) throws Exception {
-        String Path = new String(System.getenv(Controller.PATH_CHECK));
-        String[] PathList = Path.split(Controller.SEPARATOR);//Changed from ";"
+        String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+        String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
         Log.Debug("Environment variable Path + " + Path);
         String filename = "ZugINI.xml";
         File file = new File(filename);
@@ -385,8 +387,8 @@ public class ExtensionInterpreterSupport {
     public HashMap<String,String> readConfigurationForCartestisanProduct() throws Exception {
 
 
-        String Path = new String(System.getenv(Controller.PATH_CHECK));
-        String[] PathList = Path.split(Controller.SEPARATOR);//Changed from ";"
+        String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+        String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
         Log.Debug("Environment variable Path + " + Path);
         String filename = "ZugINI.xml";
         File file = new File(filename);
@@ -431,8 +433,8 @@ public class ExtensionInterpreterSupport {
      * returns a HashMap with specific configuration.
      */
   public HashMap<String, ArrayList<String>> readNativePackageArchitecture(String attributeValue) throws Exception {
- String Path = new String(System.getenv(Controller.PATH_CHECK));
-        String[] PathList = Path.split(Controller.SEPARATOR);//Changed from ";"
+ String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+        String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
         Log.Debug("Environment variable Path + " + Path);
         String filename = "ZugINI.xml";
         File file = new File(filename);
@@ -480,8 +482,8 @@ public class ExtensionInterpreterSupport {
      */
 
   public HashMap<String, ArrayList<String>> readCOMPackageArchitecture(String attributeValue) throws Exception {
- String Path = new String(System.getenv(Controller.PATH_CHECK));
-        String[] PathList = Path.split(Controller.SEPARATOR);//Changed from ";"
+ String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+        String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
         Log.Debug("Environment variable Path + " + Path);
         String filename = "ZugINI.xml";
         File file = new File(filename);
