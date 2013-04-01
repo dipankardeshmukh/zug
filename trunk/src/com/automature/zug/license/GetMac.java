@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.regex.*;
 //Internal Imports
 import com.automature.zug.engine.Controller;
+import com.automature.zug.engine.SysEnv;
 import com.automature.zug.util.Log;
 
 public class GetMac {
@@ -27,18 +28,18 @@ public class GetMac {
         boolean isWindows=false;
 
         ArrayList<String> macList = new ArrayList<String>();
-        if (Controller.OS_NAME.toLowerCase().contains("windows"))
+        if (SysEnv.OS_NAME.toLowerCase().contains("windows"))
         {
             command = "ipconfig -all";
             mac_pattern=".*Physical Address.*: (.*)";
             isWindows=true;
-        } else if (Controller.OS_NAME.equalsIgnoreCase("linux"))
+        } else if (SysEnv.OS_NAME.equalsIgnoreCase("linux"))
         {
             command = "ifconfig -a";
             
         } else
         {
-            System.out.println("You are using Different Operating System\t"+Controller.OS_NAME);
+            System.out.println("You are using Different Operating System\t"+SysEnv.OS_NAME);
              command="";
         }
 		//http://www.windowsitpro.com/article/john-savills-windows-faqs/how-can-i-get-system-information-from-the-command-line-.aspx

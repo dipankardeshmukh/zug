@@ -15,6 +15,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import com.automature.zug.engine.ContextVar;
 import com.automature.zug.engine.Controller;
+import com.automature.zug.engine.SysEnv;
 
 public class Log {
 
@@ -40,14 +41,14 @@ public class Log {
 
 		String userDir = System.getProperty("user.dir");
 		if (Controller.isLogFileName)
-			fullFilePath = com.automature.zug.engine.Controller.LOGLOCATION
-					+ com.automature.zug.engine.Controller.SLASH + "ZUG Logs"
-					+ com.automature.zug.engine.Controller.SLASH
+			fullFilePath = com.automature.zug.engine.SysEnv.LOGLOCATION
+					+ com.automature.zug.engine.SysEnv.SLASH + "ZUG Logs"
+					+ com.automature.zug.engine.SysEnv.SLASH
 					+ Controller.logfilename;
 		else
-			fullFilePath = com.automature.zug.engine.Controller.LOGLOCATION
-					+ com.automature.zug.engine.Controller.SLASH + "ZUG Logs"
-					+ com.automature.zug.engine.Controller.SLASH
+			fullFilePath = com.automature.zug.engine.SysEnv.LOGLOCATION
+					+ com.automature.zug.engine.SysEnv.SLASH + "ZUG Logs"
+					+ com.automature.zug.engine.SysEnv.SLASH
 					+ Utility.dateAsString();
 		//System.out.println("The logfile name is "+fullFilePath);
 		Controller.ZUG_LOGFILENAME = fullFilePath;

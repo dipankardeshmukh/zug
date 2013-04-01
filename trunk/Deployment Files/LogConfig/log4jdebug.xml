@@ -43,23 +43,23 @@
 	</appender>
 
 
-	<appender name="Atom" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="log/Atoms.txt"/>
+	<appender name="Primitives" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="log/Primitives.txt"/>
 		<param name="maxBackupIndex" value="10"/>
 		<param name="Append" value="true"/>
 		<param name="maxFileSize" value="100000KB" />
-		<param name="threshold" value="INFO" />
+		<param name="threshold" value="ERROR" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="conversionPattern" value="%d{hh:mm:ss} [%t] %-5p %C - %m%n" />
 		</layout>
 	</appender>
 
-	<appender name="AtomResults" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="log/AtomResults.txt"/>
+	<appender name="PrimitiveResults" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="log/PrimitiveResults.txt"/>
 		<param name="maxBackupIndex" value="10"/>
 		<param name="Append" value="true"/>
 		<param name="maxFileSize" value="100000KB" />
-		<param name="threshold" value="INFO" />
+		<param name="threshold" value="FATAL" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="conversionPattern" value="%d{hh:mm:ss} [%t] %-5p %C - %m%n" />
 		</layout>
@@ -74,8 +74,8 @@
 		<appender-ref ref="Debug" />
 		<appender-ref ref="Result" />
 		<appender-ref ref="Error" />
-		<appender-ref ref="Atom" />
-		<appender-ref ref="AtomResults" />
+		<appender-ref ref="Primitives" />
+		<appender-ref ref="PrimitiveResults" />
 	</root>
 
 
