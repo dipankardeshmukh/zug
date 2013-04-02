@@ -200,6 +200,12 @@ public class GTuple {
 						"\n[%s] Exception in "+this.getClass().getSimpleName()+" %s (%s:%s).\n\t Message: %s",
 						this.stackTrace,this.name, this.sheetName,
 						this.lineNumber, e.getMessage()));
+				if (!StringUtils
+						.isBlank(TestSuite.errorMessageDuringTestCaseExecution
+								.get(this.parentTestCaseID))) {
+					TestSuite.errorMessageDuringTestCaseExecution
+					.put(this.parentTestCaseID,StringUtils.EMPTY);
+				}
 			} else {
 				throw e;
 			}
