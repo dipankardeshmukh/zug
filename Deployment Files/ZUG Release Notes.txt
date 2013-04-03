@@ -1,6 +1,12 @@
 ZUG Release Notes.
 The Following has been Introduced in V6.0
  * Log file location change.
+ * Negative property for Molecules as well as for In-Build atoms
+ * Ignore Test Step feature added
+ * Integration with TestLink Frame work
+ * Integration with Wrapper for using external frameworks as atom library   
+ * Latest Bug fixes #801 #800 #794 #384 #792 #778 #761 #735 #728 #725 #710 #707 #704 #700
+ * Latest Feature Request #741 #729 #723 #717 #731
 
 
 The Following has been Introduced in V5.4 (SP3)
