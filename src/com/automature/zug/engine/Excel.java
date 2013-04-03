@@ -3084,7 +3084,8 @@ public class Excel {
 					col = worksheet.getRow(index).getCell(
 							((short) (testCaseIndex)));
 				}catch(Exception e){
-				//	e.printStackTrace();
+//					e.printStackTrace();
+					Log.Error("Warn: Exception in "+nameSpace+" due to empty line or cell in line number "+(index+1)+". "+e.getMessage());
 					continue;
 				}
 
