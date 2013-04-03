@@ -3079,9 +3079,16 @@ public class Excel {
 			for (; index <= worksheet.getLastRowNum(); index++) {
 				Log.Debug("Excel/GetAbstractTestCaseSheetValues : Reading the Abstract TestCase Excel sheet at Index -> "
 						+ index);
-
-				HSSFCell col = worksheet.getRow(index).getCell(
-						((short) (testCaseIndex)));
+				System.out.println("about to read");
+				HSSFCell col=null;
+				try{
+					col = worksheet.getRow(index).getCell(
+							((short) (testCaseIndex)));
+				}catch(Exception e){
+				//	e.printStackTrace();
+					continue;
+				}
+				System.out.println("col value"+col);
 
 				String valueInTestCaseColumn = null;
 
