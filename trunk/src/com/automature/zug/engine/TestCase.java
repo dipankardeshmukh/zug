@@ -268,6 +268,7 @@ class TestCase
 	 */
 	private void runExpandedTestCase() throws Exception,
 	ReportingException {
+		
 		Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
 		
@@ -1785,6 +1786,7 @@ class TestCase
 
 	void run() throws Exception,
 	ReportingException {
+		
 		if (this.automated == false) {
 			Log.Debug("TestCase/RunTestCase : TestCase ID "
 					+ this.testCaseID
@@ -1829,8 +1831,16 @@ class TestCase
 
 		Log.Debug("TestCase/RunTestCase: Calling ExpandTestCase With TestCase ID is "
 				+ this.testCaseID);
-		
-		TestCase[] expandedTestCases = this.ExpandTestCase( true);
+	//	System.out.println("Test Case id"+this.testCaseID);
+		TestCase[] expandedTestCases=null;
+		try{
+			 expandedTestCases = this.ExpandTestCase( true);
+		}catch(Exception e){
+		//	e.printStackTrace();
+			expandedTestCases=new TestCase[1];
+			expandedTestCases[0]=this;
+		}
+	//	System.out.println("ETC size "+expandedTestCases.length);
 		Log.Debug("TestCase/RunTestCase: After Expansion for TestCase ID is "
 				+ this.testCaseID + " the number of expanded test case is : "
 				+ expandedTestCases.length);
