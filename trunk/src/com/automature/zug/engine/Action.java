@@ -83,7 +83,7 @@ public class Action extends GTuple {
 							String.format(
 									"\n\nException in Action %s (%s:%s).\n\t Message: %s",
 									this.name, this.sheetName,
-									this.lineNumber, e.getMessage()));
+									this.lineNumber+1, e.getMessage()));
 				}
 			}
 			for (int j = 0; j < this.verification.size(); j++) {
