@@ -3085,7 +3085,7 @@ public class Excel {
 							((short) (testCaseIndex)));
 				}catch(Exception e){
 //					e.printStackTrace();
-					Log.Error("Warn: Exception in "+nameSpace+" due to empty line or cell in line number "+(index+1)+". "+e.getMessage());
+					Log.Error("Warn: Exception in molecule sheet of "+nameSpace+" due to empty line or cell in line number "+(index+1)+". "+e.getMessage());
 					continue;
 				}
 
@@ -4662,14 +4662,19 @@ public class Excel {
 			Log.Debug("Excel/GetTestCaseSheetValues : Started reading the TestCase Excel sheet at Index -> "
 					+ index);
 
-			HSSFCell col;
+			HSSFCell col=null;
 			String description = null;
 			for (; index <= worksheet.getLastRowNum(); index++) {
 				Log.Debug("Excel/GetTestCaseSheetValues : Reading the TestCase Excel sheet at Index -> "
 						+ index);
 				String valueInTestCaseColumn = null;
 				// System.out.println("The GetTestCAse :: "+worksheet.getRow(index).getCell((short)testCaseIndex));
-				col = worksheet.getRow(index).getCell((short) testCaseIndex);
+				try{
+					col = worksheet.getRow(index).getCell((short) testCaseIndex);
+				}catch(Exception e){
+					Log.Debug("Warn: Exception in "+nameSpace+" due to empty line or cell in line number "+(index+1)+". "+e.getMessage());
+					continue;
+				}
 
 				if (col != null) {
 					valueInTestCaseColumn = GetCellValueAsString(col);

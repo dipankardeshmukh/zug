@@ -58,7 +58,7 @@ public class Verification extends GTuple {
 							String.format(
 									"\n\nException in Verification %s (%s:%s).\n\t Message: %s",
 									this.name, this.sheetName,
-									this.lineNumber, e.getMessage()));
+									this.lineNumber+1, e.getMessage()));
 				}
 			}
 		

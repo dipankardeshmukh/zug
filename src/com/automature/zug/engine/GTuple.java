@@ -82,6 +82,7 @@ public class GTuple {
 	void run(String threadID) throws Exception {
 		boolean exceptionOccured = true;
 		try {
+		//	System.out.println("thread id"+threadID);
 			if (this.name.startsWith("&")) {
 				// Run an Abstract Test Case
 				String abstractTestCaseName = Utility.TrimStartEnd(this.name,
@@ -127,6 +128,8 @@ public class GTuple {
 							// Do nothing
 						}
 					}
+				//	System.out.println("isConcurrentMoleculeCall"+tempActntestcase.isConcurrentMoleculeCall);
+				//	System.out.println("concurrentExecutionOnExpansion"+tempActntestcase.concurrentExecutionOnExpansion);
 					Action a = tempActntestcase.actions.get(0);
 					if (a.name.startsWith("#define")) {
 						if (a.arguments.size() != tempList.size()) {
@@ -199,7 +202,7 @@ public class GTuple {
 				Controller.message(String.format(
 						"\n[%s] Exception in "+this.getClass().getSimpleName()+" %s (%s:%s).\n\t Message: %s",
 						this.stackTrace,this.name, this.sheetName,
-						this.lineNumber, e.getMessage()));
+						this.lineNumber+1, e.getMessage()));
 				if (!StringUtils
 						.isBlank(TestSuite.errorMessageDuringTestCaseExecution
 								.get(this.parentTestCaseID))) {
