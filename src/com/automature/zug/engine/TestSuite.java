@@ -71,7 +71,7 @@ public class TestSuite {
 				if (test.testCaseID.compareToIgnoreCase("init") != 0) {
 					if (StringUtils.isNotBlank(Controller.opts.manualTestCaseID)) {
 
-						if (!Controller.opts.manualTestCaseID.toLowerCase().contains(
+						if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
 								test.testCaseID.toLowerCase().trim())) {
 							// if
 							// (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim()))
@@ -180,7 +180,7 @@ public class TestSuite {
 					if (test.testCaseID.compareTo("init") != 0) {
 
 						if (StringUtils.isNotBlank(Controller.opts.manualTestCaseID)) {
-							if (!Controller.opts.manualTestCaseID.toLowerCase().contains(
+							if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
 									test.testCaseID.toLowerCase().trim())) {
 								continue;
 							}
@@ -320,7 +320,7 @@ public class TestSuite {
 						// message("The manual commandline 1b " +
 						// manualTestCaseID + "\n The Testcase ids " +
 						// test.testCaseID);
-						if (!Controller.opts.manualTestCaseID.toLowerCase().contains(
+						if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
 								test.testCaseID.toLowerCase().trim())) {
 							// if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
 
@@ -434,7 +434,7 @@ public class TestSuite {
 						// manualTestCaseID + "\n The Testcase ids " +
 						// test.testCaseID);
 						if (StringUtils.isNotBlank(Controller.opts.manualTestCaseID)) {
-							if (!Controller.opts.manualTestCaseID.toLowerCase().contains(
+							if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
 									test.testCaseID.toLowerCase().trim())) {
 								continue;
 							}
