@@ -27,9 +27,34 @@ public class TestSuite {
 	static Hashtable _testStepStopper = new Hashtable();
 	static String testcasenotran;
 	static Hashtable<String, ExecutedTestCase> executedTestCaseData = new Hashtable<String, ExecutedTestCase>();
+	static boolean implicitTCMolecule=false;
+	static boolean implicitTSMolecule=false;
+	static String implicitTSMoleculeName="Zstep_Verify".toLowerCase();
+	static String implicitTCMoleculeName="Zcase_Verify".toLowerCase();
+	
+		
+	private void implicitTestCaseCall(TestCase test)throws Exception{
+		if(implicitTCMolecule && !(test.testCaseID.toLowerCase().equalsIgnoreCase("cleanup")) && !(test.testCaseID.toLowerCase().equalsIgnoreCase("init"))){
+			Molecule implicitMolecule=abstractTestCase.get(implicitTCMoleculeName);
+			implicitMolecule.setCallingtTestCaseSTACK(test.stackTrace);
+			implicitMolecule.setParentTestCaseID(test.parentTestCaseID);
+			implicitMolecule.run();
+		}
+	}
 	
 	public void run() throws Exception,
 	DavosExecutionException {
+		
+		implicitTCMoleculeName=Excel.mainNameSpace+"."+implicitTCMoleculeName;
+		implicitTSMoleculeName=Excel.mainNameSpace+"."+implicitTSMoleculeName;
+		if(abstractTestCase.containsKey(implicitTCMoleculeName)){
+			implicitTCMolecule=true;
+	//		System.out.println("implicitTCMolecule= "+implicitTCMolecule);
+		}
+		if(abstractTestCase.containsKey(implicitTSMoleculeName)){
+			implicitTSMolecule=true;
+	//		System.out.println("implicitTSMolecule="+implicitTSMolecule);
+		}
 		Log.Debug("TestSuite/RunTestCaseForMain : Start of function");
 		System.out.println("\n*** Number of TestCase in Chur Sheet "
 				+ testcases.length + " ***\n ");
@@ -99,9 +124,11 @@ public class TestSuite {
 								TestCase tempTest = test.GenerateNewTestCaseID(count);
 								// message("The generated Id 0a "+tempTest.testCaseID);
 								tempTest.run();
+							
 							} else {
 								// message("The generated Id 0b "+test.testCaseID);
 								test.run();
+								this.implicitTestCaseCall(test);
 							}
 						} else {
 							Log.Debug("TestSuite/RunTestCaseForMain : TestCase ID "
@@ -210,9 +237,11 @@ public class TestSuite {
 									TestCase tempTest = test.GenerateNewTestCaseID(count);
 
 									tempTest.run();
+									this.implicitTestCaseCall(test);
 								} else {
 
 									test.run();
+									this.implicitTestCaseCall(test);
 								}
 
 							} else {
@@ -269,6 +298,7 @@ public class TestSuite {
 						// Function to run and Execute the TestCase
 
 						test.run();
+						this.implicitTestCaseCall(test);
 
 					} else {
 						Log.Debug("TestSuite/RunTestCaseForMain : TestCase ID "
@@ -351,6 +381,7 @@ public class TestSuite {
 								// message("The Testcases to match1a " +
 								// tempTest.testCaseID);
 								tempTest.run();
+								this.implicitTestCaseCall(test);
 							} else {
 								test.threadID = (String.valueOf(Thread
 										.currentThread().getId()));
@@ -358,6 +389,7 @@ public class TestSuite {
 							// message("The generated Id 2a " +
 							// test.testCaseID);
 							test.run();
+							this.implicitTestCaseCall(test);
 						} else {
 							Log.Debug("TestSuite/RunTestCaseForMain : TestCase ID "
 									+ test.testCaseID
@@ -467,8 +499,10 @@ public class TestSuite {
 									// message("The Testcases to match1b " +
 									// tempTest.testCaseID);
 									tempTest.run();
+									this.implicitTestCaseCall(test);
 								} else {
 									test.run();
+									this.implicitTestCaseCall(test);
 								}
 							} else {
 								Log.Debug("TestSuite/RunTestCaseForMain : TestCase ID "
@@ -524,6 +558,7 @@ public class TestSuite {
 						// Function to run and Execute the TestCase
 
 						test.run();
+						this.implicitTestCaseCall(test);
 					} else {
 						Log.Debug("TestSuite/RunTestCaseForMain : TestCase ID "
 								+ test.testCaseID
