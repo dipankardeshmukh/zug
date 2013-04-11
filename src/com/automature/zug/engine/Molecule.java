@@ -43,6 +43,25 @@ public class Molecule extends TestCase {
 	public void setCallingtTestCaseSTACK(String callingtTestCaseSTACK) {
 		this.callingtTestCaseSTACK = callingtTestCaseSTACK;
 	}
+	
+	void implicitTestStepCall(){
+		String implicitTSMoleculeName=TestSuite.implicitTSMoleculeName.substring(TestSuite.implicitTSMoleculeName.indexOf(".")+1);
+		String implicitTCMoleculeName=TestSuite.implicitTCMoleculeName.substring(TestSuite.implicitTCMoleculeName.indexOf(".")+1);
+		if(TestSuite.implicitTSMoleculeName.equalsIgnoreCase(this.testCaseID) || implicitTSMoleculeName.equalsIgnoreCase(this.testCaseID) || this.stackTrace.contains(implicitTSMoleculeName)||this.stackTrace.toLowerCase().contains("init")||this.stackTrace.toLowerCase().contains("cleanup")||this.stackTrace.toLowerCase().contains(implicitTCMoleculeName)){
+			return;
+		}
+		
+		if(TestSuite.implicitTSMolecule){
+			Molecule implicitMolecule=TestSuite.abstractTestCase.get(TestSuite.implicitTSMoleculeName);
+			implicitMolecule.setCallingtTestCaseSTACK(this.stackTrace);
+			implicitMolecule.setParentTestCaseID(this.parentTestCaseID);
+			try{
+				implicitMolecule.run();
+			}catch(Exception e){
+				
+			}
+		}
+	}
 
 	private void runExpandedMolecule() {
 		Log.Debug("Molecule/RunExpandedTestCaseForMolecule : Start of Function.");
@@ -131,6 +150,7 @@ public class Molecule extends TestCase {
 
 						public void run() {
 							act.run();
+							implicitTestStepCall();
 						}
 					});
 					// thread.IsBackground = true;
@@ -168,6 +188,7 @@ public class Molecule extends TestCase {
 
 						public void run() {
 							act.run();
+							implicitTestStepCall();
 						}
 					});
 					thread.start();
@@ -252,6 +273,7 @@ public class Molecule extends TestCase {
 								Thread thread = new Thread(new Runnable() {
 									public void run() {
 										act.run();
+										implicitTestStepCall();
 									}
 								});
 								// thread.IsBackground = true;
@@ -270,6 +292,7 @@ public class Molecule extends TestCase {
 								Thread thread = new Thread(new Runnable() {
 									public void run() {
 										act.run();
+										implicitTestStepCall();
 									}
 								});
 								// thread.IsBackground = true;
@@ -318,6 +341,7 @@ public class Molecule extends TestCase {
 
 									public void run() {
 										act.run();
+										implicitTestStepCall();
 									}
 								});
 								// thread.IsBackground = true;
@@ -337,6 +361,7 @@ public class Molecule extends TestCase {
 
 									public void run() {
 										act.run();
+										implicitTestStepCall();
 									}
 								});
 								// thread.IsBackground = true;
@@ -764,6 +789,7 @@ public class Molecule extends TestCase {
 				+ this.testCaseID
 				+ " and parentTestCaseID = "
 				+ parentTestCaseID);
+	
 
 		Molecule tempTestCase = new Molecule(this);
 
