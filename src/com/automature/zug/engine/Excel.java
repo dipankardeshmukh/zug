@@ -37,7 +37,7 @@ public class Excel {
 
 	// Objects for reading the input EXCEL file
 	private HSSFWorkbook _workBook = null;
-	private String mainNameSpace = StringUtils.EMPTY;
+	static String mainNameSpace = StringUtils.EMPTY;
 	private static Boolean verificationSwitching = true;
 	private static Boolean compileModeFlag = false;
 	private static String errorInTheSheet = StringUtils.EMPTY;
