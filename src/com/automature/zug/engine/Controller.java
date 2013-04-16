@@ -1180,6 +1180,10 @@ public class Controller extends Thread {
 		String frameWork="";
 		// controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
 		//System.out.println(Controller.ZUG_LOGFILENAME+ " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
+     controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
+		ContextVar.setContextVar("ZUG_LOGFILENAME",
+				Controller.ZUG_LOGFILENAME);
+		
 		StringBuilder cmdinputsargs = new StringBuilder();
 		for (String cmdinputs : args) {
 			cmdinputsargs.append(cmdinputs);
