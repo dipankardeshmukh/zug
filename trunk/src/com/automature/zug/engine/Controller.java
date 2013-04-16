@@ -67,7 +67,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.0" + ".201304012" + ".145";
+	private static String Version = "ZUG Premium 6.0" + ".201304016" + ".146";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -1176,6 +1176,9 @@ public class Controller extends Thread {
 				}
 			}
 		}
+    		Controller.harnessPIDValue = Integer
+				.parseInt((java.lang.management.ManagementFactory
+						.getRuntimeMXBean().getName().split("@"))[0]); 
 		final Controller controller = new Controller();
 		String frameWork="";
 		// controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
@@ -1238,9 +1241,7 @@ public class Controller extends Thread {
 			.message("No Inprocess Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
 		}
 		//String reporterName[]=testINI.reteriveXmlTagAttributeValue(reportingXmlTagPath, reportingXmlTagAttribute);
-		Controller.harnessPIDValue = Integer
-				.parseInt((java.lang.management.ManagementFactory
-						.getRuntimeMXBean().getName().split("@"))[0]); // ProcessMonitorThread.currentThread().getId();
+// ProcessMonitorThread.currentThread().getId();
 
 		// First Validate the Command Line Arguments
 
