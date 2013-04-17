@@ -32,6 +32,7 @@ public class ProgramOptions {
 	public  boolean nyonserver = false; 
 	public boolean includeFlag = true; 
 	public  boolean isLongevityOn = false;
+	public boolean ignore=false;
 	int repeatCount = 1;
 	boolean repeatDurationSpecified = false;
 	int repeatDuration = 0;
@@ -62,7 +63,7 @@ public class ProgramOptions {
 	public static String filelocation = null;
 	private Hashtable<String, String> _opts=new Hashtable<String, String>();
 	protected static String currentPath, workingDirectory;
-	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname"));
+	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore"));
 	/*
 	 * Creates a new instance.
 	 * 
@@ -1112,6 +1113,10 @@ public class ProgramOptions {
 			if((this.buildName=this.getString("buildname", null))==null){
 				buildName=StringUtils.EMPTY;
 			}
+			if((this.getString("ignore", null))!=null){
+				this.ignore=true;
+			}
+			
 
 
 

@@ -56,6 +56,8 @@ public class GTuple {
 	}
 	
 	public void putExceptionMessage(Exception ex){
+	//	System.out.println("putting exception message:stack trace"+this.stackTrace);
+	//	System.out.println("putting exception message:parentTestCaseID"+this.parentTestCaseID);
 		if (StringUtils
 				.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution
 						.get(this.stackTrace))) {
@@ -81,6 +83,7 @@ public class GTuple {
 	
 	void run(String threadID) throws Exception {
 		boolean exceptionOccured = true;
+	//	System.out.println("isNegative: "+this.isNegative);
 		try {
 		//	System.out.println("thread id"+threadID);
 			if (this.name.startsWith("&")) {
@@ -202,7 +205,7 @@ public class GTuple {
 				Controller.message(String.format(
 						"\n[%s] Exception in "+this.getClass().getSimpleName()+" %s (%s:%s).\n\t Message: %s",
 						this.stackTrace,this.name, this.sheetName,
-						this.lineNumber+1, e.getMessage()));
+						(this.lineNumber+1), e.getMessage()));
 				if (!StringUtils
 						.isBlank(TestSuite.errorMessageDuringTestCaseExecution
 								.get(this.parentTestCaseID))) {

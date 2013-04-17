@@ -23,7 +23,7 @@ import com.automature.zug.util.Utility;
  */ 
 class TestCase
 {
-	
+
 	public String parentTestCaseID 	= null;
 	public String nameSpace 		= null;
 	public String stackTrace 		= null;
@@ -48,9 +48,9 @@ class TestCase
 	public HashMap<String,ArrayList<MultiValuedMacro>> mvm_macro_variable_map = new HashMap<String,ArrayList<MultiValuedMacro>>();
 	public HashMap<String,String> mvm_value_map=new HashMap<String,String>(); 
 
-	
+
 	public TestCase(){
-		
+
 	}
 
 	TestCase(TestCase tc){
@@ -70,11 +70,11 @@ class TestCase
 		this._testcasemoleculeArgDefn = tc._testcasemoleculeArgDefn;
 		this.mvm_macro_variable_map =tc. mvm_macro_variable_map;
 		this.mvm_value_map =tc. mvm_value_map;
-		 actions 		= new ArrayList<Action>();
+		actions 		= new ArrayList<Action>();
 	}
 
 
-	 TestCase GenerateNewTestCaseID(int count) {
+	TestCase GenerateNewTestCaseID(int count) {
 		Log.Debug("TestCase/GenerateNewTestCaseID: Start of function with a new TestCase. TestCase ID is "
 				+ this.testCaseID + " and count = " + count);
 
@@ -93,7 +93,7 @@ class TestCase
 			tempAction.testCaseID = tempTestCase.testCaseID;
 			tempAction.parentTestCaseID = tempTestCase.testCaseID;
 			tempAction.stackTrace = tempTestCase.stackTrace;
-		
+
 			Log.Debug("TestCase/GenerateNewTestCaseID: Working on Action "
 					+ action.name + " with Step Number as " + action.step);
 			Log.Debug("TestCase/GenerateNewTestCaseID: Number of Action Arguments are : "
@@ -109,7 +109,7 @@ class TestCase
 					action.arguments);
 
 			Verification[] verifications = new Verification[action.verification
-					.size()];
+			                                                .size()];
 			action.verification.toArray(verifications);
 			Log.Debug("TestCase/GenerateNewTestCaseID: Number of verifications are : "
 					+ verifications.length
@@ -122,7 +122,7 @@ class TestCase
 						+ tempVerification.parentTestCaseID);
 
 				tempVerification.stackTrace = tempTestCase.stackTrace;
-				
+
 				Log.Debug("TestCase/GenerateNewTestCaseID: Number of Verification Arguments = "
 						+ verification.arguments.size()
 						+ " fon Verification " + verification.name);
@@ -140,126 +140,126 @@ class TestCase
 				+ this.testCaseID);
 		return tempTestCase;
 	}
-	 
-	 
-	 private HashMap<String, String> findVariablesValueForTestCase() {
-			HashMap<String, String> variablevalueMap = new HashMap<String, String>();
-			// message("The finding variables started "+test.testCaseID);
-			Action test_action_arr[] = new Action[this.actions.size()];
-			this.actions.toArray(test_action_arr);
-			for (int i = 0; i < test_action_arr.length; i++) {
-				Action testcase_actions = test_action_arr[i];
-				// message("the varabless are "+testcase_actions.actionArguments+"\n Action Actual Arguments "+testcase_actions.actionActualArguments);
-		//	for(Action testcase_actions:this.actions){
-				if (testcase_actions.arguments.size() == testcase_actions.actualArguments
+
+
+	private HashMap<String, String> findVariablesValueForTestCase() {
+		HashMap<String, String> variablevalueMap = new HashMap<String, String>();
+		// message("The finding variables started "+test.testCaseID);
+		Action test_action_arr[] = new Action[this.actions.size()];
+		this.actions.toArray(test_action_arr);
+		for (int i = 0; i < test_action_arr.length; i++) {
+			Action testcase_actions = test_action_arr[i];
+			// message("the varabless are "+testcase_actions.actionArguments+"\n Action Actual Arguments "+testcase_actions.actionActualArguments);
+			//	for(Action testcase_actions:this.actions){
+			if (testcase_actions.arguments.size() == testcase_actions.actualArguments
+					.size()) {
+				for (int j = 0; j < testcase_actions.arguments.size(); j++) {
+					String variable_name = testcase_actions.actualArguments
+							.get(j);
+					// message("the varabless are "+variable_name);
+					if (variable_name.startsWith("$$")) {
+						if (variable_name.startsWith("$$%")
+								&& variable_name.endsWith("%")) {
+							// System.out.println("Variable name "+variable_name+" value "+testcase_actions.actionArguments.get(j));
+							String contextvar_name = variable_name.replaceAll(
+									"%", "");
+							variablevalueMap.put(contextvar_name,
+									testcase_actions.arguments.get(j));
+							// dont do any thing
+						} else {
+
+							variablevalueMap.put(variable_name,
+									testcase_actions.arguments.get(j));
+						}
+					} else if (variable_name.contains("=")) {
+						// variable_name =
+						// Excel.SplitOnFirstEquals(variable_name)[1];
+						// message("The value variable "+Excel.SplitOnFirstEquals(variable_name).length);
+						variable_name = Excel.SplitOnFirstEquals(variable_name).length > 1 ? Excel
+								.SplitOnFirstEquals(variable_name)[1]
+										: variable_name;
+								if (variable_name.startsWith("$$")) {
+									if (variable_name.startsWith("$$%")
+											&& variable_name.endsWith("%")) {
+										// dont do any thing
+										String contextvar_name = variable_name
+												.replaceAll("%", "");
+										variablevalueMap
+										.put(contextvar_name,
+												testcase_actions.arguments
+												.get(j));
+									} else {
+										variablevalueMap
+										.put(variable_name,
+												testcase_actions.arguments
+												.get(j));
+									}
+								}
+					}
+				}
+			}
+
+			for (Verification verify : testcase_actions.verification) {
+				if (verify.arguments.size() == verify.actualArguments
 						.size()) {
-					for (int j = 0; j < testcase_actions.arguments.size(); j++) {
-						String variable_name = testcase_actions.actualArguments
-								.get(j);
-						// message("the varabless are "+variable_name);
+					for (int k = 0; k < verify.actualArguments
+							.size(); k++) {
+						String variable_name = verify.actualArguments
+								.get(k);
 						if (variable_name.startsWith("$$")) {
 							if (variable_name.startsWith("$$%")
 									&& variable_name.endsWith("%")) {
-								// System.out.println("Variable name "+variable_name+" value "+testcase_actions.actionArguments.get(j));
-								String contextvar_name = variable_name.replaceAll(
-										"%", "");
-								variablevalueMap.put(contextvar_name,
-										testcase_actions.arguments.get(j));
 								// dont do any thing
+								String contextvar_name = variable_name
+										.replaceAll("%", "");
+								variablevalueMap.put(contextvar_name,
+										verify.arguments.get(k));
 							} else {
-
 								variablevalueMap.put(variable_name,
-										testcase_actions.arguments.get(j));
+										verify.arguments.get(k));
 							}
 						} else if (variable_name.contains("=")) {
 							// variable_name =
 							// Excel.SplitOnFirstEquals(variable_name)[1];
-							// message("The value variable "+Excel.SplitOnFirstEquals(variable_name).length);
-							variable_name = Excel.SplitOnFirstEquals(variable_name).length > 1 ? Excel
-									.SplitOnFirstEquals(variable_name)[1]
-											: variable_name;
-									if (variable_name.startsWith("$$")) {
-										if (variable_name.startsWith("$$%")
-												&& variable_name.endsWith("%")) {
-											// dont do any thing
-											String contextvar_name = variable_name
-													.replaceAll("%", "");
-											variablevalueMap
-											.put(contextvar_name,
-													testcase_actions.arguments
-													.get(j));
-										} else {
-											variablevalueMap
-											.put(variable_name,
-													testcase_actions.arguments
-													.get(j));
-										}
-									}
-						}
-					}
-				}
-
-				for (Verification verify : testcase_actions.verification) {
-					if (verify.arguments.size() == verify.actualArguments
-							.size()) {
-						for (int k = 0; k < verify.actualArguments
-								.size(); k++) {
-							String variable_name = verify.actualArguments
-									.get(k);
-							if (variable_name.startsWith("$$")) {
-								if (variable_name.startsWith("$$%")
-										&& variable_name.endsWith("%")) {
-									// dont do any thing
-									String contextvar_name = variable_name
-											.replaceAll("%", "");
-									variablevalueMap.put(contextvar_name,
-											verify.arguments.get(k));
-								} else {
-									variablevalueMap.put(variable_name,
-											verify.arguments.get(k));
-								}
-							} else if (variable_name.contains("=")) {
-								// variable_name =
-								// Excel.SplitOnFirstEquals(variable_name)[1];
-								//Controller. message("The value variable "+Excel.SplitOnFirstEquals(variable_name).length);
-								variable_name = Excel
-										.SplitOnFirstEquals(variable_name).length > 1 ? Excel
-												.SplitOnFirstEquals(variable_name)[1]
-														: variable_name;
-												if (variable_name.startsWith("$$")) {
-													if (variable_name.startsWith("$$%")
-															&& variable_name.endsWith("%")) {
-														// dont do any thing
-														String contextvar_name = variable_name
-																.replaceAll("%", "");
-														variablevalueMap
-														.put(contextvar_name,
-																verify.arguments
-																.get(k));
-													} else {
-														variablevalueMap
-														.put(variable_name,
-																verify.arguments
-																.get(k));
-													}
+							//Controller. message("The value variable "+Excel.SplitOnFirstEquals(variable_name).length);
+							variable_name = Excel
+									.SplitOnFirstEquals(variable_name).length > 1 ? Excel
+											.SplitOnFirstEquals(variable_name)[1]
+													: variable_name;
+											if (variable_name.startsWith("$$")) {
+												if (variable_name.startsWith("$$%")
+														&& variable_name.endsWith("%")) {
+													// dont do any thing
+													String contextvar_name = variable_name
+															.replaceAll("%", "");
+													variablevalueMap
+													.put(contextvar_name,
+															verify.arguments
+															.get(k));
+												} else {
+													variablevalueMap
+													.put(variable_name,
+															verify.arguments
+															.get(k));
 												}
-							}
+											}
 						}
 					}
 				}
-
 			}
 
-			Log.Debug("TestCase/findVariablesValueForTestCase: The Variable Map "
-					+ variablevalueMap);
-			return variablevalueMap;
 		}
-	 
-	
-	 
-	
-	
-	
+
+		Log.Debug("TestCase/findVariablesValueForTestCase: The Variable Map "
+				+ variablevalueMap);
+		return variablevalueMap;
+	}
+
+
+
+
+
+
 	/***
 	 * This will be executed on a separate thread..This will run the expanded
 	 * test case.
@@ -268,10 +268,10 @@ class TestCase
 	 */
 	private void runExpandedTestCase() throws Exception,
 	ReportingException {
-		
+
 		Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
-		
+
 
 		Log.Debug("TestCase/RunExpandedTestCase : Setting ZUG_TCID as ->"
 				+ this.testCaseID);
@@ -314,7 +314,7 @@ class TestCase
 					tData.testcasedescription = "";
 				}
 				TestSuite.	executedTestCaseData.put(tData.testCaseID, tData);
-		
+
 
 				if (Controller.opts.dbReporting == true) {
 					// If the testCase is not an Init or Cleanup Step then only
@@ -344,7 +344,7 @@ class TestCase
 											Controller.opts.topologySetId, de.getMessage()));
 							System.exit(1);
 						}
-							try {
+						try {
 							Controller.reporter.saveTestCaseVariables(
 									this.findVariablesValueForTestCase(),
 									this.testCaseID, TestSuite.testSuitName);
@@ -621,7 +621,7 @@ class TestCase
 							+ " Started. ***************************");
 
 					for (int i = count; i < actions.length; ++i) {
-					
+
 						final Action action = actions[i];
 
 						Log.Debug("TestCase/RunExpandedTestCase - Finally/Cleanup:  Working on Action  : "
@@ -1122,13 +1122,13 @@ class TestCase
 				tempValue = ContextVar.getContextVar(tempValue);
 				// message("EQUAL contextvariablemvm value"+tempValue);
 			} else if (tempValue.startsWith("$$") && tempValue.contains("#")) {
-			//	Controller. message("\nGetValue:/This is Indexed = " + tempValue);
+				//	Controller. message("\nGetValue:/This is Indexed = " + tempValue);
 				//tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
 				tempValue = Excel._indexedMacroTable.get(tempValue.substring(1)
 						.toLowerCase());
-			//	System.out.println("temp value from indexed table"+tempValue);
+				//	System.out.println("temp value from indexed table"+tempValue);
 
-			//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
+				//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
 				// message("GetValue:/This is Indexed The Value = " +
 				// tempValue);
 			}else if(tempValue.startsWith("$") && tempValue.contains("#")){
@@ -1143,12 +1143,12 @@ class TestCase
 					+ tempValue);
 		} // First Check in the Indexed Variable
 		else if (entireValue.startsWith("$$") && entireValue.contains("#")) {
-		//	entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
-		//	Controller. message("\nGetValue:/This is a entire Indexed\t" + entireValue);
+			//	entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
+			//	Controller. message("\nGetValue:/This is a entire Indexed\t" + entireValue);
 			tempValue = Excel._indexedMacroTable.get(entireValue.substring(1).toLowerCase());
 
-		//	System.out.println("temp value from indexed table"+tempValue);
-		//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
+			//	System.out.println("temp value from indexed table"+tempValue);
+			//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
 			// /message("GetValue:/This is a Indexed\t" + tempValue);
 
 		} else if (entireValue.startsWith("$$%") && entireValue.endsWith("%")) {
@@ -1156,9 +1156,9 @@ class TestCase
 			entireValue = entireValue.replaceAll("%", "");
 			tempValue = ContextVar.getContextVar(entireValue);
 		}else if (entireValue.startsWith("$") && entireValue.contains("#")) {
-		//	System.out.println("In else entire value="+entireValue.toLowerCase());
+			//	System.out.println("In else entire value="+entireValue.toLowerCase());
 			tempValue = Excel._indexedMacroTable.get(entireValue.toLowerCase());
-		//	System.out.println(Excel._indexedMacroTable);
+			//	System.out.println(Excel._indexedMacroTable);
 		}
 		else {
 			// message("TempVal=EntireVal "+tempValue);
@@ -1170,7 +1170,7 @@ class TestCase
 
 		// message("The tempvalue "+tempValue);
 		if(tempValue==null){
-		//	System.out.println("entire value");
+			//	System.out.println("entire value");
 			tempValue=entireValue;
 		}
 		return tempValue;
@@ -1195,7 +1195,7 @@ class TestCase
 						+ " and its value is -> "
 						+ valueToSubstitute);
 				//Controller. message("GetActualComb:: 1b "+entireValue+" valusubs "+valueToSubstitute);
-		//		Controller. message("value returned"+valueToSubstitute);
+				//		Controller. message("value returned"+valueToSubstitute);
 				return valueToSubstitute;
 			}
 			if (valueToSubstitute.contains("=")) {
@@ -1214,7 +1214,7 @@ class TestCase
 		Log.Debug("TestCase/GetActualCombination : End of function with variableToFind = "
 				+ entireValue + " and its value is -> " + tempValue);
 		// message("GetActualComb:: 1e "+tempValue);
-	//	Controller. message("value returned"+tempValue);
+		//	Controller. message("value returned"+tempValue);
 		return tempValue;
 	}
 
@@ -1258,7 +1258,7 @@ class TestCase
 					//Controller.message("ExpandTest:/cheks to Macro action args exp\t" + action.arguments);
 					String tempVal = GetTheActualValue((String) (action.arguments
 							.get(i)));
-				//	System.out.println("Temp val"+tempVal);
+					//	System.out.println("Temp val"+tempVal);
 					if (action.actualArguments.size() == action.arguments
 							.size()) {
 						// put in a hashmap
@@ -1448,7 +1448,7 @@ class TestCase
 						if(ind<0){
 							String val = StringUtils.replace(tempVal, "{", "");
 							val = StringUtils.replace(val, "}", "");
-						//	System.out.println("Val :"+val);
+							//	System.out.println("Val :"+val);
 							Log.Debug("TestCase/ExpandTestCase: Working on Argument with value = "
 									+ val + " of Action: ");
 							allActionVerificationArgs.add(new ArrayList<String>(
@@ -1462,7 +1462,7 @@ class TestCase
 								String vals[]=val.split(",");
 								for(int i=0;i<vals.length;i++){
 									vals[i]=str[0]+"="+vals[i];
-								//	System.out.println("values-"+vals[i]);
+									//	System.out.println("values-"+vals[i]);
 								}
 								Log.Debug("TestCase/ExpandTestCase: Working on Argument with value = "
 										+ vals.toString() + " of Action: ");
@@ -1472,12 +1472,12 @@ class TestCase
 							}else{
 								String val = StringUtils.replace(tempVal, "{", "");
 								val = StringUtils.replace(val, "}", "");
-							//	System.out.println("Val :"+val);
+								//	System.out.println("Val :"+val);
 								Log.Debug("TestCase/ExpandTestCase: Working on Argument with value = "
 										+ val + " of Action: ");
 								allActionVerificationArgs.add(new ArrayList<String>(
 										Arrays.asList(val.split(","))));
-								
+
 							}
 						}	
 						multiValuedVariablePosition.put(count1,
@@ -1508,7 +1508,7 @@ class TestCase
 						"Combination Of MVM values Exceeded permisible limit :: Not Comapatibile \nError: ");
 			}
 		}
-		
+
 		ArrayList<TestCase> tempTestCases = new ArrayList<TestCase>();
 		// message("Coming to this end. 7 "+result);
 		if (result != null) {
@@ -1561,7 +1561,7 @@ class TestCase
 						if (multiValuedVariablePosition.containsKey(count)) {
 							String testcase_partial_id = tempTestCaseVar[count]
 									.toLowerCase();
-						if (action.name
+							if (action.name
 									.equalsIgnoreCase("appendtocontextvar")
 									|| action.name
 									.equalsIgnoreCase("setcontextvar")
@@ -1653,7 +1653,7 @@ class TestCase
 								}
 								tempTestCase.testCaseID += "_"
 										+ testcase_partial_id;
-								
+
 							}
 
 							count++;
@@ -1686,17 +1686,17 @@ class TestCase
 				// message("EXPNDD:: arguments .. "+actions[1].actionArguments);
 				for(Action action:actions){
 					Action tempAction = new Action(action);
-				
+
 					tempAction.testCaseID = tempTestCase.testCaseID;
 					tempAction.parentTestCaseID = tempTestCase.parentTestCaseID;
 					tempAction.stackTrace = tempTestCase.stackTrace;
 					ArrayList<String> arg=new ArrayList<String>();
-			//		System.out.println("Action args:"+action.arguments);
+					//		System.out.println("Action args:"+action.arguments);
 					for(String argA:action.arguments){
-					//for (int i = 0; i < action.arguments.size(); ++i) {
+						//for (int i = 0; i < action.arguments.size(); ++i) {
 						arg.add(GetActualCombination((String) argA,tempTestCaseVar[count++]));
 					}
-				//	System.out.println("Action args after:"+arg);
+					//	System.out.println("Action args after:"+arg);
 					tempAction.arguments.addAll(arg);
 					Log.Debug("TestCase/ExpandTestCase: Number of verifications are : "
 							+ action.verification.size()
@@ -1708,7 +1708,7 @@ class TestCase
 						Verification tempVerification = new Verification(verification);
 						tempVerification.testCaseID = tempTestCase.testCaseID;
 						tempVerification.parentTestCaseID = tempTestCase.parentTestCaseID;
-					
+
 						ArrayList<String> argv=new ArrayList<String>();
 						for(String argVer:verification.arguments){
 							argv.add(GetActualCombination(argVer,tempTestCaseVar[count++]));
@@ -1744,7 +1744,7 @@ class TestCase
 		if (tempTestCases.size() == 0) {
 			Log.Debug("TestCase/ExpandTestCase: Returning only 1 testcase after Expansion. End of function with TestCase ID is "
 					+ this.testCaseID);
-		//	System.out.println("returning this");
+			//	System.out.println("returning this");
 			return new TestCase[] { this };
 		}
 		if (Controller.opts.excludeTestCaseID != null) {
@@ -1789,7 +1789,7 @@ class TestCase
 		return tempTestCases.toArray(tempT);
 	}
 
-	 void implicitTestStepCall(){
+	void implicitTestStepCall(){
 		String implicitTSMoleculeName=TestSuite.implicitTSMoleculeName.substring(TestSuite.implicitTSMoleculeName.indexOf(".")+1);
 		if(this.testCaseID.equalsIgnoreCase("init")||this.testCaseID.equalsIgnoreCase("cleanup")){
 			return;
@@ -1801,14 +1801,14 @@ class TestCase
 			try{
 				implicitMolecule.run();
 			}catch(Exception e){
-				
+
 			}
 		}
 	}
-	 
+
 	void run() throws Exception,
 	ReportingException {
-		
+
 		if (this.automated == false) {
 			Log.Debug("TestCase/RunTestCase : TestCase ID "
 					+ this.testCaseID
@@ -1853,24 +1853,24 @@ class TestCase
 
 		Log.Debug("TestCase/RunTestCase: Calling ExpandTestCase With TestCase ID is "
 				+ this.testCaseID);
-	//	System.out.println("Test Case id"+this.testCaseID);
+		//	System.out.println("Test Case id"+this.testCaseID);
 		TestCase[] expandedTestCases=null;
 		try{
-			 expandedTestCases = this.ExpandTestCase( true);
+			expandedTestCases = this.ExpandTestCase( true);
 		}catch(Exception e){
-		//	e.printStackTrace();
+			//	e.printStackTrace();
 			expandedTestCases=new TestCase[1];
 			expandedTestCases[0]=this;
 		}
-	//	System.out.println("ETC size "+expandedTestCases.length);
+		//	System.out.println("ETC size "+expandedTestCases.length);
 		Log.Debug("TestCase/RunTestCase: After Expansion for TestCase ID is "
 				+ this.testCaseID + " the number of expanded test case is : "
 				+ expandedTestCases.length);
 
 		ArrayList<Thread> ThreadPool = new ArrayList<Thread>();
-		
+
 		for (TestCase test : expandedTestCases) {
-		
+
 			final TestCase test2 = test;
 			if (this.concurrentExecutionOnExpansion == true) {
 				Thread thread = new Thread(new Runnable() {

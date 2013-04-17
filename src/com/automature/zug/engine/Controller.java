@@ -67,7 +67,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.0" + ".201304016" + ".146";
+	private static String Version = "ZUG Premium 6.1" + ".201304017" + ".147";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -106,11 +106,12 @@ public class Controller extends Thread {
 	public static HashMap<String,String> macroColumnValue=new HashMap<String, String>();
 
 	public TestSuite testsuite=new TestSuite();
-
+	
 	/*
 	 * Constructor that initializes the program options.
 	 */
 	public Controller() {
+		
 		StringBuilder helpMessagebuf = new StringBuilder();
 		versionMessage = Version;
 
@@ -1176,17 +1177,16 @@ public class Controller extends Thread {
 				}
 			}
 		}
-    		Controller.harnessPIDValue = Integer
+		Controller.harnessPIDValue = Integer
 				.parseInt((java.lang.management.ManagementFactory
-						.getRuntimeMXBean().getName().split("@"))[0]); 
+						.getRuntimeMXBean().getName().split("@"))[0]);
 		final Controller controller = new Controller();
 		String frameWork="";
-		// controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
-		//System.out.println(Controller.ZUG_LOGFILENAME+ " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
-     controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
+		 controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
+	//	System.out.println(Controller.ZUG_LOGFILENAME+ " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		ContextVar.setContextVar("ZUG_LOGFILENAME",
 				Controller.ZUG_LOGFILENAME);
-		
+	//	System.out.println("ZUG_LOGFILENAME"+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		StringBuilder cmdinputsargs = new StringBuilder();
 		for (String cmdinputs : args) {
 			cmdinputsargs.append(cmdinputs);
@@ -1241,11 +1241,11 @@ public class Controller extends Thread {
 			.message("No Inprocess Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
 		}
 		//String reporterName[]=testINI.reteriveXmlTagAttributeValue(reportingXmlTagPath, reportingXmlTagAttribute);
-// ProcessMonitorThread.currentThread().getId();
+		 // ProcessMonitorThread.currentThread().getId();
 
 		// First Validate the Command Line Arguments
 
-
+		//System.out.println("Harness PID value"+Controller.harnessPIDValue);
 
 		//System.out.println(Controller.ZUG_LOGFILENAME+" 3rd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		try {

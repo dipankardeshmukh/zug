@@ -1,7 +1,7 @@
 package com.automature.zug.engine;
 
-import com.automature.zug.util.Log;
-import com.automature.zug.util.Utility;
+
+//import com.automature.zug.util.Utility;
 
 public class SysEnv {
 	public static String OS_NAME = "", OS_VERSION = "", OS_ARCH = "";
@@ -51,8 +51,8 @@ public class SysEnv {
 			LOGLOCATION = System.getProperty("user.dir") + "/log";
 			
 		}   
-		mvmconfiguration = Utility.getMaxJVMMemorySize(Runtime.getRuntime())
-				.split("\\.")[0];
+		//mvmconfiguration = Utility.getMaxJVMMemorySize(Runtime.getRuntime())
+		//		.split("\\.")[0];
     }
 
 }
