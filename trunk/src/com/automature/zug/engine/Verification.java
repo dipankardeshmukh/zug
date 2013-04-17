@@ -22,7 +22,7 @@ public class Verification extends GTuple {
 	
 	//public Boolean isVerifyNegative = false;
 
-	public void run(String threadID){
+	public void run(String threadID)throws Exception{
 		try{
 			boolean exceptionOccured=true;
 			try {
@@ -63,7 +63,8 @@ public class Verification extends GTuple {
 			}
 		
 		}catch(Exception e){
-			this.putExceptionMessage(e);
+		//	this.putExceptionMessage(e);
+			throw e;
 		}
 	}
 	/*

@@ -93,9 +93,22 @@ public class Action extends GTuple {
 				this.verification.get(j).run(threadID);
 			}
 		}catch(Exception e){
-			this.putExceptionMessage(e);
+			if(Controller.opts.ignore){
+				Controller.message("Ignore testcases is on:Exception message"+e.getMessage());
+				if (!StringUtils
+						.isBlank(TestSuite.errorMessageDuringTestCaseExecution
+								.get(this.parentTestCaseID))) {
+					TestSuite.errorMessageDuringTestCaseExecution
+					.put(this.parentTestCaseID,StringUtils.EMPTY);
+				}
+			}else{
+				this.putExceptionMessage(e);
+			}	
+			
 		}
 	}
+	
+	
 	/*
 	public void run() {
 		
