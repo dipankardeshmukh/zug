@@ -136,7 +136,6 @@ public class OutProcessAtom implements Atom{
 						parentTestCaseId));
 
 		String actualCommand = command;
-
 		Log.Debug("OutProcessAtom/ExecuteCommand: Calling Controller/FindWorkingDirectory()");
 		String workingDirectory = FindWorkingDirectory(command,
 				workingDirectoryList);
