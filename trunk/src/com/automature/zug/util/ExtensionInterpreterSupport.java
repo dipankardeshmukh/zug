@@ -52,6 +52,57 @@ public class ExtensionInterpreterSupport {
     public static List<Double> jvm_max_memory_list=new ArrayList<Double>();
     public Set<String> inprocesspackageError = new HashSet<String>();
 
+   /* public static String getNodesValues(String path)throws Exception{
+
+          String filename = "ZugINI.xml";
+          String values="";
+          Document document = null;
+          try {
+              document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(filename));
+              document.getDocumentElement().normalize();
+          } catch (Exception FileLoadException) {
+              Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + filename);
+              throw FileLoadException;
+
+          }
+          NodeList languagesList = org.apache.xpath.XPathAPI.selectNodeList(document, path);
+        
+          ArrayList<String> locations=new ArrayList<String>();
+          System.out.println(languagesList.getLength());
+          for (int i = 0; i < languagesList.getLength(); i++) {
+        	  Node node=languagesList.item(i);
+        	  node.normalize();
+        	  String str=node.getTextContent().trim();
+        	  System.out.println("Str"+str);
+        	  locations.add(str);
+        	  //values+=languagesList.item(i).getTextContent()+";";  
+          }
+          for(String str:locations){
+        	  values+=str+";";
+          }
+          System.out.println(locations.toString());
+          System.out.println(values);
+          return values;
+    }
+    */
+    public static String getNode(String path)throws Exception{
+    
+          String filename = "ZugINI.xml";
+          Document document = null;
+          try {
+              document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(filename));
+              document.getDocumentElement().normalize();
+          } catch (Exception FileLoadException) {
+              Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + filename);
+              throw FileLoadException;
+
+          }
+          Node ele = org.apache.xpath.XPathAPI.selectSingleNode(document, path);//.selectNodeList(document, path);
+          if(ele==null)
+        	  return null;
+          return ele.getTextContent();
+    }
+    
     private static ArrayList<ExtensionInterpreterSupport> readConfigFile() throws Exception {
         String Pathlist = new String(System.getenv(SysEnv.PATH_CHECK));
         ArrayList<ExtensionInterpreterSupport> extensionList = new ArrayList<ExtensionInterpreterSupport>();

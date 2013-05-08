@@ -67,7 +67,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.1" + ".201304017" + ".147";
+	private static String Version = "ZUG Premium 6.2" + ".20130507" + ".148";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -538,6 +538,9 @@ public class Controller extends Thread {
 			String[] spliArr = opts.scriptLocation.split(";");
 			String newLocation = "";
 			for (String spits : spliArr) {
+				if(spits==null){
+					continue;
+				}
 				String[] temp0 = spits.split("\\\\");
 				if (!temp0[0].contains(":")) {
 					if (opts.filelocation == null) {
@@ -1370,6 +1373,7 @@ public class Controller extends Thread {
 					opts.verificationSwitching, opts.compileMode);
 			Controller.message("SUCCESSFULLY Read the TestCases Input Sheet "
 					+ opts.inputFile);
+			
 			if (!opts.verbose) {
 				System.out
 				.println("SUCCESSFULLY Read the TestCases Input Sheet "
@@ -1472,6 +1476,7 @@ public class Controller extends Thread {
 				System.out
 				.println("\n******************************************************************************** ");
 			}
+		
 			final String fw=frameWork;
 			Thread thread = new Thread(new Runnable() {
 
