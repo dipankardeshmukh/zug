@@ -62,6 +62,11 @@
               <mvm-configuration jvm-max-memorysize="455">3000</mvm-configuration>
                <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
                <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
+<scriptlocation></scriptlocation>
+				 <dbhostname></dbhostname>
+				<dbname></dbname>
+				<dbusername></dbusername>
+				<dbuserpassword></dbuserpassword>
               </configurations>
               
 
