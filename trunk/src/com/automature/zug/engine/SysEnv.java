@@ -1,5 +1,7 @@
 package com.automature.zug.engine;
 
+import java.lang.management.ManagementFactory;
+
 
 //import com.automature.zug.util.Utility;
 
@@ -13,7 +15,7 @@ public class SysEnv {
 	public static boolean OS_FLAG;
 	public static String JavaVersion = "", JavaHome = "", JavaCompiler = "",
 			JavaLibraryPath = "";
-	 boolean isOSSupported=false;
+	boolean isOSSupported=false;
 	public String mvmconfiguration;
     SysEnv(){
     	if (OS_NAME.toLowerCase().contains("windows")) {
@@ -50,9 +52,30 @@ public class SysEnv {
 		if (LOGLOCATION == null) {
 			LOGLOCATION = System.getProperty("user.dir") + "/log";
 			
-		}   
+		}  
 		//mvmconfiguration = Utility.getMaxJVMMemorySize(Runtime.getRuntime())
 		//		.split("\\.")[0];
     }
+    public static String getEnvProps(){
+		String str="";
+		str+="OS Name="+System.getProperty("os.name")+",";
+		str+="Java version="+System.getProperty("java.specification.version")+",";
+		str+="LOGON SERVER="+System.getenv("LOGONSERVER")+",";
+		str+="COMPUTER NAME="+System.getenv("COMPUTERNAME")+",";
+		str+="USER NAME="+System.getenv("USERNAME")+",";
+		str+="APPDATA="+System.getenv("APPDATA")+",";
+		str+="USERDOMAIN="+System.getenv("USERDOMAIN")+",";
+		//str+="os Arch="+System.getProperty("os.arch")+",";
+	//	str+="PROCESSOR IDENTIFIER="+System.getenv("PROCESSOR_IDENTIFIER")+",";
+		str+="PROCESSOR_ARCHITECTURE="+System.getenv("PROCESSOR_ARCHITECTURE")+",";
+		str+="NUMBER_OF_PROCESSORS="+System.getenv("NUMBER_OF_PROCESSORS")+",";
+		com.sun.management.OperatingSystemMXBean mxbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		str+="RAM="+mxbean.getTotalPhysicalMemorySize()/(1024*1024) + " MB";
+		//for(String str1:str.split(",")){
+		//	System.out.println(str1);
+	//	} 
+	//	System.out.println(str);
+		return str;
+	}
 
 }

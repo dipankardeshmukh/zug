@@ -47,7 +47,7 @@ class TestCase
 	//public HashMap<String,String>_testcasemoleculekeyvalueDefn=new HashMap<String, String>();
 	public HashMap<String,ArrayList<MultiValuedMacro>> mvm_macro_variable_map = new HashMap<String,ArrayList<MultiValuedMacro>>();
 	public HashMap<String,String> mvm_value_map=new HashMap<String,String>(); 
-
+	 boolean returnFlag=false;
 
 	public TestCase(){
 
@@ -266,6 +266,7 @@ class TestCase
 	 * 
 	 * @param testcaseObj
 	 */
+	
 	private void runExpandedTestCase() throws Exception,
 	ReportingException {
 
@@ -462,6 +463,14 @@ class TestCase
 							public void run() {
 								tempAction.run();
 								implicitTestStepCall();
+							/*	if(action.property.equalsIgnoreCase("ROS") && StringUtils
+										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+									returnFlag=true;
+									
+								}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
+										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+									returnFlag=true;
+								}*/
 							}
 						});
 						// thread.IsBackground = true;
@@ -534,6 +543,14 @@ class TestCase
 							public void run() {
 								action.run();
 								implicitTestStepCall();
+						/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
+										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+									returnFlag=true;
+									
+								}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
+										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+									returnFlag=true;
+								}*/
 							}
 						});
 						// thread.IsBackground = true;
@@ -674,6 +691,14 @@ class TestCase
 										public void run() {
 											action.run();
 											implicitTestStepCall();
+									/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+												
+											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+											}*/
 										}
 									});
 									// thread.IsBackground = true;
@@ -729,6 +754,14 @@ class TestCase
 										public void run() {
 											action.run();
 											implicitTestStepCall();
+									/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+												
+											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+											}*/
 										}
 									});
 									// thread.IsBackground = true;
@@ -795,6 +828,14 @@ class TestCase
 										public void run() {
 											action.run();
 											implicitTestStepCall();
+									/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+												
+											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+											}*/
 										}
 									});
 									// thread.IsBackground = true;
@@ -849,6 +890,14 @@ class TestCase
 										public void run() {
 											action.run();
 											implicitTestStepCall();
+										/*	if(action.property.equalsIgnoreCase("ROS") && StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+												
+											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
+													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
+												returnFlag=true;
+											}*/
 										}
 									});
 									// thread.IsBackground = true;
@@ -1001,6 +1050,7 @@ class TestCase
 
 		}
 	}
+
 
 
 

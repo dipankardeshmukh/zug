@@ -1370,7 +1370,8 @@ public class Excel {
 			// / We now need something to iterate through the cells.
 			Iterator rowIter = worksheet.rowIterator();
 
-			do {
+			//do {
+			 while (rowIter.hasNext()){
 				boolean keyflag = false, valueflag = false;
 				HSSFRow myRow = (HSSFRow) rowIter.next();
 				Iterator cellIter = myRow.cellIterator();
@@ -1610,7 +1611,7 @@ public class Excel {
 					hashTable.put(strKey, strValue);
 				}
 
-			} while (rowIter.hasNext());
+			}// while (rowIter.hasNext());
 
 		} catch (Exception e) {
 
@@ -4143,6 +4144,12 @@ public class Excel {
 				}
 
 				return null;
+			}
+			
+			if(property==null){
+				actionObj.property=" ";
+			}else{
+				actionObj.property=property;
 			}
 			if (property != null
 					&& property.toLowerCase().equalsIgnoreCase(NEGATIVE)) {
