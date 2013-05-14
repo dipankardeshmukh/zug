@@ -63,6 +63,36 @@ public class Molecule extends TestCase {
 		}
 	}
 
+	private void removeAndShowExceptionMessage(Action act){
+		if(act.property.equalsIgnoreCase("ROS") && StringUtils
+				.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+			returnFlag=true;
+			
+		}else if(act.property.equalsIgnoreCase("ROF") && !StringUtils
+				.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+			returnFlag=true;
+			Controller.message(String.format(
+					"\n[%s] Exception in "+act.getClass().getSimpleName()+" %s (%s:%s).\n\t Message: %s",
+					act.stackTrace,act.name, act.sheetName,
+					(act.lineNumber+1),TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace)));
+			//Controller.message(TestSuite.errorMessageDuringMoleculeCaseExecution
+			//				.get(act.stackTrace));
+			if (!StringUtils
+					.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution
+							.get(act.stackTrace))) {
+				TestSuite.errorMessageDuringMoleculeCaseExecution
+				.put(act.stackTrace,StringUtils.EMPTY);			
+			}
+			
+			if (!StringUtils
+					.isBlank(TestSuite.errorMessageDuringTestCaseExecution
+							.get(act.parentTestCaseID))) {
+				TestSuite.errorMessageDuringTestCaseExecution
+				.put(act.parentTestCaseID,StringUtils.EMPTY);
+			}
+		}	
+	}
+	
 	private void runExpandedMolecule() {
 		Log.Debug("Molecule/RunExpandedTestCaseForMolecule : Start of Function.");
 
@@ -151,6 +181,17 @@ public class Molecule extends TestCase {
 						public void run() {
 							act.run();
 							implicitTestStepCall();
+							
+							if(act.property.equalsIgnoreCase("ROS") && StringUtils
+									.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+								returnFlag=true;
+								
+							}else if(act.property.equalsIgnoreCase("ROF") && !StringUtils
+									.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+								returnFlag=true;
+								removeAndShowExceptionMessage(act);
+
+							}
 						}
 					});
 					// thread.IsBackground = true;
@@ -163,7 +204,9 @@ public class Molecule extends TestCase {
 					}
 
 					ThreadPool.clear();
-
+					if(returnFlag){
+						return;
+					}
 					// In case we get an Exception then Dont run any more
 					// processes
 					if ((StringUtils
@@ -189,6 +232,15 @@ public class Molecule extends TestCase {
 						public void run() {
 							act.run();
 							implicitTestStepCall();
+							if(act.property.equalsIgnoreCase("ROS") && StringUtils
+									.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+								returnFlag=true;
+								
+							}else if(act.property.equalsIgnoreCase("ROF") && !StringUtils
+									.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+								returnFlag=true;
+								removeAndShowExceptionMessage(act);
+							}
 						}
 					});
 					thread.start();
@@ -216,6 +268,9 @@ public class Molecule extends TestCase {
 			// like to perform
 			// before the test case is finally said to be done..
 			//
+			if(returnFlag){
+				return;
+			}
 			if ((actionsForCleanup.size() > 0 && !TestSuite._testPlanStopper && !((Boolean) TestSuite._testStepStopper
 					.get(this.parentTestCaseID)))
 					|| (actionsForCleanup.size() > 0 && Controller.opts.doCleanupOnTimeout)) {
@@ -274,6 +329,16 @@ public class Molecule extends TestCase {
 									public void run() {
 										act.run();
 										implicitTestStepCall();
+										if(act.property.equalsIgnoreCase("ROS") && StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											
+										}else if(act.property.equalsIgnoreCase("ROF") && !StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											removeAndShowExceptionMessage(act);
+										
+										}
 									}
 								});
 								// thread.IsBackground = true;
@@ -286,13 +351,24 @@ public class Molecule extends TestCase {
 								}
 
 								ThreadPool.clear();
-
+								if(returnFlag){
+									return;
+								}
 								// The new step number is the current one
 								stepNumber = act.step;
 								Thread thread = new Thread(new Runnable() {
 									public void run() {
 										act.run();
 										implicitTestStepCall();
+										if(act.property.equalsIgnoreCase("ROS") && StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											
+										}else if(act.property.equalsIgnoreCase("ROF") && !StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											removeAndShowExceptionMessage(act);
+										}
 									}
 								});
 								// thread.IsBackground = true;
@@ -342,6 +418,15 @@ public class Molecule extends TestCase {
 									public void run() {
 										act.run();
 										implicitTestStepCall();
+										if(act.property.equalsIgnoreCase("ROS") && StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											
+										}else if(act.property.equalsIgnoreCase("ROF") && !StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											removeAndShowExceptionMessage(act);
+										}
 									}
 								});
 								// thread.IsBackground = true;
@@ -354,7 +439,9 @@ public class Molecule extends TestCase {
 								}
 
 								ThreadPool.clear();
-
+								if(returnFlag){
+									return;
+								}
 								// The new step number is the current one
 								stepNumber = act.step;
 								Thread thread = new Thread(new Runnable() {
@@ -362,6 +449,15 @@ public class Molecule extends TestCase {
 									public void run() {
 										act.run();
 										implicitTestStepCall();
+										if(act.property.equalsIgnoreCase("ROS") && StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											
+										}else if(act.property.equalsIgnoreCase("ROF") && !StringUtils
+												.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(act.stackTrace))){
+											returnFlag=true;
+											removeAndShowExceptionMessage(act);
+										}
 									}
 								});
 								// thread.IsBackground = true;

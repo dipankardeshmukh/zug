@@ -30,6 +30,7 @@ public class GTuple {
 	public String name = null;
 	public Boolean isComment = false;
 	public UserData userObj;
+	String property="";
 
 	public GTuple() {
 		super();
@@ -52,6 +53,7 @@ public class GTuple {
 		this.isComment = gt.isComment;
 		this.userObj = gt.userObj;
 		this.isIgnore = gt.isIgnore;
+		this.property=gt.property;
 		arguments = new ArrayList<String>();
 	}
 	
