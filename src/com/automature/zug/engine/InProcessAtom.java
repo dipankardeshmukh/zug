@@ -2,6 +2,9 @@ package com.automature.zug.engine;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.automature.zug.util.ExtensionInterpreterSupport;
@@ -19,6 +22,7 @@ public class InProcessAtom  implements Atom{
 		} else {
 			type = "verification";
 		}
+		HiPerfTimer hft=null;
 		try {
 			boolean PkgstructureFound = false;
 			String package_struct[] = action.name.trim().split("\\.",2);
@@ -42,6 +46,12 @@ public class InProcessAtom  implements Atom{
 
 			// TODO need to make the builtin_atom_package_name as
 			// threadsafe....
+			if(Controller.opts.showTime){
+				
+				hft=new HiPerfTimer();
+				hft.Start();
+			}
+			
 			Controller.message(String.format(
 					"[%s] Execution Started "+type+" %s with values %s ",
 					action.stackTrace.toUpperCase(), action.name,
@@ -70,16 +80,37 @@ public class InProcessAtom  implements Atom{
 						String.format(
 								" %s Package architecture is not matching with ZugINI.xml definition ", package_struct[0]));
 			}
+			if(Controller.opts.showTime){
+				hft.Stop();
+				if(Controller.atomPerformence.containsKey(action.name.toLowerCase())){
+					List l=Controller.atomPerformence.get(action.name.toLowerCase());
+					l.add(hft.Duration());
+					Controller.atomPerformence.put(action.name.toLowerCase(),l);
+				}else{
+					ArrayList al=new ArrayList();
+					al.add(hft.Duration());
+					Controller.atomPerformence.put(action.name.toLowerCase(),new ArrayList(al));
+				}
+				Controller
+				.message(String.format(
+						"\n[%s] "+type+" %s SUCCESSFULLY Executed in %s milli sec.",
+						action.stackTrace.toUpperCase(),
+						action.name.toUpperCase(),hft.Duration()));
+			}else{
 			Controller
 			.message(String.format(
 					"\n[%s] "+type+" %s SUCCESSFULLY Executed",
 					action.stackTrace.toUpperCase(),
 					action.name.toUpperCase()));
-		
+			}
 		
 		} catch (Exception e) {
 			throw e;
 		
+		}finally{
+			if(hft!=null){
+				hft.Stop();
+			}
 		}
 
 	}

@@ -29,6 +29,7 @@ public class AtomHandler {
 			//&& !action.actionName.startsWith("&")) {
 			InProcessAtom ipa=new InProcessAtom();		
 			ipa.run(action,threadID);
+		
 		} else if (action.name.trim().startsWith("#define")) {
 		} else {
 			BuildInAtom bia = new BuildInAtom();
