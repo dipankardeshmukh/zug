@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -443,6 +444,7 @@ public class OutProcessAtom implements Atom{
 	public void run(GTuple action, String threadID) throws Exception {
 		String type = "";
 		String step = "";
+		HiPerfTimer hft=null;
 		try {
 			if (action instanceof Action) {
 				type = "Action";
@@ -483,7 +485,10 @@ public class OutProcessAtom implements Atom{
 					.format("OutProcessAtom/run : Calling ExecuteCommand with Command as %s ,  arguments =%s and parentTestCaseID = %s",
 							command, arguments.toString().trim(),
 							action.parentTestCaseID));
-
+			if(Controller.opts.showTime){
+				hft=new HiPerfTimer();
+				hft.Start();
+			}	
 			if (StringUtils.isBlank(arguments.toString())) {
 				Controller
 						.message(String
@@ -526,11 +531,30 @@ public class OutProcessAtom implements Atom{
 						Controller.opts.scriptLocation, user,
 						action.parentTestCaseID, step);
 			}
+
+			if(Controller.opts.showTime){
+				hft.Stop();
+				if(Controller.atomPerformence.containsKey(action.name.toLowerCase())){
+					List l=Controller.atomPerformence.get(action.name.toLowerCase());
+					l.add(hft.Duration());
+					Controller.atomPerformence.put(action.name.toLowerCase(),l);
+				}else{
+					ArrayList al=new ArrayList();
+					al.add(hft.Duration());
+					Controller.atomPerformence.put(action.name.toLowerCase(),al);
+				}
+				Controller
+				.message(String.format(
+						"\n[%s] "+type+" %s SUCCESSFULLY Executed in %s milli sec.",
+						action.stackTrace.toUpperCase(),
+						action.name.toUpperCase(),hft.Duration()));
+			}else{
 			Controller
 					.message(String.format(
 							"\n[%s] Action %s SUCCESSFULLY Executed",
 							action.stackTrace.toUpperCase(),
 							action.name.toUpperCase()));
+			}
 			Log.Debug(String
 					.format("OutProcessAtom/run : Successfully Executed ExecuteCommand with Command as %s and  arguments =%s ",
 							command, arguments.toString()));
@@ -544,6 +568,10 @@ public class OutProcessAtom implements Atom{
 			throw ex;
 	
 		
+		}finally{
+			if(hft!=null){
+				hft.Stop();
+			}
 		}
 	}
 }

@@ -1369,15 +1369,17 @@ public class Excel {
 							worksheet.getPhysicalNumberOfRows()));
 			// / We now need something to iterate through the cells.
 			Iterator rowIter = worksheet.rowIterator();
-
+			//System.out.println("row iterator initialized");
 			//do {
+			int line=0;
 			 while (rowIter.hasNext()){
+				// System.out.println("at line "+line);
 				boolean keyflag = false, valueflag = false;
 				HSSFRow myRow = (HSSFRow) rowIter.next();
 				Iterator cellIter = myRow.cellIterator();
-
+				int col=0;
 				while (cellIter.hasNext()) {
-
+			//		System.out.println("col no"+col);
 					HSSFCell myCell = (HSSFCell) cellIter.next();
 
 					if (myCell.getCellNum() == key) {
@@ -1411,6 +1413,7 @@ public class Excel {
 						}
 					}
 				}
+			//	System.out.println("str key"+strKey+"\t str value"+strValue);
 				// / If this is a Macros sheet then Expand the Value before
 				// adding it to the Hashtable..
 				if (sheetname.equals("macros")) {
@@ -1445,6 +1448,7 @@ public class Excel {
 						&& ((_configSheetKeys[10].compareTo(strKey) == 0))) {
 					// /Don't insert in hash table if sheet is config and key is
 					// INCLUDE
+					
 					if (!Controller.opts.includeFlag) {
 						Log.Debug("Command Line Executions switch Given\t"
 								+ Controller.opts.includeFlag);
@@ -1529,7 +1533,7 @@ public class Excel {
 					if (Controller.opts.includeFlag || !Controller.opts.includeFlag) {
 						Log.Debug("No Command Line Executions switch Given\t"
 								+ Controller.opts.includeFlag);
-						if (strValue.isEmpty()) {
+						if (strValue==null||strValue.isEmpty()) {
 
 							break;
 						} else {
@@ -1591,30 +1595,35 @@ public class Excel {
 									+ " Molecule file: " + moleculefile);
 						}
 					}
-				} else if (sheetname.equals("config")
-						&& _configSheetKeys[1].equalsIgnoreCase(strKey)) {
-					// System.out.println("The Key of Config sheet "+strKey+"vlue "+strValue);
-					// if(strValue.startsWith("/")||strValue.indexOf("\\\\")>1)
-					if (new File(strValue).isDirectory()
-							|| strValue.contains(";"))
-						hashTable.put(strKey, "");
-					else
+				} else if(strValue!=null){
+					if (sheetname.equals("config")
+							&& _configSheetKeys[1].equalsIgnoreCase(strKey)) {
+						// System.out.println("The Key of Config sheet "+strKey+"vlue "+strValue);
+						// if(strValue.startsWith("/")||strValue.indexOf("\\\\")>1)
+						if (new File(strValue).isDirectory()
+								|| strValue.contains(";"))
+							hashTable.put(strKey, "");
+						else
+							hashTable.put(strKey, strValue);
+					} else if (sheetname.equals("config")
+							&& _configSheetKeys[3].equalsIgnoreCase(strKey)) {
+						if (new File(strValue).isDirectory()
+								|| strValue.contains(";") || strValue.contains(":"))
+							hashTable.put(strKey, "");
+						else
+							hashTable.put(strKey, strValue);
+					} else {
 						hashTable.put(strKey, strValue);
-				} else if (sheetname.equals("config")
-						&& _configSheetKeys[3].equalsIgnoreCase(strKey)) {
-					if (new File(strValue).isDirectory()
-							|| strValue.contains(";") || strValue.contains(":"))
-						hashTable.put(strKey, "");
-					else
-						hashTable.put(strKey, strValue);
-				} else {
+					}
+				}else{
+					strValue=strValue==null?"":strValue;
 					hashTable.put(strKey, strValue);
 				}
 
 			}// while (rowIter.hasNext());
 
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			Log.Error(String
 					.format("Excel/GetKeyValuePair : Error occured while getting values from the %s Sheet. \n Message %s: ",
 							sheetname, e.getMessage()));

@@ -26,9 +26,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +69,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.2" + ".20130507" + ".148";
+	private static String Version = "ZUG Premium 6.3" + ".20130517" + ".149";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -106,6 +108,8 @@ public class Controller extends Thread {
 	public static HashMap<String,String> macroColumnValue=new HashMap<String, String>();
 
 	public TestSuite testsuite=new TestSuite();
+	
+	public static HashMap<String ,List> atomPerformence=new HashMap<String,List>();
 	
 	/*
 	 * Constructor that initializes the program options.
@@ -1148,6 +1152,56 @@ public class Controller extends Thread {
 		return ht;
 	}
 */
+	static void showAtomPerformance(){
+
+		System.out.println("\n10 Most time consuming Atom in the Test Suite\n");
+		Set atoms=Controller.atomPerformence.keySet();
+		TreeMap tm=new TreeMap();
+		Iterator it=atoms.iterator();
+		while(it.hasNext()){
+			String atomName=(String)it.next();
+			List l=Controller.atomPerformence.get(atomName);
+			int size = l.size();
+			int sum=0;
+			for(int i=0;i<size;i++){
+				int time=(Integer)l.get(i);
+				sum+=time;
+			}
+			double avg=sum/size;
+			if(tm.containsKey(avg)){
+				List atomNames=(List)tm.get(avg);
+				atomNames.add(atomName);
+				tm.put(avg, atomNames);
+			}else{
+				ArrayList al=new ArrayList();
+				al.add(atomName);
+				tm.put(avg,al);
+			}
+		}		
+		int noOfItem=0;
+		try{
+		NavigableSet ds=tm.descendingKeySet();
+		Iterator itTm=ds.iterator();
+		while(itTm.hasNext()){
+			if(noOfItem==10){
+				break;
+			}
+			double n=(Double)itTm.next();
+			ArrayList l=(ArrayList)tm.get(n);
+			for(Object obj:l){
+				if(noOfItem==10){
+					break;
+				}
+				System.out.println(String.format("%-70s %.3f milli sec", obj,n));
+				noOfItem++;
+			}
+		}
+		System.out.println("\n********************************************************************************\n");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * main method for Harness. Entry point to the Controller
 	 * 
@@ -1529,6 +1583,7 @@ public class Controller extends Thread {
 			controller.executionTime = (int) (tm.Duration());
 			// controller.message("the output\t" + controller.executionTime);
 			// In any case, do the reporting
+			
 			if (opts.dbReporting == true) {
 
 				if (controller.testsuite.executedTestCaseData.size() > 0) {
@@ -1583,6 +1638,10 @@ public class Controller extends Thread {
 			System.out
 			.println("\n******************************************************************************** ");
 		}
+		if(opts.showTime){
+			Controller.showAtomPerformance();
+		}
+		
 		controller.DoHarnessCleanup();
 
 	}

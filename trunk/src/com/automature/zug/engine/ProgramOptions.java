@@ -54,7 +54,7 @@ public class ProgramOptions {
 
 	String buildName=StringUtils.EMPTY;
 	String testPlanName=StringUtils.EMPTY;
-
+	static boolean showTime=false;
 	public static String CONTEXTVARRETRYCOUNT="5",CONTEXTVARRETRYTIMEOUT="1";
 	private static boolean retrycountflag = false;
 	private static boolean retrytimeoutflag = false;
@@ -63,7 +63,7 @@ public class ProgramOptions {
 	public static String filelocation = null;
 	private Hashtable<String, String> _opts=new Hashtable<String, String>();
 	protected static String currentPath, workingDirectory;
-	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore"));
+	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime"));
 	/*
 	 * Creates a new instance.
 	 * 
@@ -1116,7 +1116,9 @@ public class ProgramOptions {
 			if((this.getString("ignore", null))!=null){
 				this.ignore=true;
 			}
-			
+			if((this.getString("atomexectime", null))!=null){
+				this.showTime=true;
+			}
 
 
 
