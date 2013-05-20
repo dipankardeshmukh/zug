@@ -1156,7 +1156,7 @@ public class Controller extends Thread {
 		if(Controller.atomPerformance.isEmpty()){
 			return;
 		}
-		Controller.message("\n10 Most time consuming Atom in the Test Suite\n");
+		Controller.message("\n10 Most time consuming Atom in the Test Suite with their execution time in milli seconds\n");
 		Set atoms=Controller.atomPerformance.keySet();
 		TreeMap tm=new TreeMap();
 		Iterator it=atoms.iterator();
