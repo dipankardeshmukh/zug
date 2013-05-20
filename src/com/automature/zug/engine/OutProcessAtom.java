@@ -534,14 +534,14 @@ public class OutProcessAtom implements Atom{
 
 			if(Controller.opts.showTime){
 				hft.Stop();
-				if(Controller.atomPerformence.containsKey(action.name.toLowerCase())){
-					List l=Controller.atomPerformence.get(action.name.toLowerCase());
+				if(Controller.atomPerformance.containsKey(action.name.toLowerCase())){
+					List l=Controller.atomPerformance.get(action.name.toLowerCase());
 					l.add(hft.Duration());
-					Controller.atomPerformence.put(action.name.toLowerCase(),l);
+					Controller.atomPerformance.put(action.name.toLowerCase(),l);
 				}else{
 					ArrayList al=new ArrayList();
 					al.add(hft.Duration());
-					Controller.atomPerformence.put(action.name.toLowerCase(),al);
+					Controller.atomPerformance.put(action.name.toLowerCase(),al);
 				}
 				Controller
 				.message(String.format(
