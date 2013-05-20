@@ -109,7 +109,7 @@ public class Controller extends Thread {
 
 	public TestSuite testsuite=new TestSuite();
 	
-	public static HashMap<String ,List> atomPerformence=new HashMap<String,List>();
+	public static HashMap<String ,List> atomPerformance=new HashMap<String,List>();
 	
 	/*
 	 * Constructor that initializes the program options.
@@ -1153,21 +1153,23 @@ public class Controller extends Thread {
 	}
 */
 	static void showAtomPerformance(){
-
-		System.out.println("\n10 Most time consuming Atom in the Test Suite\n");
-		Set atoms=Controller.atomPerformence.keySet();
+		if(Controller.atomPerformance.isEmpty()){
+			return;
+		}
+		Controller.message("\n10 Most time consuming Atom in the Test Suite\n");
+		Set atoms=Controller.atomPerformance.keySet();
 		TreeMap tm=new TreeMap();
 		Iterator it=atoms.iterator();
 		while(it.hasNext()){
 			String atomName=(String)it.next();
-			List l=Controller.atomPerformence.get(atomName);
+			List l=Controller.atomPerformance.get(atomName);
 			int size = l.size();
 			int sum=0;
 			for(int i=0;i<size;i++){
 				int time=(Integer)l.get(i);
 				sum+=time;
 			}
-			double avg=sum/size;
+			double avg=(double)sum/size;
 			if(tm.containsKey(avg)){
 				List atomNames=(List)tm.get(avg);
 				atomNames.add(atomName);
@@ -1192,11 +1194,11 @@ public class Controller extends Thread {
 				if(noOfItem==10){
 					break;
 				}
-				System.out.println(String.format("%-70s %.3f milli sec", obj,n));
+				Controller.message(String.format("%-60s %.3f milli sec", obj,n));
 				noOfItem++;
 			}
 		}
-		System.out.println("\n********************************************************************************\n");
+		Controller.message("\n********************************************************************************\n");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
