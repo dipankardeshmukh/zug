@@ -1184,6 +1184,7 @@ public class Controller extends Thread {
 		try{
 		NavigableSet ds=tm.descendingKeySet();
 		Iterator itTm=ds.iterator();
+		Controller.message(String.format("%-55s%-5s %-8s %-5s","Atom Name","Min.","Avg.","Max.\n"));
 		while(itTm.hasNext()){
 			if(noOfItem==10){
 				break;
@@ -1194,13 +1195,15 @@ public class Controller extends Thread {
 				if(noOfItem==10){
 					break;
 				}
-				Controller.message(String.format("%-60s %.3f milli sec", obj,n));
+				List<String> al=Controller.atomPerformance.get(obj.toString());
+				Collections.sort(al);	
+				Controller.message(String.format("%-55s%-5d %-5.2f  %-5d", obj,al.get(0),n,al.get(al.size()-1)));
 				noOfItem++;
 			}
 		}
 		Controller.message("\n********************************************************************************\n");
 		}catch(Exception e){
-			e.printStackTrace();
+			Controller.message("Controller/showAtomPerforamance:Exception-"+e.getMessage());
 		}
 	}
 	
