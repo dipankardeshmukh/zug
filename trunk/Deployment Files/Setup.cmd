@@ -23,15 +23,15 @@ set SAMPLE_ROOT=%~dp0.
 :: Working directory will be current directory.
 pushd "%~dp0."
 
-:: Checking the .net Framework v3.5 installation
-if not exist %windir%\Microsoft.NET\Framework\v4.0.30319 goto EndNotAbleToFindNetFramework
+:: Checking the .net Framework v4.0 installation
+rem if not exist %windir%\Microsoft.NET\Framework\v4.0.30319 goto EndNotAbleToFindNetFramework
 
 :: Get processor type
 set processorType=%PROCESSOR_ARCHITECTURE%
 if %errorlevel% NEQ 0 goto EndProcessorArchNotFound
 
 ::Install HarnessAPI.dll COM dll
-rem %windir%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe .\COM\ZugAPI.dll /codebase /tlb
+rem %windir%\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe .\COM\ZugAPI.dll /codebase /tlb
 rem if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness
 
 ::Add .Net dll in GAC
@@ -43,25 +43,37 @@ IF %PROCESSOR_ARCHITECTURE%==x86 %windir%\Microsoft.NET\Framework\v4.0.30319\Reg
 if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness32
 
 
+
+
 ::Add .Net dll in GAC for 32Bit
 IF %PROCESSOR_ARCHITECTURE%==x86 .\GAC\gacutil32Bit.exe /i System.Data.SQLite.DLL
 if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC32
+
+
 
 ::Install HarnessAPI.dll COM dll for 64Bit
 IF NOT %PROCESSOR_ARCHITECTURE%==x86 %windir%\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe .\COM\x64\ZugAPI.dll /codebase /tlb
 if %errorlevel% NEQ 0 goto EndNotAbleToInstallMatness64
 
+
+
 ::Add .Net dll in GAC for 64Bit
 IF NOT %PROCESSOR_ARCHITECTURE%==x86 .\GAC\gacutil64Bit.exe /i .\GAC\System.Data.SQLite.DLL
 if %errorlevel% NEQ 0 goto EndNotAbleToAddNetDllToGAC64
+
+
 
 ::Copy Specific ZugUtility.exe for 32Bit
 IF %PROCESSOR_ARCHITECTURE%==x86 COPY .\ZugUtilityExe\x86\ZugUtility.exe .\
 if %errorlevel% NEQ 0 goto EndNotAbleToCopyZugUtility
 
+
+
 ::Copy Specific ZugUtility.exe for 64Bit
 IF NOT %PROCESSOR_ARCHITECTURE%==x86 COPY .\ZugUtilityExe\x64\ZugUtility.exe .\
 if %errorlevel% NEQ 0 goto EndNotAbleToCopyZugUtility
+
+
 
 ::setting runZUG.bat in path variables. EditSystemPathVariable.exe 
 EditSystemPathVariable.exe
@@ -75,6 +87,8 @@ ECHO. runZUG.bat location set in System PATH variables.
 
 
 ipconfig/all > config.txt
+
+
 Echo.
 Echo. Config file has been created with name "config.txt"
 Echo. Kindly email the file Config.txt (in your Zug folder) to sales@automature.com to receive the copy of license for Zug
@@ -121,8 +135,8 @@ Echo Error MESSAGE: Not able to Copy ZugUtility.exe
 EXIT /B 8
 
 :EndNotAbleToFindNetFramework
-Echo Error Message : Not able to find .Net Framework v3.5 installed on system
-Echo Error Message : Please install .Net Framework v3.5 on your system
+Echo Error Message : Not able to find .Net Framework v4.0.30319 installed on system
+Echo Error Message : Please install .Net Framework v4.0.30319 on your system
 Echo Error Message : You may download it from the ZUG Install Kit
 Echo -------------------------------------------------------------------------
 Echo ZUG Installation Failed
