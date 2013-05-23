@@ -1,6 +1,6 @@
 :: Automation - It contains command to install ZUG.
 :: Author : Gurpreet Anand
-:: Modiied by : Nitish Rawat on 23-07-2010,Sankha on 05-01-2012,Chayan on 08-07-2011,Sankha on 12-06-2012,Sankha on 18-02-2013
+:: Modiied by : Nitish Rawat on 23-07-2010,Sankha on 05-01-2012,Chayan on 08-07-2011,Sankha on 12-06-2012,Sankha on 18-02-2013, Chayan 24-05-2013
 :: © Copyright 2009 Automature Inc.. All Rights Reserved.
 
 cls
