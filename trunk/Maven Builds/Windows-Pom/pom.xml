@@ -119,8 +119,8 @@
                            <exec executable="cmd">
                            <arg value="/c" />    
                            <arg value="makensis.exe" />
-                           <arg value="./NSIS/setup.nsi" />
                            <arg value="/DZug_Version="%Zug_Version% />
+                           <arg value="./NSIS/setup.nsi" />
                             </exec>
                            <move file="./NSIS/ZugSetup.exe" todir="./" />
                         
