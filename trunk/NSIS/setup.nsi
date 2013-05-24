@@ -2,7 +2,6 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Automature-ZUG"
-!define PRODUCT_VERSION ${Zug_Version}
 !define PRODUCT_PUBLISHER "Automature, Inc."
 !define PRODUCT_WEB_SITE "http://www.automature.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
@@ -60,7 +59,7 @@ Page custom JavaPage JavaPageLeave
 
 ; MUI end ------
 
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+Name "${PRODUCT_NAME} ${Zug_Version}"
 OutFile "ZugSetup.exe"
 InstallDir "$PROGRAMFILES\Automature"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
@@ -100,7 +99,7 @@ Function .onInit
       IfSilent 0 Jend
         SetSilent silent  
         CreateDirectory '$APPDATA\ZUG Logs'
-        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__}  ${__TIME__} ::  ${PRODUCT_NAME} - ${PRODUCT_VERSION} $\r$\n`  
+        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__}  ${__TIME__} ::  ${PRODUCT_NAME} - ${Zug_Version} $\r$\n`  
         StrCmp $Update "TRUE" 0 Jerror
             StrCpy $IsSilent "TRUE"
             Goto Jend
@@ -188,7 +187,7 @@ Section "MainSection" SEC01
       ExecWait "$INSTDIR\ZUG\Setup.cmd"
       AccessControl::GrantOnFile \
       "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
-     ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__} ::  ${PRODUCT_NAME} - ${PRODUCT_VERSION} installed successfully. $\r$\n` 
+     ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__} ::  ${PRODUCT_NAME} - ${Zug_Version} installed successfully. $\r$\n` 
   ${Else}
  
       !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
@@ -218,7 +217,7 @@ Section -Post
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "Zugpath" "$INSTDIR"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\ZUG\uninstZUG.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${Zug_Version}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
