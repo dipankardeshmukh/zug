@@ -114,13 +114,13 @@
                            <copy todir="./NSIS">
                            <fileset dir="export/NSIS" />
                            
-                           </copy>
+                           </copy> maven writes 
                            <copy file="Zug.zip" todir="./NSIS" />
                            <exec executable="cmd">
                            <arg value="/c" />    
                            <arg value="makensis.exe" />
                            <arg value="./NSIS/setup.nsi" />
-                           <arg value="/DZug_Version=%Zug_Version%"/>"
+                           <arg value=/DZug_Version=%Zug_Version% />
                             </exec>
                            <move file="./NSIS/ZugSetup.exe" todir="./" />
                         
