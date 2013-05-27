@@ -84,7 +84,7 @@ Page custom CredentialPage CredentialPageLeave
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${Zug_Version}"
-OutFile "ZugSetup-6.0.exe"
+OutFile "ZugSetup.exe"
 InstallDir "$PROGRAMFILES\Automature"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
