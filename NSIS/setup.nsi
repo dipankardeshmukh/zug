@@ -2,6 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Automature-ZUG"
+!define PRODUCT_VERSION "6.0"
 !define PRODUCT_PUBLISHER "Automature, Inc."
 !define PRODUCT_WEB_SITE "http://www.automature.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
@@ -20,6 +21,26 @@ var /global JavaSOURCETEXT
 
 Var Java_SOURCE_TEXT
 var dialog
+Var Hostname
+Var DBName
+Var DBUser
+Var DBPassword
+Var SOURCE
+Var SOURCETEXT
+Var SOURCE_TEXT
+Var BROWSESOURCE
+
+
+Var Content_BROWSESOURCE
+Var Content_Hostname
+Var Content_DBName
+Var Content_DBUser
+Var Content_DBPassword
+Var TotalLength 
+Var CompletepathLength
+Var InstallDirLength 
+
+Var NoDotNet
 
 
 ; MUI 1.67 compatible ------
@@ -27,6 +48,8 @@ var dialog
 !include nsDialogs.nsh
 !include "ZipDLL.nsh"
 !include "functions.nsi"
+!include EnvVarUpdate.nsh
+!include x64.nsh
 !define /date NOW "%H:%M:%S %d %b, %Y"
 
 ; MUI Settings
@@ -40,7 +63,9 @@ var dialog
 !insertmacro MUI_PAGE_LICENSE "ZugEULA.txt"
 ; Directory page
 ;Java Directory Page
-Page custom JavaPage JavaPageLeave
+Page custom JavaPage JavaPageLeave  
+;script and Framework configuration 
+Page custom CredentialPage CredentialPageLeave 
 !define MUI_PAGE_CUSTOMFUNCTION_PRE CheckInstDirReg
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
@@ -59,8 +84,8 @@ Page custom JavaPage JavaPageLeave
 
 ; MUI end ------
 
-Name "${PRODUCT_NAME} ${Zug_Version}"
-OutFile "ZugSetup.exe"
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+OutFile "ZugSetup-6.0.exe"
 InstallDir "$PROGRAMFILES\Automature"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -80,26 +105,45 @@ Function .onInit
 
   ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Automature-ZUG" "Zugpath"
   
+  IfSilent 0 notSilent
+      CreateDirectory '$APPDATA\ZUG Logs'
+      ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__}  ${__TIME__} ::  ${PRODUCT_NAME} - ${PRODUCT_VERSION} $\r$\n` 
+  notSilent:
+  
+  ${If} ${RunningX64}
+  MessageBox MB_OK "2"
+    IfFileExists $windir\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe Continue 0
+       StrCpy $NoDotNet "TRUE"
+  ${Else}
+    IfFileExists $windir\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe Continue 0
+      StrCpy $NoDotNet "TRUE"
+  ${EndIf}
+  
+  StrCmp $NoDotNet "TRUE" 0 Continue
+    IfSilent 0 Log1
+      ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `You do not have DotNet Framework v4.0 or higher.Please install and then run ZugSetup.$\r$\n Download Location : http://www.microsoft.com/en-in/download/confirmation.aspx?id=17718 `
+      Goto exit1
+    Log1:
+      MessageBox MB_OK "You do not have DotNet Framework v4.0 or higher.Please install and then run ZugSetup."
+    exit1:
+    quit
+  Continue:
+  
   IfFileExists $R0\ZUG\ZUG.exe 0 FirstTimeInstall
      StrCpy $INSTDIR "$R0"
      StrCpy $Update "TRUE"
      IfSilent J1 0 
         MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Upgrading ZUG, keeping your previous settings. Do you want to continue?" IDYES +2
         quit
-     Goto J1
-  
+     Goto J1 
   FirstTimeInstall: 
-      IfFileExists $windir\Microsoft.NET\Framework\v3.5 +3 0
-        MessageBox MB_OK "You do not have DotNet Framework 3.5 or higher.Please install and then run ZugSetup"
-        quit
+       
         ReadRegStr $R1 HKLM "Software\JavaSoft\Java Runtime Environment" "CurrentVersion"
         ReadRegStr $R2 HKLM "Software\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
   
-  J1:
+    J1:
       IfSilent 0 Jend
-        SetSilent silent  
-        CreateDirectory '$APPDATA\ZUG Logs'
-        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__}  ${__TIME__} ::  ${PRODUCT_NAME} - ${Zug_Version} $\r$\n`  
+        SetSilent silent     
         StrCmp $Update "TRUE" 0 Jerror
             StrCpy $IsSilent "TRUE"
             Goto Jend
@@ -160,11 +204,66 @@ abort
 FunctionEnd
 
 
+Function CredentialPage
+
+  ${If} $Update == "TRUE"
+    Abort
+  ${EndIf}
+  
+  !insertmacro MUI_HEADER_TEXT "Config Settings" "Choose atom location path and Test Management Framework configuration settings."
+	#Create Dialog and quit if error
+	nsDialogs::Create 1018
+	Pop $Dialog
+	${If} $Dialog == error
+		Abort
+	${EndIf}
+  
+  ${NSD_CreateLabel} 10 10u 100% 10u "Please enter atom path location"  
+  ${NSD_CreateText} 10 20u 75% 10u ""
+   Pop $SOURCETEXT
+	${NSD_CreateBrowseButton} 350 20u 20% 12u "Browse"
+	pop $BROWSESOURCE
+	${NSD_OnClick} $BROWSESOURCE CredentialPageBrowsesource
+  ${NSD_CreateLabel} 10 35u 100% 10u "Please enter Database Host Name(http://192.168.0.45:4567)" 
+  ${NSD_CreateText} 10 45u 60% 10u ""
+   Pop $Hostname
+  ${NSD_CreateLabel} 10 60u 100% 10u "Please enter the Database Name" 
+  ${NSD_CreateText} 10 70u 40% 10u ""
+   Pop $DBName
+  ${NSD_CreateLabel} 10 85u 100% 10u "Please enter the Database User Name" 
+  ${NSD_CreateText} 10 95u 40% 10u ""
+   Pop $DBUser
+  ${NSD_CreateLabel} 10 110u 100% 10u "Please enter the Database User Password" 
+  ${NSD_CreatePassword} 10 120u 40% 10u ""
+   Pop $DBPassword
+  nsDialogs::Show
+FunctionEnd
+
+
+Function CredentialPageBrowsesource
+nsDialogs::SelectFolderDialog "Select Source Folder" "c:\"
+pop $SOURCE
+${If} $SOURCE == 'error'
+   StrCpy $SOURCE ""
+${EndIf}
+${NSD_SetText} $SOURCETEXT $SOURCE
+FunctionEnd
+
+Function CredentialPageLeave
+${NSD_GetText} $SOURCETEXT $Content_BROWSESOURCE
+${NSD_GetText} $Hostname   $Content_Hostname
+${NSD_GetText} $DBName $Content_DBName
+${NSD_GetText} $DBUser $Content_DBUser
+${NSD_GetText} $DBPassword $Content_DBPassword
+FunctionEnd
+
+
 Section "MainSection" SEC01
   SetOutPath "$TEMP"
   SetOverwrite on
   File "ZUG.zip"
-  
+ 
+ ;=================================  UPDATE ========================================================= 
   ${If} $Update == "TRUE"
   
     IfFileExists $INSTDIR\ZUG\ZugINI.xml backup donot_backup
@@ -182,33 +281,120 @@ Section "MainSection" SEC01
       IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
     interchange: 
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
-      Rename "$INSTDIR\ZUG\ZugINI.xml.temp" "$INSTDIR\ZUG\ZugINI.xml"
+      Rename "$INSTDIR\ZUG\ZugINI.xml.temp" "$INSTDIR\ZUG\ZugINI.xml"  
     donot_interchange:  
       ExecWait "$INSTDIR\ZUG\Setup.cmd"
       AccessControl::GrantOnFile \
       "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
-     ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__} ::  ${PRODUCT_NAME} - ${Zug_Version} installed successfully. $\r$\n` 
+     ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `${__DATE__} ::  ${PRODUCT_NAME} - ${PRODUCT_VERSION} installed successfully. $\r$\n` 
+     
+     
+;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx UPDATE  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX     
   ${Else}
  
       !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
-      ExecWait "$INSTDIR\ZUG\Setup.cmd"
+      
       AccessControl::GrantOnFile \
       "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
       
       CopyFiles `$Java_SOURCE_TEXT\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
       CopyFiles `$INSTDIR\ZUG\lib\sqlitejdbc-v056.jar` `$Java_SOURCE_TEXT\lib\ext\`
       
-      ReadRegStr $R0 HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "PROCESSOR_ARCHITECTURE"
-      ${If} $R0 == "x86"
+      ${If} ${RunningX64}
       CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x86\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
       ${Else}
       CopyFiles `$INSTDIR\ZUG\SDK\System.Data.Sqlite.Net4.0\x64\System.Data.SQLite.DLL` `$INSTDIR\ZUG\System.Data.SQLite.DLL`
       ${EndIf}
+      
+      ExecWait "$INSTDIR\ZUG\Setup.cmd"
+      
       nsExec::ExecToStack '"$INSTDIR\ZUG\runzug.Bat"'
       Delete "$TEMP\ZUG.zip"
   
   ${EndIf}
+  
+  
+ ; ================================ Add new XML tags ================================================
+        
+      
+  nsisXML::create
+	nsisXML::load "$INSTDIR\ZUG\ZugINI.xml"
+  nsisXML::select '/root/configurations/scriptlocation'
+	  IntCmp $2 0 0 SkipSLoc SkipSLoc 
+    nsisXML::select '/root/configurations'
+    nsisXML::createElement "scriptlocation"
+    nsisXML::appendChild
+    SkipSLoc:
+    nsisXML::getText
+    StrCmp $3 "" 0 SkipSValLoc
+      nsisXML::setText $Content_BROWSESOURCE
+    SkipSValLoc:
+  
+  nsisXML::select '/root/configurations/dbhostname'
+   	IntCmp $2 0 0 SkipHName SkipHName 
+    nsisXML::select '/root/configurations'
+    nsisXML::createElement "dbhostname"
+    nsisXML::appendChild  
+  SkipHName:
+    nsisXML::getText
+    StrCmp $3 "" 0 SkipHNameVal
+      nsisXML::setText $Content_Hostname 
+    SkipHNameVal:
+    
+  nsisXML::select '/root/configurations/dbname'
+   	IntCmp $2 0 0 SkipDbName SkipDbName 
+    nsisXML::select '/root/configurations'
+    nsisXML::createElement "dbname"
+    nsisXML::appendChild  
+    SkipDbName:
+    nsisXML::getText
+    StrCmp $3 "" 0 SkipDbNameVal
+      nsisXML::setText $Content_DBName
+  SkipDbNameVal:
+  
+  nsisXML::select '/root/configurations/dbusername'
+   	IntCmp $2 0 0 SkipDbUName SkipDbUName 
+    nsisXML::select '/root/configurations'
+    nsisXML::createElement "dbusername"
+    nsisXML::appendChild 
+    SkipDbUName:
+    nsisXML::getText
+    StrCmp $3 "" 0 SkipDbUNameVal 
+      nsisXML::setText $Content_DBUser
+  SkipDbUNameVal:
+  
+  
+  nsisXML::select '/root/configurations/dbuserpassword'
+   	IntCmp $2 0 0 SkipDbPassword SkipDbPassword 
+    nsisXML::select '/root/configurations'
+    nsisXML::createElement "dbuserpassword"
+    nsisXML::appendChild     
+    SkipDbPassword:
+    nsisXML::getText
+    StrCmp $3 "" 0 SkipDbPasswordVal 
+      nsisXML::setText $Content_DBPassword
+  SkipDbPasswordVal:
+  
+  nsisXML::save "$INSTDIR\ZUG\ZugINI.xml"
+      
+ ; xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Add new XML tags xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 
+SectionEnd
+
+Section "WriteEnvironment" SEC07
+
+  ReadEnvStr $0 "PATH"
+  StrLen $CompletepathLength $0
+  StrLen $InstallDirLength $INSTDIR\ZUG
+  IntOp $TotalLength $CompletepathLength + $InstallDirLength 
+  ${If} $ == ""
+   ${OrIf} $TotalLength >= ${NSIS_MAX_STRLEN}   
+      MessageBox MB_OK "Current environment variable PATH length ($TotalLength) too long to modify by Installer.Please set manually."
+   ${Else} 
+      ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}" "Zugpath"
+      ${EnvVarUpdate} $0 "PATH" "R" "HKLM" "$R0\ZUG"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\ZUG" 
+   ${EndIf}  
 SectionEnd
 
 
@@ -217,7 +403,7 @@ Section -Post
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "Zugpath" "$INSTDIR"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\ZUG\uninstZUG.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${Zug_Version}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
@@ -246,6 +432,7 @@ Section Uninstall
   Goto +2
     MessageBox MB_OK "Cannot find Zug path in the registry. Please delete the folder ZUG manually"
   Delete "$R0\ZUG\ZUG.exe"
+   ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$R0\ZUG"
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
   Delete "$R0\*.*"
