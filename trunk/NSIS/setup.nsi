@@ -110,7 +110,6 @@ Function .onInit
   notSilent:
   
   ${If} ${RunningX64}
-  MessageBox MB_OK "2"
     IfFileExists $windir\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe Continue 0
        StrCpy $NoDotNet "TRUE"
   ${Else}
