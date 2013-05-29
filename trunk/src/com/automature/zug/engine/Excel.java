@@ -223,32 +223,18 @@ public class Excel {
 	public String DBHostName() {
 		String dbHostName = null;
 		try {
-			ConsoleReader reader = new ConsoleReader();
-			// System.out.println("The DBKEY "+_configSheetKeys[1]+" Hashtable "+_configSheetHashTable.get("DBHostName"));
 			if (_configSheetHashTable.get(_configSheetKeys[1]) != null) {
 				dbHostName = (String) _configSheetHashTable
 						.get(_configSheetKeys[1]);
 			}
 
 			if (StringUtils.isBlank(dbHostName) && Controller.opts.dbReporting) {
-			//	ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
 				dbHostName=ExtensionInterpreterSupport.getNode(Excel.dbHostName);
 				if(dbHostName==null||dbHostName.equals("")||dbHostName.isEmpty() ){
 					Log.Error("Exception:Excel/DBHostName-dbhostname not provided in test suite and also in INI file.Exiting ZUG");
 					System.exit(0);
 				}
-			/*	up: while (true) {
-
-					if (StringUtils.isBlank(dbHostName)) {
-						dbHostName = reader
-								.readLine("\nEnter the DBHostName : ");
-						continue up;
-					} else {
-						_configSheetHashTable.put(_configSheetKeys[1],
-								dbHostName.trim());
-						break up;
-					}
-				}*/
+			
 			}
 		} catch (IOException e) {
 			
@@ -262,8 +248,7 @@ public class Excel {
 	public String DBName() {
 		String dbName = null;
 		try {
-			ConsoleReader reader = new ConsoleReader();
-			// System.out.println("The DBKEY "+_configSheetKeys[1]+" Hashtable "+_configSheetHashTable.get("DBHostName"));
+			
 			if (_configSheetHashTable.get(_configSheetKeys[2]) != null) {
 				dbName = (String) _configSheetHashTable
 						.get(_configSheetKeys[2]);
@@ -272,26 +257,13 @@ public class Excel {
 						.get(_configSheetKeys[_configSheetKeys.length-1]);
 			}
 			if (StringUtils.isBlank(dbName) && Controller.opts.dbReporting) {
-			//	ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
+			
 				dbName=ExtensionInterpreterSupport.getNode(Excel.dbName);
 				if(dbName==null||dbName.equals("")){
 					Log.Error("Excel/DBName:Exception:-dbname not provided in test suite and also in INI file.Exiting ZUG");
 					System.exit(0);
 				}
-				/*up: while (true) {
-
-					if (StringUtils.isBlank(dbName)) {
-						dbName = reader
-								.readLine("\nEnter the DBName : ");
-						continue up;
-					} else {
-						_configSheetHashTable.put(_configSheetKeys[2],
-								dbName.trim());
-						break up;
-					}
-				}*/
-				
-			}
+						}
 		} catch (IOException e) {
 			
 		}catch(Exception e){
@@ -310,30 +282,17 @@ public class Excel {
 	public String DBUserName() {
 		String dbUserName = null;
 		try {
-			ConsoleReader reader = new ConsoleReader();
 			if (_configSheetHashTable.get(_configSheetKeys[3]) != null) {
 				dbUserName = (String) _configSheetHashTable
 						.get(_configSheetKeys[3]);
 			}
 			if (StringUtils.isBlank(dbUserName) && Controller.opts.dbReporting) {
-				//ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
 				dbUserName=ExtensionInterpreterSupport.getNode(Excel.dbUserName);
 				if(dbUserName==null||dbUserName.equals("")){
 					Log.Error("Excel/DBUserName:Exception:-dbUsername not provided in test suite and also in INI file.Exiting ZUG");
 					System.exit(0);
 				}
 				
-			/*
-			up: while (true) {
-				if (StringUtils.isBlank(dbUserName)) {
-					dbUserName = reader
-							.readLine("\nEnter the User Name to Connect : ");
-					continue up;
-				} else {
-					_configSheetHashTable.put(_configSheetKeys[3],
-							dbUserName.trim());
-					break up;
-				}*/
 			}
 		} catch (IOException e) {
 		}catch(Exception e){
@@ -355,26 +314,12 @@ public class Excel {
 			}
 
 			if (StringUtils.isBlank(dbUserPassword) && Controller.opts.dbReporting) {
-			//	ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
 				dbUserPassword=ExtensionInterpreterSupport.getNode(Excel.dbUserPassword);
 				if(dbUserPassword==null||dbUserPassword.equals("")){
 					Log.Error("Excel/DBUserPassword:Exception:-dbUserPassword not provided in test suite and also in INI file.Exiting ZUG");
 					System.exit(0);
 				}
 			
-		/*	up: while (true) {
-				if (StringUtils.isBlank(dbUserPassword)) {
-					dbUserPassword = (String) ProgramOptions
-							.promptForPassword("Enter the Password of the User "
-									+ (String) _configSheetHashTable
-											.get(_configSheetKeys[2])
-									+ " to connect : ");
-					continue up;
-				} else {
-					_configSheetHashTable.put(_configSheetKeys[4],
-							dbUserPassword.trim());
-					break up;
-				}*/
 			}
 		} catch (Exception e) {
 			Log.Error("Excel/DBUserPassword:"+e.getMessage());

@@ -69,7 +69,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.3" + ".20130517" + ".149";
+	private static String Version = "ZUG Premium 6.3.2" + ".20130517" + ".149";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();

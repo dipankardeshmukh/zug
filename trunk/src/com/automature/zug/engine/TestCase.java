@@ -463,14 +463,6 @@ class TestCase
 							public void run() {
 								tempAction.run();
 								implicitTestStepCall();
-							/*	if(action.property.equalsIgnoreCase("ROS") && StringUtils
-										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-									returnFlag=true;
-									
-								}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
-										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-									returnFlag=true;
-								}*/
 							}
 						});
 						// thread.IsBackground = true;
@@ -498,15 +490,16 @@ class TestCase
 								.join(Integer
 										.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
 								if (((Thread) ThreadPool.get(t)).isAlive()) {
+									((Thread) ThreadPool.get(t)).interrupt();
 									TestSuite._testStepStopper.put(this.parentTestCaseID,
 											true);
 								}
 							}
 						}
 						// Lastly wait for the Threads running to get Over
-						for (int t = 0; t < ThreadPool.size(); ++t) {
+					/*	for (int t = 0; t < ThreadPool.size(); ++t) {
 							((Thread) ThreadPool.get(t)).join();
-						}
+						}*/
 
 						ThreadPool.clear();
 
@@ -543,14 +536,6 @@ class TestCase
 							public void run() {
 								action.run();
 								implicitTestStepCall();
-						/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
-										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-									returnFlag=true;
-									
-								}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
-										.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-									returnFlag=true;
-								}*/
 							}
 						});
 						// thread.IsBackground = true;
@@ -585,6 +570,7 @@ class TestCase
 						.join(Integer
 								.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
 						if (((Thread) ThreadPool.get(t)).isAlive()) {
+							((Thread) ThreadPool.get(t)).interrupt();
 							TestSuite._testStepStopper.put(this.parentTestCaseID, true);
 						}
 
@@ -593,9 +579,9 @@ class TestCase
 				}
 
 				// Lastly wait for the Threads running to get Over
-				for (int t = 0; t < ThreadPool.size(); ++t) {
+		/*		for (int t = 0; t < ThreadPool.size(); ++t) {
 					((Thread) ThreadPool.get(t)).join();
-				}
+				}*/
 
 				if (StringUtils
 						.isNotBlank(((String) TestSuite.errorMessageDuringTestCaseExecution
@@ -691,14 +677,6 @@ class TestCase
 										public void run() {
 											action.run();
 											implicitTestStepCall();
-									/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-												
-											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-											}*/
 										}
 									});
 									// thread.IsBackground = true;
@@ -731,6 +709,7 @@ class TestCase
 
 											if (((Thread) ThreadPool.get(t))
 													.isAlive()) {
+												((Thread) ThreadPool.get(t)).interrupt();
 												TestSuite._testStepStopper.put(
 														this.parentTestCaseID,
 														true);
@@ -754,14 +733,7 @@ class TestCase
 										public void run() {
 											action.run();
 											implicitTestStepCall();
-									/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-												
-											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-											}*/
+								
 										}
 									});
 									// thread.IsBackground = true;
@@ -828,14 +800,6 @@ class TestCase
 										public void run() {
 											action.run();
 											implicitTestStepCall();
-									/*		if(action.property.equalsIgnoreCase("ROS") && StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-												
-											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-											}*/
 										}
 									});
 									// thread.IsBackground = true;
@@ -867,6 +831,7 @@ class TestCase
 													.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
 											if (((Thread) ThreadPool.get(t))
 													.isAlive()) {
+												((Thread) ThreadPool.get(t)).interrupt();
 												TestSuite._testStepStopper.put(
 														this.parentTestCaseID,
 														true);
@@ -877,9 +842,9 @@ class TestCase
 
 									// Lastly wait for the Threads running to
 									// get Over
-									for (int t = 0; t < ThreadPool.size(); ++t) {
+							/*		for (int t = 0; t < ThreadPool.size(); ++t) {
 										((Thread) ThreadPool.get(t)).join();
-									}
+									}*/
 
 									ThreadPool.clear();
 
@@ -889,15 +854,6 @@ class TestCase
 
 										public void run() {
 											action.run();
-											implicitTestStepCall();
-										/*	if(action.property.equalsIgnoreCase("ROS") && StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-												
-											}else if(action.property.equalsIgnoreCase("ROF") && !StringUtils
-													.isBlank(TestSuite.errorMessageDuringMoleculeCaseExecution.get(action.stackTrace))){
-												returnFlag=true;
-											}*/
 										}
 									});
 									// thread.IsBackground = true;
@@ -942,6 +898,7 @@ class TestCase
 									.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
 
 							if (((Thread) ThreadPool.get(t)).isAlive()) {
+								((Thread) ThreadPool.get(t)).interrupt();
 								TestSuite._testStepStopper.put(this.parentTestCaseID,
 										true);
 							}
@@ -949,9 +906,9 @@ class TestCase
 					}
 
 					// Lastly wait for the Threads running to get Over
-					for (int t = 0; t < ThreadPool.size(); ++t) {
+				/*	for (int t = 0; t < ThreadPool.size(); ++t) {
 						((Thread) ThreadPool.get(t)).join();
-					}
+					}*/
 					// message("The total teststepperput\t"+_testStepStopper);
 					Controller.message("\n******************** Cleanup Action Finished For TestCase : "
 							+ this.stackTrace + ". ***************************");
