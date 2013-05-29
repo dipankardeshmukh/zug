@@ -462,6 +462,7 @@ class TestCase
 
 							public void run() {
 								tempAction.run();
+								
 								implicitTestStepCall();
 							}
 						});
@@ -490,14 +491,14 @@ class TestCase
 								.join(Integer
 										.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
 								if (((Thread) ThreadPool.get(t)).isAlive()) {
-									((Thread) ThreadPool.get(t)).interrupt();
+										((Thread) ThreadPool.get(t)).interrupt();
 									TestSuite._testStepStopper.put(this.parentTestCaseID,
 											true);
 								}
 							}
 						}
 						// Lastly wait for the Threads running to get Over
-					/*	for (int t = 0; t < ThreadPool.size(); ++t) {
+						/*for (int t = 0; t < ThreadPool.size(); ++t) {
 							((Thread) ThreadPool.get(t)).join();
 						}*/
 
@@ -578,8 +579,8 @@ class TestCase
 
 				}
 
-				// Lastly wait for the Threads running to get Over
-		/*		for (int t = 0; t < ThreadPool.size(); ++t) {
+			/*	// Lastly wait for the Threads running to get Over
+				for (int t = 0; t < ThreadPool.size(); ++t) {
 					((Thread) ThreadPool.get(t)).join();
 				}*/
 
@@ -710,6 +711,7 @@ class TestCase
 											if (((Thread) ThreadPool.get(t))
 													.isAlive()) {
 												((Thread) ThreadPool.get(t)).interrupt();
+											
 												TestSuite._testStepStopper.put(
 														this.parentTestCaseID,
 														true);
@@ -720,9 +722,9 @@ class TestCase
 
 									// Lastly wait for the Threads running to
 									// get Over
-									for (int t = 0; t < ThreadPool.size(); ++t) {
+								/*	for (int t = 0; t < ThreadPool.size(); ++t) {
 										((Thread) ThreadPool.get(t)).join();
-									}
+									}*/
 
 									ThreadPool.clear();
 
@@ -832,6 +834,7 @@ class TestCase
 											if (((Thread) ThreadPool.get(t))
 													.isAlive()) {
 												((Thread) ThreadPool.get(t)).interrupt();
+											
 												TestSuite._testStepStopper.put(
 														this.parentTestCaseID,
 														true);
@@ -841,8 +844,8 @@ class TestCase
 									}
 
 									// Lastly wait for the Threads running to
-									// get Over
-							/*		for (int t = 0; t < ThreadPool.size(); ++t) {
+								/*	// get Over
+									for (int t = 0; t < ThreadPool.size(); ++t) {
 										((Thread) ThreadPool.get(t)).join();
 									}*/
 
@@ -899,6 +902,7 @@ class TestCase
 
 							if (((Thread) ThreadPool.get(t)).isAlive()) {
 								((Thread) ThreadPool.get(t)).interrupt();
+							
 								TestSuite._testStepStopper.put(this.parentTestCaseID,
 										true);
 							}
@@ -906,7 +910,7 @@ class TestCase
 					}
 
 					// Lastly wait for the Threads running to get Over
-				/*	for (int t = 0; t < ThreadPool.size(); ++t) {
+				/*for (int t = 0; t < ThreadPool.size(); ++t) {
 						((Thread) ThreadPool.get(t)).join();
 					}*/
 					// message("The total teststepperput\t"+_testStepStopper);

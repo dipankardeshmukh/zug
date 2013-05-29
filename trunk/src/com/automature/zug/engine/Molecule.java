@@ -254,8 +254,16 @@ public class Molecule extends TestCase {
 			for (int t = 0; t < ThreadPool.size(); ++t) {
 				((Thread) ThreadPool.get(t)).join();
 			}
-		} catch (Exception ex) {
-			Log.ErrorInLog("Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
+		}catch(InterruptedException e){
+			//e.printStackTrace();
+			Log.ErrorInLog("Error_Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
+					+ this.testCaseID + ".Thread Interrupted or Test Step timed out" + e.getMessage());
+			errorDuringTestCaseExecution += "Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
+					+ this.testCaseID + ".Thread Interrupted or Test Step timed out" + e.getMessage();
+		}
+		catch (Exception ex) {
+//			System.out.println("Error:"+ex.getMessage()+ex.getCause()+ex.getClass().getName());
+			Log.ErrorInLog("Error_Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
 					+ this.testCaseID + "." + ex.getMessage());
 			errorDuringTestCaseExecution += "Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
 					+ this.testCaseID + "." + ex.getMessage();
@@ -380,7 +388,12 @@ public class Molecule extends TestCase {
 									+ act.name
 									+ " for TestCase ID : "
 									+ this.testCaseID);
-						} catch (Exception ex) {
+						}catch(InterruptedException e){
+							Log.ErrorInLog("Error_Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
+									+ this.testCaseID + ".Thread Interrupted or Test Step timed out" + e.getMessage());
+							errorDuringTestCaseExecution += "Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
+									+ this.testCaseID + ".Thread Interrupted or Test Step timed out" + e.getMessage();
+						}catch (Exception ex) {
 							Log.ErrorInLog("Molecule/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception while running test case "
 									+ this.testCaseID + "." + ex.getMessage());
 							errorDuringTestCaseExecution += "Molecule/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception while running test case "
@@ -468,6 +481,11 @@ public class Molecule extends TestCase {
 									+ act.name
 									+ " for TestCase ID : "
 									+ this.testCaseID);
+						}catch(InterruptedException e){
+							Log.ErrorInLog("Error_Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
+									+ this.testCaseID + ".Thread Interrupted or Test Step timed out" + e.getMessage());
+							errorDuringTestCaseExecution += "Molecule/RunExpandedTestCaseForMolecule: Exception while running test case "
+									+ this.testCaseID + ".Thread Interrupted or Test Step timed out" + e.getMessage();
 						} catch (Exception ex) {
 							Log.ErrorInLog(String
 									.format("Molecule/RunExpandedTestCaseForMolecule - Finally/Cleanup: Exception while running test case %s.%s",
