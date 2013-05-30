@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.FileReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -69,7 +70,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.3.2" + ".20130517" + ".149";
+	private static String Version = "ZUG Premium 6.4.0";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -312,8 +313,19 @@ public class Controller extends Thread {
 
 	// / This function prints the Version
 	private void PrintVersionInformation() {
+		File f=new File("Build_No");
+		if(f.exists()){
+			try{
+				BufferedReader br=new BufferedReader(new FileReader(f));
+				String line = br.readLine();
+				if(line!=null && !line.isEmpty()){
+					versionMessage+="."+line;
+				}
+			}catch(Exception e){
+				
+			}
+		}
 		System.out.println(versionMessage);
-
 	}
 
 	public static void message(String msg) {
@@ -568,6 +580,8 @@ public class Controller extends Thread {
 			opts.scriptLocation=opts.scriptLocation.replaceAll(";(;)+", ";");
 			Log.Debug("Controller::The Updated ScriptLocation\t"
 					+ opts.scriptLocation);
+			//System.out.println("Controller::The Updated ScriptLocation\t"
+			//		+ opts.scriptLocation);
 		}
 		// from where the Zug is invoked
 
