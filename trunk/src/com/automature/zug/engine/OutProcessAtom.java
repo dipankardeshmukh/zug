@@ -37,11 +37,13 @@ public class OutProcessAtom implements Atom{
 					Log.Debug(String
 							.format("OutProcessAtomFindWorkingDirectory: Found with argument as %s when Working Directory value is %s",
 									command, workingDirectory));
+					
 
 					return workingDirectory;
 				}
 			}
 		}
+		System.out.println("returning empty string");
 		return StringUtils.EMPTY;
 
 	}

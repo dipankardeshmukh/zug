@@ -533,13 +533,21 @@ public class Controller extends Thread {
 	 * 
 	 */
 	private void InitializeVariables(Excel readExcel) throws Exception {
-		
 		Log.Debug("Controller/InitializeVariables :Start of Function");
-
 		if (StringUtils.isEmpty(opts.scriptLocation)) {
-			opts.scriptLocation = readExcel.ScriptLocation() + ";"
-					+ opts.workingDirectory; // appends the current directory
+			if(opts.workingDirectory!=null ){
+				opts.scriptLocation = readExcel.ScriptLocation()  +";"
+					+ opts.workingDirectory+";"+opts.filelocation+";"; // appends the current directory
+			}else{
+				opts.scriptLocation = readExcel.ScriptLocation()+";"+opts.filelocation+";";
+			}
+			opts.scriptLocation=opts.scriptLocation.replaceAll(";(;)+", ";");
 			String[] spliArr = opts.scriptLocation.split(";");
+			for (String spits : spliArr) {
+				if(spits==null){
+					continue;
+				}
+			}
 			String newLocation = "";
 			for (String spits : spliArr) {
 				if(spits==null){
@@ -554,13 +562,10 @@ public class Controller extends Thread {
 						temp0[0] = opts.filelocation;
 						newLocation = temp0[0] + spits;
 					}
-
 				}
-
 			}
-
 			opts.scriptLocation = opts.scriptLocation + ";" + newLocation;
-			// message("Notun Location\t"+scriptLocation);
+			opts.scriptLocation=opts.scriptLocation.replaceAll(";(;)+", ";");
 			Log.Debug("Controller::The Updated ScriptLocation\t"
 					+ opts.scriptLocation);
 		}
