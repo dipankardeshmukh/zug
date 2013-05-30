@@ -205,7 +205,7 @@ public class Excel {
 		}
 		if(scriptLocation==null)
 			scriptLocation=iniSL;
-		else if(iniSL!=null)
+		else if(iniSL!=null && !iniSL.isEmpty())
 			scriptLocation+=";"+iniSL+";";
 		return scriptLocation;		
 	}
