@@ -58,12 +58,12 @@ public class ProgramOptions {
 	public static String CONTEXTVARRETRYCOUNT="5",CONTEXTVARRETRYTIMEOUT="1";
 	private static boolean retrycountflag = false;
 	private static boolean retrytimeoutflag = false;
-
+	public ArrayList<String> testCaseIds;
 
 	public static String filelocation = null;
 	private Hashtable<String, String> _opts=new Hashtable<String, String>();
 	protected static String currentPath, workingDirectory;
-	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid"));
+	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid"));
 	/*
 	 * Creates a new instance.
 	 * 
@@ -71,7 +71,7 @@ public class ProgramOptions {
 	 */
 
 	ProgramOptions(){
-
+		testCaseIds=new ArrayList<String>();
 	}
 	/*	ProgramOptions(Hashtable<String, String> opts) {
 		this._opts = opts;
@@ -865,6 +865,10 @@ public class ProgramOptions {
 					Log.Error("[Error]Multiple testcaseid must separate by , (comma) wrong inputs: "
 							+ manualTestCaseID);
 					System.exit(1);
+				}
+				String []testCaseIDs=manualTestCaseID.split(",");
+				for(String tcID:testCaseIDs){
+					testCaseIds.add(tcID.trim().toLowerCase());
 				}
 				Log.Debug("Controller/GetOptions: ManualTestCase ID specified by user is = "
 						+ manualTestCaseID);
