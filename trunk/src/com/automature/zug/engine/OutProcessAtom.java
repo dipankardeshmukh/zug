@@ -225,6 +225,7 @@ public class OutProcessAtom implements Atom{
 				for (String cmd : commandList) {
 					Log.Debug("OutProcessAtom/ExecuteCommand: Adding Command parameters - "
 							+ cmd);
+					
 					if (!cmd.isEmpty())// Chekcing for Null Inclution
 					{
 						commandparam.add(cmd.trim());

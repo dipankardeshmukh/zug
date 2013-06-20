@@ -223,10 +223,10 @@ public class ExtensionInterpreterSupport {
         }
         NodeList languagesList = org.apache.xpath.XPathAPI.selectNodeList(document, "//root//languages//language");
         for (ExtensionInterpreterSupport extensionConfig : extensionsList) {
-            String extensionName = extensionConfig.extension.toLowerCase();
-            String interpreterName = extensionConfig.interpreterCommand.toLowerCase();
-            String interpreterOption = extensionConfig.InterpreterOption.toLowerCase();
-            String interpreterPath = extensionConfig.interpreterPath.toLowerCase();
+            String extensionName = extensionConfig.extension;
+            String interpreterName = extensionConfig.interpreterCommand;
+            String interpreterOption = extensionConfig.InterpreterOption;
+            String interpreterPath = extensionConfig.interpreterPath;
             //System.out.println("the path is\t"+interpreterName);
             Log.Debug("ExtensionInterpreterSupport/ReadFileExtension :: Values of language interpreter configurations "
                     + " extension name " + extensionName + " interpreter name " + interpreterName
