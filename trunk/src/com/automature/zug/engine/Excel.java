@@ -3765,6 +3765,9 @@ public class Excel {
 					tempValue = "$" + tempValue;
 
 					tempValue = _macroSheetHashTable.get(tempValue);
+					 if(tempValue==null){
+						 tempValue=splitVariableToFind[1].substring(1).toLowerCase();
+					 }
 
 				}/*
 				 * else if(tempValue.startsWith("$") && !tempValue.contains("%")
