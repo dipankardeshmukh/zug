@@ -225,7 +225,6 @@ public class OutProcessAtom implements Atom{
 				for (String cmd : commandList) {
 					Log.Debug("OutProcessAtom/ExecuteCommand: Adding Command parameters - "
 							+ cmd);
-					
 					if (!cmd.isEmpty())// Chekcing for Null Inclution
 					{
 						commandparam.add(cmd.trim());
@@ -243,15 +242,15 @@ public class OutProcessAtom implements Atom{
 		// Add the Command param to arrayList
 
 	//	commandparam.add(FileName.trim());
-		int size=argument.size();
-		if(size>0){
-			String tmp=argument.get(size-1);
-			tmp=fineTuneArgument(actualCommand,tmp);
-			argument.remove(size-1);
-			argument.add(tmp);
-		}
+//		int size=argument.size();
+//		if(size>0){
+//			String tmp=argument.get(size-1);
+//			tmp=fineTuneArgument(actualCommand,tmp);
+//			argument.remove(size-1);
+//			argument.add(tmp);
+//		}
 		commandparam.addAll(argument);
-
+		//System.out.println("params :"+commandparam.toString());
 		try {
 			pr.command(commandparam);
 			if (StringUtils.isNotBlank(workingDirectory)) {
@@ -284,7 +283,7 @@ public class OutProcessAtom implements Atom{
 			while ((primitiveStreams = stdInput.readLine()) != null) {
 				Log.Debug("OutProcessAtom/ExecuteCommand : [AtomLog/" + FileName
 						+ "] - " + primitiveStreams);
-				// System.out.println("OUTPUT->\t"+primitiveStreams);
+			//	 System.out.println("OUTPUT->\t"+primitiveStreams);
 			}
 
 			// read any errors from the attempted command

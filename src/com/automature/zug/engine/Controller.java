@@ -70,7 +70,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.4.2";
+	private static String Version = "ZUG Premium 6.4.3";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -553,35 +553,43 @@ public class Controller extends Thread {
 			}else{
 				opts.scriptLocation = readExcel.ScriptLocation()+";"+opts.filelocation+";";
 			}
+			String testSuiteLoc=new File(Controller.readExcel.getXlsFilePath()).getParent();
+			opts.scriptLocation=opts.scriptLocation+";"+testSuiteLoc;
 			opts.scriptLocation=opts.scriptLocation.replaceAll(";(;)+", ";");
 			String[] spliArr = opts.scriptLocation.split(";");
-			for (String spits : spliArr) {
-				if(spits==null){
-					continue;
-				}
-			}
 			String newLocation = "";
+			ArrayList<String> locations=new ArrayList<String>();
 			for (String spits : spliArr) {
 				if(spits==null){
 					continue;
 				}
 				String[] temp0 = spits.split("\\\\");
 				if (!temp0[0].contains(":")) {
-					if (opts.filelocation == null) {
-						temp0[0] = opts.workingDirectory;
-						newLocation = temp0[0] + "\\" + spits;
+					if (testSuiteLoc != null) {
+						temp0[0] = testSuiteLoc;
+						newLocation = temp0[0] +SysEnv.SLASH+  spits;
 					} else {
 						temp0[0] = opts.filelocation;
 						newLocation = temp0[0] + spits;
 					}
+					locations.add(newLocation);
+				}else{
+					if(!locations.contains(spits)){
+						locations.add(spits);
+					}
 				}
 			}
-			opts.scriptLocation = opts.scriptLocation + ";" + newLocation;
+			String str="";
+			for(String loc:locations){
+				str+=loc+";";
+			}
+			opts.scriptLocation=str.substring(0, str.length()-1);
+			
+			//	opts.scriptLocation = opts.scriptLocation + ";" + newLocation;
+	
 			opts.scriptLocation=opts.scriptLocation.replaceAll(";(;)+", ";");
 			Log.Debug("Controller::The Updated ScriptLocation\t"
 					+ opts.scriptLocation);
-			//System.out.println("Controller::The Updated ScriptLocation\t"
-			//		+ opts.scriptLocation);
 		}
 		// from where the Zug is invoked
 
@@ -1483,7 +1491,7 @@ public class Controller extends Thread {
 			// do useful work
 			Log.Debug("Controller/Main : Initializing the Controller Variables after reading the Excel sheet. Calling controller.InitializeVariables");
 			//System.out.println("db reporting "+opts.dbReporting);
-			controller.InitializeVariables(controller.readExcel);
+			controller.InitializeVariables(readExcel);
 			Log.Debug("Controller/Main : Initialized the Controller Variables after reading the Excel sheet.");
 			// reporting_server_add = controller.readExcel.DBHostName();
 			
