@@ -4606,7 +4606,7 @@ public class Excel {
 	private void GetTestCaseSheetValues(HSSFSheet worksheet, String nameSpace)
 			throws Exception, MoleculeDefinitionException {
 		Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
-		int index = 2;
+		int index = 1;
 		try {
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Start of Function to read Test Case sheet");
