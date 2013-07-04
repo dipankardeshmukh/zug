@@ -70,7 +70,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.4.4";
+	private static String Version = "ZUG Premium 6.4.5";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -1343,6 +1343,7 @@ public class Controller extends Thread {
 		//System.out.println(Controller.ZUG_LOGFILENAME+" 3rd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
 		try {
 			Log.Debug("Controller/Main : Calling ProgramOptions.parse() to Parse program argument");
+			Controller.readExcel = new Excel();
 			opts.parse(args);
 
 
@@ -1452,7 +1453,7 @@ public class Controller extends Thread {
 			Controller.message("Reading the TestCases Input Sheet  "
 					+ opts.inputFile + ".\n");
 			// Now reading the Excel object.
-			Controller.readExcel = new Excel();
+			
 			Controller.readExcel.setXlsFilePath(opts.inputFile);
 
 			Controller.CreateContextVariable("ZUG_BWD="
@@ -1566,7 +1567,7 @@ public class Controller extends Thread {
 				System.out
 				.println("\n******************************************************************************** ");
 			}
-		
+			
 			final String fw=frameWork;
 			Thread thread = new Thread(new Runnable() {
 
