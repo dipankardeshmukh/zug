@@ -4629,7 +4629,7 @@ public class Excel {
 					+ TotalVerificationArgs);
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Calling GetActionVerificationMap to read the Header from the Excel sheet.");
-			index = GetActionVerificationMap(worksheet, labelIndex,
+			GetActionVerificationMap(worksheet, labelIndex,
 					_mapHashTable);
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Read the Header from the TestCase Excel sheet. Index returned is -> "
