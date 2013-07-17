@@ -25,5 +25,6 @@ public interface Reporter {
 	public void saveTestCaseVariables(HashMap<String, String> variablemap,
 			String testcase_id, String testsuite_name)
 					throws ReportingException, InterruptedException ;
+	public void destroySession(String sessionId)throws ReportingException;
 	
 }

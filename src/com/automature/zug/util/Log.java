@@ -84,7 +84,7 @@ public class Log {
 	 */
 	public static void Error(String message) {
 		log.warn(message);
-		System.out.println(message);
+		System.err.println(message);
 
 	}
 
