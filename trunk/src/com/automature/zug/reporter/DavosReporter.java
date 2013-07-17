@@ -142,6 +142,7 @@ public class DavosReporter implements Reporter {
 					+ " with user "
 					+ dbUserName + ". The Exception is " + dd.getMessage());
 			dd.printStackTrace();
+			Log.Error("Exiting ZUG.....");
 			connnect_flag = false;
 			System.exit(1);
 
@@ -607,6 +608,13 @@ public class DavosReporter implements Reporter {
 	public void heartBeat(String sessionId)throws ReportingException,InterruptedException{
 		try{
 			davosclient.heartBeat(sessionid);
+		}catch(DavosExecutionException e){
+			throw new ReportingException(e.getMessage());
+		}
+	}
+	public void destroySession(String sessionId)throws ReportingException{
+		try{
+			davosclient.destorySession(sessionId);
 		}catch(DavosExecutionException e){
 			throw new ReportingException(e.getMessage());
 		}

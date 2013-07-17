@@ -336,5 +336,8 @@ public class TestLinkReporter implements Reporter{
 					throws ReportingException, InterruptedException {
 
 	}
-
+	
+	public void destroySession(String sessionId)throws ReportingException{
+	
+	}
 }

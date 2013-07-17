@@ -70,7 +70,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.4.5";
+	private static String Version = "ZUG Premium 6.5.1";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -851,6 +851,7 @@ public class Controller extends Thread {
 	 */
 	String testexecutiondetailid = null, testcycletopologysetid = null,
 			variables = null;
+	protected boolean listen=true;;
 
 
 	/***
@@ -1098,6 +1099,7 @@ public class Controller extends Thread {
 				if (file.exists()) {
 				}
 			}
+			reporter.destroySession(sessionid);
 		}
 
 		// Log.Debug(" DoHarnessCleanup/Main : USING System.Environment.Exit(0) to EXIT ");
@@ -1362,21 +1364,19 @@ public class Controller extends Thread {
 				try {
 					com.automature.zug.license.LicenseValidator licenseValid = new com.automature.zug.license.LicenseValidator();
 					if (licenseValid.matchMac() == false) {
-						Controller
-						.message("Please get a valid license for your machine");
+						Log.Error("Please get a valid license for your machine");
 						System.exit(1);
 					}
 					if (licenseValid.isDateValid() == false) {
-						Controller
-						.message("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
+						Log.Error("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
 						System.exit(1);
 					}
 					Controller.message("Zug is Valid "
 							+ licenseValid.userInfo.companyName);
 
 				} catch (Exception e) {
-					Controller.message("Failed to validate your License copy");
-					Controller.message("Message : " + e.getMessage() + "\n");
+					Log.Error("Failed to validate your License copy");
+					Log.Error("Message : " + e.getMessage() + "\n");
 					System.exit(1);
 				}
 
@@ -1408,13 +1408,11 @@ public class Controller extends Thread {
 			com.automature.zug.license.LicenseValidator licenseValid = new com.automature.zug.license.LicenseValidator();
 
 			if (licenseValid.matchMac() == false) {
-				Controller
-				.message("Please get a valid license for your machine");
+				Log.Error("Please get a valid license for your machine");
 				System.exit(1);
 			}
 			if (licenseValid.isDateValid() == false) {
-				Controller
-				.message("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
+				Log.Error("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
 				System.exit(1);
 			}
 			Controller.message("Zug is Valid "
@@ -1422,11 +1420,12 @@ public class Controller extends Thread {
 			if (!opts.verbose) {
 				System.out.println("Zug is Valid "
 						+ licenseValid.userInfo.companyName);
+				
 			}
 
 		} catch (Exception e) {
-			Controller.message("Failed to validate your License copy");
-			Controller.message("Message : " + e.getMessage() + "\n");
+			Log.Error("Failed to validate your License copy");
+			Log.Error("Message : " + e.getMessage() + "\n");
 			System.exit(1);
 		}
 
@@ -1597,7 +1596,21 @@ public class Controller extends Thread {
 			});
 
 			thread.start();
-
+			if(opts.dbReporting){
+				Thread dbStimulator = new Thread(new Runnable() {
+					public void run() {
+						try {
+							while(controller.listen){
+								reporter.heartBeat(sessionid);
+								Thread.sleep(1000*60*5);
+							}
+						}catch(Exception e){
+//							Controller.errorOccured=true;
+						}
+					}
+				});
+				dbStimulator.start();
+			}
 			if (!opts.debugMode) {
 				// wait for thread for specific time
 				String[] tep = controller.ReadContextVariable(
@@ -1610,7 +1623,7 @@ public class Controller extends Thread {
 
 			// Last time again wait for this Thread to get Over....
 			thread.join();
-
+			controller.listen=false;
 			tm.Stop();
 			// controller.executionTime = (int)(tm.Duration() / ((double)1000));
 			controller.executionTime = (int) (tm.Duration());
