@@ -3900,10 +3900,17 @@ public class Excel {
 	}
 
 	public static String[] SplitOnFirstEquals(String nameOfVariable) {
+
 		if (StringUtils.isBlank(nameOfVariable)) {
 			return new String[0];
+		}else if(nameOfVariable.contains("=")){
+			return nameOfVariable.split("=",2);
+		}else{
+			String str[]=new String[1];
+			str[0]=nameOfVariable;
+			return str;
 		}
-
+/*
 		String[] stringToReturn = nameOfVariable.split("=");
 		if (stringToReturn.length <= 2) {
 			return stringToReturn;
@@ -3923,7 +3930,8 @@ public class Excel {
 
 			return tempStringToReturn;
 		}
-	}
+*/	}
+	
 	private TestCase ReadTestCase(HSSFSheet worksheet,
 			Hashtable<Short, String> labelIndex, int index, int testCaseIndex,
 			String description, String nameSpace,boolean isTestCase) throws Exception {

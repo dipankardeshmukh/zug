@@ -224,6 +224,9 @@ public class ProgramOptions {
 
 		Hashtable<String, String> ht = new Hashtable<String, String>();
 		 for (String opt : args) {
+			 if(opt==null || opt.isEmpty() || opt.equals("") || opt.equals(" ")||opt.equals("  ") ){
+				 continue;
+			 }
 			 int indexOfDash = opt.indexOf("-");
 			 String[] nv = new String[2];
 			 if (indexOfDash == 0) {
@@ -249,9 +252,12 @@ public class ProgramOptions {
 
 				 if (ht.containsKey("inputfile")) {
 					 Log.Error("ProgramOptions/parse: Error : Repeated input file.");
+					 Log.Error("Input file Value="+opt);
+					 Log.Result("Input file Value="+opt);
 					 System.out.println("\n\nRedundant value : Input File "
 							 + "\n Use -help for Usage information\n\n");
 					 Log.Debug("ProgramOptions/parse: Error : Repeated input file. Program exiting");
+					// Thread.sleep(1000*1000);
 					 System.exit(1);
 
 				 }
