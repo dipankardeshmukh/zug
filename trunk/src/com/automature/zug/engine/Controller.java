@@ -70,7 +70,7 @@ public class Controller extends Thread {
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
 
-	private static String Version = "ZUG Premium 6.5.1";
+	private static String Version = "ZUG Premium 6.5.2";
 	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -1082,14 +1082,16 @@ public class Controller extends Thread {
 		return keyValue;
 	}
 
-	private void DoHarnessCleanup() throws Exception, DavosExecutionException {
+	private void DoHarnessCleanup() {
 		// Remove all the ContextVariable
-
+		try{
+			
+		
 		this.TOPOSET = ContextVar.getContextVar("ZUG_TOPOSET");
 		testsuite.testSuiteId = ContextVar.getContextVar("ZUG_TESTSUITEID");
 		//ContextVar.DeleteAll((int) harnessPIDValue);
 
-		if (opts.dbReporting) {
+		if (opts.dbReporting && reporter!=null) {
 			reporter.archiveLog();
 			message("Cleanup starting... Closing Log");
 			Log.Cleanup();
@@ -1101,7 +1103,9 @@ public class Controller extends Thread {
 			}
 			reporter.destroySession(sessionid);
 		}
-
+		}catch(Exception e){
+			Log.Error("Controller/DoHarnessCleanUp :Exception"+e.getMessage());
+		}
 		// Log.Debug(" DoHarnessCleanup/Main : USING System.Environment.Exit(0) to EXIT ");
 		System.out.println("\nExiting ZUG");
 
@@ -1543,6 +1547,17 @@ public class Controller extends Thread {
 			controller.testsuite.abstractTestCase = controller.readExcel
 					.AbstractTestCases();
 
+//			for(TestCase tc:controller.testsuite.testcases){
+//				System.out.println("test case id"+tc.testCaseID);
+//				for	(Action act:tc.actions){
+//					System.out.println("action:"+act.name+" args="+act.arguments.toString());
+//					for(Verification ver:act.verification){
+//						System.out.println("\tverify:"+ver.name+" args="+ver.arguments.toString());
+//					}
+//				}
+//				System.out.println(Excel._indexedMacroTable.toString());
+//				System.out.println(Excel._macroSheetHashTable.toString());
+//			}
 			initializationTime.Stop();
 			// controller.initializationTime =
 			// (int)(initializationTime.Duration()/ (double)1000);
@@ -1574,6 +1589,7 @@ public class Controller extends Thread {
 					try {
 						try {
 							// TODO update the current threadid
+							
 							controller.testsuite.run();
 							if (opts.dbReporting == true) {
 								reporter.heartBeat(sessionid);
@@ -1601,7 +1617,9 @@ public class Controller extends Thread {
 					public void run() {
 						try {
 							while(controller.listen){
+								Log.Result("Controller/Main: Sending heart beat signal to davos");
 								reporter.heartBeat(sessionid);
+								Log.Result("Controller/Main: going off to sleep");
 								Thread.sleep(1000*60*5);
 							}
 						}catch(Exception e){
@@ -1610,6 +1628,7 @@ public class Controller extends Thread {
 					}
 				});
 				dbStimulator.start();
+			
 			}
 			if (!opts.debugMode) {
 				// wait for thread for specific time

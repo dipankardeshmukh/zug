@@ -240,6 +240,7 @@ public class BuildInAtom implements Atom {
 						action.name.toUpperCase()));
 			}
 		} else if (action.name.trim().toLowerCase().contains("print")) {
+			
 			if (action.arguments.size() > 0) {
 
 				for (int i = 0; i < action.arguments.size(); i++) {
@@ -286,7 +287,7 @@ public class BuildInAtom implements Atom {
 							+ " %s Execution STARTED With Arguments %s",
 							action.stackTrace.toUpperCase(),
 							action.name.toUpperCase(), action.arguments));
-
+					//System.out.println("");
 					String args_list[] = arg1.split(",");
 
 					if (args_list.length >= Integer.valueOf(arg2)) {

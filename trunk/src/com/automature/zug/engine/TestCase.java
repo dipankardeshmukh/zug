@@ -1106,6 +1106,7 @@ class TestCase
 	}
 
 	private String GetTheActualValue(String entireValue) throws Exception {
+//		System.out.println("entire value"+entireValue);
 		String tempValue = StringUtils.EMPTY;
 		//	Controller. message("\nTestCase/enitre value "+entireValue);
 		if (entireValue.contains("=")) {
@@ -1133,17 +1134,9 @@ class TestCase
 				tempValue = ContextVar.getContextVar(tempValue);
 				// message("EQUAL contextvariablemvm value"+tempValue);
 			} else if (tempValue.startsWith("$$") && tempValue.contains("#")) {
-				//	Controller. message("\nGetValue:/This is Indexed = " + tempValue);
-				//tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
 				tempValue = Excel._indexedMacroTable.get(tempValue.substring(1)
 						.toLowerCase());
-				//	System.out.println("temp value from indexed table"+tempValue);
-
-				//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
-				// message("GetValue:/This is Indexed The Value = " +
-				// tempValue);
-			}else if(tempValue.startsWith("$") && tempValue.contains("#")){
-				//System.out.println("IF entire value="+tempValue.toLowerCase());
+				}else if(tempValue.startsWith("$") && tempValue.contains("#")){
 				tempValue = Excel._indexedMacroTable.get(tempValue.toLowerCase());
 			}
 			else {
@@ -1154,14 +1147,7 @@ class TestCase
 					+ tempValue);
 		} // First Check in the Indexed Variable
 		else if (entireValue.startsWith("$$") && entireValue.contains("#")) {
-			//	entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
-			//	Controller. message("\nGetValue:/This is a entire Indexed\t" + entireValue);
 			tempValue = Excel._indexedMacroTable.get(entireValue.substring(1).toLowerCase());
-
-			//	System.out.println("temp value from indexed table"+tempValue);
-			//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
-			// /message("GetValue:/This is a Indexed\t" + tempValue);
-
 		} else if (entireValue.startsWith("$$%") && entireValue.endsWith("%")) {
 			entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
 			entireValue = entireValue.replaceAll("%", "");
@@ -1192,9 +1178,12 @@ class TestCase
 			String valueToSubstitute) {
 
 		String tempValue = StringUtils.EMPTY;
-		//Controller. message("GetActualComb:: 1a "+entireValue+" valusubs "+valueToSubstitute);
+//		Controller. message("GetActualComb:: 1a "+entireValue+" valusubs "+valueToSubstitute);
 		if (entireValue.contains("=")) {
 			Log.Debug("TestCase/GetActualCombination : entireValue contains an = sign ");
+			if(entireValue.startsWith("$~$")&&entireValue.endsWith("$~$")){
+				return valueToSubstitute;
+			}
 			String[] splitVariableToFind = Excel
 					.SplitOnFirstEquals(entireValue);
 
@@ -1205,13 +1194,13 @@ class TestCase
 						+ entireValue
 						+ " and its value is -> "
 						+ valueToSubstitute);
-				//Controller. message("GetActualComb:: 1b "+entireValue+" valusubs "+valueToSubstitute);
+//				Controller. message("GetActualComb:: 1b "+entireValue+" valusubs "+valueToSubstitute);
 				//		Controller. message("value returned"+valueToSubstitute);
 				return valueToSubstitute;
 			}
 			if (valueToSubstitute.contains("=")) {
 				tempValue = valueToSubstitute;
-				// message("GetActualComb:: GGHH"+tempValue);
+//				Controller. message("GetActualComb:: GGHH"+tempValue);
 			} else {
 				tempValue = splitVariableToFind[0] + "=" + valueToSubstitute;
 			}
@@ -1225,7 +1214,7 @@ class TestCase
 		Log.Debug("TestCase/GetActualCombination : End of function with variableToFind = "
 				+ entireValue + " and its value is -> " + tempValue);
 		// message("GetActualComb:: 1e "+tempValue);
-		//	Controller. message("value returned"+tempValue);
+//			Controller. message( "value returned"+tempValue);
 		return tempValue;
 	}
 
@@ -1258,9 +1247,6 @@ class TestCase
 					+ action.name);
 			// //TODO put checking if testcase have no actio argument then at
 			// least print any message or put the exception
-			// message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
-			// message("The Action names "+action.actionName+" having testcaseid "+action.parentTestCaseID
-			// +" Arguments "+action.actionArguments);
 			if (action.arguments.size() > 0) {
 				// removeDuplicateMVMVariables(action);
 				for (int i = 0; i < action.arguments.size(); ++i) {
@@ -1303,17 +1289,20 @@ class TestCase
 										+ " NullValueException \n In TesrCaseId: "
 										+ action.testCaseID);
 					}
-					String tempindexcheckin[] = Excel
-							.SplitOnFirstEquals(tempVal);
-					if (tempindexcheckin.length == 2) {
-						if (tempindexcheckin[1].startsWith("$~$")
-								&& tempindexcheckin[1].endsWith("$~$")) {
-							// message("indexmacro checking: from "+tempVal+" to "+tempindexcheckin[1]);
-							tempVal = tempindexcheckin[1];
+					if(!tempVal.startsWith("$~$")){
+						String tempindexcheckin[] = Excel
+								.SplitOnFirstEquals(tempVal);
+						if (tempindexcheckin.length == 2) {
+							if (tempindexcheckin[1].startsWith("$~$")
+									&& tempindexcheckin[1].endsWith("$~$")) {
+								// message("indexmacro checking: from "+tempVal+" to "+tempindexcheckin[1]);
+								tempVal = tempindexcheckin[1];
+							}
 						}
 					}
 					if ((tempVal.startsWith("$~$"))
 							&& (tempVal.endsWith("$~$"))) {
+					//	System.out.println("tempval"+tempVal);
 						tempVal = StringUtils.replace(tempVal, "$~$", "");
 						// tempVal=tempVal.replaceAll("~","");
 						String val = Utility.TrimStartEnd(tempVal, '#', 1);
@@ -1326,6 +1315,7 @@ class TestCase
 								+ val
 								+ " of Action: "
 								+ action.name);
+					//	System.out.println("vale"+val);
 						allActionVerificationArgs.add(new ArrayList<String>(
 								Arrays.asList(val.split(","))));
 
@@ -1406,8 +1396,9 @@ class TestCase
 											+ " NullValueException \n In TesrCaseId: "
 											+ verification.testCaseID);
 						}
-						if (tempVal2.startsWith("$~$#")
-								&& tempVal2.endsWith("#$~$")) {
+						if ((tempVal2.startsWith("$~$#")
+								&& tempVal2.endsWith("#$~$"))||(tempVal2.startsWith("$~$")
+										&& tempVal2.endsWith("$~$"))) {
 							tempVal2 = StringUtils.replace(tempVal2, "$~$", "");
 							String val = Utility.TrimStartEnd(tempVal2, '#', 1);
 							val = Utility.TrimStartEnd(val, '#', 0);
@@ -1423,7 +1414,7 @@ class TestCase
 							.add(new ArrayList<String>(Arrays
 									.asList(val.split(","))));
 							multiValuedVariablePosition.put(count1, "");
-						} else {
+						}else {
 							allActionVerificationArgs
 							.add(new ArrayList<String>(Arrays
 									.asList(new String[] { tempVal2 })));
@@ -1435,9 +1426,9 @@ class TestCase
 				}
 			}
 
-		}		List<Tuple<String>> resultAfterIndexed = CartesianProduct
+		}
+		List<Tuple<String>> resultAfterIndexed = CartesianProduct
 				.indexedProduct(allActionVerificationArgs);
-
 		List<Tuple<String>> result = new ArrayList<Tuple<String>>();
 
 		for (Tuple<String> tempResult : resultAfterIndexed) {
@@ -1540,7 +1531,6 @@ class TestCase
 				for (int q = 0; q < actualValue.length; ++q) {
 					tempCollection.add((String) actualValue[q]);
 				}
-
 				/*
 				 * while(subList.hasMoreElements()) { String
 				 * val=subList.nextElement(); tempCollection.add(val); }
@@ -1704,7 +1694,6 @@ class TestCase
 					ArrayList<String> arg=new ArrayList<String>();
 					//		System.out.println("Action args:"+action.arguments);
 					for(String argA:action.arguments){
-						//for (int i = 0; i < action.arguments.size(); ++i) {
 						arg.add(GetActualCombination((String) argA,tempTestCaseVar[count++]));
 					}
 					//	System.out.println("Action args after:"+arg);
