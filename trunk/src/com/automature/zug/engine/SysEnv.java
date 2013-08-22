@@ -6,6 +6,7 @@ import java.lang.management.ManagementFactory;
 //import com.automature.zug.util.Utility;
 
 public class SysEnv {
+	
 	public static String OS_NAME = "", OS_VERSION = "", OS_ARCH = "";
 	public static String USER_HOME = "", USER_LANG = "", USER_NAME = "";
 	public static String SLASH = "";
@@ -17,7 +18,10 @@ public class SysEnv {
 			JavaLibraryPath = "";
 	boolean isOSSupported=false;
 	public String mvmconfiguration;
-    SysEnv(){
+
+	
+ public  SysEnv(){
+	   
     	if (OS_NAME.toLowerCase().contains("windows")) {
 			PATH_CHECK = "Path";
 			SEPARATOR = ";";
@@ -37,7 +41,7 @@ public class SysEnv {
 			isOSSupported=true;
 
 		} else {
-			
+			//System.out.println("in the else part");
 		}
 		OS_NAME = System.getProperty("os.name");
 		OS_ARCH = System.getProperty("os.arch");
@@ -53,9 +57,12 @@ public class SysEnv {
 			LOGLOCATION = System.getProperty("user.dir") + "/log";
 			
 		}  
+		//System.out.println("log dir"+System.getenv(LOG_DIR));
+	//	System.out.println("log loc"+LOGLOCATION);
 		//mvmconfiguration = Utility.getMaxJVMMemorySize(Runtime.getRuntime())
 		//		.split("\\.")[0];
     }
+   
     public static String getEnvProps(){
 		String str="";
 		str+="OS Name="+System.getProperty("os.name")+",";
@@ -74,7 +81,7 @@ public class SysEnv {
 		//for(String str1:str.split(",")){
 		//	System.out.println(str1);
 	//	} 
-	//	System.out.println(str);
+		//System.out.println(str);
 		return str;
 	}
 

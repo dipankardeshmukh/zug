@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Random;
 //Internal package imports
 import com.automature.zug.util.Log;
@@ -73,6 +74,72 @@ public class ContextVar {
 		}
 	}
 
+	static ArrayList getAllContextVar() throws Exception {
+		Log.Debug("getContextVar: Start of Function");
+		Connection conn = null;
+		ArrayList <String> list=null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			conn = DriverManager.getConnection("jdbc:sqlite:" + _dbPath + "/"
+					+ _dbName);
+			int parentPId = (int) Controller.harnessPIDValue;
+			Statement stat = conn.createStatement();
+			String name=null;
+			String value = null;
+			list=new ArrayList<String>(); 
+				try {
+			synchronized (justForLock) {
+				ResultSet rs = stat.executeQuery("Select Name From "
+						+ _tableName + " Where ProcessId="
+						+ Quotedstring(Integer.toString(parentPId)));
+
+				if (rs.next()) {
+					while(rs.next()){	
+						name  = rs.getString(1);
+						//value = rs.getString(3);
+						list.add(name);
+					}
+					
+				}
+				rs.close();
+				
+			}
+				}catch(SQLException sq)
+				{
+					Log.Debug("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
+							+ name
+							+ " \nmessage:"
+							+ sq.getMessage()
+							+ "\ncausing class: " + sq.getClass());
+					System.out
+							.println("ContextVar/getContextVar:: [WARN] exception occured while setting the contextvar "
+									+ name
+									+ " \nmessage:"
+									+ sq.getMessage()
+									+ "\ncausing class: " + sq.getClass());
+				}
+			conn.close();
+			Log.Debug("getContextVar: Executed Command = "
+					+ "Select value From " + _tableName + " Where ProcessId="
+					+ Quotedstring(Integer.toString(parentPId)) + " And "
+					+ "Name=" + Quotedstring(name) + ""
+					+ " and Value returned is : " + value);
+
+
+		} catch (Exception ex) {
+			Log.Error("ContextVar/getContextVar: Exception is : "
+					+ ex.getMessage() + ex.getStackTrace());
+			throw new Exception("ContextVar/getContextVar: Exception is : "
+					+ ex.getMessage() + ex.getStackTrace());
+		} finally {
+			if (conn != null)
+				conn.close();
+			
+		}
+		return list;
+	}
+
+	
 	/***
 	 * Set context variable if not exist else update the value.
 	 * 

@@ -63,10 +63,10 @@ public class InProcessAtom  implements Atom{
 				if (pkg_name.equalsIgnoreCase(package_struct[0])) {
 					
 					if (isAction) {
-						Controller.invokeAtoms.get(pkg_name)
+						Controller.invokeAtoms.get(pkg_name.toLowerCase())
 						.setInprocessAction((Action) action);
 					} 
-					Controller.invokeAtoms.get(pkg_name).invokeMethod(
+					Controller.invokeAtoms.get(pkg_name.toLowerCase()).invokeMethod(
 							package_struct[1].trim(), action.arguments);
 				
 					PkgstructureFound = true;

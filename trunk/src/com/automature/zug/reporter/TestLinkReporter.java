@@ -338,6 +338,7 @@ public class TestLinkReporter implements Reporter{
 	}
 	
 	public void destroySession(String sessionId)throws ReportingException{
-	
+		
 	}
+
 }

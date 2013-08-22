@@ -22,6 +22,5 @@ public class ExecutedTestCase
 	public int timeToExecute 				= 0;
 	public Date testCaseCompletetionTime 	= Utility.dateNow();
 	
-	
 
 }

@@ -22,13 +22,14 @@ public class OutProcessAtom implements Atom{
 		}
 		String[] workingDirectoryArray = workingDirectoryList.split(";");
 		for (String workingDirectory : workingDirectoryArray) {
-
+			
 			if (StringUtils.isBlank(workingDirectory)) {
 				File f = new File(command);
 				if (f.exists()) {
 					Log.Debug(String
 							.format("OutProcessAtomFindWorkingDirectory: Found with argument as %s when Working Directory value is %s",
 									command, workingDirectory));
+					
 					return workingDirectory;
 				}
 			} else {
@@ -37,15 +38,11 @@ public class OutProcessAtom implements Atom{
 					Log.Debug(String
 							.format("OutProcessAtomFindWorkingDirectory: Found with argument as %s when Working Directory value is %s",
 									command, workingDirectory));
-					
-
 					return workingDirectory;
 				}
 			}
 		}
-		System.out.println("returning empty string");
 		return StringUtils.EMPTY;
-
 	}
 
 	/***
@@ -250,7 +247,7 @@ public class OutProcessAtom implements Atom{
 //			argument.add(tmp);
 //		}
 		commandparam.addAll(argument);
-		//System.out.println("params :"+commandparam.toString());
+
 		try {
 			pr.command(commandparam);
 			if (StringUtils.isNotBlank(workingDirectory)) {
@@ -261,12 +258,9 @@ public class OutProcessAtom implements Atom{
 			}
 
 			Log.Debug(String
-					.format("OutProcessAtom/ExecuteCommand  :Arguments for the Command %s is %s . ",
-							command, argument.toString()));
-
-			Log.Debug(String
 					.format("OutProcessAtom/ExecuteCommand :Started the Process for the Command %s with Arguments as %s . ",
 							command, argument.toString()));
+			Controller.message("Command to be run "+commandparam.toString());
 			process = pr.start();
 
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
@@ -283,7 +277,9 @@ public class OutProcessAtom implements Atom{
 			while ((primitiveStreams = stdInput.readLine()) != null) {
 				Log.Debug("OutProcessAtom/ExecuteCommand : [AtomLog/" + FileName
 						+ "] - " + primitiveStreams);
-			//	 System.out.println("OUTPUT->\t"+primitiveStreams);
+				if(Controller.opts.debugMode||Controller.opts.debugger){
+					System.out.println("OUTPUT->\t"+primitiveStreams);
+				}
 			}
 
 			// read any errors from the attempted command

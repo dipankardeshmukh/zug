@@ -68,7 +68,7 @@ public class DavosReporter implements Reporter {
 	 * stuff specified is correct and exists in the Result Database or not.
 	 */
 
-	public boolean ValidateDatabaseEntries() throws InterruptedException ,Exception{
+	public boolean ValidateDatabaseEntries() throws InterruptedException ,Exception,Throwable{
 		Log.Debug("Controller/ValidateDatabaseEntries : Start of function");
 		try {
 			// message("The Seesion Id  "+sessionid);
@@ -107,17 +107,18 @@ public class DavosReporter implements Reporter {
 				}
 			} catch (DavosExecutionException e) {
 				Log.Error("Error in Validating Data: " + e.getMessage());
-				System.exit(1);
+				throw new Throwable("Error in Validating Data: " + e.getMessage());
 			}
 
 		} catch (DavosExecutionException e) {
-			e.printStackTrace();
+			Log.Error("Error in Validating Data: " + e.getMessage());
+			throw new Throwable("Error in Validating Data: " + e.getMessage());
 		}
 		return true;
 	}
 
 
-	public boolean connect() throws ReportingException {
+	public boolean connect() throws Throwable {
 		Log.Debug("Controller/ConnectToDavos : Start of Function ");
 		boolean connnect_flag = false;
 		try {
@@ -142,9 +143,13 @@ public class DavosReporter implements Reporter {
 					+ " with user "
 					+ dbUserName + ". The Exception is " + dd.getMessage());
 			dd.printStackTrace();
-			Log.Error("Exiting ZUG.....");
 			connnect_flag = false;
-			System.exit(1);
+			throw new Throwable("Controller/ConnectToDavos : Exception while Connecting to Davos "
+					+ dBName
+					+ " of host "
+					+ dBHostName
+					+ " with user "
+					+ dbUserName + ". The Exception is " +dd.getMessage());
 
 		} catch (Exception ex) {
 			Log.Error("Controller/ConnectToDavos : Exception while connecting to Davos "
@@ -164,7 +169,7 @@ public class DavosReporter implements Reporter {
 
 
 	private String getTestPlanId()
-			throws Exception, InterruptedException {
+			throws Throwable {
 		String result = null;
 		try {
 			if (testPlanPath.contains(":")) {
@@ -179,8 +184,7 @@ public class DavosReporter implements Reporter {
 					+ ex.getMessage());
 
 			result = ex.getLocalizedMessage();
-			System.exit(1);
-			return result;
+			throw new Throwable("Controller/getTestPlanId:DavosExecutionException "+ ex.getMessage());
 		}
 
 	}
@@ -190,9 +194,10 @@ public class DavosReporter implements Reporter {
 	 * 
 	 * @param String
 	 *            topologysetname return String the topologysetid
+	 * @throws Throwable 
 	 */
 	private String getTopologySetId()
-			throws Exception, InterruptedException {
+			throws Throwable {
 		String result = null;
 		try {
 			if (topologySetName.length() > 0) {
@@ -205,9 +210,8 @@ public class DavosReporter implements Reporter {
 			Log.Error("Controller/getTopologySetId:DavosExecutionException "
 					+ x.getMessage());
 			result = x.getMessage();
-			System.exit(1);
-			return result;
-
+			throw new Throwable("Controller/getTopologySetId:DavosExecutionException" + x.getMessage());
+			
 		}
 	}
 
@@ -219,22 +223,22 @@ public class DavosReporter implements Reporter {
 	 */
 
 	private String saveBuildTag()
-			throws Exception, InterruptedException {
+			throws Throwable {
 		Log.Debug("Controller/saveBuildTag: TestPlanid " + testPlanId
 				+ " Build tag " + buildTag);
 		try {
 			return davosclient.buildtag_write(testPlanId, buildTag);
 		} catch (DavosExecutionException ee) {
 			Log.Error("Controller/saveBuildTag: Exception: " + ee.getMessage());
-			System.exit(1);
-			return ee.getMessage();
+			throw new Throwable("Controller/saveBuildTag: Exception: " + ee.getMessage());
+			
 		}
 	}
 
 
 
 	private String validateTestCycle(String testplan, String testCycle)
-			throws Exception, InterruptedException {
+			throws Throwable {
 		String testcylepresent = null;
 
 		try {
@@ -244,7 +248,7 @@ public class DavosReporter implements Reporter {
 
 		} catch (DavosExecutionException de) {
 			Log.Error("Davos execution Exception " + de.getMessage());
-			System.exit(1);
+			throw new Throwable("Davos execution Exception: " + de.getMessage());
 		} catch (Exception e) {
 			Log.Error("Controller/validatetestcycleid:: Exception occured "
 					+ e.getMessage());
@@ -383,7 +387,11 @@ public class DavosReporter implements Reporter {
 		testCaseResult.set_testCaseId(etc.testCaseID);
 		// testCaseResult.set_testSuiteName(testSuitName);
 		if (StringUtils.isNotBlank(testSuiteId)) {
-			testCaseResult.set_testSuiteId(Integer.valueOf(testSuiteId));
+			try{
+				testCaseResult.set_testSuiteId(Integer.valueOf(testSuiteId));
+			}catch(NumberFormatException E){
+				testCaseResult.set_testSuiteId(0);
+			}
 		}
 		testCaseResult.set_testEngineerName("Automation");
 		testCaseResult.set_executionDate(etc.testCaseCompletetionTime);
@@ -612,6 +620,7 @@ public class DavosReporter implements Reporter {
 			throw new ReportingException(e.getMessage());
 		}
 	}
+	
 	public void destroySession(String sessionId)throws ReportingException{
 		try{
 			davosclient.destorySession(sessionId);
@@ -619,6 +628,5 @@ public class DavosReporter implements Reporter {
 			throw new ReportingException(e.getMessage());
 		}
 	}
-
 
 }

@@ -12,12 +12,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.FileReader;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -38,6 +42,8 @@ import java.util.regex.Pattern;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.extractor.ExcelExtractor;
 
@@ -52,11 +58,13 @@ import com.automature.zug.businesslogics.TestCaseResult;
 import com.automature.zug.util.ExtensionInterpreterSupport;
 import com.automature.davos.engine.DavosClient;
 import com.automature.davos.exceptions.DavosExecutionException;
+import com.automature.zug.gui.DebuggerConsole;
+import com.automature.zug.gui.ZugGUI;
 
 //import DatabaseLayer.Testplan;
 public class Controller extends Thread {
 	// Variables for checking Program options
-	private SysEnv sysenv=new SysEnv();
+	private static SysEnv sysenv=new SysEnv();
 	private String helpMessage = StringUtils.EMPTY;
 	private String versionMessage = StringUtils.EMPTY;
 	static Excel readExcel;
@@ -64,19 +72,20 @@ public class Controller extends Thread {
 	public static int initializationTime = 0;
 	private int executionTime = 0;
 	public static long harnessPIDValue = 0;
-	public static  ProgramOptions opts =new ProgramOptions();
+	public static  ProgramOptions opts;
 	public static boolean macroentry = false; // Flag to set a Command Line
 	// Macro Value
 	public static boolean isLogFileName=false;
 	public static String logfilename="";
-
-	private static String Version = "ZUG Premium 6.5.2";
-	static Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
+	static ZugGUI gui;
+	static boolean guiFlag;
+	private static String Version = "ZUG Premium 7.1.0";
+	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
 
 	TopologySet[] TopologySet = null;
-
+	static Log logger;
 
 	@SuppressWarnings("unused")
 	private String dBHostName = StringUtils.EMPTY;
@@ -100,23 +109,37 @@ public class Controller extends Thread {
 	public static final String reportingXmlTagPath="//root//Reporting-dest";
 	public static final String reportingXmlTagAttribute="name";
 	public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
-	public static HashMap<String, AtomInvoker> invoke_native_atoms = new HashMap<String, AtomInvoker>();
+	public static HashMap<String, AtomInvoker> invoke_native_atoms = new HashMap<String, AtomInvoker>(); 
 	private static volatile String builtin_atom_package_name = "";
 
 	static Reporter reporter=null;
+	static boolean pause=true;
+	static boolean stepOver=false;
+	static boolean stepInto=false;
+	static boolean stop=false;
+	static HashMap <String,ArrayList<Integer>> breakpoints=new HashMap <String,ArrayList<Integer>> ();
+	static boolean errorOccured=false;
 
 	// Hashtable to store the file name as key and its desired macro column as value;
 	public static HashMap<String,String> macroColumnValue=new HashMap<String, String>();
 
-	public TestSuite testsuite=new TestSuite();
-	
+	public static TestSuite testsuite;
+
 	public static HashMap<String ,List> atomPerformance=new HashMap<String,List>();
-	
+	boolean listen=true;
+	ServerSocket sock = null;
+
 	/*
 	 * Constructor that initializes the program options.
 	 */
+	public static void stopExecution(){
+		stop=true;
+		pause=false;
+		stepInto=false;
+	}
+
 	public Controller() {
-		
+
 		StringBuilder helpMessagebuf = new StringBuilder();
 		versionMessage = Version;
 
@@ -284,6 +307,144 @@ public class Controller extends Thread {
 
 	}
 
+	public static String getVersionMessage(){
+		String message="";
+		try {
+			com.automature.zug.license.LicenseValidator licenseValid = new com.automature.zug.license.LicenseValidator();
+			message="Zug is Valid "
+					+ licenseValid.userInfo.companyName;
+			Calendar cal=licenseValid.userInfo.getExpiryDate();
+			String date="Expiry Date : "+cal.get(Calendar.DAY_OF_MONTH);
+			date+=". "+(cal.get(Calendar.MONTH)+1);
+			date+=". "+cal.get(Calendar.YEAR);
+			message+="\n"+date;
+			File f=new File("Build_No");
+			if(f.exists()){
+				try{
+					BufferedReader br=new BufferedReader(new FileReader(f));
+					String line = br.readLine();
+					if(line!=null && !line.isEmpty()){
+						message+="\n"+Version+"."+line;
+					}
+				}catch(Exception e){
+
+				}
+			}else{
+				message+="\n"+Version;
+			}
+
+		} catch (Exception e) {
+			message="Failed to validate your License copy";
+			message="Message : " + e.getMessage() + "\n";
+		}
+		return message;
+	}
+
+
+
+
+	public static String getContextVarValue(String name){
+		String value=null;
+		try{
+			value=ContextVar.getContextVar(name);
+		}catch(Exception e){
+
+		}
+		return value;
+	}
+
+	public static ArrayList<Integer> getBPSteps(String id){
+		return breakpoints.get(id.toLowerCase());
+	}
+
+	public static void upDateContextVar(String name,String value){
+		//	System.out.println("CV name:"+name+"\tCVValue"+value);
+		try{
+			ContextVar.alterContextVar(name, value);
+		}catch(Exception e){
+
+		}
+	}
+
+	public static ArrayList getAllContextVariables(){
+		ArrayList list=null;
+		try{
+			list = ContextVar.getAllContextVar();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+
+	public static Set getBreakPointsIDs(){
+		return breakpoints.keySet();
+	}
+
+	public static void removeBreakPoints(String id,Object []steps){
+		//	System.out.println("id:"+id+"\t steps:"+steps);
+		if(breakpoints.containsKey(id.toLowerCase())){
+			//		System.out.println("key found");
+			ArrayList al=breakpoints.get(id.toLowerCase());
+			for(Object ob:steps){
+
+				al.remove(new Integer(Integer.parseInt(ob.toString())));
+				//			System.out.println(ob.toString());
+			}
+			if(al.size()==0){
+				breakpoints.remove(id.toLowerCase());
+			}else{
+				breakpoints.put(id.toLowerCase(), al);
+			}
+		}
+	}
+
+	public static void setStepOver(){
+		Controller.stepOver=true;
+		Controller.pause=false;
+	}
+
+	static void checkDebuggerSignal(){
+		if(Controller.opts.debugger){
+			try{
+				if(Controller.pause){
+					while(Controller.pause){
+						Thread.sleep(1000);
+					}
+				}
+			}catch(Exception e){
+
+			}
+		}
+	}
+
+
+
+	public static void setPauseSignal(){
+		Controller.pause=true;
+	}
+
+	public static void setResumeSignal(){
+		Controller.pause=false;
+		Controller.stepOver=false;
+	}
+
+	public static void setBreakPoint(String id,String testStep){
+		if(breakpoints.containsKey(id.toLowerCase())){
+			ArrayList<Integer> tmp=breakpoints.get(id.toLowerCase());
+			if(!tmp.contains(testStep)){
+				tmp.add(Integer.parseInt(testStep));;
+				breakpoints.put(id.toLowerCase(), tmp);
+			}
+		}else{
+			ArrayList<Integer> al=new ArrayList<Integer>();
+			al.add(Integer.parseInt(testStep));
+			breakpoints.put(id.toLowerCase(), al);
+		}
+
+	}
+
+
 	// / This function prints the Usage
 	private void PrintUsage() {
 		System.out.println(helpMessage);
@@ -312,6 +473,8 @@ public class Controller extends Thread {
 	}
 
 	// / This function prints the Version
+
+
 	private void PrintVersionInformation() {
 		File f=new File("Build_No");
 		if(f.exists()){
@@ -322,7 +485,7 @@ public class Controller extends Thread {
 					versionMessage+="."+line;
 				}
 			}catch(Exception e){
-				
+
 			}
 		}
 		System.out.println(versionMessage);
@@ -330,11 +493,13 @@ public class Controller extends Thread {
 
 	public static void message(String msg) {
 		Log.Result(msg);
-
 		if (opts.verbose) {
 			//	Charset cs=new Charset("US-ASCII","cmdset");
-
+			/*if(guiFlag){
+				ZugGUI.message(msg);
+			}else{*/
 			System.out.println(msg);
+			//}
 
 		}
 	}
@@ -544,12 +709,12 @@ public class Controller extends Thread {
 	 * Test Case Excel sheet.
 	 * 
 	 */
-	private void InitializeVariables(Excel readExcel) throws Exception {
+	private void InitializeVariables(Excel readExcel) throws Exception ,Throwable{
 		Log.Debug("Controller/InitializeVariables :Start of Function");
 		if (StringUtils.isEmpty(opts.scriptLocation)) {
 			if(opts.workingDirectory!=null ){
 				opts.scriptLocation = readExcel.ScriptLocation()  +";"
-					+ opts.workingDirectory+";"+opts.filelocation+";"; // appends the current directory
+						+ opts.workingDirectory+";"+opts.filelocation+";"; // appends the current directory
 			}else{
 				opts.scriptLocation = readExcel.ScriptLocation()+";"+opts.filelocation+";";
 			}
@@ -558,6 +723,7 @@ public class Controller extends Thread {
 			opts.scriptLocation=opts.scriptLocation.replaceAll(";(;)+", ";");
 			String[] spliArr = opts.scriptLocation.split(";");
 			String newLocation = "";
+
 			ArrayList<String> locations=new ArrayList<String>();
 			for (String spits : spliArr) {
 				if(spits==null){
@@ -567,7 +733,7 @@ public class Controller extends Thread {
 				if (!temp0[0].contains(":")) {
 					if (testSuiteLoc != null) {
 						temp0[0] = testSuiteLoc;
-						newLocation = temp0[0] +SysEnv.SLASH+  spits;
+						newLocation = temp0[0] + SysEnv.SLASH+ spits;
 					} else {
 						temp0[0] = opts.filelocation;
 						newLocation = temp0[0] + spits;
@@ -584,12 +750,14 @@ public class Controller extends Thread {
 				str+=loc+";";
 			}
 			opts.scriptLocation=str.substring(0, str.length()-1);
-			
+
 			//	opts.scriptLocation = opts.scriptLocation + ";" + newLocation;
-	
+
 			opts.scriptLocation=opts.scriptLocation.replaceAll(";(;)+", ";");
 			Log.Debug("Controller::The Updated ScriptLocation\t"
 					+ opts.scriptLocation);
+			//	Controller.message("Controller::The Updated ScriptLocation\t"
+			//	+ opts.scriptLocation);
 		}
 		// from where the Zug is invoked
 
@@ -639,8 +807,8 @@ public class Controller extends Thread {
 			// message("The DBHOST NAME "+dBHostName);
 			Log.Debug("Controller/InitializeVariables : DBHostName = "
 					+ dBHostName);
-			 dBName = readExcel.DBName();
-			 Log.Debug("Controller/InitializeVariables : dBName = " + dBName);
+			dBName = readExcel.DBName();
+			Log.Debug("Controller/InitializeVariables : dBName = " + dBName);
 			dbUserName = readExcel.DBUserName();
 			ContextVar.setContextVar("ZUG_DBUSERNAME",dbUserName);
 			Log.Debug("Controller/InitializeVariables : dbUserName = "
@@ -660,7 +828,7 @@ public class Controller extends Thread {
 			Log.Debug("Controller/InitializeVariables : testPlanRole = "
 					+ testsuite.testSuitRole);
 		}
-		ContextVar.setContextVar("ZUG_SCRIPTLOCATION", readExcel.ScriptLocation());
+		ContextVar.setContextVar("ZUG_SCRIPTLOCATION",opts.scriptLocation);
 		Log.Debug("Controller/InitializeVariables :End of Function");
 	}
 
@@ -851,7 +1019,8 @@ public class Controller extends Thread {
 	 */
 	String testexecutiondetailid = null, testcycletopologysetid = null,
 			variables = null;
-	protected boolean listen=true;;
+
+
 
 
 	/***
@@ -864,10 +1033,11 @@ public class Controller extends Thread {
 	 * with the different primitives, so that there can be one common location
 	 * for logging.
 	 */
-	private void ListenToPrimitives(int iPORT) {
+
+	private void ListenToPrimitives(int iPORT) throws Throwable{
 		String ParamFromClient = StringUtils.EMPTY;
 		Socket conn = null;
-		ServerSocket sock = null;
+
 
 		InputStream inStream = null;
 		// DataInputStream inDataStream = null;
@@ -886,7 +1056,11 @@ public class Controller extends Thread {
 					if (iPORT == 65535) {
 						Log.Error("Controller/ListenToPrimitive: Only ten zug instances can run simultaneously "
 								+ iPORT);
-						System.exit(1);
+						if(Controller.guiFlag){
+							throw new Throwable();
+						}else{
+							System.exit(0);
+						}
 					}
 				}
 			}
@@ -905,7 +1079,7 @@ public class Controller extends Thread {
 			}catch(Exception e){
 				Log.Error("Controller/ListenToPrimitive : Exception "+e.getMessage());
 			}
-			while (true) {
+			while (listen) {
 
 				conn = sock.accept();
 				Log.Debug("Controller/ListenToPrimitive : Client Connected....");
@@ -943,20 +1117,33 @@ public class Controller extends Thread {
 				}
 
 			}
+			inStream.close();
+			inDataStream.close();
 
 		} catch (Exception e) {
 			Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
-					+ e.getMessage());
-			System.exit(1);
+					+ e.getMessage()+"-"+e.getClass().getName());
+			if(Controller.guiFlag){
+				throw new Throwable();
+			}else{
+				System.exit(0);
+			}
+		}finally{
+			try{
+				sock.close();
+				conn.close();
+			}catch(Exception e){
+
+			}
 		}
 	}
 
-	private void ListenToPrimitives() {
+	private void ListenToPrimitives() throws Throwable{
+
 		int iPORT = 8245;
 
 		String ParamFromClient = StringUtils.EMPTY;
 		Socket conn = null;
-		ServerSocket sock = null;
 
 		try {
 
@@ -982,7 +1169,7 @@ public class Controller extends Thread {
 				}catch(Exception e){
 					Log.Error("Controller/ListenToPrimitive : Exception "+e.getMessage());
 				}
-				while (true) {
+				while (listen) {
 
 					conn = sock.accept();
 					Log.Debug("Controller/ListenToPrimitive : Client Connected....");
@@ -1021,15 +1208,23 @@ public class Controller extends Thread {
 					}
 
 				}
+				//conn.close();
+				inStream.close();
+				inDataStream.close();
 
-			} catch (Exception e) {
-				// Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
-				// + e.getMessage());
+			}catch (BindException e) {
+				//	 Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
+				//	 + e.getMessage()+e.getClass().getName());
+
 				iPORT++;
 				if (iPORT == 65535) {
 					Log.Error("Controller/ListenToPrimitive: Only ten zug instances can run simultaneously "
 							+ iPORT);
-					System.exit(1);
+					if(Controller.guiFlag){
+						throw new Throwable();
+					}else{
+						System.exit(0);
+					}
 				}
 				ListenToPrimitives(iPORT);
 				// System.exit(1);
@@ -1082,14 +1277,36 @@ public class Controller extends Thread {
 		return keyValue;
 	}
 
-	private void DoHarnessCleanup() {
+	private static void clearStaticMembers(){
+
+		atomPerformance.clear();
+		breakpoints.clear();
+		macroColumnValue.clear();
+		macrocommandlineinputs.clear();
+	//	invokeAtoms.clear();
+		reporter=null;
+		opts =null;
+		testsuite=null;
+		readExcel=null;
+		isLogFileName=false;
+		macroentry=false;
+		pause=false;
+		errorOccured=false;
+		stop=false;
+		stepOver=false;
+
+		Excel.cleanUP();
+		TestSuite.cleanUP();
+		TestCase.cleanUP();
+
+	}
+
+	private void DoHarnessCleanup() throws Exception, DavosExecutionException {
 		// Remove all the ContextVariable
-		try{
-			
-		
+
 		this.TOPOSET = ContextVar.getContextVar("ZUG_TOPOSET");
 		testsuite.testSuiteId = ContextVar.getContextVar("ZUG_TESTSUITEID");
-		//ContextVar.DeleteAll((int) harnessPIDValue);
+		ContextVar.DeleteAll((int) harnessPIDValue);
 
 		if (opts.dbReporting && reporter!=null) {
 			reporter.archiveLog();
@@ -1103,13 +1320,13 @@ public class Controller extends Thread {
 			}
 			reporter.destroySession(sessionid);
 		}
-		}catch(Exception e){
-			Log.Error("Controller/DoHarnessCleanUp :Exception"+e.getMessage());
+		if(guiFlag){
+			clearStaticMembers();		
+		}else{
+			// Log.Debug(" DoHarnessCleanup/Main : USING System.Environment.Exit(0) to EXIT ");
+			System.out.println("\nExiting ZUG");
+			System.exit(0);
 		}
-		// Log.Debug(" DoHarnessCleanup/Main : USING System.Environment.Exit(0) to EXIT ");
-		System.out.println("\nExiting ZUG");
-
-		System.exit(0);
 	}
 
 	public void showTestCaseResultEveryTime(ExecutedTestCase testCaseResult) {
@@ -1168,7 +1385,7 @@ public class Controller extends Thread {
 		ht.put("testCycleId".toLowerCase(), opts.getTestCycleId());
 		return ht;
 	}
-/*
+	/*
 	public Hashtable getReportingparams(){
 		Hashtable<String,String> ht=new Hashtable<String,String>();
 		ht.put("TESTSUITEID".toLowerCase(), testsuite.testSuiteId);
@@ -1184,7 +1401,30 @@ public class Controller extends Thread {
 		ht.put("testCycleId".toLowerCase(), opts.testCycleId);
 		return ht;
 	}
-*/
+	 */
+	public String getTestCaseIds(){
+		String ids="";
+		for(TestCase tc:this.testsuite.testcases){
+			ids=ids+tc.testCaseID+":"+tc.actions.size()+",";
+		}
+
+		return ids;
+	}
+
+	public String getMoleculesId(){
+		String ids="";
+		Set s=this.testsuite.abstractTestCase.keySet();
+		Iterator it=s.iterator();
+		while(it.hasNext()){
+			String tmpId=(String)it.next();
+			Molecule mol=this.testsuite.abstractTestCase.get(tmpId);
+			ids=ids+tmpId+":"+mol.actions.size()+",";
+		}
+		//for(Molecule mol:s.)
+		return ids;
+	}
+
+
 	static void showAtomPerformance(){
 		if(Controller.atomPerformance.isEmpty()){
 			return;
@@ -1215,87 +1455,99 @@ public class Controller extends Thread {
 		}		
 		int noOfItem=0;
 		try{
-		NavigableSet ds=tm.descendingKeySet();
-		Iterator itTm=ds.iterator();
-		Controller.message(String.format("%-55s%-5s %-8s %-5s","Atom Name","Min.","Avg.","Max.\n"));
-		while(itTm.hasNext()){
-			if(noOfItem==10){
-				break;
-			}
-			double n=(Double)itTm.next();
-			ArrayList l=(ArrayList)tm.get(n);
-			for(Object obj:l){
+			NavigableSet ds=tm.descendingKeySet();
+			Iterator itTm=ds.iterator();
+			Controller.message(String.format("%-55s%-5s %-8s %-5s","Atom Name","Min.","Avg.","Max.\n"));
+			while(itTm.hasNext()){
 				if(noOfItem==10){
 					break;
 				}
-				List<String> al=Controller.atomPerformance.get(obj.toString());
-				Collections.sort(al);	
-				Controller.message(String.format("%-55s%-5d %-5.2f  %-5d", obj,al.get(0),n,al.get(al.size()-1)));
-				noOfItem++;
+				double n=(Double)itTm.next();
+				ArrayList l=(ArrayList)tm.get(n);
+				for(Object obj:l){
+					if(noOfItem==10){
+						break;
+					}
+					List<String> al=Controller.atomPerformance.get(obj.toString());
+					Collections.sort(al);	
+					Controller.message(String.format("%-55s%-5d %-5.2f  %-5d", obj,al.get(0),n,al.get(al.size()-1)));
+					noOfItem++;
+				}
 			}
-		}
-		Controller.message("\n********************************************************************************\n");
+			Controller.message("\n********************************************************************************\n");
 		}catch(Exception e){
 			Controller.message("Controller/showAtomPerforamance:Exception-"+e.getMessage());
 		}
 	}
-	
+
+
+	private static void updateTextArea(final String text) {
+		//  SwingUtilities.invokeLater(new Runnable() {
+		//   public void run() {
+		ZugGUI.message(text);
+		//   }
+		//  });
+	}
+
+	private static void redirectSystemStreams() {
+		OutputStream out = new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {
+				updateTextArea(String.valueOf((char) b));
+				this.flush();
+			}
+
+			@Override
+			public void write(byte[] b, int off, int len) throws IOException {
+				updateTextArea(new String(b, off, len));
+				this.flush();
+			}
+
+			@Override
+			public void write(byte[] b) throws IOException {
+				write(b, 0, b.length);
+			}
+		};
+
+		System.setOut(new PrintStream(out, true));
+		System.setErr(new PrintStream(out, true));
+	}
+
 	/**
 	 * main method for Harness. Entry point to the Controller
 	 * 
 	 * @param args
 	 *            -Command line parameters for harness.
 	 */
-	public static void main(String[] args) throws InterruptedException,
-	Exception, DavosExecutionException, MoleculeDefinitionException {
+	public static void main(String[] args)throws InterruptedException,
+	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
 		SysEnv sysenv=new SysEnv();
-		ProgramOptions.checkCommandLineArgs(args);
-		if (args.length > 1) {
-			for (String arg : args) {
-				// controller.message("The argumentss "+arg);
-				if(arg.toLowerCase().startsWith("-logfilename="))
-				{
-
-					String logfile[]=arg.split("=");
-					if(logfile.length==2)
-					{
-						isLogFileName=true;
-						logfilename=logfile[1];
-						break;
-					}
-					else
-					{
-						System.out.println("[Error] Incorrect usage of -logfilename switch.");
-						System.exit(1);
-					}
-
-				}
+		guiFlag = false;
+		//		if (args.length > 1) {
+		for (String arg : args) {
+			if(arg.toLowerCase().contains("-gui")){
+				guiFlag=true;
+				break;
 			}
 		}
-		Controller.harnessPIDValue = Integer
-				.parseInt((java.lang.management.ManagementFactory
-						.getRuntimeMXBean().getName().split("@"))[0]);
-		final Controller controller = new Controller();
-		String frameWork="";
-		 controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
-	//	System.out.println(Controller.ZUG_LOGFILENAME+ " 1st level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
-		ContextVar.setContextVar("ZUG_LOGFILENAME",
-				Controller.ZUG_LOGFILENAME);
-//		 Controller.CreateContextVariable("ZEnv_Values"+SysEnv.getEnvProps());
-		 ContextVar.setContextVar("ZEnv_Values", SysEnv.getEnvProps());
-		// System.out.println(ContextVar.getContextVar("ZEnv_Values"));
-		
-	//	System.out.println("ZUG_LOGFILENAME"+ContextVar.getContextVar("ZUG_LOGFILENAME"));
-		StringBuilder cmdinputsargs = new StringBuilder();
-		for (String cmdinputs : args) {
-			cmdinputsargs.append(cmdinputs);
+		//	}
+		if(guiFlag){
+			logger=new Log();
+			gui=new ZugGUI();
+			gui.initialize(args);
+			redirectSystemStreams();
+			loadInProcesses();
+		}else{
+			Controller.oldmain(args);
 		}
-		Log.Debug("Controller/Main:: Command Line Input: "
-				+ cmdinputsargs.toString());
-		// Checking for jar file entry in ZugINI.xml
+	}
+
+	public static void loadInProcesses()throws Exception{
 		ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
 		Set<Set> errorSet = new HashSet<Set>();
-
+		if(guiFlag){
+			System.out.println("Loading Inprocess packages please wait.........\n");
+		}
 		if (testINI.reteriveXmlTagAttributeValue(inprocess_jar_xml_tag_path,
 				inprocess_jar_xml_tag_attribute_name).length > 0) {
 			int c = 0;
@@ -1313,43 +1565,99 @@ public class Controller extends Thread {
 						// controller.message("Com Jacob Calling");
 					} else {
 						// controller.message("invoking jar instance "+package_names);
-						ai.loadInstance(package_names);
-
+						try{
+							ai.loadInstance(package_names);
+						}catch(Exception e){
+							System.err.println("Error while loading the package "+package_names+"\t"+e.getMessage());
+						}
 						if (ai.interpreter.inprocesspackageError.size() > 0) {
 							errorSet.add(ai.interpreter.inprocesspackageError);
-
 						}
 					}
-					invokeAtoms.put(package_names, ai);
+					invokeAtoms.put(package_names.toLowerCase(), ai);
 				} else {
-					Controller
-					.message("[Warning] ZugINI.xml contains blank inprocess package definition. Please refer to the readme.txt or Zug User Manual");
+					System.out.println("[Warning] ZugINI.xml contains blank inprocess package definition. Please refer to the readme.txt or Zug User Manual");
 				}
 			}
 
 			if (errorSet.size() > 0) {
-
-				Log.Error(String
+				System.err.println(String
 						.format("[Warning] %s has duplicate and incorrect for inprocess packages xml definition: 'language' attribute is not defined in ZugINI.xml",
 								errorSet));
-
 			}
-
 		} else {
-			Controller
-			.message("No Inprocess Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
+			System.out.println("No Inprocess Jar definition found in ZugINI.xml with proper Attribute definition for Tag");
 		}
-		//String reporterName[]=testINI.reteriveXmlTagAttributeValue(reportingXmlTagPath, reportingXmlTagAttribute);
-		 // ProcessMonitorThread.currentThread().getId();
+		if(guiFlag){
+			System.out.println("\nInprocess package Loaded.");
+		}
 
-		// First Validate the Command Line Arguments
+	}
 
-		//System.out.println("Harness PID value"+Controller.harnessPIDValue);
+	public static void oldmain(String[] args) throws InterruptedException,
+	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
 
-		//System.out.println(Controller.ZUG_LOGFILENAME+" 3rd level contextvar of LOG "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
+		
+
+
+		ProgramOptions.checkCommandLineArgs(args);
+		if (args.length > 1) {
+			for (String arg : args) {
+				// controller.message("The argumentss "+arg);
+				if(arg.toLowerCase().startsWith("-logfilename="))
+				{
+
+					String logfile[]=arg.split("=");
+					if(logfile.length==2)
+					{
+						isLogFileName=true;
+						logfilename=logfile[1];
+						break;
+					}
+					else
+					{
+						System.err.println("[Error] Incorrect usage of -logfilename switch.");
+						if(Controller.guiFlag){
+							throw new Throwable();
+						}else{
+							System.exit(0);
+						}
+					}
+
+				}
+			}
+		}
+		Controller.harnessPIDValue = Integer
+				.parseInt((java.lang.management.ManagementFactory
+						.getRuntimeMXBean().getName().split("@"))[0]);
+
+		logger=new Log();
+		opts =new ProgramOptions();
+		testsuite=new TestSuite();
+		Controller.readExcel = new Excel();
+
+		final Controller controller = new Controller();
+		String frameWork="";
+		controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
+		
+		ContextVar.setContextVar("ZUG_LOGFILENAME",
+				Controller.ZUG_LOGFILENAME);
+		
+		ContextVar.setContextVar("ZEnv_Values", SysEnv.getEnvProps());
+		
+		StringBuilder cmdinputsargs = new StringBuilder();
+		for (String cmdinputs : args) {
+			cmdinputsargs.append(cmdinputs);
+		}
+		Log.Debug("Controller/Main:: Command Line Input: "
+				+ cmdinputsargs.toString());
+		if(!guiFlag){
+			Controller.loadInProcesses();
+		}
+		
+		
 		try {
 			Log.Debug("Controller/Main : Calling ProgramOptions.parse() to Parse program argument");
-			Controller.readExcel = new Excel();
 			opts.parse(args);
 
 
@@ -1369,11 +1677,19 @@ public class Controller extends Thread {
 					com.automature.zug.license.LicenseValidator licenseValid = new com.automature.zug.license.LicenseValidator();
 					if (licenseValid.matchMac() == false) {
 						Log.Error("Please get a valid license for your machine");
-						System.exit(1);
+						if(Controller.guiFlag){
+							throw new Throwable();
+						}else{
+							System.exit(0);
+						}
 					}
 					if (licenseValid.isDateValid() == false) {
 						Log.Error("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
-						System.exit(1);
+						if(Controller.guiFlag){
+							throw new Throwable();
+						}else{
+							System.exit(0);
+						}
 					}
 					Controller.message("Zug is Valid "
 							+ licenseValid.userInfo.companyName);
@@ -1381,7 +1697,11 @@ public class Controller extends Thread {
 				} catch (Exception e) {
 					Log.Error("Failed to validate your License copy");
 					Log.Error("Message : " + e.getMessage() + "\n");
-					System.exit(1);
+					if(Controller.guiFlag){
+						throw new Throwable();
+					}else{
+						System.exit(0);
+					}
 				}
 
 				controller.PrintVersionInformation();
@@ -1394,13 +1714,11 @@ public class Controller extends Thread {
 
 				return;
 			}
-		//	System.out.println("db reporting "+opts.dbReporting);
+			//	System.out.println("db reporting "+opts.dbReporting);
 
 			Controller.message("\n\nCommand Line Arguments Validated \n");
 		} catch (Exception e) {
-			Controller
-			.message("Failed to Validate Command Line Arguments, exiting "
-					+ "Message : " + e.getMessage() + "\n");
+			e.printStackTrace();
 			Log.Error("Failed to Validate Command Line Arguments "
 					+ "Message : " + e.getMessage() + "\n");
 			return;
@@ -1413,24 +1731,35 @@ public class Controller extends Thread {
 
 			if (licenseValid.matchMac() == false) {
 				Log.Error("Please get a valid license for your machine");
-				System.exit(1);
-			}
+				if(Controller.guiFlag){
+					throw new Throwable();
+				}else{
+					System.exit(0);
+				}
+			}	
 			if (licenseValid.isDateValid() == false) {
 				Log.Error("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
-				System.exit(1);
+				if(Controller.guiFlag){
+					throw new Throwable();
+				}else{
+					System.exit(0);
+				}
 			}
 			Controller.message("Zug is Valid "
 					+ licenseValid.userInfo.companyName);
 			if (!opts.verbose) {
 				System.out.println("Zug is Valid "
 						+ licenseValid.userInfo.companyName);
-				
 			}
 
 		} catch (Exception e) {
 			Log.Error("Failed to validate your License copy");
 			Log.Error("Message : " + e.getMessage() + "\n");
-			System.exit(1);
+			if(Controller.guiFlag){
+				throw new Throwable();
+			}else{
+				System.exit(0);
+			}
 		}
 
 		fileExtensionSupport = ExtensionInterpreterSupport
@@ -1444,7 +1773,11 @@ public class Controller extends Thread {
 		Thread threadToOpenServerPipe = new Thread(new Runnable() {
 
 			public void run() {
-				controller.ListenToPrimitives();
+				try{
+					controller.ListenToPrimitives();
+				}catch(Throwable t){
+					errorOccured=true;
+				}
 			}
 		});
 		threadToOpenServerPipe.setDaemon(false);
@@ -1456,18 +1789,25 @@ public class Controller extends Thread {
 			Controller.message("Reading the TestCases Input Sheet  "
 					+ opts.inputFile + ".\n");
 			// Now reading the Excel object.
-			
+
 			Controller.readExcel.setXlsFilePath(opts.inputFile);
 
 			Controller.CreateContextVariable("ZUG_BWD="
 					+ new File(Controller.readExcel.getXlsFilePath())
 					.getParent());
 			// System.out.println("The base working directory "+ContextVar.getContextVar("ZUG_PWD"));
+			if(Controller.errorOccured){
+				clearStaticMembers();
+				throw new Throwable();
+			}
 			Controller.readExcel.ReadExcel(opts.inputFile,
 					opts.verificationSwitching, opts.compileMode);
 			Controller.message("SUCCESSFULLY Read the TestCases Input Sheet "
 					+ opts.inputFile);
-			
+			if(Controller.errorOccured){
+				clearStaticMembers();
+				throw new Throwable();
+			}
 			if (!opts.verbose) {
 				System.out
 				.println("SUCCESSFULLY Read the TestCases Input Sheet "
@@ -1495,10 +1835,10 @@ public class Controller extends Thread {
 			// do useful work
 			Log.Debug("Controller/Main : Initializing the Controller Variables after reading the Excel sheet. Calling controller.InitializeVariables");
 			//System.out.println("db reporting "+opts.dbReporting);
-			controller.InitializeVariables(readExcel);
+			controller.InitializeVariables(controller.readExcel);
 			Log.Debug("Controller/Main : Initialized the Controller Variables after reading the Excel sheet.");
 			// reporting_server_add = controller.readExcel.DBHostName();
-			
+
 			if (opts.dbReporting == true) {
 				// XMLUtility utility = new XMLUtility();
 				Log.Debug("Controller/InitializeVariables : Getting the TopologySet");
@@ -1510,10 +1850,10 @@ public class Controller extends Thread {
 				// Test Plan and Test Cases to be Inserted to the Database.
 				Hashtable connectionParam=controller.getConnectionParams();
 				//System.out.println("DB name ="+controller.dBName);
-				
+
 				if(controller.dBName.equalsIgnoreCase("testlink")){
 					reporter=new TestLinkReporter(connectionParam);
-				//	System.out.println("Testlink obejct created");
+					//	System.out.println("Testlink obejct created");
 					frameWork=controller.dBName;
 				}else{
 					reporter=new DavosReporter(connectionParam);
@@ -1529,7 +1869,7 @@ public class Controller extends Thread {
 				if (!opts.verbose) {
 					System.out.println("Connection to "+frameWork+" is successful.\n ");
 				}
-			//	Hashtable reportingParams=controller.getReportingparams();
+				//	Hashtable reportingParams=controller.getReportingparams();
 				if (!controller.reporter.ValidateDatabaseEntries()) {
 					Controller
 					.message("\nInvalid Entries provided. Controller Exiting Gracefully..... ");
@@ -1547,17 +1887,6 @@ public class Controller extends Thread {
 			controller.testsuite.abstractTestCase = controller.readExcel
 					.AbstractTestCases();
 
-//			for(TestCase tc:controller.testsuite.testcases){
-//				System.out.println("test case id"+tc.testCaseID);
-//				for	(Action act:tc.actions){
-//					System.out.println("action:"+act.name+" args="+act.arguments.toString());
-//					for(Verification ver:act.verification){
-//						System.out.println("\tverify:"+ver.name+" args="+ver.arguments.toString());
-//					}
-//				}
-//				System.out.println(Excel._indexedMacroTable.toString());
-//				System.out.println(Excel._macroSheetHashTable.toString());
-//			}
 			initializationTime.Stop();
 			// controller.initializationTime =
 			// (int)(initializationTime.Duration()/ (double)1000);
@@ -1581,7 +1910,19 @@ public class Controller extends Thread {
 				System.out
 				.println("\n******************************************************************************** ");
 			}
-			
+			if(guiFlag){
+				String []sheets=Excel.getExternalSheets();
+				HashMap<String,String> nameSpace = readExcel.getNamespaceMap();
+				gui.addSheets(nameSpace,sheets);
+			}
+			if(opts.debugger && guiFlag){
+				gui.createDebugger();
+				Controller.setPauseSignal();
+				while(pause){
+					Thread.sleep(1000);
+				}
+			}
+
 			final String fw=frameWork;
 			Thread thread = new Thread(new Runnable() {
 
@@ -1589,7 +1930,6 @@ public class Controller extends Thread {
 					try {
 						try {
 							// TODO update the current threadid
-							
 							controller.testsuite.run();
 							if (opts.dbReporting == true) {
 								reporter.heartBeat(sessionid);
@@ -1608,6 +1948,9 @@ public class Controller extends Thread {
 						e.printStackTrace();
 
 					}
+					catch(Throwable e){
+						Controller.errorOccured=true;
+					}
 				}
 			});
 
@@ -1617,18 +1960,16 @@ public class Controller extends Thread {
 					public void run() {
 						try {
 							while(controller.listen){
-								Log.Result("Controller/Main: Sending heart beat signal to davos");
 								reporter.heartBeat(sessionid);
-								Log.Result("Controller/Main: going off to sleep");
 								Thread.sleep(1000*60*5);
 							}
+
 						}catch(Exception e){
-//							Controller.errorOccured=true;
+							//							Controller.errorOccured=true;
 						}
 					}
 				});
 				dbStimulator.start();
-			
 			}
 			if (!opts.debugMode) {
 				// wait for thread for specific time
@@ -1636,19 +1977,30 @@ public class Controller extends Thread {
 						"ZUG_TESTSUITE_TIMEOUT").split("\\.");
 				thread.join(Integer.parseInt(tep[0]) * 1000);
 
-			} else {
-				thread.join();
-			}
+			} 
 
 			// Last time again wait for this Thread to get Over....
-			thread.join();
-			controller.listen=false;
+			thread.join(Integer.parseInt(controller.ReadContextVariable(
+					"ZUG_TESTSUITE_TIMEOUT")));
+
 			tm.Stop();
+			try{
+				controller.sock.close();
+			}catch(Exception e){
+				//	e.printStackTrace();
+			}
+			threadToOpenServerPipe.interrupt();
+			controller.listen=false;
+			if(stop||Controller.errorOccured){
+				controller.DoHarnessCleanup();
+				System.gc();
+				return;
+			}
 			// controller.executionTime = (int)(tm.Duration() / ((double)1000));
 			controller.executionTime = (int) (tm.Duration());
 			// controller.message("the output\t" + controller.executionTime);
 			// In any case, do the reporting
-			
+
 			if (opts.dbReporting == true) {
 
 				if (controller.testsuite.executedTestCaseData.size() > 0) {
@@ -1662,7 +2014,11 @@ public class Controller extends Thread {
 						reporter.saveTestCaseResults(controller.testsuite.executedTestCaseData);
 					} catch (Exception de) {
 						Log.Error(de.getMessage());
-						System.exit(1);
+						if(Controller.guiFlag){
+							throw new Throwable();
+						}else{
+							System.exit(0);
+						}
 
 					}
 
@@ -1706,8 +2062,11 @@ public class Controller extends Thread {
 		if(opts.showTime){
 			Controller.showAtomPerformance();
 		}
-		
+
 		controller.DoHarnessCleanup();
+		System.gc();
+		if(!guiFlag)
+			System.exit(0);
 
 	}
 

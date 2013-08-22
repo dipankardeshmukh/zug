@@ -10,9 +10,9 @@ import com.automature.zug.exceptions.ReportingException;
 
 public interface Reporter {
 	
-	public boolean connect()throws ReportingException;
+	public boolean connect()throws ReportingException, Throwable;
 
-	public boolean ValidateDatabaseEntries()throws InterruptedException,Exception;
+	public boolean ValidateDatabaseEntries()throws InterruptedException,Exception, Throwable;
 	
 	public void saveTestCaseResults(Hashtable ht)throws ReportingException,Exception ;
 

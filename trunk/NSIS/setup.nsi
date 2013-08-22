@@ -376,7 +376,6 @@ Section "MainSection" SEC01
   nsisXML::save "$INSTDIR\ZUG\ZugINI.xml"
       
  ; xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Add new XML tags xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-
 SectionEnd
 
 Section "WriteEnvironment" SEC07
@@ -404,6 +403,7 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${Zug_Version}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+CreateShortCut "$DESKTOP\ZUG.lnk" "$INSTDIR\ZUG\runzug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
 SectionEnd
 
 

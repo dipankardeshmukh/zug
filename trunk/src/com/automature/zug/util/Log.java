@@ -24,7 +24,7 @@ public class Log {
 	public static boolean TurnOFFDebugLogs = false;
 
 	// Creates a static final instance of Log class
-	private static final Log INSTANCE = new Log();
+	//private static final Log INSTANCE = new Log();
 
 	// Creates a static final instance of Log class
 	private static Logger log;
@@ -32,7 +32,7 @@ public class Log {
 	/***
 	 * Constructor for Log class
 	 */
-	private Log() {
+	 public Log() {
 
 		log = Logger.getLogger(Log.class);
 		HarnessLogFileList = new ArrayList<String>();
@@ -52,17 +52,7 @@ public class Log {
 					+ Utility.dateAsString();
 		//System.out.println("The logfile name is "+fullFilePath);
 		Controller.ZUG_LOGFILENAME = fullFilePath;
-		// try {
-		// ContextVar.setContextVar("ZUG_LOGFILENAME", fullFilePath);
-		// System.out.println("Context  from log var set "+ContextVar.getContextVar("ZUG_LOGFILENAME"));
-		// } catch (Exception e) {
-		//
-		// System.out.println("com.automature.zug.util.Log: Error message "+e.getMessage());
-		// }
-		// gets current user directory's path
-
-		// System.out.println("dir->"+userDir);
-		// gets log4j.properties file's path
+				// gets log4j.properties file's path
 		String logConfigPath = userDir + "/LogConfig/log4j.xml";
 
 		// URL url = Loader.getResource(logConfigPath);
@@ -124,6 +114,7 @@ public class Log {
 	}
 
 	public static void Cleanup() {
+		HarnessLogFileList.clear();
 		log.shutdown();
 	}
 

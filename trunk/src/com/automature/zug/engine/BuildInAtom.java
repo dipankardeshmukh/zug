@@ -11,6 +11,22 @@ public class BuildInAtom implements Atom {
 	/**
 	 * @param args
 	 */
+	public static ArrayList<String> buildIns=new ArrayList<String>();
+	
+	static{
+		buildIns.add("setcontextvar");
+		buildIns.add("unsetcontextvar");
+		buildIns.add("appendtocontextvar");
+		buildIns.add("print");
+		buildIns.add("GetValueAtIndex".toLowerCase());
+		buildIns.add("GetCurrentIndex".toLowerCase());
+		buildIns.add("wait");
+		buildIns.add("GetValueAt".toLowerCase());
+		buildIns.add("#define_args");
+		buildIns.add("#define_arg");
+		buildIns.add("#define");
+	}
+	
 
 	public void run(GTuple action, String threadID) throws Exception {
 
@@ -240,7 +256,6 @@ public class BuildInAtom implements Atom {
 						action.name.toUpperCase()));
 			}
 		} else if (action.name.trim().toLowerCase().contains("print")) {
-			
 			if (action.arguments.size() > 0) {
 
 				for (int i = 0; i < action.arguments.size(); i++) {
@@ -287,7 +302,7 @@ public class BuildInAtom implements Atom {
 							+ " %s Execution STARTED With Arguments %s",
 							action.stackTrace.toUpperCase(),
 							action.name.toUpperCase(), action.arguments));
-					//System.out.println("");
+
 					String args_list[] = arg1.split(",");
 
 					if (args_list.length >= Integer.valueOf(arg2)) {

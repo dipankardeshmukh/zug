@@ -44,8 +44,8 @@ public class Excel {
 	private static String ConfigSheetName = "Config";
 	private static String MacroSheetName = "Macros";
 	// private static String UserSheetName = "Users";
-	private static String TestCaseSheetName = "TestCases";
-	private static String AbstractSheetName = "Molecules";
+	public static String TestCaseSheetName = "TestCases";
+	public static String AbstractSheetName = "Molecules";
 	private static String PrototypeSheetName = "Prototypes";
 	public static final String NEGATIVE = "negative";
 	private static int counter;
@@ -58,7 +58,7 @@ public class Excel {
 	private int TotalVerificationArgs = 0;
 	private Double default_cardinality = new Double(10);
 	// An Array of string to hold the config sheet's keys
-	private String[] _configSheetKeys = new String[] { "ScriptLocation",
+	public String[] _configSheetKeys = new String[] { "ScriptLocation",
 			"DBHostName", "DBName", "DBUserName", "DBUserPassword",
 			"Test Suite Name", "Test Suite Role", "TestPlan Id",
 			"Test Cycle Id", "ProductLogLocations", "Include", "ValidTopos","TestFramework"};
@@ -95,6 +95,21 @@ public class Excel {
 		
 	}
 	
+	public HashMap<String, String> getNamespaceMap(){
+		return namespaceMap;
+	}
+	
+	static void clearStaticMembers(){
+		externalSheets.clear();
+		_macroSheetHashTable.clear();
+		_indexedMacroTable.clear();
+	}
+	
+	static void cleanUP(){
+		verificationSwitching = true;
+		compileModeFlag = false;
+		clearStaticMembers();
+	}
 	/**
 	 * 
 	 * @return array of configuration keys
@@ -220,7 +235,7 @@ public class Excel {
 	/**
 	 * @return the value of Database Host Name
 	 */
-	public String DBHostName() {
+	public String DBHostName() throws Throwable{
 		String dbHostName = null;
 		try {
 			if (_configSheetHashTable.get(_configSheetKeys[1]) != null) {
@@ -232,7 +247,12 @@ public class Excel {
 				dbHostName=ExtensionInterpreterSupport.getNode(Excel.dbHostName);
 				if(dbHostName==null||dbHostName.equals("")||dbHostName.isEmpty() ){
 					Log.Error("Exception:Excel/DBHostName-dbhostname not provided in test suite and also in INI file.Exiting ZUG");
-					System.exit(0);
+					if(Controller.guiFlag){
+						throw new Throwable();
+					}else{
+						System.exit(0);
+					}
+
 				}
 			
 			}
@@ -245,7 +265,7 @@ public class Excel {
 		return dbHostName;
 	}
 
-	public String DBName() {
+	public String DBName()throws Throwable {
 		String dbName = null;
 		try {
 			
@@ -261,7 +281,11 @@ public class Excel {
 				dbName=ExtensionInterpreterSupport.getNode(Excel.dbName);
 				if(dbName==null||dbName.equals("")){
 					Log.Error("Excel/DBName:Exception:-dbname not provided in test suite and also in INI file.Exiting ZUG");
-					System.exit(0);
+					if(Controller.guiFlag){
+						throw new Throwable();
+					}else{
+						System.exit(0);
+					}
 				}
 						}
 		} catch (IOException e) {
@@ -279,7 +303,7 @@ public class Excel {
 	/**
 	 * @return the value of Database User Name
 	 */
-	public String DBUserName() {
+	public String DBUserName()throws Throwable {
 		String dbUserName = null;
 		try {
 			if (_configSheetHashTable.get(_configSheetKeys[3]) != null) {
@@ -290,7 +314,11 @@ public class Excel {
 				dbUserName=ExtensionInterpreterSupport.getNode(Excel.dbUserName);
 				if(dbUserName==null||dbUserName.equals("")){
 					Log.Error("Excel/DBUserName:Exception:-dbUsername not provided in test suite and also in INI file.Exiting ZUG");
-					System.exit(0);
+					if(Controller.guiFlag){
+						throw new Throwable();
+					}else{
+						System.exit(0);
+					}
 				}
 				
 			}
@@ -305,7 +333,7 @@ public class Excel {
 	/**
 	 * @return the value of Database User Password to connect to the Database.
 	 */
-	public String DBUserPassword() {
+	public String DBUserPassword() throws Throwable{
 		String dbUserPassword = null;
 		try {
 			if (_configSheetHashTable.get(_configSheetKeys[4]) != null) {
@@ -317,7 +345,11 @@ public class Excel {
 				dbUserPassword=ExtensionInterpreterSupport.getNode(Excel.dbUserPassword);
 				if(dbUserPassword==null||dbUserPassword.equals("")){
 					Log.Error("Excel/DBUserPassword:Exception:-dbUserPassword not provided in test suite and also in INI file.Exiting ZUG");
-					System.exit(0);
+					if(Controller.guiFlag){
+						throw new Throwable();
+					}else{
+						System.exit(0);
+					}
 				}
 			
 			}
@@ -734,7 +766,7 @@ public class Excel {
 	@SuppressWarnings("unchecked")
 	public void ReadExcel(String inputFileName,
 			boolean verificationSwitchingFlag, boolean compileMode)
-			throws Exception, MoleculeDefinitionException {
+			throws Exception, MoleculeDefinitionException, Throwable {
 		FileInputStream inputFile = null;
 
 		try {
@@ -973,6 +1005,7 @@ public class Excel {
 			}
 
 		}
+		
 	}
 
 	/**
@@ -1466,6 +1499,7 @@ public class Excel {
 								commmandline_includelist += actualPath;
 							}
 						}
+						
 						AddToExternalSheets(strKey, commmandline_includelist);
 						// path
 						// specified
@@ -2145,7 +2179,7 @@ public class Excel {
 	// / 3. Prototypes Sheet
 	// / Provided they are present.
 	private void ReadExternalSheets(String inputFileName) throws Exception,
-			MoleculeDefinitionException {
+			MoleculeDefinitionException, Throwable {
 
 		File inputFile = null;
 		FileInputStream inFile = null;
@@ -2939,7 +2973,7 @@ public class Excel {
 
 	// / Function to read the Abstract TestCase Sheet
 	public void ReadAbstractTestCaseSheet(HSSFWorkbook workBook,
-			String nameSpace) throws Exception, MoleculeDefinitionException {
+			String nameSpace) throws Exception, MoleculeDefinitionException,Throwable {
 		String testCaseSheetName = AbstractSheetName;
 		Log.Debug("Excel/ReadAbstractTestCaseSheet : Start of the Function with Abstract TestCaseSheetName as "
 				+ testCaseSheetName);
@@ -2995,7 +3029,7 @@ public class Excel {
 	boolean molecule_error = false;
 
 	private void GetAbstractTestCaseSheetValues(HSSFSheet worksheet,
-			String nameSpace) throws Exception, MoleculeDefinitionException {
+			String nameSpace) throws Exception, MoleculeDefinitionException,Throwable {
 		Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
 
 		try {
@@ -3764,7 +3798,7 @@ public class Excel {
 					tempValue = AppendNamespace(tempValue, nameSpace);
 					tempValue = "$" + tempValue;
 
-					tempValue = _macroSheetHashTable.get(tempValue);
+					 tempValue = _macroSheetHashTable.get(tempValue);
 					 if(tempValue==null){
 						 tempValue=splitVariableToFind[1].substring(1).toLowerCase();
 					 }
@@ -3786,6 +3820,7 @@ public class Excel {
 				 * tempValue=splitVariableToFind[1];//.substring(1); //
 				 * System.out.println("Excel/tempValue="+tempValue); // } }
 				 */
+				
 				tempValue = tempValPrefix + "=" + tempValue;
 			} // / First Check in the Macro Sheet
 			// System.out.println("The temp value "+tempValue+" namespace "+nameSpace);
@@ -3900,7 +3935,6 @@ public class Excel {
 	}
 
 	public static String[] SplitOnFirstEquals(String nameOfVariable) {
-
 		if (StringUtils.isBlank(nameOfVariable)) {
 			return new String[0];
 		}else if(nameOfVariable.contains("=")){
@@ -3930,8 +3964,8 @@ public class Excel {
 
 			return tempStringToReturn;
 		}
-*/	}
-	
+		*/
+	}
 	private TestCase ReadTestCase(HSSFSheet worksheet,
 			Hashtable<Short, String> labelIndex, int index, int testCaseIndex,
 			String description, String nameSpace,boolean isTestCase) throws Exception {
@@ -4373,7 +4407,7 @@ public class Excel {
 	// / <param name="labelIndex">Hashtable which store the labels that is part
 	// of the TestCase.</param>
 	private void FindTotalActionVerificationArgs(
-			Hashtable<Short, String> labelIndex) {
+			Hashtable<Short, String> labelIndex)throws Throwable {
 		Log.Debug("Excel/FindTotalActionVerificationArgs : Start of Function.");
 		{
 
@@ -4398,7 +4432,11 @@ public class Excel {
 								+ value
 								+ " is specified more than once. Correct the CHUR Excel, and re-run the test.");
 						Log.Error("Exitting...");
-						System.exit(0);
+						if(Controller.guiFlag){
+							throw new Throwable();
+						}else{
+							System.exit(0);
+						}
 					}
 
 					actionVer.add(value.toLowerCase());
@@ -4417,7 +4455,11 @@ public class Excel {
 								+ value
 								+ " is specified more than once. Correct the CHUR Excel, and re-run the test.");
 						Log.Error("Exiting...");
-						System.exit(0);
+						if(Controller.guiFlag){
+							throw new Throwable();
+						}else{
+							System.exit(0);
+						}
 					}
 
 					actionVer.add(value.toLowerCase());
@@ -4552,7 +4594,7 @@ public class Excel {
 	// / Function to read the TestCase sheet
 	// / <param name="workBook">Object of WorkBook</param>
 	public void ReadTestCaseSheet(HSSFWorkbook workBook, String nameSpace)
-			throws Exception, MoleculeDefinitionException {
+			throws Exception, MoleculeDefinitionException ,Throwable{
 
 		String testCaseSheetName = TestCaseSheetName;
 		Log.Debug("Excel/ReadTestCaseSheet : Start of the Function with TestCaseSheetName as "
@@ -4612,7 +4654,7 @@ public class Excel {
 	// / populate the values in the DataStructures appropriately.
 	// / <param name="worksheet"></param>
 	private void GetTestCaseSheetValues(HSSFSheet worksheet, String nameSpace)
-			throws Exception, MoleculeDefinitionException {
+			throws Exception, MoleculeDefinitionException , Throwable{
 		Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
 		int index = 1;
 		try {
@@ -4637,7 +4679,7 @@ public class Excel {
 					+ TotalVerificationArgs);
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Calling GetActionVerificationMap to read the Header from the Excel sheet.");
-			GetActionVerificationMap(worksheet, labelIndex,
+			 GetActionVerificationMap(worksheet, labelIndex,
 					_mapHashTable);
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Read the Header from the TestCase Excel sheet. Index returned is -> "
@@ -4702,7 +4744,7 @@ public class Excel {
 					Log.Debug("Excel/GetTestCaseSheetValues : This is a Comment Section/Row..Ignoring this as this is of no use to Automation. ");
 					continue;
 				}
-				// System.out.println("The Descriptions 2d"+description);
+				// System.out.println("valueintccol"+valueInTestCaseColumn+"The Description"+description);
 				// / First checking for the Verification Methods
 				String valueInVerificationColumn = null;
 
