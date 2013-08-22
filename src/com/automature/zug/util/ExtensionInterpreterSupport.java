@@ -52,39 +52,7 @@ public class ExtensionInterpreterSupport {
     public static List<Double> jvm_max_memory_list=new ArrayList<Double>();
     public Set<String> inprocesspackageError = new HashSet<String>();
 
-   /* public static String getNodesValues(String path)throws Exception{
-
-          String filename = "ZugINI.xml";
-          String values="";
-          Document document = null;
-          try {
-              document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(filename));
-              document.getDocumentElement().normalize();
-          } catch (Exception FileLoadException) {
-              Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + filename);
-              throw FileLoadException;
-
-          }
-          NodeList languagesList = org.apache.xpath.XPathAPI.selectNodeList(document, path);
-        
-          ArrayList<String> locations=new ArrayList<String>();
-          System.out.println(languagesList.getLength());
-          for (int i = 0; i < languagesList.getLength(); i++) {
-        	  Node node=languagesList.item(i);
-        	  node.normalize();
-        	  String str=node.getTextContent().trim();
-        	  System.out.println("Str"+str);
-        	  locations.add(str);
-        	  //values+=languagesList.item(i).getTextContent()+";";  
-          }
-          for(String str:locations){
-        	  values+=str+";";
-          }
-          System.out.println(locations.toString());
-          System.out.println(values);
-          return values;
-    }
-    */
+   
     public static String getNode(String path)throws Exception{
     
           String filename = "ZugINI.xml";
@@ -223,10 +191,10 @@ public class ExtensionInterpreterSupport {
         }
         NodeList languagesList = org.apache.xpath.XPathAPI.selectNodeList(document, "//root//languages//language");
         for (ExtensionInterpreterSupport extensionConfig : extensionsList) {
-            String extensionName = extensionConfig.extension;
-            String interpreterName = extensionConfig.interpreterCommand;
-            String interpreterOption = extensionConfig.InterpreterOption;
-            String interpreterPath = extensionConfig.interpreterPath;
+            String extensionName = extensionConfig.extension.toLowerCase();
+            String interpreterName = extensionConfig.interpreterCommand.toLowerCase();
+            String interpreterOption = extensionConfig.InterpreterOption.toLowerCase();
+            String interpreterPath = extensionConfig.interpreterPath.toLowerCase();
             //System.out.println("the path is\t"+interpreterName);
             Log.Debug("ExtensionInterpreterSupport/ReadFileExtension :: Values of language interpreter configurations "
                     + " extension name " + extensionName + " interpreter name " + interpreterName

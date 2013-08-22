@@ -29,7 +29,8 @@ public class Argument {
 		String tempValue = argument;
 		if (argument.contains("=")) {
 			Log.Debug("Argument/NormalizeVariable : The Variable to Find contains an = sign ");
-			String[] splitVariableToFind = argument.split("=", 2);//Excel.SplitOnFirstEquals(argument);
+			String[] splitVariableToFind =argument.split("=", 2);// Excel.SplitOnFirstEquals(argument);
+
 			Log.Debug("Argument/NormalizeVariable : Length of  splitVariableToFind = "
 					+ splitVariableToFind.length);
 			if (splitVariableToFind.length <= 1) {
@@ -56,6 +57,7 @@ public class Argument {
 						'#', 1);
 				tempVariableOutside += threadID;
 			}
+
 			tempValue = tempVariableOutside + "="
 					+ DoSomeFineTuning(tempValue, threadID);
 		} // First Check in the Context Variable

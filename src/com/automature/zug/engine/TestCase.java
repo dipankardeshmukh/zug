@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 
 
 import com.automature.zug.exceptions.ReportingException;
+import com.automature.zug.gui.ZugGUI;
 import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
 
@@ -48,6 +49,10 @@ class TestCase
 	public HashMap<String,ArrayList<MultiValuedMacro>> mvm_macro_variable_map = new HashMap<String,ArrayList<MultiValuedMacro>>();
 	public HashMap<String,String> mvm_value_map=new HashMap<String,String>(); 
 	 boolean returnFlag=false;
+	 public boolean breakpoint=false;
+		public List breakpoints=null;
+		
+	static boolean errorOccured=false; 
 
 	public TestCase(){
 
@@ -71,8 +76,39 @@ class TestCase
 		this.mvm_macro_variable_map =tc. mvm_macro_variable_map;
 		this.mvm_value_map =tc. mvm_value_map;
 		actions 		= new ArrayList<Action>();
+		this.breakpoint=tc.breakpoint;
+		this.breakpoints=tc.breakpoints;
 	}
+	
+	public static void cleanUP(){
+		errorOccured=false;
+	}
+	
+	public boolean checkBreakPoint(int step){
 
+		//System.out.println("step-"+step);
+		step++;
+	
+			//	System.out.println("break point table"+Controller.breakpoints.keySet().toString());
+			//	System.out.println("test case id"+this.testCaseID);
+		
+			if(this.breakpoint){
+				//		System.out.println("break point");
+				//	List steps=Controller.breakpoints.get(this.testCaseID);
+				//	System.out.println(steps.toString());
+
+				if(breakpoints!=null && breakpoints.contains(""+step)){
+					//System.out.println("Step"+""+breakpoints.toString());
+					//	System.out.println("["+this.stackTrace+"]:Break point,Please press the resume button from the debugger console");
+					Controller.pause=true;
+
+					return true;
+				}
+			}
+
+		
+		return false;
+	}
 
 	TestCase GenerateNewTestCaseID(int count) {
 		Log.Debug("TestCase/GenerateNewTestCaseID: Start of function with a new TestCase. TestCase ID is "
@@ -267,8 +303,8 @@ class TestCase
 	 * @param testcaseObj
 	 */
 	
-	private void runExpandedTestCase() throws Exception,
-	ReportingException {
+	private void runExpandedTestCase() throws 
+	ReportingException,Exception,Throwable {
 
 		Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
@@ -329,12 +365,13 @@ class TestCase
 						// SaveTestCase(test.testCaseID,
 						// test.testCaseDescription);
 
-						Log.Debug(String
-								.format("TestCase/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Davos.",
-										this.testCaseID,
-										this.testCaseDescription));
+						
 						try {
 							Controller.reporter.SaveTestCaseResultEveryTime(tData);
+							Log.Debug(String
+									.format("TestCase/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Davos.",
+											this.testCaseID,
+											this.testCaseDescription));
 
 						} catch (ReportingException de) {
 							Log.Error(String
@@ -343,7 +380,11 @@ class TestCase
 											tData.testcasedescription,
 											Controller.opts.testCycleId, tData.testCaseStatus,
 											Controller.opts.topologySetId, de.getMessage()));
-							System.exit(1);
+							if(Controller.guiFlag){
+								throw new Throwable();
+							}else{
+								System.exit(1);
+							}
 						}
 						try {
 							Controller.reporter.saveTestCaseVariables(
@@ -354,7 +395,11 @@ class TestCase
 									.format("Failure in sending request to Davos.\n Davos Call: variables/write \nRequests sent: testsuitename=%s,testcaseidentifier=%s .... \nError Message: %s ",
 											TestSuite.testSuitName, this.testCaseID,
 											de.getMessage()));
-							System.exit(1);
+							if(Controller.guiFlag){
+								throw new Throwable();
+							}else{
+								System.exit(1);
+							}
 						}catch(Exception e){
 							System.out.println("Exception caught");
 							e.printStackTrace();
@@ -408,9 +453,55 @@ class TestCase
 				for (int i = 0; i < actions.length; i++) {
 					final Action action = actions[i];
 					count++;
+					try{
+						if(Controller.guiFlag){
+							Controller.gui.showRunningTestStep(action.lineNumber);
+						}
+					}catch(Exception e){
+						//e.printStackTrace();
+					}
 					if (StringUtils.isBlank(action.name)) {
 						continue;
 					}
+					if(Controller.stop)
+					{
+						return;
+					}
+					if(Controller.opts.debugger){
+					/*	try{
+							if(Controller.opts.debugger){
+								sheetTableMapper stm=new sheetTableMapper();
+								stm.setTestCaseTable(this);
+								Controller.gui.getDebugger().setTestCaseData(stm.data, stm.colheader,stm.breakPoints);
+							}
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+						Controller.gui.getDebugger().currentTestStep(i);*/	
+						
+						
+					//	if(checkBreakPoint(i)){
+						ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
+						
+						if(al!=null){
+							//System.out.println("array list"+al.toString());
+						//	System.out.println(action.lineNumber);
+							if(al.contains(action.lineNumber)){
+								//Controller.sendMessageToDebugger((Object)action);
+							//	System.out.println("pausing execution");
+								Controller.setPauseSignal();
+								Controller.checkDebuggerSignal();
+							}else if(Controller.stepOver){
+								Controller.setPauseSignal();
+								//Controller.sendMessageToDebugger((Object)action);
+								Controller.checkDebuggerSignal();
+							}
+						}else if(Controller.stepOver){
+							Controller.setPauseSignal();
+							//Controller.sendMessageToDebugger((Object)action);
+							Controller.checkDebuggerSignal();
+						}
+					}	
 
 					Log.Debug("TestCase/RunExpandedTestCase:  Action : "
 							+ action.name + " has Step Number as : "
@@ -857,6 +948,7 @@ class TestCase
 
 										public void run() {
 											action.run();
+											implicitTestStepCall();
 										}
 									});
 									// thread.IsBackground = true;
@@ -1106,9 +1198,8 @@ class TestCase
 	}
 
 	private String GetTheActualValue(String entireValue) throws Exception {
-//		System.out.println("entire value"+entireValue);
 		String tempValue = StringUtils.EMPTY;
-		//	Controller. message("\nTestCase/enitre value "+entireValue);
+			//Controller. message("\nTestCase/enitre value "+entireValue);
 		if (entireValue.contains("=")) {
 			Log.Debug("TestCase/GetTheActualValue : entireValue contains an = sign ");
 			String[] splitVariableToFind = Excel
@@ -1134,12 +1225,19 @@ class TestCase
 				tempValue = ContextVar.getContextVar(tempValue);
 				// message("EQUAL contextvariablemvm value"+tempValue);
 			} else if (tempValue.startsWith("$$") && tempValue.contains("#")) {
+				//	Controller. message("\nGetValue:/This is Indexed = " + tempValue);
+				//tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
 				tempValue = Excel._indexedMacroTable.get(tempValue.substring(1)
 						.toLowerCase());
-				}else if(tempValue.startsWith("$") && tempValue.contains("#")){
+					
+
+				//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
+				// message("GetValue:/This is Indexed The Value = " +
+				// tempValue);
+			}else if(tempValue.startsWith("$") && tempValue.contains("#")){
+				//System.out.println("IF entire value="+tempValue.toLowerCase());
 				tempValue = Excel._indexedMacroTable.get(tempValue.toLowerCase());
-			}
-			else {
+			}else {
 				// message("The entire value unchanged "+entireValue);
 				tempValue = entireValue;
 			}
@@ -1147,7 +1245,14 @@ class TestCase
 					+ tempValue);
 		} // First Check in the Indexed Variable
 		else if (entireValue.startsWith("$$") && entireValue.contains("#")) {
+			//	entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
+			//	Controller. message("\nGetValue:/This is a entire Indexed\t" + entireValue);
 			tempValue = Excel._indexedMacroTable.get(entireValue.substring(1).toLowerCase());
+
+			//	System.out.println("temp value from indexed table"+tempValue);
+			//	System.out.println("\nIndexed table value"+Excel._indexedMacroTable);
+			// /message("GetValue:/This is a Indexed\t" + tempValue);
+
 		} else if (entireValue.startsWith("$$%") && entireValue.endsWith("%")) {
 			entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
 			entireValue = entireValue.replaceAll("%", "");
@@ -1165,7 +1270,7 @@ class TestCase
 		Log.Debug("TestCase/GetTheActualValue : End of function with variableToFind = "
 				+ entireValue + " and its value is -> " + tempValue);
 
-		// message("The tempvalue "+tempValue);
+//		Controller.message("The tempvalue "+tempValue);
 		if(tempValue==null){
 			//	System.out.println("entire value");
 			tempValue=entireValue;
@@ -1178,12 +1283,12 @@ class TestCase
 			String valueToSubstitute) {
 
 		String tempValue = StringUtils.EMPTY;
-//		Controller. message("GetActualComb:: 1a "+entireValue+" valusubs "+valueToSubstitute);
+		//Controller. message("GetActualComb:: 1a "+entireValue+" valusubs "+valueToSubstitute);
 		if (entireValue.contains("=")) {
 			Log.Debug("TestCase/GetActualCombination : entireValue contains an = sign ");
-			if(entireValue.startsWith("$~$")&&entireValue.endsWith("$~$")){
-				return valueToSubstitute;
-			}
+			 if(entireValue.startsWith("$~$")&&entireValue.endsWith("$~$")){
+	                return valueToSubstitute;
+	          }
 			String[] splitVariableToFind = Excel
 					.SplitOnFirstEquals(entireValue);
 
@@ -1194,13 +1299,13 @@ class TestCase
 						+ entireValue
 						+ " and its value is -> "
 						+ valueToSubstitute);
-//				Controller. message("GetActualComb:: 1b "+entireValue+" valusubs "+valueToSubstitute);
+				//Controller. message("GetActualComb:: 1b "+entireValue+" valusubs "+valueToSubstitute);
 				//		Controller. message("value returned"+valueToSubstitute);
 				return valueToSubstitute;
 			}
 			if (valueToSubstitute.contains("=")) {
 				tempValue = valueToSubstitute;
-//				Controller. message("GetActualComb:: GGHH"+tempValue);
+				// message("GetActualComb:: GGHH"+tempValue);
 			} else {
 				tempValue = splitVariableToFind[0] + "=" + valueToSubstitute;
 			}
@@ -1214,7 +1319,7 @@ class TestCase
 		Log.Debug("TestCase/GetActualCombination : End of function with variableToFind = "
 				+ entireValue + " and its value is -> " + tempValue);
 		// message("GetActualComb:: 1e "+tempValue);
-//			Controller. message( "value returned"+tempValue);
+		//	Controller. message("value returned"+tempValue);
 		return tempValue;
 	}
 
@@ -1247,6 +1352,9 @@ class TestCase
 					+ action.name);
 			// //TODO put checking if testcase have no actio argument then at
 			// least print any message or put the exception
+			// message("Action argument size? "+action.actionArguments.size()+" Argument Valuess "+action.actionArguments);
+			// message("The Action names "+action.actionName+" having testcaseid "+action.parentTestCaseID
+			// +" Arguments "+action.actionArguments);
 			if (action.arguments.size() > 0) {
 				// removeDuplicateMVMVariables(action);
 				for (int i = 0; i < action.arguments.size(); ++i) {
@@ -1302,7 +1410,6 @@ class TestCase
 					}
 					if ((tempVal.startsWith("$~$"))
 							&& (tempVal.endsWith("$~$"))) {
-					//	System.out.println("tempval"+tempVal);
 						tempVal = StringUtils.replace(tempVal, "$~$", "");
 						// tempVal=tempVal.replaceAll("~","");
 						String val = Utility.TrimStartEnd(tempVal, '#', 1);
@@ -1315,7 +1422,6 @@ class TestCase
 								+ val
 								+ " of Action: "
 								+ action.name);
-					//	System.out.println("vale"+val);
 						allActionVerificationArgs.add(new ArrayList<String>(
 								Arrays.asList(val.split(","))));
 
@@ -1414,7 +1520,7 @@ class TestCase
 							.add(new ArrayList<String>(Arrays
 									.asList(val.split(","))));
 							multiValuedVariablePosition.put(count1, "");
-						}else {
+						} else {
 							allActionVerificationArgs
 							.add(new ArrayList<String>(Arrays
 									.asList(new String[] { tempVal2 })));
@@ -1426,9 +1532,9 @@ class TestCase
 				}
 			}
 
-		}
-		List<Tuple<String>> resultAfterIndexed = CartesianProduct
+		}		List<Tuple<String>> resultAfterIndexed = CartesianProduct
 				.indexedProduct(allActionVerificationArgs);
+
 		List<Tuple<String>> result = new ArrayList<Tuple<String>>();
 
 		for (Tuple<String> tempResult : resultAfterIndexed) {
@@ -1531,6 +1637,7 @@ class TestCase
 				for (int q = 0; q < actualValue.length; ++q) {
 					tempCollection.add((String) actualValue[q]);
 				}
+
 				/*
 				 * while(subList.hasMoreElements()) { String
 				 * val=subList.nextElement(); tempCollection.add(val); }
@@ -1694,6 +1801,7 @@ class TestCase
 					ArrayList<String> arg=new ArrayList<String>();
 					//		System.out.println("Action args:"+action.arguments);
 					for(String argA:action.arguments){
+						//for (int i = 0; i < action.arguments.size(); ++i) {
 						arg.add(GetActualCombination((String) argA,tempTestCaseVar[count++]));
 					}
 					//	System.out.println("Action args after:"+arg);
@@ -1806,9 +1914,9 @@ class TestCase
 		}
 	}
 
-	void run() throws Exception,
-	ReportingException {
-
+	void run() throws 
+	ReportingException,Exception,Throwable {
+		Controller.checkDebuggerSignal();
 		if (this.automated == false) {
 			Log.Debug("TestCase/RunTestCase : TestCase ID "
 					+ this.testCaseID
@@ -1854,6 +1962,12 @@ class TestCase
 		Log.Debug("TestCase/RunTestCase: Calling ExpandTestCase With TestCase ID is "
 				+ this.testCaseID);
 		//	System.out.println("Test Case id"+this.testCaseID);
+//		for(Action act:this.actions){
+//			System.out.println("name : "+act.name);
+//			for(String arg:act.arguments){
+//				System.out.println(arg);
+//			}
+//		}
 		TestCase[] expandedTestCases=null;
 		try{
 			expandedTestCases = this.ExpandTestCase( true);
@@ -1870,12 +1984,24 @@ class TestCase
 		ArrayList<Thread> ThreadPool = new ArrayList<Thread>();
 
 		for (TestCase test : expandedTestCases) {
-
+			if(errorOccured){
+				throw new Throwable();
+			}
+			/*if(Controller.opts.debugger){
+				if(Controller.breakpoints.containsKey(this.testCaseID)){
+					test.breakpoint=true;
+					test.breakpoints=Controller.breakpoints.get(this.testCaseID);
+				}	
+			}	
+			*/
+			if(Controller.stop){
+				return;
+			}
 			final TestCase test2 = test;
 			if (this.concurrentExecutionOnExpansion == true) {
 				Thread thread = new Thread(new Runnable() {
 
-					public void run() {
+					public void run(){
 
 						try {
 							try {
@@ -1887,6 +2013,8 @@ class TestCase
 						} catch (Exception ex) {
 							Log.Error("TestCase/RunTestCase: Exception when calling RunExpandedTestCase with exception message as : "
 									+ ex.getMessage());
+						}catch (Throwable ex) {
+							errorOccured=true;
 						}
 					}
 				});
@@ -1910,6 +2038,7 @@ class TestCase
 		for (int t = 0; t < ThreadPool.size(); ++t) {
 			((Thread) ThreadPool.get(t)).join();
 		}
+		
 
 		Log.Debug("TestCase/RunTestCase: End of function with TestCase ID is "
 				+ this.testCaseID);

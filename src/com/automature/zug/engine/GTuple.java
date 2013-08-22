@@ -121,6 +121,13 @@ public class GTuple {
 					Molecule tempActntestcase = TestSuite.abstractTestCase
 							.get(Excel.AppendNamespace(abstractTestCaseName,
 									this.nameSpace));
+//					if(Controller.opts.debugger){
+//						Controller.breakpoints.containsKey(Excel.AppendNamespace(abstractTestCaseName,
+//									this.nameSpace));
+//						tempActntestcase.breakpoint=true;
+//						tempActntestcase.breakpoints=Controller.breakpoints.get(Excel.AppendNamespace(abstractTestCaseName,
+//								this.nameSpace));
+//					}
 					tempActntestcase.setArguments(tempList);
 					tempActntestcase.setCallingtTestCaseSTACK(this.stackTrace);
 					tempActntestcase.setParentTestCaseID(this.parentTestCaseID);

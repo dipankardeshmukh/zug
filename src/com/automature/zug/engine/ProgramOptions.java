@@ -14,6 +14,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+
+import javax.xml.ws.handler.MessageContext;
+
 import jline.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
 //Internal Import
@@ -56,14 +59,13 @@ public class ProgramOptions {
 	String testPlanName=StringUtils.EMPTY;
 	static boolean showTime=false;
 	public static String CONTEXTVARRETRYCOUNT="5",CONTEXTVARRETRYTIMEOUT="1";
-	private static boolean retrycountflag = false;
-	private static boolean retrytimeoutflag = false;
-	public ArrayList<String> testCaseIds;
+	boolean debugger=false;
 
 	public static String filelocation = null;
 	private Hashtable<String, String> _opts=new Hashtable<String, String>();
+	public ArrayList<String> testCaseIds;
 	protected static String currentPath, workingDirectory;
-	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid"));
+	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid","-debugger"));
 	/*
 	 * Creates a new instance.
 	 * 
@@ -220,13 +222,10 @@ public class ProgramOptions {
 	 * @throws Exception On occurrence of any error.
 	 */
 
-	public void parse(String[] args) throws Exception {
+	public void parse(String[] args) throws Exception,Throwable {
 
 		Hashtable<String, String> ht = new Hashtable<String, String>();
 		 for (String opt : args) {
-			 if(opt==null || opt.isEmpty() || opt.equals("") || opt.equals(" ")||opt.equals("  ") ){
-				 continue;
-			 }
 			 int indexOfDash = opt.indexOf("-");
 			 String[] nv = new String[2];
 			 if (indexOfDash == 0) {
@@ -252,13 +251,10 @@ public class ProgramOptions {
 
 				 if (ht.containsKey("inputfile")) {
 					 Log.Error("ProgramOptions/parse: Error : Repeated input file.");
-					 Log.Error("Input file Value="+opt);
-					 Log.Result("Input file Value="+opt);
 					 System.out.println("\n\nRedundant value : Input File "
 							 + "\n Use -help for Usage information\n\n");
 					 Log.Debug("ProgramOptions/parse: Error : Repeated input file. Program exiting");
-					// Thread.sleep(1000*1000);
-					 System.exit(1);
+					 throw new Throwable();
 
 				 }
 				 nv[0] = "inputfile";
@@ -275,7 +271,6 @@ public class ProgramOptions {
 						 }
 
 					 }
-
 
 				 } else {
 					 for (String str : args) //Chekching the whole input arguments again in a for loop
@@ -390,6 +385,7 @@ public class ProgramOptions {
 				 macro = opt.replace("-$", "");
 				 //macro=macro.replace("$", "");
 				 String fileArr[] = null;
+				
 				 String tempPath = ht.get("inputfile").replaceAll("\\\\", "/");
 
 
@@ -559,8 +555,6 @@ public class ProgramOptions {
 			if((CONTEXTVARRETRYCOUNT=this.getString("retrycount", null))==null)
 			{
 				Log.Debug("Controller/GetOptions: -retrycount is not specified. By Default its value is 5.");
-
-				retrycountflag=false;
 			}
 			else
 			{
@@ -570,14 +564,11 @@ public class ProgramOptions {
 					Log.Error("Controller/GetOptions: Use -help for usage option.");
 					return false;
 				}
-				retrytimeoutflag=true;
 				
 			}
 			if((CONTEXTVARRETRYTIMEOUT=this.getString("retrytimeout", null))==null)
 			{
 				Log.Debug("Controller/GetOptions: -retrytimeout is not specified. By Default its value is 1 sec.");
-
-				retrytimeoutflag=false;
 			}
 			else
 			{
@@ -587,7 +578,6 @@ public class ProgramOptions {
 					Log.Error("Controller/GetOptions: Use -help for usage option.");
 					return false;
 				}
-				retrycountflag=true;
 				
 			}
 			// check if debug mode is set to true. else default value is True
@@ -870,7 +860,7 @@ public class ProgramOptions {
 					// message("it contains . "+manualTestCaseID);
 					Log.Error("[Error]Multiple testcaseid must separate by , (comma) wrong inputs: "
 							+ manualTestCaseID);
-					System.exit(1);
+					return false;
 				}
 				String []testCaseIDs=manualTestCaseID.split(",");
 				for(String tcID:testCaseIDs){
@@ -1129,8 +1119,9 @@ public class ProgramOptions {
 			if((this.getString("atomexectime", null))!=null){
 				this.showTime=true;
 			}
-
-
+			if(this.getString("debugger", null)!=null){
+				this.debugger=true;
+			}
 
 		} catch (Exception e) {
 			Log.Debug("Controller/GetOptions: Exception occured,"

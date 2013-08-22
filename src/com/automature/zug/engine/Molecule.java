@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -130,8 +131,61 @@ public class Molecule extends TestCase {
 			stepNumber = this.actions.get(0).step;
 		}
 		try {
+			int start=this.actions.get(0).lineNumber;
 			for (int i = 0; i < this.actions.size(); i++) {
+				if(Controller.stop){
+					return;
+				}
+				
+				/*try{
+					if(Controller.opts.debugger){
+						sheetTableMapper stm=new sheetTableMapper();
+						stm.setTestCaseTable(this);
+						
+							Controller.gui.getDebugger().setMoleculeData(stm.data, stm.colheader);
+							Controller.gui.getDebugger().currentMoleculeStep(i);
+						
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}*/
 				final Action act = this.actions.get(i);
+				count++;
+				if(Controller.guiFlag){
+					if(act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)){
+						Controller.gui.showRunningMoleculeStep("Molecules", act.lineNumber,start);
+					}else{
+						Controller.gui.showRunningMoleculeStep(act.nameSpace, act.lineNumber,start);
+					}
+				}
+				if(Controller.opts.debugger){	
+					String name="";
+					//System.out.println("Name space ="+act.nameSpace);
+					name=act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)?"Molecules":act.nameSpace;
+				
+					List<Integer> al=Controller.breakpoints.get(name);
+					if(al!=null){
+						if(al.contains(act.lineNumber)){
+							//	Controller.sendMessageToDebugger((Object)act);
+							Controller.setPauseSignal();
+							Controller.checkDebuggerSignal();
+						}else if(Controller.stepOver){
+							//if(!act.name.startsWith("#define"))
+							//	Controller.sendMessageToDebugger((Object)act);
+							Controller.setPauseSignal();
+							Controller.checkDebuggerSignal();
+						}
+					}else if(Controller.stepOver){
+						//if(!act.name.startsWith("#define"))
+						//	Controller.sendMessageToDebugger((Object)act);
+						Controller.setPauseSignal();
+						Controller.checkDebuggerSignal();
+					}
+				}	
+				if (StringUtils.isBlank(act.name)) {
+					continue;
+				}
+
 				count++;
 				if (StringUtils.isBlank(act.name)) {
 					continue;
@@ -552,6 +606,12 @@ public class Molecule extends TestCase {
 		for (int i = 0; i < expandedTestCases.length; i++) {
 		//	System.out.println("Type casting");
 			Molecule test = (Molecule)expandedTestCases[i];
+			if(Controller.opts.debugger){
+				if(this.breakpoint){
+					test.breakpoint=true;
+					test.breakpoints=this.breakpoints;
+				}	
+			}	
 		//	System.out.println("After tyrpe casting");
 		//	System.out.println("Mol runMol tempPTCI"+test.parentTestCaseID);
 		//	System.out.println("Mol runMol ST"+test.stackTrace);
@@ -566,6 +626,9 @@ public class Molecule extends TestCase {
 		// and are not expanded like other TestCases in the TestCases sheet for
 		// the MultiValued Macro.
 		for (int i = 0; i < expandedTestCases.length; i++) {
+			if(Controller.stop){
+				return;
+			}
 			final Molecule test = (Molecule)expandedTestCases[i];
 			// Start a new thread and run the expanded test case on it
 			if (this.concurrentExecutionOnExpansion == true) {
