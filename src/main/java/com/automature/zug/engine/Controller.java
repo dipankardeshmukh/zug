@@ -4,62 +4,30 @@
  */
 package com.automature.zug.engine;
 
+import com.automature.davos.exceptions.DavosExecutionException;
+import com.automature.zug.businesslogics.TestCaseResult;
 import com.automature.zug.exceptions.MoleculeDefinitionException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.FileReader;
-import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.net.BindException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.charset.Charset;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.automature.zug.gui.ZugGUI;
+import com.automature.zug.reporter.DavosReporter;
+import com.automature.zug.reporter.Reporter;
+import com.automature.zug.reporter.TestLinkReporter;
+import com.automature.zug.util.ExtensionInterpreterSupport;
+import com.automature.zug.util.Log;
+import com.automature.zug.util.Utility;
+import org.apache.commons.lang.StringUtils;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.swing.SwingUtilities;
+import java.io.*;
+import java.net.BindException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.security.Principal;
+import java.util.*;
+import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.extractor.ExcelExtractor;
-
-import com.automature.zug.reporter.DavosReporter;
-import com.automature.zug.reporter.Reporter;
-import com.automature.zug.reporter.TestLinkReporter;
 //Internal package imports
-import com.automature.zug.util.Log;
-import com.automature.zug.util.Utility;
-import com.automature.zug.util.ZipUtility;
-import com.automature.zug.businesslogics.TestCaseResult;
-import com.automature.zug.util.ExtensionInterpreterSupport;
-import com.automature.davos.engine.DavosClient;
-import com.automature.davos.exceptions.DavosExecutionException;
-import com.automature.zug.gui.DebuggerConsole;
-import com.automature.zug.gui.ZugGUI;
 
 //import DatabaseLayer.Testplan;
 public class Controller extends Thread {
@@ -274,7 +242,7 @@ public class Controller extends Thread {
 				"\n\n\t We can also provide name spaces to the test suite included from command line.The syntax for giving name space in the -include option is\n\n\t -include=namespace1#filename1,namespace2#filename2");
 		helpMessagebuf
 		.append("\n\n\n\n\t -MacroColumn=[file identifier:column value] :This option let us select a particular macro value column for a test suite.The syntax for -macrocolumn is \n\n\t -macrocolumn=file identifier:column number, file identifier:column number."+
-				"\n\n\t The file identifier is the file name,default name space or the optional name space provided in the -include option.If we have provided any optional name space in the -include option  then it should be the file identifier in the -macrocolumn.If any cell of the selected column is empty then it takes the value of the default column cell(1st column i.e, the “value” column).");
+				"\n\n\t The file identifier is the file name,default name space or the optional name space provided in the -include option.If we have provided any optional name space in the -include option  then it should be the file identifier in the -macrocolumn.If any cell of the selected column is empty then it takes the value of the default column cell(1st column i.e, the ï¿½valueï¿½ column).");
 		helpMessagebuf
 		.append("\n\n\n\n\t -MacroFile=[file location] :This option is used to include a macro text file from command line.The text file contains macro in the format $macro=value.Each macro should begin in a new line.At run time ZUG treats these macros as it belongs to the main test suite.The syntax is -macrofile=filelocation."+
 				"\n\n\t Example: - macrofile=D:\\Files\\macroFile.txt");
@@ -592,8 +560,7 @@ public class Controller extends Thread {
 	/**
 	 * Method to sort a ArrayList<String> according to length of the strings
 	 * 
-	 * @param ArrayList
-	 *            <String> unsortedlist
+	 * @param unsortedList ArrayList<String>
 	 * @retrun sortedlist ArrayList<String>
 	 */
 	private ArrayList<String> sortListByLength(ArrayList<String> unsortedList) {
