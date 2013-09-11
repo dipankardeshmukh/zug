@@ -1,0 +1,76 @@
+<root>
+    <languages>
+        <language name="Ruby">
+            <extension>rb</extension>
+            <interpreter>ruby</interpreter>
+            <path>C:\Ruby\bin</path>
+            <option></option>
+        </language>
+        <language name="Executable">
+            <extension>exe</extension>
+            <interpreter>cmd</interpreter>
+            <path></path>
+            <option>start /c</option>
+        </language>
+        <language name="Perl">
+            <extension>pl</extension>
+            <interpreter>perl.exe</interpreter>
+            <option></option>
+            <path></path>
+        </language>
+        <language name="Python">
+            <extension>py</extension>
+            <interpreter>python.exe</interpreter>
+            <option></option>
+            <path>"C:\Program Files(x86)\Python\bin\"</path>
+        </language>
+        <language name="Visual Basic Script">
+            <extension>vbs</extension>
+            <interpreter>wscript.exe</interpreter>
+            <option></option>
+            <path>C:\windows\system32</path>
+        </language>
+        <language name="java jar">
+            <extension>jar</extension>
+            <interpreter>zug.exe</interpreter>
+            <option>-jar</option>
+            <path>C:\ZUG</path>
+        </language>
+        <language name="java class">
+            <extension>class</extension>
+            <interpreter>zug.exe</interpreter>
+            <option></option>
+            <path>C:\ZUG</path>
+        </language>
+        <language name="Batch File">
+            <extension>bat</extension>
+            <interpreter>cmd</interpreter>
+            <option>start /c</option>
+            <path></path>
+        </language>
+	</languages>
+	<inprocesspackages>
+	    <!--inprocesspackage name="" language="">
+	      <file-path></file-path>
+	      <jar-package></jar-package>
+	      <class-name></class-name>
+	    </inprocesspackage-->
+	</inprocesspackages>
+              
+    <configurations>
+        <mvm-configuration jvm-max-memorysize="853">4000</mvm-configuration>
+        <mvm-configuration jvm-max-memorysize="455">3000</mvm-configuration>
+        <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
+        <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
+
+	    <scriptlocation></scriptlocation>
+
+        <dbhostname></dbhostname>
+
+        <dbname></dbname>
+
+        <dbusername></dbusername>
+
+        <dbuserpassword></dbuserpassword>
+    </configurations>
+</root>
