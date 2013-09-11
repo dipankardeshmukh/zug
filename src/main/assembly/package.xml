@@ -10,8 +10,8 @@
         <fileSet>
             <includes>
                 <include>resources/zug.bat</include>
-                <include>LICENSE*</include>
-                <include>LICENSE*</include>
+                <include>resources/Zug License.txt</include>
+                <include>resources/Zug Release Notes.txt</include>
             </includes>
         </fileSet>
         <fileSet>
