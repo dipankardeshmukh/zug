@@ -26,7 +26,6 @@ Var DBUser
 Var DBPassword
 Var SOURCE
 Var SOURCETEXT
-Var SOURCE_TEXT
 Var BROWSESOURCE
 
 
@@ -62,8 +61,10 @@ Var NoDotNet
 !insertmacro MUI_PAGE_LICENSE "ZugEULA.txt"
 ; Directory page
 ;Java Directory Page
-Page custom JavaPage JavaPageLeave  
-;script and Framework configuration 
+Page custom JavaPage JavaPageLeave
+; External atom location
+Page custom AtomPage AtomPageLeave 
+; Framework configuration 
 Page custom CredentialPage CredentialPageLeave 
 !define MUI_PAGE_CUSTOMFUNCTION_PRE CheckInstDirReg
 !insertmacro MUI_PAGE_DIRECTORY
@@ -201,14 +202,13 @@ MessageBox MB_OK "Wrong Java installation directory. Please choose proper instal
 abort
 FunctionEnd
 
-
-Function CredentialPage
-
-  ${If} $Update == "TRUE"
+Function AtomPage
+   
+   ${If} $Update == "TRUE"
     Abort
   ${EndIf}
   
-  !insertmacro MUI_HEADER_TEXT "Config Settings" "Choose atom location path and Test Management Framework configuration settings."
+  !insertmacro MUI_HEADER_TEXT "Atom Path Settings" "Select out of process atom path location"
 	#Create Dialog and quit if error
 	nsDialogs::Create 1018
 	Pop $Dialog
@@ -216,39 +216,63 @@ Function CredentialPage
 		Abort
 	${EndIf}
   
-  ${NSD_CreateLabel} 10 10u 100% 10u "Please enter atom path location"  
+  ${NSD_CreateLabel} 10 10u 100% 10u "Atom Path Location (Folders where your out of process atoms can be found)"  
   ${NSD_CreateText} 10 20u 75% 10u ""
-   Pop $SOURCETEXT
-	${NSD_CreateBrowseButton} 350 20u 20% 12u "Browse"
+  Pop $SOURCETEXT  
+  ${NSD_CreateBrowseButton} 350 20u 20% 12u "Browse"
 	pop $BROWSESOURCE
-	${NSD_OnClick} $BROWSESOURCE CredentialPageBrowsesource
-  ${NSD_CreateLabel} 10 35u 100% 10u "Please enter Database Host Name(http://192.168.0.45:4567)" 
+	${NSD_OnClick} $BROWSESOURCE ExternalAtomPageBrowsesource
+  nsDialogs::Show
+  
+FunctionEnd           
+
+Function ExternalAtomPageBrowsesource
+  nsDialogs::SelectFolderDialog "Select Source Folder" "c:\"
+  pop $SOURCE
+  ${If} $SOURCE == 'error'
+     StrCpy $SOURCE ""
+  ${EndIf}
+  ${NSD_SetText} $SOURCETEXT $SOURCE
+FunctionEnd
+
+Function AtomPageLeave
+
+  ${NSD_GetText} $SOURCETEXT $Content_BROWSESOURCE
+
+FunctionEnd
+
+
+Function CredentialPage
+
+  ${If} $Update == "TRUE"
+    Abort
+  ${EndIf}
+  
+  !insertmacro MUI_HEADER_TEXT "Davos Config Settings" "Set Test Management Framework configuration settings. You can skip this, if you do not want reporting of your test results."
+	#Create Dialog and quit if error
+	nsDialogs::Create 1018
+	Pop $Dialog
+	${If} $Dialog == error
+		Abort
+	${EndIf}
+
+
+  ${NSD_CreateLabel} 10 35u 100% 10u "Davos Host Name(e.g. http://192.168.0.45:4567)" 
   ${NSD_CreateText} 10 45u 60% 10u ""
    Pop $Hostname
-  ${NSD_CreateLabel} 10 60u 100% 10u "Please enter the Database Name" 
-  ${NSD_CreateText} 10 70u 40% 10u ""
+  ${NSD_CreateLabel} 10 60u 100% 10u "Database Name" 
+  ${NSD_CreateText} 10 70u 40% 10u "Framework"
    Pop $DBName
-  ${NSD_CreateLabel} 10 85u 100% 10u "Please enter the Database User Name" 
-  ${NSD_CreateText} 10 95u 40% 10u ""
+  ${NSD_CreateLabel} 10 85u 100% 10u "Davos User Name" 
+  ${NSD_CreateText} 10 95u 40% 10u "davosuser"
    Pop $DBUser
-  ${NSD_CreateLabel} 10 110u 100% 10u "Please enter the Database User Password" 
-  ${NSD_CreatePassword} 10 120u 40% 10u ""
+  ${NSD_CreateLabel} 10 110u 100% 10u "Davos Password" 
+  ${NSD_CreatePassword} 10 120u 40% 10u "user"
    Pop $DBPassword
   nsDialogs::Show
 FunctionEnd
 
-
-Function CredentialPageBrowsesource
-nsDialogs::SelectFolderDialog "Select Source Folder" "c:\"
-pop $SOURCE
-${If} $SOURCE == 'error'
-   StrCpy $SOURCE ""
-${EndIf}
-${NSD_SetText} $SOURCETEXT $SOURCE
-FunctionEnd
-
 Function CredentialPageLeave
-${NSD_GetText} $SOURCETEXT $Content_BROWSESOURCE
 ${NSD_GetText} $Hostname   $Content_Hostname
 ${NSD_GetText} $DBName $Content_DBName
 ${NSD_GetText} $DBUser $Content_DBUser
