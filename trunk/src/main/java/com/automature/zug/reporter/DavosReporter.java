@@ -192,9 +192,7 @@ public class DavosReporter implements Reporter {
 	/**
 	 * gets the topologyset id from topologysetname
 	 * 
-	 * @param String
-	 *            topologysetname return String the topologysetid
-	 * @throws Throwable 
+	 * @throws Throwable
 	 */
 	private String getTopologySetId()
 			throws Throwable {

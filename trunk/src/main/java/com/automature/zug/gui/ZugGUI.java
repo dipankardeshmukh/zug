@@ -35,11 +35,13 @@ public class ZugGUI {
 	static String cmdParams[];
 	static boolean runningStatus=false;
 
+
+
 	public void initialize(String []params) {
 		 
 
 		
-		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+/*		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 			if ("Nimbus".equals(info.getName())) {
 				try {
 					
@@ -59,7 +61,7 @@ public class ZugGUI {
 				}
 				break;
 			}
-		}
+		}*/
 		cmdParams=params;
 		LineBorder border = new LineBorder(Color.WHITE,4);
 		frame = new JFrame();
@@ -76,30 +78,33 @@ public class ZugGUI {
 		frame.setMinimumSize(new Dimension(600,600));
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setLocation(30, 30);
-	//	frame.setUndecorated(true);
-		
-	//	ComponentMover cm=new ComponentMover(frame,frame);
-		
+
 		
 		guiMenuBar=new GuiMenuBar();
 		guiMenuBar.getMenuBar().setBorder(new LineBorder(new Color(245,252,254),4));
 		frame.setJMenuBar(guiMenuBar.getMenuBar());
-		
+
 		//guiMenuBar.getMenuBar().setEnabled(false);
 		//frame.setMenuBar(arg0)
-		displayPane=new GUIDisplayPane();
-		frame.getContentPane().add(displayPane.getDisplayPane(), BorderLayout.CENTER);
+
 		ops=new OptionsPanel();
 		ops.createOptionsPanel();
 		frame.getContentPane().add(ops.getOptionsPanel(),BorderLayout.NORTH);
-		
-		frame.setVisible(true);
+
+        displayPane=new GUIDisplayPane();
+        frame.getContentPane().add(displayPane.getDisplayPane(), BorderLayout.CENTER);
+        displayPane.redirectSystemStreams();
+        frame.setVisible(true);
 	}
   
 	static SheetDisplayPane getSheetDisplayPane(){
 		return displayPane.getSheetDisplayPane();
 	}
-	
+
+    static void spitDisplay(){
+                displayPane.splitTab();
+    }
+
 	public void createDebugger(){
 		
 		ops.createDebugger(displayPane.getSheetDisplayPane().getSheetNames());
@@ -118,9 +123,9 @@ public class ZugGUI {
 		
 		String fileName;
 		ArrayList<String> al=IconsPanel.getList();
-		ArrayList<String> params=new ArrayList<String>();;
-		
-		fileName=IconsPanel.getFileName();
+		ArrayList<String> params=new ArrayList<String>();
+
+        fileName=IconsPanel.getFileName();
 		params.add(fileName);
 		params.addAll(IconsPanel.getOptions());
 		params.addAll(al);
@@ -239,7 +244,7 @@ public class ZugGUI {
 		//frame.doLayout();
 	}
 	public static void setTitle(String title){
-		frame.setTitle("Automature ZUG        -----      "+title);
+		frame.setTitle("Automature ZUG - "+title);
 	}
 	
 	public static void clearConsole(){
@@ -252,8 +257,7 @@ public class ZugGUI {
 	
 	
 	public static void addTestSuiteTabToDisplay(String fileName){
-		SheetDisplayPane sdp=new SheetDisplayPane(fileName);
-		displayPane.addTab("Test Suite", null, sdp, "");
+        displayPane.addSheetDisplayPane(fileName);
 		IconsPanel.od.createPanels();
 	}
  

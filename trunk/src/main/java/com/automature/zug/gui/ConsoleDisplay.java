@@ -1,23 +1,22 @@
 package com.automature.zug.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
 public class ConsoleDisplay {
 	
-	private JPanel outputPanel;
-	private JScrollPane scrollPane;
-	private JTextArea textArea= new JTextArea();
+	private  static  JPanel outputPanel;
+	private  static JScrollPane scrollPane;
+	private  static JTextArea textArea= new JTextArea();
 //	private CmdGUI cmd;
-	private DefaultCaret caret;
+	private  static DefaultCaret caret;
 	
 	ConsoleDisplay(){
 	
@@ -31,55 +30,20 @@ public class ConsoleDisplay {
 		outputPanel.add(scrollPane);
 		scrollPane.setAutoscrolls(true);
 		scrollPane.setViewportView(textArea);
-		textArea.setForeground(Color.WHITE);
-		textArea.setBackground(Color.BLACK);
+		textArea.setForeground(Color.black);
+		textArea.setBackground(Color.lightGray);
+        textArea.setFont(Font.getFont("Arial"));
 		textArea.setEditable(false);
 		textArea.setAutoscrolls(true);
+
 		caret = (DefaultCaret)textArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-	/*	
-		textArea.addMouseListener(new MouseAdapter() {
-			private boolean flag=true;
 
-			public void mouseClicked(MouseEvent event)
-			{
-				if(event.getClickCount()==2)
-				{
-					if(flag==true)
-					{
-						outputPanel.removeAll();
-						cmd = new CmdGUI(textArea);
-						flag=false;
-
-						outputPanel.revalidate();
-						outputPanel.repaint();
-					}
-					else if(flag==false)
-					{
-						cmd.getFrame().dispose();
-						textArea.setVisible(true);
-						outputPanel.removeAll();
-						scrollPane.removeAll();
-						scrollPane = new JScrollPane(textArea);
-						textArea.setEditable(false);
-						textArea.setBounds(0, 0, 737, 311);
-						caret = (DefaultCaret)textArea.getCaret();
-						caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-						scrollPane.setBounds(0, 0, 737, 349);
-						scrollPane.setAutoscrolls(true);
-						outputPanel.add(scrollPane);
-						outputPanel.revalidate();
-						outputPanel.repaint();
-						ZugGUI.updateFrame();
-						flag=true;
-					}
-				}
-				event.consume();
-			}
-		});*/
 
 	}
-	
+
+
+
 	public void clearDisplay(){
 		textArea.setText("");
 	}
@@ -90,4 +54,51 @@ public class ConsoleDisplay {
 	public JTextArea getConsoleDisplay(){
 		return textArea;
 	}
+
+
+
+
+    public void updateTextArea(final String text) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                textArea.append(text);
+            }
+        });
+    }
+
+    public void redirectSystemStreams() {
+        OutputStream out = new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                updateTextArea(String.valueOf((char) b));
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                updateTextArea(new String(b, off, len));
+            }
+
+            @Override
+            public void write(byte[] b) throws IOException {
+                write(b, 0, b.length);
+            }
+        };
+
+        System.setOut(new PrintStream(out, true));
+        System.setErr(new PrintStream(out, true));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

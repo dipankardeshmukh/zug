@@ -1448,7 +1448,7 @@ public class Controller extends Thread {
 	}
 
 
-	private static void updateTextArea(final String text) {
+/*	private static void updateTextArea(final String text) {
 		//  SwingUtilities.invokeLater(new Runnable() {
 		//   public void run() {
 		ZugGUI.message(text);
@@ -1478,7 +1478,7 @@ public class Controller extends Thread {
 
 		System.setOut(new PrintStream(out, true));
 		System.setErr(new PrintStream(out, true));
-	}
+	}*/
 
 	/**
 	 * main method for Harness. Entry point to the Controller
@@ -1502,7 +1502,7 @@ public class Controller extends Thread {
 			logger=new Log();
 			gui=new ZugGUI();
 			gui.initialize(args);
-			redirectSystemStreams();
+			//redirectSystemStreams();
 			loadInProcesses();
 		}else{
 			Controller.oldmain(args);
@@ -1563,9 +1563,6 @@ public class Controller extends Thread {
 
 	public static void oldmain(String[] args) throws InterruptedException,
 	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
-
-		
-
 
 		ProgramOptions.checkCommandLineArgs(args);
 		if (args.length > 1) {

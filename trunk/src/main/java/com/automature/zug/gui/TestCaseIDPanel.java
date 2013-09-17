@@ -152,9 +152,19 @@ public class TestCaseIDPanel extends JPanel {
 		ArrayList<String> files=new ArrayList<String>();
 		String option;
 		int size=list.getModel().getSize();
-		if(size==0){
-			return files;
+        boolean selected_testcases=false;
+
+        for(int i=0;i<size;i++){
+            CheckListItem it=(CheckListItem)list.getModel().getElementAt(i);
+            if(it.isSelected){
+                selected_testcases=true;
+            }
+        }
+
+        if(!selected_testcases){
+            return files;
 		}
+
 		option=rdbtnNewRadioButton.isSelected()?"-testcaseid=":"-excludetestcaseid=";
 		for(int i=0;i<size;i++){
 			CheckListItem item=(CheckListItem)list.getModel().getElementAt(i);
@@ -166,7 +176,7 @@ public class TestCaseIDPanel extends JPanel {
 		files.add(option);
 		return files;
 	}
-	
+
 	class CheckListItem{
 		private String  label;
 		private boolean isSelected = false;

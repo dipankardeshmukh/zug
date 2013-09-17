@@ -1,18 +1,9 @@
 package com.automature.zug.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
@@ -28,19 +19,22 @@ public class OptionsPanel {
 	public OptionsPanel() {
 		border1 = new LineBorder(Color.GRAY,1);
 		optionsPanel = new JPanel();
-		optionsPanel.setPreferredSize(new Dimension(767, 120));
-		optionsPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width, 520));
-		optionsPanel.setBackground(Color.WHITE);
+		optionsPanel.setPreferredSize(new Dimension(767, 55));
+		//optionsPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width, 10));
+		optionsPanel.setBackground(Color.lightGray);
 		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
+        //optionsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
 	}
 	
 	void createOptionsPanel()
 	{
 		debuggerControls=new DebuggerControls();
 		cmdPanel = new CommandPanel();
-		optionsPanel.add(IconsPanel.iconPanel);
+        optionsPanel.add(IconsPanel.iconPanel);
+        //IconsPanel.iconPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		optionsPanel.add(cmdPanel.getPanel());
-		IconsPanel.setIconsPanelProperty(this);
+        IconsPanel.setIconsPanelProperty(this);
 	}
 	
 	public JPanel getOptionsPanel(){
@@ -56,20 +50,20 @@ public class OptionsPanel {
 	public void showDebuggerControls(){
 		
 		if(cmdPanel.getPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,240));
+			optionsPanel.setPreferredSize(new Dimension(767,150));
 			optionsPanel.add(debuggerControls.getDebuggerControlPanel());
 			optionsPanel.remove(getcmdPanel());
 			optionsPanel.add(getcmdPanel());
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,200));
+			optionsPanel.setPreferredSize(new Dimension(767,150));
 			optionsPanel.add(debuggerControls.getDebuggerControlPanel());
 		}
 	}
 	public void hideDebuggerControls(){
 		if(cmdPanel.getPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,120));
+			optionsPanel.setPreferredSize(new Dimension(767,55));
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,80));
+			optionsPanel.setPreferredSize(new Dimension(767,55));
 		}
 		optionsPanel.remove(debuggerControls.getDebuggerControlPanel());
 	}
@@ -77,11 +71,11 @@ public class OptionsPanel {
 	
 	public void showRunCommand(){
 		if(debuggerControls.getDebuggerControlPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,240));
+			optionsPanel.setPreferredSize(new Dimension(767,55));
 			optionsPanel.remove(debuggerControls.getDebuggerControlPanel());
 			optionsPanel.add(debuggerControls.getDebuggerControlPanel());
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,120));
+			optionsPanel.setPreferredSize(new Dimension(767,55));
 		}
 		optionsPanel.add(getcmdPanel());
 	}
@@ -89,9 +83,9 @@ public class OptionsPanel {
 	public void hideRunCommand(){
 		optionsPanel.remove(getcmdPanel());
 		if(debuggerControls.getDebuggerControlPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,200));
+			optionsPanel.setPreferredSize(new Dimension(767,55));
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,80));
+			optionsPanel.setPreferredSize(new Dimension(767,55));
 		}
 	}
 	

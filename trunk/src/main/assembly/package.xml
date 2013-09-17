@@ -8,11 +8,12 @@
     </formats>
     <fileSets>
         <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>release</outputDirectory>
             <includes>
-                <include>resources/zug.bat</include>
-                <include>resources/Zug License.txt</include>
-                <include>resources/Zug Release Notes.txt</include>
-            </includes>
+                <include>*.bat</include>
+                <include>LICENSE*</include>
+              </includes>
         </fileSet>
         <fileSet>
             <directory>${project.build.directory}/release</directory>

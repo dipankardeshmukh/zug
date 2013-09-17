@@ -1,14 +1,15 @@
 package com.automature.zug.engine;
 
-import com.automature.zug.util.Log;
-import com.automature.zug.util.Utility;
-import org.apache.commons.lang.StringUtils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.automature.zug.util.Log;
+import com.automature.zug.util.Utility;
 
 public class OutProcessAtom implements Atom{
 	
@@ -57,7 +58,7 @@ public class OutProcessAtom implements Atom{
 						command, parentTestCaseID));
 		File pathOfDefaultexe;
 		if (SysEnv.OS_FLAG) {
-			pathOfDefaultexe = new File("Executables/DefaultAction.exe");
+			pathOfDefaultexe = new File("./DefaultAction.exe");
 		} else {
 			pathOfDefaultexe = new File("./DefaultAction");
 		}
@@ -68,7 +69,7 @@ public class OutProcessAtom implements Atom{
 
 		Process process = null;
 		try {
-			CommandParam.add("Executables/ExeWrapper.exe");
+			CommandParam.add("ExeWrapper.exe");
 			CommandParam.add(command);
 			CommandParam.add(parentTestCaseID);
 
@@ -435,8 +436,8 @@ public class OutProcessAtom implements Atom{
 	 * 
 	 * @param action
 	 *            Action Object to Execute
-	 * @param threadID
-	 *            Thread to perform/execute this action.
+	 * @param user
+	 *            User to perform/execute this action.
 	 */
 	public void run(GTuple action, String threadID) throws Exception {
 		String type = "";
