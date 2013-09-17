@@ -248,7 +248,7 @@ Function CredentialPage
     Abort
   ${EndIf}
   
-  !insertmacro MUI_HEADER_TEXT "Davos Config Settings" "Set Test Management Framework configuration settings. You can skip this, if you do not want reporting of your test results."
+  !insertmacro MUI_HEADER_TEXT "Davos Config Settings" "Set Test Management Framework configuration settings. You can skip this, if you do not want reporing of your test results."
 	#Create Dialog and quit if error
 	nsDialogs::Create 1018
 	Pop $Dialog
@@ -419,7 +419,8 @@ Section "WriteEnvironment" SEC07
 SectionEnd
 
 
-Section -Post
+Section -Post 
+  SetShellVarContext all
   WriteUninstaller "$INSTDIR\ZUG\uninstZUG.exe"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "Zugpath" "$INSTDIR"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
@@ -427,7 +428,10 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${Zug_Version}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-CreateShortCut "$DESKTOP\ZUG.lnk" "$INSTDIR\ZUG\runzug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
+  createDirectory "$SMPROGRAMS\Automature\ZUG"
+  CreateShortCut "$SMPROGRAMS\Automature\ZUG\uninstall.lnk" "$INSTDIR\ZUG\uninstZUG.exe" "" "$INSTDIR\ZUG\Images\Zug.ico"
+  CreateShortCut "$SMPROGRAMS\Automature\ZUG\ZUG.lnk" "$INSTDIR\ZUG\runzug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
+  CreateShortCut "$DESKTOP\ZUG.lnk" "$INSTDIR\ZUG\runzug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
 SectionEnd
 
 
@@ -442,11 +446,14 @@ Function un.onInit
 FunctionEnd
 
 Section Uninstall
+  SetShellVarContext all
   RMDir "$SMPROGRAMS\ZUG"
   RMDir "$INSTDIR\ZUG"
   Delete "$INSTDIR\README.txt"
   SetOutPath "$TEMP"
   SetOverwrite ifnewer
+  Delete "$SMPROGRAMS\Automature\ZUG\*.*"
+  RMDir "$SMPROGRAMS\Automature\ZUG"
   File "DeleteZug.cmd"
   ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Automature-ZUG" "Zugpath"
  IfFileExists $R0\ZUG\ZUG.exe 0 +3
