@@ -23,9 +23,9 @@ public class FileMenu {
 	}
 
 	public FileMenu(){
-		
-		mnFile = new JMenu("File");
-		
+
+        mnFile = new JMenu("File");
+
 		mntmOpen = new JMenuItem("Open");
 		mnFile.add(mntmOpen);
 

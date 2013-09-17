@@ -7,14 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 
 public class DebuggerControls {
-	
-	JPanel controlPanel;
+
 	private JButton breakPoint;
 	private JButton resume;
 	private JButton singleStep;
@@ -22,42 +19,61 @@ public class DebuggerControls {
 	private JButton pause;
 	private JButton viewBP;
 	private JPanel panel;
+    private JPanel debuugerToolBar;
 	private DebuggerConsole dc;
 	
 	
 	DebuggerControls(){
 		
 		panel=new JPanel(new GridLayout(0, 2, 1, 1));
-		controlPanel=new JPanel();
-		controlPanel.setBackground(Color.WHITE);
-		controlPanel.setLayout(null);
-		controlPanel.setVisible(true);
+        debuugerToolBar = new JPanel();
+        debuugerToolBar.setBackground(Color.WHITE);
+        debuugerToolBar.setLayout(null);
+        debuugerToolBar.setVisible(true);
 		
 		breakPoint = new JButton("");
+        breakPoint.setContentAreaFilled(false);
+        breakPoint.setBorderPainted(false);
 		initializeBreakPointButton();
-		controlPanel.add(breakPoint);
+		debuugerToolBar.add(breakPoint);
+        //controlPanel.add(breakPoint);
 		
 		resume = new JButton("");
+        resume.setContentAreaFilled(false);
+        resume.setBorderPainted(false);
 		initializeResumeButton();
-		controlPanel.add(resume);
+		debuugerToolBar.add(resume);
+        //controlPanel.add(resume);
 		
 		singleStep = new JButton("");
+        singleStep.setContentAreaFilled(false);
+        singleStep.setBorderPainted(false);
 		initializeSingleStepButton();
-		controlPanel.add(singleStep);
+		debuugerToolBar.add(singleStep);
+        //controlPanel.add(singleStep);
 		
 		viewCV = new JButton();
+        viewCV.setContentAreaFilled(false);
+        viewCV.setBorderPainted(false);
 		initializeViewCVButton();
-		controlPanel.add(viewCV);
+        debuugerToolBar.add(viewCV);
+		//controlPanel.add(viewCV);
 		
 		pause = new JButton();
+        pause.setContentAreaFilled(false);
+        pause.setBorderPainted(false);
 		initializePauseButton();
-		controlPanel.add(pause);
+		debuugerToolBar.add(pause);
+		//controlPanel.add(pause);
 		
 		viewBP = new JButton("");
+        viewBP.setContentAreaFilled(false);
+        viewBP.setBorderPainted(false);
 		initializeViewBPButton();
-		controlPanel.add(viewBP);
+		debuugerToolBar.add(viewBP);
+		//controlPanel.add(viewBP);
 		
-		panel.add(controlPanel);
+		panel.add(debuugerToolBar);
 	//	panel.setPreferredSize(new Dimension(767,60));
 		panel.setVisible(true);
 		panel.setBackground(Color.WHITE);
@@ -162,7 +178,7 @@ public class DebuggerControls {
 	public void createDebugger(ArrayList names){
 		try{
 			panel.removeAll();
-			panel.add(controlPanel);
+			panel.add(debuugerToolBar);
 		}catch(Exception e){
 			
 		}

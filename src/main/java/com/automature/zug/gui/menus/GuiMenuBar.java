@@ -1,6 +1,7 @@
 package com.automature.zug.gui.menus;
 
 import javax.swing.JMenuBar;
+import java.awt.*;
 
 public class GuiMenuBar {
 	
@@ -17,8 +18,8 @@ public class GuiMenuBar {
 		
 		super();
 		menuBar = new JMenuBar();
-		
-		fileMenu=new FileMenu();
+
+        fileMenu=new FileMenu();
 		menuBar.add(fileMenu.getMnFile());
 		
 		editMenu=new EditMenu();
