@@ -20,6 +20,7 @@ public class OptionsPanel {
 		border1 = new LineBorder(Color.GRAY,1);
 		optionsPanel = new JPanel();
 		optionsPanel.setPreferredSize(new Dimension(767, 55));
+        optionsPanel.setBorder(border1);
 		//optionsPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width, 10));
 		optionsPanel.setBackground(Color.lightGray);
 		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
@@ -32,8 +33,7 @@ public class OptionsPanel {
 		debuggerControls=new DebuggerControls();
 		cmdPanel = new CommandPanel();
         optionsPanel.add(IconsPanel.iconPanel);
-        //IconsPanel.iconPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		optionsPanel.add(cmdPanel.getPanel());
+        optionsPanel.add(cmdPanel.getPanel());
         IconsPanel.setIconsPanelProperty(this);
 	}
 	

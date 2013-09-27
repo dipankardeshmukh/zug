@@ -1,24 +1,11 @@
 package com.automature.zug.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Point;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.Vector;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 
 public class ExcelHandler {
@@ -27,7 +14,7 @@ public class ExcelHandler {
 	boolean isMainSheet=true;
 	
 	private  HashMap<String, String> externalSheets ;
-	private  LinkedHashMap<String, Sheet> sheets = new LinkedHashMap<String, Sheet>();
+	private  LinkedHashMap<String, Excel> sheets = new LinkedHashMap<String, Excel>();
 	
 	ExcelHandler(String inputFileName,HashMap<String,String> sm,boolean mainSheet){
 		this.inputFileName=inputFileName;
@@ -69,15 +56,15 @@ public class ExcelHandler {
 	
 	private void readSheets(){
 		try{
-			Sheet mainSheet=new Sheet(inputFileName,isMainSheet);
-			mainSheet.readSheet();
-			sheets.put(mainSheet.getFileName(), mainSheet);
-			externalSheets.put(mainSheet.getFileName(), mainSheet.getFullFileName());
+			Excel mainExcel =new Excel(inputFileName,isMainSheet);
+			mainExcel.readSheet();
+			sheets.put(mainExcel.getFileName(), mainExcel);
+			externalSheets.put(mainExcel.getFileName(), mainExcel.getFullFileName());
 			if(isMainSheet){
-				Sheet moleculeSheet=mainSheet.getMoleculeSheet();
-				sheets.put(moleculeSheet.getFileName(), moleculeSheet);
+				Excel moleculeExcel = mainExcel.getMoleculeExcel();
+				sheets.put(moleculeExcel.getFileName(), moleculeExcel);
 			}
-			AddToExternalSheets(mainSheet.getIncludeList());
+			AddToExternalSheets(mainExcel.getIncludeList());
 			readIncludedSheets();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -133,9 +120,9 @@ public class ExcelHandler {
 				} else {
 					externalSheets.put(fileKey, fileName);
 					try{
-						Sheet sheet=new Sheet(fileName,false);
-						sheet.readSheet();
-						sheets.put(fileKey, sheet);
+						Excel excel =new Excel(fileName,false);
+						excel.readSheet();
+						sheets.put(fileKey, excel);
 					}catch(Exception e){
 						System.err.print("ExcelHandler/AddToExternalSheets:Exception "+e.getMessage()+"\nCause:"+e.getCause());
 					}
@@ -146,7 +133,7 @@ public class ExcelHandler {
 		}
 	}
 	
-	public HashMap<String,Sheet> getSheets(){
+	public HashMap<String,Excel> getSheets(){
 		return sheets;
 	}
 	

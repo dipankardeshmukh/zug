@@ -1,30 +1,40 @@
 package com.automature.zug.gui;
 
-import com.sun.java.swing.plaf.windows.WindowsTabbedPaneUI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+
+import com.automature.zug.gui.sheets.SpreadSheet;
+
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import javax.swing.plaf.metal.MetalTabbedPaneUI;
+import javax.swing.plaf.multi.MultiTabbedPaneUI;
 import javax.swing.text.DefaultCaret;
 
 public class GUIDisplayPane {
 
+    JPanel mainPanel = new JPanel();
     private JTabbedPane tabbedPane;
     private static ConsoleDisplay consoleDisplay = new ConsoleDisplay();
     private static SheetDisplayPane sheetDisplay;
+    private static TaskPane taskPane;
 
     public GUIDisplayPane() {
+
         tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+        tabbedPane.setBackground(Color.LIGHT_GRAY);
+
         consoleDisplay=new ConsoleDisplay();
         this.addTab("Console", null, consoleDisplay.getConsole(), null);
-        tabbedPane.setUI(new WindowsTabbedPaneUI());
-        //tabbedPane.setBorder(BorderFactory.createEmptyBorder());
+
+        mainPanel.add(tabbedPane);
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+
 
     }
 
@@ -35,14 +45,32 @@ public class GUIDisplayPane {
                 tabbedPane.remove(c);
             }
         }
+
         tabbedPane.addTab(title, icon, component, tip);
     }
 
-    public void addSheetDisplayPane(String fileName){
-        sheetDisplay =new SheetDisplayPane(fileName);
-        this.addTab("Test Suite", null, sheetDisplay, "");
-    }
+    public void addSheetDisplayPane(SpreadSheet sp){
 
+        sheetDisplay =new SheetDisplayPane(sp);
+        this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
+
+        if(taskPane!=null && !taskPane.getParentSpreadSheet().equalsIgnoreCase(ZugGUI.spreadSheet.getAbsolutePath())){
+            mainPanel.remove(taskPane);
+            taskPane=null;
+        }
+
+        if(taskPane==null){
+            taskPane = new TaskPane();
+            Toolkit tk = Toolkit.getDefaultToolkit();
+            int xSize = ((int) tk.getScreenSize().getWidth());
+            int gameWidth = (int) (Math.round(xSize * 0.20));
+            taskPane.setMaximumSize(new Dimension(gameWidth,(int)tk.getScreenSize().getHeight()));
+            //taskPane.setAlignmentY(SwingConstants.TOP);
+            mainPanel.add(taskPane);
+        }
+
+
+    }
 
     public void splitTab(){
 
@@ -51,7 +79,7 @@ public class GUIDisplayPane {
             JSplitPane splitview;
             splitview = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
                     consoleDisplay.getConsole(), sheetDisplay);
-            splitview.setResizeWeight(.6d);
+            splitview.setResizeWeight(.5d);
             this.addTab("Split view", null, splitview, null);
         }
         else {
@@ -59,10 +87,22 @@ public class GUIDisplayPane {
         }
     }
 
-    public JTabbedPane getDisplayPane()	{
-        return tabbedPane;
+    public JPanel getDisplayPane(){
+        return mainPanel;
     }
-    public JTextArea getConsole()	{
+
+    public void removeTaskPane(){
+
+        mainPanel.remove(taskPane);
+        ZugGUI.updateFrame();
+    }
+
+    public void addTaskPane(){
+        mainPanel.add(taskPane);
+        ZugGUI.updateFrame();
+    }
+
+    public JTextArea getConsole(){
         return consoleDisplay.getConsoleDisplay();
     }
 
@@ -86,7 +126,7 @@ public class GUIDisplayPane {
 
     public void showTestSuite(){
         if(IconsPanel.getFileName()!=null){
-            this.addTab("Sheet", null, sheetDisplay, null);
+            this.addTab("Excel", null, sheetDisplay, null);
         }
         else {
             JOptionPane.showMessageDialog(null, "Select test suite first!");
