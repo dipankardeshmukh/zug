@@ -2,11 +2,13 @@ package com.automature.zug.gui.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import com.automature.zug.gui.IconsPanel;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class FileMenu {
 
@@ -51,8 +53,12 @@ public class FileMenu {
 		
 		mntmOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				IconsPanel.chooseFile();
-			}
+                try {
+                    IconsPanel.chooseFile();
+                } catch (Exception e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
 		});
 		
 		mntmExit.addActionListener(new ActionListener() {

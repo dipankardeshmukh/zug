@@ -2,28 +2,22 @@ package com.automature.zug.gui;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.border.LineBorder;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
-import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import javax.swing.UIManager;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.automature.zug.engine.Controller;
 import com.automature.zug.gui.menus.GuiMenuBar;
+import com.automature.zug.gui.sheets.SpreadSheet;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class ZugGUI {
 
@@ -35,7 +29,8 @@ public class ZugGUI {
 	static String cmdParams[];
 	static boolean runningStatus=false;
 
-
+    public static SpreadSheet spreadSheet;
+    public static Set<String> allIncludeFiles;
 
 	public void initialize(String []params) {
 		 
@@ -63,11 +58,12 @@ public class ZugGUI {
 			}
 		}*/
 		cmdParams=params;
-		LineBorder border = new LineBorder(Color.WHITE,4);
+		//LineBorder border = new LineBorder(Color.WHITE,4);
 		frame = new JFrame();
-		frame.getRootPane().setBorder(border);
+        frame.setBackground(Color.lightGray);
+		//frame.getRootPane().setBorder(border);
 		frame.getContentPane().setFont(new Font("Tahoma", Font.BOLD, 11));
-		frame.getContentPane().setBackground(Color.WHITE);
+		frame.getContentPane().setBackground(Color.lightGray);
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir")+"\\Images\\automature.png"));
 		frame.setSize(783, 595);
 		frame.setPreferredSize(new Dimension(783,590));
@@ -81,7 +77,7 @@ public class ZugGUI {
 
 		
 		guiMenuBar=new GuiMenuBar();
-		guiMenuBar.getMenuBar().setBorder(new LineBorder(new Color(245,252,254),4));
+		//guiMenuBar.getMenuBar().setBorder(new LineBorder(new Color(245,252,254),4));
 		frame.setJMenuBar(guiMenuBar.getMenuBar());
 
 		//guiMenuBar.getMenuBar().setEnabled(false);
@@ -100,6 +96,10 @@ public class ZugGUI {
 	static SheetDisplayPane getSheetDisplayPane(){
 		return displayPane.getSheetDisplayPane();
 	}
+
+    static GUIDisplayPane getDisplayPane(){
+        return displayPane;
+    }
 
     static void spitDisplay(){
                 displayPane.splitTab();
@@ -161,19 +161,28 @@ public class ZugGUI {
 		return params;
 	}
 	
-	public static void loadFile(){
+	public static void loadFile() throws Exception {
 		String fileName=IconsPanel.getFileName();
 		if (fileName != null) {
 			ZugGUI.setTitle(fileName.substring(fileName
 					.lastIndexOf("\\") + 1));
 				ZugGUI.clearOptions();
 				ZugGUI.initialize();
-				ZugGUI.addTestSuiteTabToDisplay(fileName);	
+                ZugGUI.loadSpreadSheet(fileName);
+				ZugGUI.addTestSuiteTabToDisplay(spreadSheet);
 		}	
 		
 	}
-	
-	static void clearOptions(){
+
+    private static void loadSpreadSheet(String fileName) throws Exception {
+        spreadSheet = new SpreadSheet();
+        allIncludeFiles = new HashSet<String>();
+
+        spreadSheet.readSpreadSheet(fileName);
+    }
+
+
+    static void clearOptions(){
 		guiMenuBar.clearOptions();
 		IconsPanel.clearOptions();
 		OptionGUI.clearOptions();
@@ -256,13 +265,13 @@ public class ZugGUI {
 	}
 	
 	
-	public static void addTestSuiteTabToDisplay(String fileName){
-        displayPane.addSheetDisplayPane(fileName);
+	public static void addTestSuiteTabToDisplay(SpreadSheet sh){
+        displayPane.addSheetDisplayPane(sh);
 		IconsPanel.od.createPanels();
 	}
  
 	public void showRunningTestStep(int n){
-		displayPane.getSheetDisplayPane().showRunnigTestStep(n);
+		displayPane.getSheetDisplayPane().showRunningTestStep(n);
 	}
 	public void showRunningMoleculeStep(String name,int n,int start){
 		displayPane.getSheetDisplayPane().showRunningMoleculeStep(name,n,start);
@@ -311,4 +320,5 @@ public class ZugGUI {
 		ZugGUI.getSheetDisplayPane().addExtraSheets(nameSpace, sheets);
 		
 	}
+
 }

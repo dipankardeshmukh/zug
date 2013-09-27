@@ -15,7 +15,6 @@ public class ConsoleDisplay {
 	private  static  JPanel outputPanel;
 	private  static JScrollPane scrollPane;
 	private  static JTextArea textArea= new JTextArea();
-//	private CmdGUI cmd;
 	private  static DefaultCaret caret;
 	
 	ConsoleDisplay(){
@@ -32,7 +31,8 @@ public class ConsoleDisplay {
 		scrollPane.setViewportView(textArea);
 		textArea.setForeground(Color.black);
 		textArea.setBackground(Color.lightGray);
-        textArea.setFont(Font.getFont("Arial"));
+        textArea.setOpaque(false);
+        textArea.setFont(Font.getFont(Font.SANS_SERIF));
 		textArea.setEditable(false);
 		textArea.setAutoscrolls(true);
 
@@ -59,11 +59,11 @@ public class ConsoleDisplay {
 
 
     public void updateTextArea(final String text) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+        //SwingUtilities.invokeLater(new Runnable() {
+           // public void run() {
                 textArea.append(text);
-            }
-        });
+            //}
+        //});
     }
 
     public void redirectSystemStreams() {

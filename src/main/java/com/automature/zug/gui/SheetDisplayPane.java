@@ -1,28 +1,22 @@
 package com.automature.zug.gui;
 
+import com.automature.zug.gui.sheets.SpreadSheet;
+import org.jdesktop.swingx.JXTable;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-
-import com.automature.zug.engine.Controller;
 
 public class SheetDisplayPane extends JPanel {
 
@@ -30,61 +24,70 @@ public class SheetDisplayPane extends JPanel {
 	private  HashMap<String, String> externalSheets;
 	public static ArrayList testCaseIds;
 
-	SheetDisplayPane(String fileName){
+	SheetDisplayPane(SpreadSheet sh){
 
-		tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		tabbedPane = new JTabbedPane(JTabbedPane.VERTICAL);
 		tabbedPane.setBorder(new LineBorder(new Color(0, 0, 0)));
-		try{
+
+        addTab("Config",null,sh.getConfigSheetPanel(),null);
+        addTab("Macros",null,sh.getMacroSheetPanel(),null);
+        addTab("TestCases",null,sh.getTestCasesSheetPanel(),null);
+        addTab("Molecules",null,sh.getMoleculesSheetPanel(),null);
+
+/*		try{
 			ExcelHandler ex=new ExcelHandler(fileName);
 			HashMap map=ex.getSheets();
 			Set s=map.keySet();
 			Iterator it=s.iterator();
 			ZugGUI.removeAllTabs();
 			while(it.hasNext()){
-				Sheet sht=(Sheet)map.get(it.next());
+				Excel sht=(Excel)map.get(it.next());
 				if(sht.isMainSheet()){
 					testCaseIds=sht.getTestCaseIDs();
 				//	System.out.println("sdp:"+testCaseIds);
 				}
 				JPanel panel=getPanel(sht);
-				addTab(sht.getFileName(), null,panel, null);
+				addTab(sht.getAbsolutePath(), null,panel, null);
 			}
 			externalSheets=ex.getExternalSheets();
 		}catch(Exception e){
 			e.printStackTrace();
 			System.err.println("SheetDisplayPane Exception "+e.getMessage()+"\nCause "+e.getCause());
-		}
+		}*/
+
 		this.setLayout(new BorderLayout());
 		this.setBackground(Color.white);
-		this.add(tabbedPane,BorderLayout.CENTER);
+		this.add(tabbedPane, BorderLayout.CENTER);
 	}
 
 
-	private JPanel getPanel(Sheet sheet){
+	private JPanel getPanel(Excel excel){
 
 		JPanel panel = new JPanel(new BorderLayout());
 		//table = new JTable(dataHolder,(Vector)dataHolder.firstElement());
-		final HashMap<Point,String> map=sheet.messageMap;
-		JTable table = new JTable(sheet.getData(),sheet.getHeader());
+		final HashMap<Point,String> map= excel.messageMap;
+		JXTable table = new JXTable(excel.getData(), excel.getHeader());
+
 		table.setFillsViewportHeight(true);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		TableColumn column = null;
-		int actionColumn=sheet.getActionColumn();
-		int verifyColumn=sheet.getVerifyColumn();
+
+
+		int actionColumn= excel.getActionColumn();
+		int verifyColumn= excel.getVerifyColumn();
+
 		for (int i = 1; i <table.getColumnCount(); i++) {			
 			column = table.getColumnModel().getColumn(i);
-			if(i==(actionColumn)||i==(actionColumn-1)){
+/*			if(i==(actionColumn)||i==(actionColumn-1)){
 				column.setPreferredWidth(120);
 			}else{
 				column.setPreferredWidth(200);
-			}
+			}*/
 
 			if(i==actionColumn+1||i==verifyColumn+1){
-			//	column.setCellRenderer(new MyTableCellRenderer(sheet.messageMap));
-				column.setCellRenderer(new MyTableCellRenderer(sheet.messageMap));
+			//	column.setCellRenderer(new MyTableCellRenderer(excel.messageMap));
+				column.setCellRenderer(new MyTableCellRenderer(excel.messageMap));
 			}
-
-
 		}
 
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -107,7 +110,7 @@ public class SheetDisplayPane extends JPanel {
 					Set s=map.keySet();
 					Iterator it=s.iterator();
 					while(it.hasNext()){
-						Sheet sht=(Sheet)map.get(it.next());
+						Excel sht=(Excel)map.get(it.next());
 						JPanel panel=getPanel(sht);
 						if(nameSpace.containsKey(sht.getFullFileName())){
 							if(getTab(nameSpace.get(sht.getFullFileName()))==-1)
@@ -125,15 +128,28 @@ public class SheetDisplayPane extends JPanel {
 		}
 	}
 
-	public void showRunnigTestStep(int n){
-
-		JPanel jp=(JPanel)tabbedPane.getComponentAt(0);
+	public void showRunningTestStep(int n){
+        tabbedPane.setSelectedIndex(2);
+		JPanel jp=(JPanel)tabbedPane.getComponentAt(2);
 		JScrollPane sp=(JScrollPane)jp.getComponent(0);
 		JViewport viewport = sp.getViewport(); 
 		JTable table = (JTable)viewport.getView();
 		table.setRowSelectionInterval(0,n-1);
-		tabbedPane.setSelectedIndex(0);
+
+
 	}
+
+    public void showRunningMoleculeStep(String name,int n,int start){
+        //	if(n!=0)
+        try{
+            int pos=getTab(name);
+            tabbedPane.setSelectedIndex(pos);
+            JTable table = getTable(pos);
+            table.setRowSelectionInterval(start,n-1);
+        }catch(Exception e){
+            //e.printStackTrace();
+        }
+    }
 
 	public int getTab(String name){
 
@@ -167,17 +183,7 @@ public class SheetDisplayPane extends JPanel {
 		}
 	}
 
-	public void showRunningMoleculeStep(String name,int n,int start){
-		//	if(n!=0)
-		try{
-			int pos=getTab(name);
-			tabbedPane.setSelectedIndex(pos);
-			JTable table = getTable(pos);
-			table.setRowSelectionInterval(start,n-1);
-		}catch(Exception e){
-			//e.printStackTrace();
-		}
-	}
+
 
 	public void showSelectedStep(String name,int n){
 		try{

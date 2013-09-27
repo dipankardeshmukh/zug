@@ -6,12 +6,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class IconsPanel {
@@ -46,6 +48,7 @@ public class IconsPanel {
     static JButton split;
     static JButton console;
     static JButton sheet;
+    static JButton toggleTaskPane;
 	static OptionDialog od=new OptionDialog();
 
 
@@ -217,7 +220,7 @@ public class IconsPanel {
 
         final JButton button = new JButton("");
 		button.setToolTipText("Browse test suite file");
-		button.setBounds(10, 0, 33, 33);
+		button.setBounds(0, 0, 33, 33);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         iconPanel.add(button);
@@ -245,7 +248,11 @@ public class IconsPanel {
         reloadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 if(fileName!=null && StringUtils.isNotBlank(fileName)){
-                    ZugGUI.loadFile();
+                    try {
+                        ZugGUI.loadFile();
+                    } catch (Exception e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                 }
             }
         });
@@ -512,6 +519,14 @@ public class IconsPanel {
         sheet.setBorderPainted(false);
         iconPanel.add(sheet);
 
+        toggleTaskPane = new JButton("Toggle");
+        toggleTaskPane.setMargin(new Insets(0,0,0,0));
+        toggleTaskPane.setToolTipText("Split the display");
+        toggleTaskPane.setBounds(510, 0, 45, 33);
+        toggleTaskPane.setContentAreaFilled(false);
+        toggleTaskPane.setBorderPainted(false);
+        iconPanel.add(toggleTaskPane);
+
 		mnNewMenu.setVisible(true);
 
 /*		btnDevelopment.addActionListener(new ActionListener() {
@@ -603,8 +618,12 @@ public class IconsPanel {
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				chooseFile();
-			}
+                try {
+                    chooseFile();
+                } catch (Exception e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
 		});
 		button.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
@@ -636,6 +655,20 @@ public class IconsPanel {
                 ZugGUI.showTestSuite();
             }
         });
+
+        toggleTaskPane.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if(ZugGUI.getDisplayPane().getDisplayPane().getComponentCount()>1){
+
+                    ZugGUI.getDisplayPane().removeTaskPane();
+                }else
+                {
+                    ZugGUI.getDisplayPane().addTaskPane();
+                }
+            }
+        });
 	}
 
 	public static void enableDebugger(){
@@ -663,14 +696,15 @@ public class IconsPanel {
 	
 	
 	
-	public static void chooseFile() {
+	public static void chooseFile() throws Exception {
 		JFileChooser chooser = new JFileChooser();
 		if(fileName!=null && !fileName.isEmpty()){
 			chooser.setCurrentDirectory(new File(fileName).getParentFile());
 		}
 		
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"Microsoft Excel Documents", "xls");
+				"Microsoft Excel Documents", "xls", "xlsx");
+
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setFileFilter(filter);
 		int returnVal = chooser.showOpenDialog(iconPanel.getRootPane());

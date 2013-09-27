@@ -107,7 +107,7 @@ public class DebuggerConsole {
 //	}
 //	
 //	public void currentTestStep(int n){
-//		sdp.showRunnigTestStep(n);
+//		sdp.showRunningTestStep(n);
 //	}
 //	public void currentMoleculeStep(int n){
 //		sdp.showRunningMoleculeStep(n);

@@ -10,17 +10,19 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+//import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import com.automature.zug.engine.AtomHandler;
 import com.automature.zug.engine.SysEnv;
 import com.automature.zug.util.ExtensionInterpreterSupport;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-public class Sheet {
+public class Excel {
 
 	static String scriptLocation;
 	private Vector data;
@@ -31,14 +33,14 @@ public class Sheet {
 	private	boolean mainSheet=false;
 	private	int actionColumn,VerifyColumn;
 	private	FileInputStream inputFile;
-	private Sheet moleculeSheet;
+	private Excel moleculeExcel;
  	public HashMap<Point, String> messageMap=new HashMap<Point, String>();
 	
-	public Sheet getMoleculeSheet() {
-		return moleculeSheet;
+	public Excel getMoleculeExcel() {
+		return moleculeExcel;
 	}
 
-	Sheet(String inputFileName,boolean mainsheet)throws Exception{
+	Excel(String inputFileName, boolean mainsheet)throws Exception{
 	
 		this.inputFileName=inputFileName;
 		this.mainSheet=mainsheet;
@@ -87,12 +89,12 @@ public class Sheet {
 		return VerifyColumn;
 	}
 
-	private HSSFWorkbook openFile()throws IOException{
+	private Workbook openFile() throws IOException, InvalidFormatException {
 		
 		File file = new File(inputFileName);
 		inputFile = new FileInputStream(file);
-		POIFSFileSystem inputFileSystem = new POIFSFileSystem(inputFile);
-		return new HSSFWorkbook(inputFileSystem);	
+		//POIFSFileSystem inputFileSystem = new POIFSFileSystem(inputFile);
+		return WorkbookFactory.create(inputFile);	
 	}
 	
 	private void closeFiles()throws IOException{
@@ -110,19 +112,19 @@ public class Sheet {
 	}
 	
 	
-	private void readHeader(HSSFSheet mySheet){
+	private void readHeader(Sheet mySheet){
 
 		header=new Vector();
 		Iterator rowIter = mySheet.rowIterator();
 		header.add("Line");
 		if(rowIter.hasNext()){
-			HSSFRow myRow = (HSSFRow) rowIter.next();
+			Row myRow = (Row) rowIter.next();
 			Iterator cellIter = myRow.cellIterator();
 			int n=myRow.getLastCellNum();
 			
 			for(int i=0;i<=n;i++){
 
-				HSSFCell myCell=myRow.getCell(i);
+				Cell myCell=myRow.getCell(i);
 				header.addElement(myCell==null?"":myCell);
 				if(myCell!=null){
 					if(myCell.getStringCellValue().equalsIgnoreCase("Action")){
@@ -141,7 +143,7 @@ public class Sheet {
 		return testCaseID;
 	}
 	
-	private void readData(HSSFSheet mySheet){
+	private void readData(Sheet mySheet){
 		
 		data = new Vector();
 		Iterator rowIter = mySheet.rowIterator();
@@ -149,14 +151,14 @@ public class Sheet {
 		int line=1;
 		AtomHandler ah=new AtomHandler(scriptLocation);
 		while(rowIter.hasNext()){
-			HSSFRow myRow = (HSSFRow) rowIter.next();
+			Row myRow = (Row) rowIter.next();
 			Iterator cellIter = myRow.cellIterator();
 			Vector cellStoreVector=new Vector();
 			cellStoreVector.addElement(line);
 			int n=myRow.getLastCellNum();
 			{
 				if(mainSheet){
-					HSSFCell myCell=myRow.getCell(0);
+					Cell myCell=myRow.getCell(0);
 					if(myCell!=null){
 						String testcaseID=myCell.getStringCellValue();
 						if(testcaseID!=null && !testcaseID.isEmpty() && StringUtils.isNotBlank(testcaseID) && !testcaseID.equalsIgnoreCase("comment")){
@@ -167,7 +169,7 @@ public class Sheet {
 				}
 			}
 			for(int i=0;i<=n;i++){
-				HSSFCell myCell=myRow.getCell(i);
+				Cell myCell=myRow.getCell(i);
 				cellStoreVector.addElement(myCell==null?"":myCell);
 				if(i==actionColumn||i==VerifyColumn){
 					if(myCell!=null){
@@ -182,19 +184,20 @@ public class Sheet {
 			line++;
 			data.addElement(cellStoreVector);
 		}
+
 	}
 	
-	private void readIncludeFileName(HSSFSheet configSheet){
-		HSSFRow row=configSheet.getRow(7);
-		HSSFCell cell=row.getCell(1);
+	private void readIncludeFileName(Sheet configSheet){
+		Row row=configSheet.getRow(7);
+		Cell cell=row.getCell(1);
 		includeList=(cell!=null?cell.getStringCellValue():"");
 	}
 	
-	private void readScriptLocation(HSSFSheet configSheet){
+	private void readScriptLocation(Sheet configSheet){
 		try{
 			String iniSL=ExtensionInterpreterSupport.getNode("//root//configurations//scriptlocation");//.getNodesValues(scriptLocationsTag);
-			HSSFRow row=configSheet.getRow(0);
-			HSSFCell cell=row.getCell(1);
+			Row row=configSheet.getRow(0);
+			Cell cell=row.getCell(1);
 			String location=(cell!=null?cell.getStringCellValue():"");
 			if(iniSL!=null){
 				location+=";"+iniSL+";"+new File(getFullFileName()).getParent();
@@ -238,19 +241,19 @@ public class Sheet {
 	
 		try{
 			/** Get the test case sheet from workbook**/		
-			HSSFWorkbook _workBook=openFile();
-			HSSFSheet configSheet =_workBook.getSheet("Config");
+			Workbook _workBook=openFile();
+			Sheet configSheet =_workBook.getSheet("Config");
 			readIncludeFileName(configSheet);
 			if(isMainSheet()){
 				readScriptLocation(configSheet);
 			}
-			HSSFSheet mySheet = _workBook.getSheet(getSheetName());
+			Sheet mySheet = _workBook.getSheet(getSheetName());
 			readHeader( mySheet);
 			readData(mySheet);	
 			if(isMainSheet()){
-				moleculeSheet=new Sheet(inputFileName,false);
-				moleculeSheet.readSheet();
-				moleculeSheet.inputFileName="Molecules";
+				moleculeExcel =new Excel(inputFileName,false);
+				moleculeExcel.readSheet();
+				moleculeExcel.inputFileName="Molecules";
 			}
 			
 		}catch (Exception e){
