@@ -12,10 +12,11 @@ import com.automature.zug.util.Utility;
 import com.automature.zug.util.XMLWriter;
 import jline.console.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import java.io.File;
@@ -28,7 +29,7 @@ import java.util.*;
 public class Excel {
 
 	// Objects for reading the input EXCEL file
-	private HSSFWorkbook _workBook = null;
+	private Workbook _workBook;
 	static String mainNameSpace = StringUtils.EMPTY;
 	private static Boolean verificationSwitching = true;
 	private static Boolean compileModeFlag = false;
@@ -56,16 +57,16 @@ public class Excel {
 			"Test Cycle Id", "ProductLogLocations", "Include", "ValidTopos","TestFramework"};
 
 	// A hash table to store the Values(Name/Value pair) from the Configuration
-	// Sheet
+	// Excel
 	private Hashtable<String, String> _configSheetHashTable = new Hashtable<String, String>();
 
 	private List<String> _externalSheets = new ArrayList<String>();
 	private static HashMap<String, String> externalSheets = new HashMap<String, String>();
-	// A hashtable to store the Values(Name/Value pair) from the Macro Sheet
+	// A hashtable to store the Values(Name/Value pair) from the Macro Excel
 	 static Hashtable<String, String> _macroSheetHashTable = new Hashtable<String, String>();
 	public static Hashtable<String, String> _indexedMacroTable = new Hashtable<String, String>();
 	// A hashtable to store the UserName and its Object contain its credentials
-	// from the User Sheet
+	// from the User Excel
 	// private Hashtable<String,UserData> _userSheetHashTable = new
 	// Hashtable<String,UserData>();
 	// ArrayList to Store the TestCases Object that the Controller needs to
@@ -84,26 +85,26 @@ public class Excel {
 	private static String scriptLocationsTag="//root//configurations//scriptlocation";
 
 	public Excel(){
-		
+
 	}
-	
+
 	public HashMap<String, String> getNamespaceMap(){
 		return namespaceMap;
 	}
-	
+
 	static void clearStaticMembers(){
 		externalSheets.clear();
 		_macroSheetHashTable.clear();
 		_indexedMacroTable.clear();
 	}
-	
+
 	static void cleanUP(){
 		verificationSwitching = true;
 		compileModeFlag = false;
 		clearStaticMembers();
 	}
 	/**
-	 * 
+	 *
 	 * @return array of configuration keys
 	 */
 	public String[] ConfigSheetKeys() {
@@ -208,13 +209,13 @@ public class Excel {
 		try{
 			iniSL=ExtensionInterpreterSupport.getNode(scriptLocationsTag);//.getNodesValues(scriptLocationsTag);
 		}catch(Exception e){
-			
+
 		}
 		if(scriptLocation==null)
 			scriptLocation=iniSL;
 		else if(iniSL!=null && !iniSL.isEmpty())
 			scriptLocation+=";"+iniSL+";";
-		return scriptLocation;		
+		return scriptLocation;
 	}
 
 	public String IncludeMolecules() {
@@ -246,10 +247,10 @@ public class Excel {
 					}
 
 				}
-			
+
 			}
 		} catch (IOException e) {
-			
+
 		}catch(Exception e){
 			Log.Error("Excel/DBHostName:"+e.getMessage());
 		}
@@ -260,7 +261,7 @@ public class Excel {
 	public String DBName()throws Throwable {
 		String dbName = null;
 		try {
-			
+
 			if (_configSheetHashTable.get(_configSheetKeys[2]) != null) {
 				dbName = (String) _configSheetHashTable
 						.get(_configSheetKeys[2]);
@@ -269,7 +270,7 @@ public class Excel {
 						.get(_configSheetKeys[_configSheetKeys.length-1]);
 			}
 			if (StringUtils.isBlank(dbName) && Controller.opts.dbReporting) {
-			
+
 				dbName=ExtensionInterpreterSupport.getNode(Excel.dbName);
 				if(dbName==null||dbName.equals("")){
 					Log.Error("Excel/DBName:Exception:-dbname not provided in test suite and also in INI file.Exiting ZUG");
@@ -281,7 +282,7 @@ public class Excel {
 				}
 						}
 		} catch (IOException e) {
-			
+
 		}catch(Exception e){
 			Log.Error("Excel/DBName:"+e.getMessage());
 		}
@@ -290,7 +291,7 @@ public class Excel {
 	/**
 	 * @return the value of Database Name
 	 */
-	
+
 
 	/**
 	 * @return the value of Database User Name
@@ -312,13 +313,13 @@ public class Excel {
 						System.exit(0);
 					}
 				}
-				
+
 			}
 		} catch (IOException e) {
 		}catch(Exception e){
 			Log.Error("Excel/DBUserName:"+e.getMessage());
 		}
-		
+
 		return dbUserName;
 	}
 
@@ -343,7 +344,7 @@ public class Excel {
 						System.exit(0);
 					}
 				}
-			
+
 			}
 		} catch (Exception e) {
 			Log.Error("Excel/DBUserPassword:"+e.getMessage());
@@ -382,7 +383,7 @@ public class Excel {
 
 	/**
 	 * @return the Test Plan Role.
-	 * 
+	 *
 	 */
 	public String TestSuitRole() {
 		String testSuitRole = null;
@@ -411,7 +412,7 @@ public class Excel {
 
 	/**
 	 * @return the testplan Id.
-	 * 
+	 *
 	 */
 	public String TestPlanID() {
 		String testplanID = null;
@@ -439,7 +440,7 @@ public class Excel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Return the Test Cycle Id.
 	 */
 	public String TestCycleId() {
@@ -468,7 +469,7 @@ public class Excel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Get product log files path.
 	 */
 	public String[] ProductLogFiles() {
@@ -521,13 +522,13 @@ public class Excel {
 
 	/*
 	 * function to find the ClosetValue in a list
-	 * 
+	 *
 	 * @param value,range_list
-	 * 
+	 *
 	 * double,List<Double>
-	 * 
+	 *
 	 * return closetValue
-	 * 
+	 *
 	 * double
 	 */
 
@@ -550,13 +551,13 @@ public class Excel {
 
 	/***
 	 * Function to check the optimality of ZUG to execute expanded Testcases
-	 * 
+	 *
 	 * @param memorysize
 	 *            memorysize as a String
-	 * 
+	 *
 	 * @param cardinalnumber
 	 *            cardinalnumber as String
-	 * 
+	 *
 	 * @return boolean
 	 */
 	private boolean checkOptimalityForCartesianProduct(String memorysize,
@@ -631,10 +632,10 @@ public class Excel {
 
 	/***
 	 * Function to find the cardinality of the macro values
-	 * 
+	 *
 	 * @param macroList
 	 *            macroList as a Hashtable<?,?>
-	 * 
+	 *
 	 * @return int
 	 */
 	private int getCardinalityForMVM(Hashtable<?, ?> macroList) {
@@ -662,11 +663,11 @@ public class Excel {
 	}
 
 	/**
-	 * Function to find a variable in Macro sheet and Environment Variable Sheet
-	 * 
+	 * Function to find a variable in Macro sheet and Environment Variable Excel
+	 *
 	 * @param variableToFind
 	 *            Name of the Variable to Search in Macro and Env Variable
-	 *            Sheet.
+	 *            Excel.
 	 * @return Returns the value of the Variable from Macro/Environment Variable
 	 *         table.
 	 */
@@ -704,24 +705,24 @@ public class Excel {
 						.format("Excel/FindInMacroAndEnvTableForSingleVector : variableToFind = %s",
 								tempValue));
 
-				// First Check in the Macro Sheet
+				// First Check in the Macro Excel
 				if (_macroSheetHashTable.get("$"
 						+ AppendNamespace(tempValue, nameSpace)) != null) {
 					tempValue = (String) _macroSheetHashTable.get("$"
 							+ AppendNamespace(tempValue, nameSpace));
 					Log.Debug(String
-							.format("Excel/FindInMacroAndEnvTableForSingleVector : After Macro Sheet parsing , variableToFind = %s",
+							.format("Excel/FindInMacroAndEnvTableForSingleVector : After Macro Excel parsing , variableToFind = %s",
 									tempValue));
 				}
 
 				tempValue = splitVariableToFind[0] + "=" + tempValue;
-			} // First Check in the Macro Sheet
+			} // First Check in the Macro Excel
 			else if (_macroSheetHashTable.get("$"
 					+ AppendNamespace(tempValue, nameSpace)) != null) {
 				tempValue = (String) _macroSheetHashTable.get("$"
 						+ AppendNamespace(tempValue, nameSpace));
 				Log.Debug(String
-						.format("Excel/FindInMacroAndEnvTableForSingleVector : After Macro Sheet parsing , variableToFind =  %S",
+						.format("Excel/FindInMacroAndEnvTableForSingleVector : After Macro Excel parsing , variableToFind =  %S",
 								tempValue));
 			}
 
@@ -733,21 +734,21 @@ public class Excel {
 					"Excel/FindInMacroAndEnvTableForSingleVector : Exception occured,message is : "
 							+ e.getMessage());
 		}
-		
+
 
 		Log.Debug("Excel/FindInMacroAndEnvTableForSingleVector : End of function with variableToFind = "
 				+ variableToFind + " and its value is -> " + tempValue);
-		
+
 		return tempValue;
 	}// FindInMacroAndEnvTableForSingleVector
 
 
 	/**
 	 * Function to read the Excel file. This function will read the different
-	 * sheets present inside this sheet..usually Config sheet, Macros Sheet,
+	 * sheets present inside this sheet..usually Config sheet, Macros Excel,
 	 * Users sheet and the TestCase sheet. If there are any other sheet then
 	 * those will be ignored.
-	 * 
+	 *
 	 * @param inputFileName
 	 *            Name of the input Excel file.
 	 * @param verificationSwitchingFlag
@@ -796,17 +797,20 @@ public class Excel {
 			compileModeFlag = compileMode;
 
 			// / Create a POIFSFileSystem object
-			POIFSFileSystem inputFileSystem = new POIFSFileSystem(inputFile);
+			//POIFSFileSystem inputFileSystem = new POIFSFileSystem(inputFile);
+
+
 			Log.Debug("Excel/openExcelFile : Creating new workbook object ");
 
 			// / Create a workbook using the File System
-			_workBook = new HSSFWorkbook(inputFileSystem);
+            _workBook = WorkbookFactory.create(inputFile);
+			//_workBook = new Workbook(inputFileSystem);
 			Log.Debug(String.format(
 					"Excel/ReadExcel : The excel File %s opened successfully",
 					inputFileName));
 
 			Log.Debug(String.format(
-					"Excel/ReadExcel : Reading the Config Sheet %s",
+					"Excel/ReadExcel : Reading the Config Excel %s",
 					ConfigSheetName));
 			// system.out.println(String.format("READING Config SHEET OF %s" ,
 			// inputFileName));
@@ -815,7 +819,7 @@ public class Excel {
 			readHashTable(_configSheetHashTable);
 
 			Log.Debug(String
-					.format("Excel/ReadExcel : The config Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExcel : The config Excel - %s of Excel Excel %s read successfully.",
 							ConfigSheetName, inputFileName));
 		} catch (Exception e) {
 
@@ -857,7 +861,7 @@ public class Excel {
 			}
 			for (String externalSheet : Excel.getExternalSheets()) {
 				Log.Debug(String
-						.format("Excel/ReadExcel : Reading the External INCLUDE Sheet %s",
+						.format("Excel/ReadExcel : Reading the External INCLUDE Excel %s",
 								externalSheet));
 				// System.out.println(String.format("Reading the External INCLUDE  FILE : %s",
 				// externalSheet));
@@ -865,21 +869,21 @@ public class Excel {
 				ReadExternalSheets(externalSheet);
 
 				Log.Debug(String
-						.format("Excel/ReadExcel : Successfully Read the External INCLUDE Sheet %s",
+						.format("Excel/ReadExcel : Successfully Read the External INCLUDE Excel %s",
 								externalSheet));
 				Log.Result(String
-						.format("Excel/ReadExcel : Successfully Read the External INCLUDE Sheet %s",
+						.format("Excel/ReadExcel : Successfully Read the External INCLUDE Excel %s",
 								externalSheet));
 			}
 
-			// / Resume Back with the MAIN Sheet after reading all the External
+			// / Resume Back with the MAIN Excel after reading all the External
 			// Molecule sheets.
 			Log.Debug(String
-					.format("Excel/ReadExcel : Resume Back with the MAIN Sheet after reading all the External Molecule sheets of %s. ",
+					.format("Excel/ReadExcel : Resume Back with the MAIN Excel after reading all the External Molecule sheets of %s. ",
 							inputFileName));
 
 			Log.Debug(String.format(
-					"Excel/ReadExcel : Reading the Macro Sheet %s",
+					"Excel/ReadExcel : Reading the Macro Excel %s",
 					MacroSheetName));
 			// system.out.println(String.format("READING Macro SHEET OF %s",
 			// inputFileName));
@@ -910,39 +914,39 @@ public class Excel {
 
 			readHashTable(_macroSheetHashTable);
 			Log.Debug(String
-					.format("Excel/ReadExcel : The Macro Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExcel : The Macro Excel - %s of Excel Excel %s read successfully.",
 							MacroSheetName, inputFileName));
 			Log.Debug(String.format(
 					"Excel/ReadExcel: The New CommandLine - %s",
 					_macroSheetHashTable));
 			Log.Debug(String.format(
-					"Excel/ReadExcel : Reading the Prototypes Sheet %s",
+					"Excel/ReadExcel : Reading the Prototypes Excel %s",
 					PrototypeSheetName));
 
 			ReadPrototypesSheet(_workBook, mainNameSpace);
 
 			Log.Debug(String
-					.format("Excel/ReadExcel : The Prototypes Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExcel : The Prototypes Excel - %s of Excel Excel %s read successfully.",
 							PrototypeSheetName, inputFileName));
 
 			Log.Debug(String.format(
-					"Excel/ReadExcel : Reading the Abstract TestCase Sheet %s",
+					"Excel/ReadExcel : Reading the Abstract TestCase Excel %s",
 					AbstractSheetName));
 
 			ReadAbstractTestCaseSheet(_workBook, mainNameSpace);
 
 			Log.Debug(String
-					.format("Excel/ReadExcel : The Abstract TestCase Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExcel : The Abstract TestCase Excel - %s of Excel Excel %s read successfully.",
 							AbstractSheetName, inputFileName));
 
 			Log.Debug(String.format(
-					"Excel/ReadExcel : Reading the TestCase Sheet %s",
+					"Excel/ReadExcel : Reading the TestCase Excel %s",
 					TestCaseSheetName));
 
 			ReadTestCaseSheet(_workBook, mainNameSpace);
 
 			Log.Debug(String
-					.format("Excel/ReadExcel : The TestCase Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExcel : The TestCase Excel - %s of Excel Excel %s read successfully.",
 							TestCaseSheetName, inputFileName));
 			Log.Result(String.format(
 					"Excel/ReadExcel: Excel file : %s read successfully",
@@ -997,16 +1001,16 @@ public class Excel {
 			}
 
 		}
-		
+
 	}
 
 	/**
 	 * Function to read the Configuration sheet
-	 * 
+	 *
 	 * @param workBook
 	 * @throws Exception
 	 */
-	void ReadConfigSheet(HSSFWorkbook workBook) throws Exception {
+	void ReadConfigSheet(Workbook workBook) throws Exception {
 
 		Log.Debug(String
 				.format("Excel/ReadConfigSheet : Start of the Function with ConfigSheetName as %s",
@@ -1014,7 +1018,7 @@ public class Excel {
 
 		String configSheetName = ConfigSheetName;
 
-		HSSFSheet workSheet = null;
+		Sheet workSheet = null;
 		xmlfile = new XMLWriter();
 		Log.Debug("Excel/ReadConfigSheet : The worksheet object created");
 
@@ -1029,7 +1033,7 @@ public class Excel {
 			if (workSheet == null) {
 				throw new Exception(
 						String.format(
-								"Excel/ReadConfigSheet : Could not find the Config Sheet : %s",
+								"Excel/ReadConfigSheet : Could not find the Config Excel : %s",
 								configSheetName));
 			}
 
@@ -1040,16 +1044,16 @@ public class Excel {
 		} catch (Exception e) {
 
 			Log.Error(String
-					.format("Excel/ReadConfigSheet : Could not find the Config Sheet : %s Exception Message raised is : %s",
+					.format("Excel/ReadConfigSheet : Could not find the Config Excel : %s Exception Message raised is : %s",
 							configSheetName, e.getMessage()));
 			throw new Exception(
 					String.format(
-							"Excel/ReadConfigSheet : Could not find the Config Sheet : %s Exception Message raised is : %s",
+							"Excel/ReadConfigSheet : Could not find the Config Excel : %s Exception Message raised is : %s",
 							configSheetName, e.getMessage()));
 		}
 		try {
 
-			Log.Debug("Excel/ReadConfigSheet : Getting the values from the Config Sheet. Calling GetKeyValuePair....");
+			Log.Debug("Excel/ReadConfigSheet : Getting the values from the Config Excel. Calling GetKeyValuePair....");
 
 			GetKeyValuePair(workSheet, _configSheetHashTable, "config", null);
 			Log.Debug("Excel/ReadConfigSheet : The values from the Config sheet is read successfully.");
@@ -1103,23 +1107,23 @@ public class Excel {
 
 	/***
 	 * Function to always return String Equivalent of a given cell.
-	 * 
+	 *
 	 * @param cell
 	 * @return String value for the Cell
 	 */
-	String GetCellValueAsString(HSSFCell cell) {
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_BOOLEAN) {
+	String GetCellValueAsString(Cell cell) {
+		if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
 			return Boolean.toString(cell.getBooleanCellValue());
 		}
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
+		if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 			return Double.toString(cell.getNumericCellValue());
 		}
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-			
+		if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+
 			return cell.getStringCellValue();
 		}
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK
-				|| cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) {
+		if (cell.getCellType() == Cell.CELL_TYPE_BLANK
+				|| cell.getCellType() == Cell.CELL_TYPE_ERROR) {
 			// System.out.println(" get cell value "+cell.getCellType());
 			return StringUtils.EMPTY;
 		}
@@ -1145,10 +1149,9 @@ public class Excel {
 				throw new Exception(error);
 			}
 			extFile = new FileInputStream(inputFile);
-			POIFSFileSystem inputFileSystem = new POIFSFileSystem(extFile);
-			HSSFWorkbook _workbook_nested_extern = new HSSFWorkbook(
-					inputFileSystem);
-			HSSFSheet externalSheet = _workbook_nested_extern
+			//POIFSFileSystem inputFileSystem = new POIFSFileSystem(extFile);
+			Workbook _workbook_nested_extern = WorkbookFactory.create(extFile);
+			Sheet externalSheet = _workbook_nested_extern
 					.getSheet(ConfigSheetName);
 
 			int key = 0, value = 1;
@@ -1157,19 +1160,19 @@ public class Excel {
 
 			do {
 
-				HSSFRow myRow = (HSSFRow) rowIter.next();
+				Row myRow = (Row) rowIter.next();
 				Iterator cellIter = myRow.cellIterator();
 
 				while (cellIter.hasNext()) {
 
-					HSSFCell myCell = (HSSFCell) cellIter.next();
+					Cell myCell = (Cell) cellIter.next();
 
-					if (myCell.getCellNum() == key) {
+					if (myCell.getColumnIndex() == key) {
 
 						extrKey = GetCellValueAsString(myCell);
 					}
 
-					if (myCell.getCellNum() == value) {
+					if (myCell.getColumnIndex() == value) {
 						extrValue = GetCellValueAsString(myCell);
 					}
 
@@ -1202,11 +1205,11 @@ public class Excel {
 
 		} catch (Exception ex) {
 			Log.Error(String
-					.format("Excel/readNestedScriptLocations : Error occured while getting values from the %s Sheet. \n Message %s: ",
+					.format("Excel/readNestedScriptLocations : Error occured while getting values from the %s Excel. \n Message %s: ",
 							nestedexternalfile, ex.getClass()));
 			throw new Exception(
 					String.format(
-							"Excel/readNestedScriptLocations : Error occured while getting values from the %s Sheet. \n Message %s: ",
+							"Excel/readNestedScriptLocations : Error occured while getting values from the %s Excel. \n Message %s: ",
 							nestedexternalfile, ex.getMessage()));
 		} finally {
 			// forDebug("Excel/readNestedScriptLocations:: "+ScriptLocationPathList);
@@ -1233,10 +1236,9 @@ public class Excel {
 				throw new Exception(error);
 			}
 			extFile = new FileInputStream(inputFile);
-			POIFSFileSystem inputFileSystem = new POIFSFileSystem(extFile);
-			HSSFWorkbook _workbook_nested_extern = new HSSFWorkbook(
-					inputFileSystem);
-			HSSFSheet externalSheet = _workbook_nested_extern
+			//POIFSFileSystem inputFileSystem = new POIFSFileSystem(extFile);
+			Workbook _workbook_nested_extern = WorkbookFactory.create(extFile);
+			Sheet externalSheet = _workbook_nested_extern
 					.getSheet(ConfigSheetName);
 
 			int key = 0, value = 1;
@@ -1245,19 +1247,19 @@ public class Excel {
 
 			do {
 
-				HSSFRow myRow = (HSSFRow) rowIter.next();
+				Row myRow = (Row) rowIter.next();
 				Iterator cellIter = myRow.cellIterator();
 
 				while (cellIter.hasNext()) {
 
-					HSSFCell myCell = (HSSFCell) cellIter.next();
+					Cell myCell = (Cell) cellIter.next();
 
-					if (myCell.getCellNum() == key) {
+					if (myCell.getColumnIndex() == key) {
 
 						extrKey = GetCellValueAsString(myCell);
 					}
 
-					if (myCell.getCellNum() == value) {
+					if (myCell.getColumnIndex() == value) {
 						extrValue = GetCellValueAsString(myCell);
 					}
 				}
@@ -1300,11 +1302,11 @@ public class Excel {
 
 		} catch (Exception ex) {
 			Log.Error(String
-					.format("Excel/readNestedIncludeMolecules : Error occured while getting values from the %s Sheet. \n Message %s: ",
+					.format("Excel/readNestedIncludeMolecules : Error occured while getting values from the %s Excel. \n Message %s: ",
 							nestedexternalfile, ex.getMessage()));
 			throw new Exception(
 					String.format(
-							"Excel/readNestedIncludeMolecules : Error occured while getting values from the %s Sheet. \n Message %s: ",
+							"Excel/readNestedIncludeMolecules : Error occured while getting values from the %s Excel. \n Message %s: ",
 							nestedexternalfile, ex.getMessage()));
 
 		} finally {
@@ -1317,7 +1319,7 @@ public class Excel {
 	// /This function will put the values of different sheets in their
 	// corresponding HashTables
 
-	void GetKeyValuePair(HSSFSheet worksheet,
+	void GetKeyValuePair(Sheet worksheet,
 			Hashtable<String, String> hashTable, String sheetname,
 			String nameSpace) throws Exception {
 		int key = 0, value = 1, defValue = 1;
@@ -1345,25 +1347,25 @@ public class Excel {
 			 while (rowIter.hasNext()){
 				// System.out.println("at line "+line);
 				boolean keyflag = false, valueflag = false;
-				HSSFRow myRow = (HSSFRow) rowIter.next();
+				Row myRow = (Row) rowIter.next();
 				Iterator cellIter = myRow.cellIterator();
 				int col=0;
 				while (cellIter.hasNext()) {
 			//		System.out.println("col no"+col);
-					HSSFCell myCell = (HSSFCell) cellIter.next();
+					Cell myCell = (Cell) cellIter.next();
 
-					if (myCell.getCellNum() == key) {
-						
+					if (myCell.getColumnIndex() == key) {
+
 						strKey = GetCellValueAsString(myCell);
 						//if(StringUtils.isNotEmpty(strKey)||StringUtils.isNotBlank(strKey))
 							keyflag = true;
-						
+
 					}
 					if (myCell.getColumnIndex() == defValue
 							&& defValue != value) {
 						defStrValue = GetCellValueAsString(myCell);
 					}
-					if (myCell.getCellNum() == value) {
+					if (myCell.getColumnIndex() == value) {
 						valueflag = true;
 						// System.out.println("The value of cell "+GetCellValueAsString(myCell));
 						strValue = GetCellValueAsString(myCell);
@@ -1387,7 +1389,7 @@ public class Excel {
 				// / If this is a Macros sheet then Expand the Value before
 				// adding it to the Hashtable..
 				if (sheetname.equals("macros")) {
-					// / If this is a Macros Sheet, then, append the name space
+					// / If this is a Macros Excel, then, append the name space
 					// for the Macro
 					// System.out.println("the flags are "+keyflag+"  "+valueflag);
 					if (keyflag) {
@@ -1411,14 +1413,14 @@ public class Excel {
 					strValue = ExpandMacrosValue(strValue.trim(),
 							strKey.trim(), nameSpace); // modify
 					}
-				
+
 				}
 
 				if (sheetname.equals("config")
 						&& ((_configSheetKeys[10].compareTo(strKey) == 0))) {
 					// /Don't insert in hash table if sheet is config and key is
 					// INCLUDE
-					
+
 					if (!Controller.opts.includeFlag) {
 						Log.Debug("Command Line Executions switch Given\t"
 								+ Controller.opts.includeFlag);
@@ -1462,11 +1464,11 @@ public class Excel {
 									// ProgramOptions.workingDirectory+
 									// Controller.SLASH + commandline_include +
 									// ",";
-									
+
 									if(commandline_include.contains("..")){
 										int lastIndex=commandline_include.lastIndexOf("..")+1;
 										String temp[]=commandline_include.split("\\..");
-										int upperH=temp.length;	
+										int upperH=temp.length;
 										String p=inputxlsfile.getParent();
 										for(int i=1;i<upperH-1;i++){
 											p=p.substring(0, p.lastIndexOf(SysEnv.SLASH));		//		System.out.println("p="+p);
@@ -1491,7 +1493,7 @@ public class Excel {
 								commmandline_includelist += actualPath;
 							}
 						}
-						
+
 						AddToExternalSheets(strKey, commmandline_includelist);
 						// path
 						// specified
@@ -1530,7 +1532,7 @@ public class Excel {
 										if(Path.contains("..")){
 											int lastIndex=Path.lastIndexOf("..")+1;
 											String temp[]=Path.split("\\..");
-											int upperH=temp.length;	
+											int upperH=temp.length;
 											String p=inputxlsfile.getParent();
 											for(int i=1;i<upperH-1;i++){
 												p=p.substring(0, p.lastIndexOf(SysEnv.SLASH));		//		System.out.println("p="+p);
@@ -1596,11 +1598,11 @@ public class Excel {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.Error(String
-					.format("Excel/GetKeyValuePair : Error occured while getting values from the %s Sheet. \n Message %s: ",
+					.format("Excel/GetKeyValuePair : Error occured while getting values from the %s Excel. \n Message %s: ",
 							sheetname, e.getMessage()));
 			throw new Exception(
 					String.format(
-							"Excel/GetKeyValuePair : Error occured while getting values from the %s Sheet. \n Message %s: ",
+							"Excel/GetKeyValuePair : Error occured while getting values from the %s Excel. \n Message %s: ",
 							sheetname, e.getMessage()));
 		}
 
@@ -1723,7 +1725,7 @@ public class Excel {
 
 					} else if (tempStringToExpand.startsWith("$")
 							&& !tempStringToExpand.startsWith("$$")) {
-						
+
 						String tempMacroToExpand = AppendNamespace(
 								tempStringToExpand, nameSpace);
 						String newMacroKey = macroKey + "#"
@@ -1905,49 +1907,49 @@ public class Excel {
 		 * Log.Debug("\nExcel/ExpandValue : Calling DiffCharCodes for " +
 		 * stringsToCompare[0]); int[] a_codes =
 		 * DiffCharCodes(stringsToCompare[0], true);
-		 * 
+		 *
 		 * Log.Debug("\nExcel/ExpandValue : Calling DiffCharCodes for " +
 		 * stringsToCompare[1]); int[] b_codes =
 		 * DiffCharCodes(stringsToCompare[1], true);
-		 * 
+		 *
 		 * Log.Debug("\nExcel/ExpandValue : Calling DiffInt for a_codes & b_codes"
 		 * ); Diff.Item[] diffs = Diff.DiffInt(a_codes, b_codes);
-		 * 
+		 *
 		 * Log.Debug("Excel/ExpandValue : diffs.Length = " + diffs.Length); if
 		 * (diffs.Length != 1) { Log.Debug(
 		 * "\nExcel/ExpandValue : [diffs.Length != 1] End of the Function  with valueToExpand = "
 		 * + valueToExpand + " and return Value as = " + valueToExpand); return
 		 * valueToExpand; }
-		 * 
+		 *
 		 * if (diffs[0].deletedA != diffs[0].insertedB) { Log.Debug(
 		 * "\nExcel/ExpandValue : [diffs[0].deletedA != diffs[0].insertedB] End of the Function  with valueToExpand = "
 		 * + valueToExpand + " and return Value as = " + valueToExpand); return
 		 * valueToExpand; }
-		 * 
+		 *
 		 * Diff.Item it = diffs[0];
-		 * 
+		 *
 		 * ArrayList firstCharSet = new ArrayList();
-		 * 
+		 *
 		 * Log.Debug("\nExcel/ExpandValue : Finding difference in first word. ");
 		 * // Find difference in the first Word if (it.deletedA > 0) { for (int
 		 * m = 0; m < it.deletedA; m++) {
 		 * firstCharSet.add(stringsToCompare[0][it.StartA + m]); } } ArrayList
 		 * secondCharSet = new ArrayList(); // Find difference in the second
 		 * Word
-		 * 
+		 *
 		 * Log.Debug("\nExcel/ExpandValue : Finding difference in Second Word. ")
 		 * ; if (it.insertedB > 0) { for (int m = 0; m < it.insertedB; m++) {
 		 * secondCharSet.add(stringsToCompare[1][it.StartB + m]); } }
-		 * 
-		 * 
+		 *
+		 *
 		 * String[] stringToReturn;
-		 * 
+		 *
 		 * firstVal = new string((char[])(firstCharSet.ToArray(typeof(char))));
 		 * Log.Debug("\nExcel/ExpandValue : firstVal = . " + firstVal);
 		 * secondVal = new
 		 * string((char[])(secondCharSet.ToArray(typeof(char))));
 		 * Log.Debug("\nExcel/ExpandValue : secondVal = . " + secondVal);
-		 * 
+		 *
 		 * firstIntVal = 0; secondIntVal = 0;
 		 * firstIntVal=Integer.parseInt(firstVal);
 		 * secondIntVal=Integer.parseInt(secondVal); if (firstIntVal>0 &&
@@ -1966,7 +1968,7 @@ public class Excel {
 		 * "Excel/ExpandValue : stringToReturn[firstIntVal -i]  = {0} ",
 		 * stringToReturn[firstIntVal - i])); stringToReturn[firstIntVal - i] =
 		 * stringToReturn[firstIntVal - i].Insert(it.StartA, i.ToString());
-		 * 
+		 *
 		 * _log.info(string.Format(
 		 * "Excel/ExpandValue : stringToReturn[firstIntVal -i]  = {0} ",
 		 * stringToReturn[firstIntVal - i])); } } else {
@@ -1990,17 +1992,17 @@ public class Excel {
 		 * ); // Get all the possible Combinations
 		 * IEnumerable<IEnumerable<char>> result =
 		 * GenerateCartesianProduct(firstCharSet, secondCharSet);
-		 * 
+		 *
 		 * ArrayList allCombination = new ArrayList(); foreach
 		 * (IEnumerable<char> subList in result) { string tempValue =
 		 * string.Empty; for (char val : subList) { tempValue += val; }
 		 * Log.Debug
 		 * ("Excel/ExpandValue : Inside allCombination loop...tempValue = " +
 		 * tempValue); allCombination.Add(tempValue); }
-		 * 
+		 *
 		 * // Now we have list of all the combinations...the only thing is to
 		 * append this in the already existing string..
-		 * 
+		 *
 		 * Log.Debug(
 		 * "Excel/ExpandValue : Expanding the Value NOW in a Loop  with allCombination.Count = "
 		 * + allCombination.Count); stringToReturn = new
@@ -2015,12 +2017,12 @@ public class Excel {
 		 * stringToReturn[i].Insert(it.StartA, (string)allCombination[i]);
 		 * Log.Debug("\nExcel/ExpandValue : Finally....stringToReturn[i] = " +
 		 * stringToReturn[i]); } }
-		 * 
+		 *
 		 * Log.Debug(
 		 * "Excel/ExpandValue : End of the Function  with valueToExpand = " +
 		 * valueToExpand + " and return Value as = " + string.Join(",",
 		 * stringToReturn));
-		 * 
+		 *
 		 * return join(",", stringToReturn,0,stringToReturn.length-1);
 		 */
 		// //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2030,7 +2032,7 @@ public class Excel {
 	}// ExpandValue
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @return result as boolean
 	 */
@@ -2045,7 +2047,7 @@ public class Excel {
 
 	// Function to append a namespace for the Macro/Molecule
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @param nameSpace
 	 * @return macro key
@@ -2099,7 +2101,7 @@ public class Excel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param inputFileName
 	 * @throws Exception
 	 */
@@ -2132,14 +2134,14 @@ public class Excel {
 
 			/** Create a POIFSFileSystem object **/
 			inFile = new FileInputStream(inputFile);
-			POIFSFileSystem inputFileSystem = new POIFSFileSystem(inFile);
+			//POIFSFileSystem inputFileSystem = new POIFSFileSystem(inFile);
 
 			Log.Debug("Excel/ReadExternalMacros : Opening the excel File "
 					+ inputFileName);
 			Log.Debug("Excel/ReadExternalMacros : Creating new workbook object ");
 
 			// / Create a workbook using the File System
-			HSSFWorkbook _workBook_extern = new HSSFWorkbook(inputFileSystem);
+			Workbook _workBook_extern = WorkbookFactory.create(inFile);
 
 			Log.Debug("Excel/ReadExternalMacros : The excel File "
 					+ inputFileName + " opened successfully");
@@ -2147,7 +2149,7 @@ public class Excel {
 			ReadMacroSheet(_workBook_extern, nameSpace);
 
 			Log.Debug(String
-					.format("Excel/ReadExternalMacros : The Macro Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExternalMacros : The Macro Excel - %s of Excel Excel %s read successfully.",
 							MacroSheetName, inputFileName));
 
 		} catch (Exception ex) {
@@ -2166,9 +2168,9 @@ public class Excel {
 
 	// / Function to read external Included Sheets. This will read the following
 	// sheets -
-	// / 1. Macros Sheet.
-	// / 2. Molecule Sheet
-	// / 3. Prototypes Sheet
+	// / 1. Macros Excel.
+	// / 2. Molecule Excel
+	// / 3. Prototypes Excel
 	// / Provided they are present.
 	private void ReadExternalSheets(String inputFileName) throws Exception,
 			MoleculeDefinitionException, Throwable {
@@ -2203,19 +2205,19 @@ public class Excel {
 
 			/** Create a POIFSFileSystem object **/
 			inFile = new FileInputStream(inputFile);
-			POIFSFileSystem inputFileSystem = new POIFSFileSystem(inFile);
+			//POIFSFileSystem inputFileSystem = new POIFSFileSystem(inFile);
 
 			Log.Debug("Excel/ReadExternalSheets : Opening the excel File "
 					+ inputFileName);
 			Log.Debug("Excel/ReadExternalSheets : Creating new workbook object ");
 
 			// / Create a workbook using the File System
-			HSSFWorkbook _workBook_extern = new HSSFWorkbook(inputFileSystem);
+			Workbook _workBook_extern = WorkbookFactory.create(inFile);
 
 			Log.Debug("Excel/ReadExternalSheets : The excel File "
 					+ inputFileName + " opened successfully");
 
-			Log.Debug("Excel/ReadExternalSheets : Reading the Macro Sheet "
+			Log.Debug("Excel/ReadExternalSheets : Reading the Macro Excel "
 					+ MacroSheetName);
 			// system.out.println("READING Macro SHEET OF " +
 			// inputFileName+"\n");
@@ -2224,10 +2226,10 @@ public class Excel {
 			// System.out.println("Macro Values of: "+nameSpace+" - "+readHashTable(_macroSheetHashTable));
 
 			Log.Debug(String
-					.format("Excel/ReadExternalSheets : The Macro Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExternalSheets : The Macro Excel - %s of Excel Excel %s read successfully.",
 							MacroSheetName, inputFileName));
 
-			Log.Debug("Excel/ReadExternalSheets : Reading the Prototypes Sheet "
+			Log.Debug("Excel/ReadExternalSheets : Reading the Prototypes Excel "
 					+ PrototypeSheetName);
 
 			// system.out.println("READING prototype SHEET OF " + inputFileName+
@@ -2236,14 +2238,14 @@ public class Excel {
 			readHashTable(protoTypesHT);
 
 			Log.Debug(String
-					.format("Excel/ReadExternalSheets : The Prototypes Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExternalSheets : The Prototypes Excel - %s of Excel Excel %s read successfully.",
 							PrototypeSheetName, inputFileName));
 
-			Log.Debug("Excel/ReadExternalSheets : Reading the Abstract TestCase Sheet "
+			Log.Debug("Excel/ReadExternalSheets : Reading the Abstract TestCase Excel "
 					+ AbstractSheetName);
 			ReadAbstractTestCaseSheet(_workBook_extern, nameSpace);
 			Log.Debug(String
-					.format("Excel/ReadExternalSheets : The Abstract TestCase Sheet - %s of Excel Sheet %s read successfully.",
+					.format("Excel/ReadExternalSheets : The Abstract TestCase Excel - %s of Excel Excel %s read successfully.",
 							AbstractSheetName, inputFileName));
 		} catch (Exception ex) {
 			Log.Error(String
@@ -2267,10 +2269,10 @@ public class Excel {
 	}
 
 	// / Function to read the Macros sheet
-	private void ReadMacroSheet(HSSFWorkbook workBook, String nameSpace)
+	private void ReadMacroSheet(Workbook workBook, String nameSpace)
 			throws Exception {
 
-		HSSFSheet workSheet = null;
+		Sheet workSheet = null;
 		String macroSheetName = MacroSheetName;
 
 		Log.Debug("Excel/ReadMacroSheet : The worksheet object created");
@@ -2288,23 +2290,23 @@ public class Excel {
 					+ MacroSheetName + " exists and read successfully");
 		} catch (Exception e) {
 			Log.Error(String
-					.format("Excel/ReadMacroSheet : Could not find the Macro Sheet : %s Exception Message raised is : %s",
+					.format("Excel/ReadMacroSheet : Could not find the Macro Excel : %s Exception Message raised is : %s",
 							MacroSheetName, e.getMessage()));
 			throw new Exception(
 					String.format(
-							"Excel/ReadMacroSheet : Could not find the Macro Sheet : %s Exception Message raised is : %s",
+							"Excel/ReadMacroSheet : Could not find the Macro Excel : %s Exception Message raised is : %s",
 							MacroSheetName, e.getMessage()));
 		}
 
 		try {
-			Log.Debug("Excel/ReadMacroSheet : Getting the values from the Macro Sheet. Calling GetKeyValuePair ......");
+			Log.Debug("Excel/ReadMacroSheet : Getting the values from the Macro Excel. Calling GetKeyValuePair ......");
 			GetKeyValuePair(workSheet, _macroSheetHashTable, "macros",
 					nameSpace);
 
 			Log.Debug("Excel/ReadMacroSheet : The values from the Macro sheet is read successfully."
 					+ "\n");
 		} catch (Exception ex) {
-			String error = "Excel/ReadMacroSheet : Error occured while getting the values from Macro Sheet "
+			String error = "Excel/ReadMacroSheet : Error occured while getting the values from Macro Excel "
 					+ macroSheetName
 					+ "\nException Message is "
 					+ ex.getMessage();
@@ -2357,48 +2359,48 @@ public class Excel {
 
 	// / Function to read the User sheet
 	/*
-	 * private void ReadUserSheet(HSSFWorkbook workBook) throws Exception{
-	 * 
+	 * private void ReadUserSheet(Workbook workBook) throws Exception{
+	 *
 	 * String userSheetName = UserSheetName; Log.Debug(
 	 * "Excel/ReadUserSheet : Start of the Function with UserSheetName as " +
 	 * userSheetName);
-	 * 
-	 * HSSFSheet workSheet = null;
+	 *
+	 * Excel workSheet = null;
 	 * Log.Debug("Excel/ReadUserSheet : The worksheet object created");
 	 * Log.Debug("Excel/ReadUserSheet : Reading the WorkSheet " +
 	 * userSheetName);
-	 * 
-	 * try { Log.Debug("Excel/ReadUserSheet : Getting the Users Sheet " +
+	 *
+	 * try { Log.Debug("Excel/ReadUserSheet : Getting the Users Excel " +
 	 * userSheetName + " from the WorkBook");
-	 * 
+	 *
 	 * // get the first and only worksheet from the collection of worksheets
 	 * workSheet=workBook.getSheet(userSheetName);
-	 * 
+	 *
 	 * if(workSheet==null) throw new Exception
 	 * ("Excel/ReadUserSheet : Could not find the User sheet " + userSheetName);
-	 * 
+	 *
 	 * Log.Debug("Excel/ReadUserSheet : Worksheet " + userSheetName +
 	 * " exists and read successfully"); } catch (Exception e) {
 	 * Log.Error("Excel/ReadUserSheet : Could not find the User sheet " +
 	 * userSheetName + " Exception message is : " + e.getMessage() );
-	 * 
+	 *
 	 * throw new Exception
 	 * ("Excel/ReadUserSheet : Could not find the User sheet " + userSheetName +
 	 * " Exception message is : " + e.getMessage() ); }
-	 * 
+	 *
 	 * try { Log.Debug(
-	 * "Excel/ReadUserSheet : Getting the values from the User Sheet. Calling GetUserFromUserSheet ......"
+	 * "Excel/ReadUserSheet : Getting the values from the User Excel. Calling GetUserFromUserSheet ......"
 	 * ); GetUserFromUserSheet(workSheet, _userSheetHashTable); Log.Debug(
 	 * "Excel/ReadUserSheet : The values from the User sheet is read successfully."
 	 * );
-	 * 
+	 *
 	 * } catch (Exception ex) { String error =
-	 * "Excel/ReadUserSheet : Error occured while getting the values from User Sheet "
+	 * "Excel/ReadUserSheet : Error occured while getting the values from User Excel "
 	 * +userSheetName+". Exception Message is "+ ex.getMessage();
 	 * Log.Error(error); throw new Exception (error); }
 	 * Log.Debug("Excel/ReadUserSheet : End of the Function with UserSheetName as "
 	 * + userSheetName);
-	 * 
+	 *
 	 * }//ReadUserSheet
 	 */
 	// / Function will retrieve the user information from the sheet. Here we
@@ -2407,111 +2409,111 @@ public class Excel {
 	// / Password associated with the User. The third column is the Domain of
 	// the User.
 	/*
-	 * private void GetUserFromUserSheet(HSSFSheet worksheet,
+	 * private void GetUserFromUserSheet(Excel worksheet,
 	 * Hashtable<String,UserData> hashTable)throws Exception { try {
 	 * Log.Debug("Excel/GetUserFromUserSheet : Start of the Function.");
 	 * Log.Debug(
 	 * "Excel/GetUserFromUserSheet : Getting the user information from the sheet. Number of rows to read is -> "
 	 * + worksheet.getLastRowNum());
-	 * 
+	 *
 	 * Iterator rowIter = worksheet.rowIterator();
-	 * 
+	 *
 	 * String strUserName=null,strUserPassword=null,strUserDomain=null; int
 	 * userKey=-1, pswdKey=-1,domainKey=-1;
-	 * 
+	 *
 	 * while(rowIter.hasNext()){
-	 * 
-	 * HSSFRow myRow=null;
-	 * 
+	 *
+	 * Row myRow=null;
+	 *
 	 * try{
-	 * 
+	 *
 	 * strUserName=null; strUserPassword=null; strUserDomain=null;
-	 * 
-	 * myRow = (HSSFRow) rowIter.next(); Iterator cellIter =
+	 *
+	 * myRow = (Row) rowIter.next(); Iterator cellIter =
 	 * myRow.cellIterator();
-	 * 
+	 *
 	 * while(cellIter.hasNext()){
-	 * 
-	 * HSSFCell myCell = (HSSFCell) cellIter.next();
-	 * 
+	 *
+	 * Cell myCell = (Cell) cellIter.next();
+	 *
 	 * //Assign cell no. for different fields [Username, password,domain]
 	 * if(userKey==-1 || pswdKey==-1 || domainKey==-1) {
 	 * if(GetCellValueAsString(myCell).equalsIgnoreCase("username"))
-	 * 
+	 *
 	 * userKey= myCell.getCellNum();
-	 * 
+	 *
 	 * else if(GetCellValueAsString(myCell).equalsIgnoreCase("password"))
-	 * 
+	 *
 	 * pswdKey= myCell.getCellNum();
-	 * 
+	 *
 	 * else if(GetCellValueAsString(myCell).equalsIgnoreCase("domain"))
-	 * 
+	 *
 	 * domainKey= myCell.getCellNum(); }
-	 * 
+	 *
 	 * else if(userKey!=-1 || pswdKey!=-1 || domainKey!=-1) {
 	 * if(myCell.getCellNum()==userKey)
-	 * 
+	 *
 	 * strUserName=GetCellValueAsString(myCell);
-	 * 
+	 *
 	 * else if(myCell.getCellNum()==pswdKey)
-	 * 
+	 *
 	 * strUserPassword=GetCellValueAsString(myCell);
-	 * 
+	 *
 	 * else if(myCell.getCellNum()==domainKey)
-	 * 
+	 *
 	 * strUserDomain=GetCellValueAsString(myCell); } }//CellIterator loop
-	 * 
+	 *
 	 * if (StringUtils.isNotBlank(strUserName) &&
 	 * StringUtils.isNotBlank(strUserPassword) &&
 	 * StringUtils.isNotBlank(strUserDomain)) { Log.Debug(String.format(
 	 * "Excel/GetUserFromUserSheet : Working on Row[%d] of the sheet. The userName is %s and Domain is %s"
 	 * ,myRow.getRowNum(),strUserName,strUserDomain)); UserData tempUser = new
 	 * UserData();
-	 * 
+	 *
 	 * tempUser.userName = strUserName; tempUser.userPassword = strUserPassword;
 	 * tempUser.domain = strUserDomain;
-	 * 
+	 *
 	 * //system.out.println(String.format("User : %s pswd : %s domain : %s",
 	 * strUserName,strUserPassword,strUserDomain));
-	 * 
+	 *
 	 * Log.Debug(String.format(
 	 * "Excel/GetUserFromUserSheet : Working on Row[%d] of the sheet. userName %s along with the User Object is getting inserted into the hashtable."
 	 * ,myRow.getRowNum(),strUserName));
 	 * //system.out.println("UserKey : "+strUserName+
 	 * " tempUserValue : "+tempUser.toString());
-	 * 
+	 *
 	 * hashTable.put(strUserName, tempUser);
 	 * Log.Debug("Excel/GetUserFromUserSheet : Working on Row["
 	 * +myRow.getRowNum()+"] of the sheet. userName "+strUserName+
 	 * " along with the User Object is inserted into the hastbale."); }
-	 * 
+	 *
 	 * }catch (Exception e) { Log.Error(
 	 * "Excel/GetUserFromUserSheet : Non-string and Non-boolean value read from "
 	 * + "User.file at Index : , " +myRow.getRowNum() + "\nIgnoring the line");
-	 * 
+	 *
 	 * throw new Exception(
 	 * "Excel/GetUserFromUserSheet : Non-string and Non-boolean value read from "
 	 * + "User.file at Index : , " +myRow.getRowNum() + "\nIgnoring the line");
 	 * }
-	 * 
+	 *
 	 * } } catch (Exception e) { Log.Error(
 	 * "Excel/GetUserFromUserSheet : Error occured while getting values from the "
-	 * + " User Sheet. \n Message : " + e.getMessage());
-	 * 
+	 * + " User Excel. \n Message : " + e.getMessage());
+	 *
 	 * throw new Exception(
 	 * "Excel/GetUserFromUserSheet : Error occured while getting values from the "
-	 * + " User Sheet. \n Exception Message is : " + e.getMessage());
-	 * 
+	 * + " User Excel. \n Exception Message is : " + e.getMessage());
+	 *
 	 * } }///GetUserFromUserSheet
 	 */
 	// / Function to read the Prototypes sheet
-	public void ReadPrototypesSheet(HSSFWorkbook workBook, String nameSpace)
+	public void ReadPrototypesSheet(Workbook workBook, String nameSpace)
 			throws Exception {
 		String prototypeSheetName = PrototypeSheetName;
 		Log.Debug("Excel/ReadPrototypesSheet : Start of the Function with prototypeSheetName as "
 				+ prototypeSheetName);
 
-		HSSFSheet workSheet = null;
+		Sheet workSheet = null;
 		Log.Debug("Excel/ReadPrototypesSheet : The worksheet object created");
 		Log.Debug("Excel/ReadPrototypesSheet : Reading the prototypeSheetName "
 				+ prototypeSheetName);
@@ -2556,32 +2558,32 @@ public class Excel {
 				+ prototypeSheetName);
 	}// ReadPrototypesSheet
 
-	// / Function to read the Prototypes Sheet and Fill in the Appropriate Data
+	// / Function to read the Prototypes Excel and Fill in the Appropriate Data
 	// Structures.
 	// / This will find the prototype for a Molecule/ Primitives with its
 	// arguments
 	// / and other details.
-	private void GetPrototypesSheetValues(HSSFSheet workSheet, String nameSpace)
+	private void GetPrototypesSheetValues(Sheet workSheet, String nameSpace)
 			throws Exception {
 		int index = 1;
 
 		try {
 			Log.Debug("Excel/GetPrototypesSheetValues : Start of Function to read Prototypes sheet");
-			// / Read the Labels from the Prototypes Sheet and find their index
-			Hashtable<Short, String> labelIndex = new Hashtable<Short, String>();
+			// / Read the Labels from the Prototypes Excel and find their index
+			Hashtable<Integer, String> labelIndex = new Hashtable<Integer, String>();
 
 			Log.Debug("Excel/GetPrototypesSheetValues : Calling getLabelIndex for Prototypes sheet");
 			GetLabelIndex(workSheet, labelIndex);
 
-			short argumentIndex = 0;
+			Integer argumentIndex = 0;
 			// /Initially we assume that the prototype and its Arguments to be
 			// Null.
 			Prototype prototypeObj = null;
 			Arguments argumentsObj = null;
 
-			short nameIndex = 0;
-			Set<Short> it = labelIndex.keySet();
-			for (Short key : it) {
+			Integer nameIndex = 0;
+			Set<Integer> it = labelIndex.keySet();
+			for (Integer key : it) {
 				if (labelIndex.get(key).toString()
 						.equalsIgnoreCase("arguments")) {
 					argumentIndex = key;
@@ -2608,7 +2610,7 @@ public class Excel {
 
 				String valueInNameColumn = null;
 
-				HSSFCell tempcol = workSheet.getRow(index).getCell(nameIndex);
+				Cell tempcol = workSheet.getRow(index).getCell(nameIndex);
 				if (tempcol != null) {
 					valueInNameColumn = GetCellValueAsString(tempcol);
 				}
@@ -2616,8 +2618,8 @@ public class Excel {
 				if (valueInNameColumn != null
 						&& valueInNameColumn.toLowerCase().trim()
 								.equalsIgnoreCase("comment")) {
-					HSSFCell col = workSheet.getRow(index).getCell(
-							(short) (nameIndex + 1));
+					Cell col = workSheet.getRow(index).getCell(
+							(Integer) (nameIndex + 1));
 
 					if (col == null) {
 						throw new Exception(
@@ -2627,7 +2629,7 @@ public class Excel {
 					}
 
 					description = GetCellValueAsString(workSheet.getRow(index)
-							.getCell((short) (nameIndex + 1)));
+							.getCell((Integer) (nameIndex + 1)));
 					Log.Debug("Excel/GetPrototypesSheetValues : This is a Comment Section/Row..Ignoring this as this is of no use to Automation. ");
 					continue;
 				}
@@ -2655,17 +2657,17 @@ public class Excel {
 				}
 
 				// / First checking for the Arguments column
-				HSSFCell col = workSheet.getRow(index).getCell(
-						(short) (argumentIndex));
+				Cell col = workSheet.getRow(index).getCell(
+						(Integer) (argumentIndex));
 
-				// HSSFRow.MissingCellPolicy();
+				// Row.MissingCellPolicy();
 				if (col == null) {
 					Log.Debug((String
 							.format("Excel/GetPrototypesSheetValues :Unable to read the cell at Row/Col(%d/%d) in prototypesheet",
 									index, nameIndex)));
 				} else {
 					String valueInArgumentsColumn = GetCellValueAsString(workSheet
-							.getRow(index).getCell((short) (argumentIndex)));
+							.getRow(index).getCell((Integer) (argumentIndex)));
 					if (StringUtils.isNotBlank(valueInArgumentsColumn)) {
 						if (argumentsObj != null && prototypeObj != null) {
 							prototypeObj.arguments.add(argumentsObj);
@@ -2706,33 +2708,33 @@ public class Excel {
 	}// GetPrototypesSheetValues
 
 	// / Method to read the first row in the testcase worksheet.
-	public void GetLabelIndex(HSSFSheet sheet,
-			Hashtable<Short, String> indexHashtable) throws Exception {
+	public void GetLabelIndex(Sheet sheet,
+			Hashtable<Integer, String> indexHashtable) throws Exception {
 		try {
 
-			Log.Debug("Excel/getLabelIndex : Start of Function to read the First Row in the TestCase Sheet");
+			Log.Debug("Excel/getLabelIndex : Start of Function to read the First Row in the TestCase Excel");
 
 			Iterator rowIter = sheet.rowIterator();
 
 			if (rowIter.hasNext()) {
 
-				HSSFRow myRow = (HSSFRow) rowIter.next();
+				Row myRow = (Row) rowIter.next();
 				Iterator cellIter = myRow.cellIterator();
 
 				Log.Debug("Excel/getLabelIndex : Started reading the Cells of the First Row");
 				while (cellIter.hasNext()) {
 
-					HSSFCell myCell = (HSSFCell) cellIter.next();
+					Cell myCell = (Cell) cellIter.next();
 					Log.Debug("Excel/getLabelIndex : Working on Cell["
-							+ myCell.getCellNum() + "] of the First Row");
+							+ myCell.getColumnIndex() + "] of the First Row");
 
 					if (StringUtils.isNotBlank(GetCellValueAsString(myCell))) {
 
 						Log.Debug("Excel/getLabelIndex :Inserting the Value in the Hashtable for Cell["
-								+ myCell.getCellNum()
+								+ myCell.getColumnIndex()
 								+ "] = "
 								+ GetCellValueAsString(myCell));
-						indexHashtable.put(myCell.getCellNum(),
+						indexHashtable.put(myCell.getColumnIndex(),
 								GetCellValueAsString(myCell).toLowerCase()
 										.trim());
 					}
@@ -2747,7 +2749,7 @@ public class Excel {
 							+ e.getMessage());
 
 		}
-		Log.Debug("Excel/getLabelIndex : End of Function to read the First Row in the TestCase Sheet");
+		Log.Debug("Excel/getLabelIndex : End of Function to read the First Row in the TestCase Excel");
 
 	}// /GetLabelIndex
 
@@ -2757,8 +2759,8 @@ public class Excel {
 	// / <param name="index"></param>
 	// / <param name="nameIndex"></param>
 	// / <param name="description"></param>
-	private Prototype ReadPrototypes(HSSFSheet worksheet,
-			Hashtable<Short, String> labelIndex, int index, short nameIndex,
+	private Prototype ReadPrototypes(Sheet worksheet,
+			Hashtable<Integer, String> labelIndex, Integer index, Integer nameIndex,
 			String description, String nameSpace) throws Exception {
 		Prototype prototypes = new Prototype();
 		{
@@ -2767,7 +2769,7 @@ public class Excel {
 					+ index
 					+ " and  Index of nameIndex column as : "
 					+ nameIndex);
-			HSSFCell col = worksheet.getRow(index).getCell((nameIndex));
+			Cell col = worksheet.getRow(index).getCell((nameIndex));
 
 			if (col == null) {
 				throw new Exception(
@@ -2838,12 +2840,12 @@ public class Excel {
 								index, getKey(labelIndex, "property")));
 			}
 			// system.out.println("Cell's value is : " + col.getCellType()
-			// +" Numeric is : "+HSSFCell.CELL_TYPE_NUMERIC + "String is : "+
-			// HSSFCell.CELL_TYPE_STRING + "Formula " +
-			// HSSFCell.CELL_TYPE_FORMULA );
-			if (col.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
+			// +" Numeric is : "+Cell.CELL_TYPE_NUMERIC + "String is : "+
+			// Cell.CELL_TYPE_STRING + "Formula " +
+			// Cell.CELL_TYPE_FORMULA );
+			if (col.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				argCount = (int) col.getNumericCellValue();
-			} else if (col.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+			} else if (col.getCellType() == Cell.CELL_TYPE_STRING) {
 				argCount = Integer.parseInt(GetCellValueAsString(col));
 			}
 
@@ -2865,8 +2867,8 @@ public class Excel {
 	// / <param name="labelIndex"></param>
 	// / <param name="index"></param>
 	// / <param name="argumentsIndex"></param>
-	private Arguments ReadArgumentsSection(HSSFSheet workSheet,
-			Hashtable<Short, String> labelIndex, int index, int argumentsIndex)
+	private Arguments ReadArgumentsSection(Sheet workSheet,
+			Hashtable<Integer, String> labelIndex, int index, int argumentsIndex)
 			throws Exception {
 		Arguments arguments = new Arguments();
 
@@ -2876,8 +2878,8 @@ public class Excel {
 					+ " and  Index of argumentsIndex column as : "
 					+ argumentsIndex);
 
-			HSSFCell col = workSheet.getRow(index).getCell(
-					(short) (argumentsIndex));
+			Cell col = workSheet.getRow(index).getCell(
+					(Integer) (argumentsIndex));
 
 			if (col == null) {
 				throw new Exception(
@@ -2887,7 +2889,7 @@ public class Excel {
 			}
 
 			arguments.argumentName = (GetCellValueAsString(workSheet.getRow(
-					index).getCell((short) (argumentsIndex))));
+					index).getCell((Integer) (argumentsIndex))));
 			Log.Debug("Excel/ReadArgumentsSection : Row[" + index
 					+ "]  arguments.argumentName =  " + arguments.argumentName);
 
@@ -2951,10 +2953,10 @@ public class Excel {
 	}// /ReadArgumentsSection
 
 	// /function returns key of a HashTable corresponding to the value supplied
-	public short getKey(Hashtable<Short, String> hTable, String value) {
-		short key = -1;
-		Set<Short> it = hTable.keySet();
-		for (short s : it) {
+	public Integer getKey(Hashtable<Integer, String> hTable, String value) {
+		Integer key = -1;
+		Set<Integer> it = hTable.keySet();
+		for (Integer s : it) {
 			if (hTable.get(s).equalsIgnoreCase(value)) {
 				key = s;
 				break;
@@ -2963,14 +2965,14 @@ public class Excel {
 		return key;
 	}// /getKey
 
-	// / Function to read the Abstract TestCase Sheet
-	public void ReadAbstractTestCaseSheet(HSSFWorkbook workBook,
+	// / Function to read the Abstract TestCase Excel
+	public void ReadAbstractTestCaseSheet(Workbook workBook,
 			String nameSpace) throws Exception, MoleculeDefinitionException,Throwable {
 		String testCaseSheetName = AbstractSheetName;
 		Log.Debug("Excel/ReadAbstractTestCaseSheet : Start of the Function with Abstract TestCaseSheetName as "
 				+ testCaseSheetName);
 
-		HSSFSheet workSheet = null;
+		Sheet workSheet = null;
 		Log.Debug("Excel/ReadAbstractTestCaseSheet : The worksheet object created");
 
 		Log.Debug("Excel/ReadAbstractTestCaseSheet : Reading the WorkSheet "
@@ -2998,12 +3000,12 @@ public class Excel {
 							+ e.getMessage() + "\n");
 		}
 		try {
-			Log.Debug("Excel/ReadAbstractTestCaseSheet : Getting the values from the Abstract TestCase Sheet. Calling GetAbstractTestCaseSheetValues ......");
+			Log.Debug("Excel/ReadAbstractTestCaseSheet : Getting the values from the Abstract TestCase Excel. Calling GetAbstractTestCaseSheetValues ......");
 			GetAbstractTestCaseSheetValues(workSheet, nameSpace);
 			Log.Debug("Excel/ReadAbstractTestCaseSheet : The values from the Abstract TestCase sheet is read successfully.");
 
 		} catch (Exception ex) {
-			String error = "Excel/ReadAbstractTestCaseSheet : Error occured while getting the values from Abstract TestCase Sheet "
+			String error = "Excel/ReadAbstractTestCaseSheet : Error occured while getting the values from Abstract TestCase Excel "
 					+ testCaseSheetName
 					+ ". Exception Message is \n"
 					+ ex.getMessage();
@@ -3020,17 +3022,17 @@ public class Excel {
 	// / populate the values in the DataStructures appropriately.
 	boolean molecule_error = false;
 
-	private void GetAbstractTestCaseSheetValues(HSSFSheet worksheet,
+	private void GetAbstractTestCaseSheetValues(Sheet worksheet,
 			String nameSpace) throws Exception, MoleculeDefinitionException,Throwable {
-		Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
+		Hashtable<Integer, String> _mapHashTable = new Hashtable<Integer, String>();
 
 		try {
 			int index = 1;
 			Log.Debug("Excel/GetAbstractTestCaseSheetValues : Start of Function to read Abstract Test Case sheet");
 
-			// / Read the Labels from the TestCase Sheet and find their index in
+			// / Read the Labels from the TestCase Excel and find their index in
 			// the TestSheet
-			Hashtable<Short, String> labelIndex = new Hashtable<Short, String>();
+			Hashtable<Integer, String> labelIndex = new Hashtable<Integer, String>();
 
 			Log.Debug("Excel/GetAbstractTestCaseSheetValues : Calling getLabelIndex for Abstract Test Case sheet");
 			GetLabelIndex(worksheet, labelIndex);
@@ -3074,11 +3076,11 @@ public class Excel {
 			Log.Debug("Excel/GetAbstractTestCaseSheetValues : testCaseIndex = "
 					+ testCaseIndex);
 
-			short actionIndex = getKey(labelIndex, "action");
+			Integer actionIndex = getKey(labelIndex, "action");
 			Log.Debug("Excel/GetAbstractTestCaseSheetValues : actionIndex = "
 					+ actionIndex);
 
-			short verifyIndex = getKey(labelIndex, "verify");
+			Integer verifyIndex = getKey(labelIndex, "verify");
 			Log.Debug("Excel/GetAbstractTestCaseSheetValues : verifyIndex = "
 					+ verifyIndex);
 
@@ -3093,10 +3095,10 @@ public class Excel {
 			for (; index <= worksheet.getLastRowNum(); index++) {
 				Log.Debug("Excel/GetAbstractTestCaseSheetValues : Reading the Abstract TestCase Excel sheet at Index -> "
 						+ index);
-				HSSFCell col=null;
+				Cell col=null;
 				try{
 					col = worksheet.getRow(index).getCell(
-							((short) (testCaseIndex)));
+							((Integer) (testCaseIndex)));
 				}catch(Exception e){
 //					e.printStackTrace();
 					Log.Error("Warn: Exception in molecule sheet of "+nameSpace+" due to empty line or cell in line number "+(index+1)+". "+e.getMessage());
@@ -3116,7 +3118,7 @@ public class Excel {
 								.equals("comment")) {
 					// System.out.println("if comment valid ");
 					col = worksheet.getRow(index).getCell(
-							((short) (testCaseIndex + 1)));
+							((Integer) (testCaseIndex + 1)));
 
 					if (col != null) {
 
@@ -3131,7 +3133,7 @@ public class Excel {
 						throw new Exception(
 								"Comment can't be provided at last row of "
 										+ nameSpace
-										+ ".xls Sheet: molecule Row: "
+										+ ".xls Excel: molecule Row: "
 										+ worksheet.getLastRowNum());
 
 					}
@@ -3141,7 +3143,7 @@ public class Excel {
 				// / First checking for the Verification Methods
 
 				String valueInVerificationColumn = null;
-				col = worksheet.getRow(index).getCell(((short) (verifyIndex)));
+				col = worksheet.getRow(index).getCell(((Integer) (verifyIndex)));
 
 				if (col != null) {
 					valueInVerificationColumn = GetCellValueAsString(col);
@@ -3179,7 +3181,7 @@ public class Excel {
 				//
 				// / The read the Action
 				String valueInActionColumn = null;
-				col = worksheet.getRow(index).getCell(((short) (actionIndex)));
+				col = worksheet.getRow(index).getCell(((Integer) (actionIndex)));
 				if (col != null) {
 					valueInActionColumn = GetCellValueAsString(col);
 				}
@@ -3296,15 +3298,15 @@ public class Excel {
 	// / <param name="index">Row of the TestCase sheet that one is
 	// reading</param>
 	// / <param name="verifyIndex">Index of the Verify Column</param>
-	private Verification ReadVerificationSection(HSSFSheet worksheet,
-			Hashtable<Short, String> labelIndex,
-			Hashtable<Short, String> _mapHashTable, int index, int verifyIndex,
+	private Verification ReadVerificationSection(Sheet worksheet,
+			Hashtable<Integer, String> labelIndex,
+			Hashtable<Integer, String> _mapHashTable, int index, int verifyIndex,
 			String sheetName, TestCase testCase, int testcaseIndex,
 			String nameSpace) throws Exception {
 		Log.Debug("Excel/ReadVerificationSection : Start of the Function with Row Index = "
 				+ index
 				+ " and  Index of Verification column as : "
-				+ verifyIndex + ". The name of the Sheet is - > " + sheetName);
+				+ verifyIndex + ". The name of the Excel is - > " + sheetName);
 		Verification verifyObj = new Verification();
 
 		if (!verificationSwitching) {
@@ -3316,7 +3318,7 @@ public class Excel {
 
 		String property = null;
 
-		HSSFCell col = worksheet.getRow(index).getCell(
+		Cell col = worksheet.getRow(index).getCell(
 				getKey(labelIndex, "property"));
 
 		if (col != null) {
@@ -3353,10 +3355,10 @@ public class Excel {
 				verifyObj.isIgnore = true;
 
 			}
-			
-			
+
+
 			verifyObj.name = GetCellValueAsString(worksheet.getRow(
-					index).getCell((short) (verifyIndex)));
+					index).getCell((Integer) (verifyIndex)));
 
 			if (verifyObj.name == null) {
 				return null;
@@ -3399,9 +3401,9 @@ public class Excel {
 				 * if (_userSheetHashTable.get(user) != null) {
 				 * Log.Debug("Excel/ReadVerificationSection : Row["
 				 * +index+"] User Credentials and Information for User "
-				 * +user+" exists in the User Sheet"); userObj =
+				 * +user+" exists in the User Excel"); userObj =
 				 * (UserData)_userSheetHashTable.get(user); }
-				 */col = worksheet.getRow(index).getCell((short) testcaseIndex);
+				 */col = worksheet.getRow(index).getCell((Integer) testcaseIndex);
 				if (col != null) {
 					testCaseID = GetCellValueAsString(col);
 				}
@@ -3483,7 +3485,7 @@ public class Excel {
 
 					String argumentValue = null;
 					col = worksheet.getRow(index).getCell(
-							(short) ((getKey(labelIndex, "verifyarg_" + i))));
+							(Integer) ((getKey(labelIndex, "verifyarg_" + i))));
 
 					if (col == null) {
 						Log.Debug("\n"
@@ -3577,7 +3579,7 @@ public class Excel {
 							.get(AppendNamespace(tempName, nameSpace));
 					if (arguments.size() > tempPrototype.arguments.size()) {
 						errorInTheSheet += String
-								.format(" \n Number of Arguments Specified For Primitive : %s is : %d whereas the prototype has lesser number of Arguments specified.  Exception at Line Number :  %d  of Sheet : %s  while working on TestCase : %s",
+								.format(" \n Number of Arguments Specified For Primitive : %s is : %d whereas the prototype has lesser number of Arguments specified.  Exception at Line Number :  %d  of Excel : %s  while working on TestCase : %s",
 										name, arguments.size(), lineNumber + 1,
 										sheetName, testCaseID);
 					}
@@ -3585,7 +3587,7 @@ public class Excel {
 							arguments, name, lineNumber, sheetName, testCaseID);
 				} else {
 					errorInTheSheet += String
-							.format(" \n No Prototype Present For Primitive : %s Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+							.format(" \n No Prototype Present For Primitive : %s Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 									name, lineNumber + 1, sheetName, testCaseID);
 				}
 
@@ -3596,7 +3598,7 @@ public class Excel {
 							.get(AppendNamespace(tempName, nameSpace));
 					if (arguments.size() > tempPrototype.arguments.size()) {
 						errorInTheSheet += String
-								.format(" \n Number of Arguments Specified For Molecule : %s is : %d whereas the prototype has lesser number of Arguments specified.  Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+								.format(" \n Number of Arguments Specified For Molecule : %s is : %d whereas the prototype has lesser number of Arguments specified.  Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 										name, arguments.size(), lineNumber + 1,
 										sheetName, testCaseID);
 					}
@@ -3605,14 +3607,14 @@ public class Excel {
 							arguments, name, lineNumber, sheetName, testCaseID);
 				} else {
 					errorInTheSheet += String
-							.format(" \n No Prototype Present For Molecule : %s Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+							.format(" \n No Prototype Present For Molecule : %s Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 									name, lineNumber + 1, sheetName, testCaseID);
 
 				}
 			} else if (name.trim().compareTo("setcontextvar") == 0) {
 				if (arguments.size() != 1) {
 					errorInTheSheet += String
-							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be 1.  Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be 1.  Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 									name, arguments.size(), lineNumber + 1,
 									sheetName, testCaseID);
 				}
@@ -3620,7 +3622,7 @@ public class Excel {
 			} else if (name.trim().compareTo("unsetcontextvar") == 0) {
 				if (arguments.size() != 1) {
 					errorInTheSheet += String
-							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be 1.  Exception at Line Number : %d of Sheet : 5s while working on TestCase : %s",
+							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be 1.  Exception at Line Number : %d of Excel : 5s while working on TestCase : %s",
 									name, arguments.size(), lineNumber + 1,
 									sheetName, testCaseID);
 				}
@@ -3631,21 +3633,21 @@ public class Excel {
 					if (firstArgument.substring(0, idx).toLowerCase()
 							.compareTo("contextvar") != 0) {
 						errorInTheSheet += String
-								.format(" \n Invalid first argument specified For Built-In Primitive : %s is : %s should be contextvar=%s Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+								.format(" \n Invalid first argument specified For Built-In Primitive : %s is : %s should be contextvar=%s Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 										name, firstArgument,
 										firstArgument.substring(idx + 1),
 										lineNumber + 1, sheetName, testCaseID);
 					}
 				} else {
 					errorInTheSheet += String
-							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be more than equal to 2.  Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be more than equal to 2.  Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 									name, arguments.size(), lineNumber + 1,
 									sheetName, testCaseID);
 				}
 			} else if (name.trim().compareTo("getdbcolumnsbykey") == 0) {
 				if (arguments.size() != 3) {
 					errorInTheSheet += String
-							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be equal to 3.  Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+							.format(" \n Number of Arguments Specified For Built-In Primitive : %s is : %d whereas it should be equal to 3.  Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 									name, arguments.size(), lineNumber + 1,
 									sheetName, testCaseID);
 				} else {
@@ -3669,7 +3671,7 @@ public class Excel {
 					if (!(isValidatedTableName && isValidatedKeyName && isValidatedKeyValue)) {
 						errorInTheSheet += String
 								.format(" \n Arguments Specified For Built-In Primitive : %s should be "
-										+ "tablename, keyname and keyvalue. Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+										+ "tablename, keyname and keyvalue. Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 										name, lineNumber + 1, sheetName,
 										testCaseID);
 					}
@@ -3703,7 +3705,7 @@ public class Excel {
 			if (!prototypeArg.isDefaultValue) {
 				if (!actualArgumentValue.startsWith(prototypeArg.argumentName)) {
 					errorInTheSheet += String
-							.format(" \n Argument  : %s specified as  argument %d in the Prototype is not present for : %s Exception at Line Number : %d of Sheet : %s while working on TestCase : %s",
+							.format(" \n Argument  : %s specified as  argument %d in the Prototype is not present for : %s Exception at Line Number : %d of Excel : %s while working on TestCase : %s",
 									prototypeArg.argumentName, (i + 1), name,
 									(lineNumber + 1), sheetName, testCaseID);
 				}
@@ -3712,9 +3714,9 @@ public class Excel {
 	}// ComparePrototypeAndActualArguments
 
 	// / Function to find a variable in Macro sheet and Environment Variable
-	// Sheet
+	// Excel
 	// / <param name="variableToFind">Name of the Variable to Search in Macro
-	// and Env Variable Sheet</param>
+	// and Env Variable Excel</param>
 	// / <returns>Returns the value of the Variable from Macro/Environment
 	// Variable table.</returns>
 	public String FindInMacroAndEnvTable(String variableToFind, String nameSpace)
@@ -3753,7 +3755,7 @@ public class Excel {
 				}
 
 				String tempValPrefix = splitVariableToFind[0].trim();
-				// / First Check in the Macro Sheet
+				// / First Check in the Macro Excel
 				if (StringUtils.isNotBlank(tempValPrefix)
 						|| StringUtils.isNotEmpty(tempValPrefix)) {
 
@@ -3763,7 +3765,7 @@ public class Excel {
 								.get(AppendNamespace(tempValPrefix, nameSpace));
 						Log.Debug("\n"
 								+ String.format(
-										"Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , tempValPrefix = %s ",
+										"Excel/FindInMacroAndEnvTable : After Macro Excel parsing , tempValPrefix = %s ",
 										tempValPrefix));
 					}
 				}
@@ -3771,14 +3773,14 @@ public class Excel {
 				Log.Debug("Excel/FindInMacroAndEnvTable : variableToFind = "
 						+ tempValue);
 
-				// / First Check in the Macro Sheet
+				// / First Check in the Macro Excel
 				if (_macroSheetHashTable.get(AppendNamespace(tempValue,
 						nameSpace)) != null) {
 					tempValue = (String) _macroSheetHashTable
 							.get(AppendNamespace(tempValue, nameSpace));
 					Log.Debug("\n"
 							+ String.format(
-									"Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , variableToFind = %s ",
+									"Excel/FindInMacroAndEnvTable : After Macro Excel parsing , variableToFind = %s ",
 									tempValue));
 
 				}
@@ -3812,9 +3814,9 @@ public class Excel {
 				 * tempValue=splitVariableToFind[1];//.substring(1); //
 				 * System.out.println("Excel/tempValue="+tempValue); // } }
 				 */
-				
+
 				tempValue = tempValPrefix + "=" + tempValue;
-			} // / First Check in the Macro Sheet
+			} // / First Check in the Macro Excel
 			// System.out.println("The temp value "+tempValue+" namespace "+nameSpace);
 			if (_macroSheetHashTable.get(AppendNamespace(tempValue, nameSpace)) != null) {
 				// System.out.println("The value comming action "+tempValue);
@@ -3823,7 +3825,7 @@ public class Excel {
 				// System.out.println(tempValue+" THE macro hashtable "+_macroSheetHashTable);
 				Log.Debug("\n"
 						+ String.format(
-								"Excel/FindInMacroAndEnvTable : After Macro Sheet parsing , variableToFind = %s ",
+								"Excel/FindInMacroAndEnvTable : After Macro Excel parsing , variableToFind = %s ",
 								tempValue));
 			}
 			// checking for any vector macro
@@ -3857,7 +3859,7 @@ public class Excel {
 				/*
 				 * if(tempValue==null){ //if(variableToFind.startsWith("$$")){
 				 * tempValue=variableToFind;//.substring(1);
-				 * 
+				 *
 				 * // System.out.println("Excel/tempValue="+tempValue); //} }
 				 */
 
@@ -3944,7 +3946,7 @@ public class Excel {
 			String[] tempStringToReturn = new String[2];
 			tempStringToReturn[0] = stringToReturn[0];
 			String[] tempStringToJoin = new String[stringToReturn.length - 1];// Separately
-			
+
 			for (int i = 1; i < stringToReturn.length; i++) {
 				tempStringToJoin[i - 1] = stringToReturn[i];// getting the
 			} // computed string
@@ -3958,14 +3960,14 @@ public class Excel {
 		}
 		*/
 	}
-	private TestCase ReadTestCase(HSSFSheet worksheet,
-			Hashtable<Short, String> labelIndex, int index, int testCaseIndex,
+	private TestCase ReadTestCase(Sheet worksheet,
+			Hashtable<Integer, String> labelIndex, int index, int testCaseIndex,
 			String description, String nameSpace,boolean isTestCase) throws Exception {
 		Log.Debug("Excel/ReadTestCase : Start of the Function with Row Index = "
 				+ index
 				+ " and  Index of testCaseIndex column as : "
 				+ testCaseIndex);
-		HSSFCell col;
+		Cell col;
 		// Same description comming for other testcases.....
 		// System.out.println("Testcaseid "+index
 		// +" TestcaseDescription->"+description+" Namespace "+nameSpace);
@@ -3978,7 +3980,7 @@ public class Excel {
 		}
 
 		try {
-			col = worksheet.getRow(index).getCell((short) (testCaseIndex));
+			col = worksheet.getRow(index).getCell((Integer) (testCaseIndex));
 
 			if (col == null) {
 				throw new Exception(
@@ -4046,12 +4048,12 @@ public class Excel {
 							"Excel/ReadTestCase : Row[%d] test case ID is concurrentExecutionOnExpansion = %s ",
 							index, testCase.concurrentExecutionOnExpansion));
 
-			col = worksheet.getRow(index).getCell(getKey(labelIndex, "user"));
+			/*col = worksheet.getRow(index).getCell(getKey(labelIndex, "user"));
 			if (col == null) {
 				testCase.user = "";
 			} else {
 				testCase.user = GetCellValueAsString(col);
-			}
+			}*/
 
 			Log.Debug("\n"
 					+ String.format("Excel/ReadTestCase : Row[%d] user = %s ",
@@ -4070,7 +4072,7 @@ public class Excel {
 			/*
 			 * if (_userSheetHashTable.get(testCase.user) != null) {
 			 * Log.Debug("\n"+String.format(
-			 * "Excel/ReadTestCase : Row[%d] User Credentials and Information for User %s exists in the User Sheet"
+			 * "Excel/ReadTestCase : Row[%d] User Credentials and Information for User %s exists in the User Excel"
 			 * , index, testCase.user)); testCase.userObj =
 			 * (UserData)_userSheetHashTable.get(testCase.user) ; }
 			 */Log.Debug("Excel/ReadTestCase : End of the Function with Row Index = "
@@ -4095,22 +4097,22 @@ public class Excel {
 	// / <param name="index">Row of the TestCase sheet that one is
 	// reading</param>
 	// / <param name="actionIndex">Index of the Verify Column</param>
-	private Action ReadActionSection(HSSFSheet worksheet,
-			Hashtable<Short, String> labelIndex,
-			Hashtable<Short, String> _mapHashTable, int index, int actionIndex,
+	private Action ReadActionSection(Sheet worksheet,
+			Hashtable<Integer, String> labelIndex,
+			Hashtable<Integer, String> _mapHashTable, int index, int actionIndex,
 			String sheetName, TestCase testCase, int testcaseIndex,
 			String nameSpace) throws Exception, MoleculeDefinitionException {
 		Log.Debug("Excel/ReadActionSection : Start of the Function with Row Index = "
 				+ index
 				+ " and  Index of Action column as : "
 				+ actionIndex
-				+ ". The name of the Sheet is - > " + sheetName);
+				+ ". The name of the Excel is - > " + sheetName);
 
 		Action actionObj = new Action();
 		try {
 			String property = null;
 
-			HSSFCell col = worksheet.getRow(index).getCell(
+			Cell col = worksheet.getRow(index).getCell(
 					(getKey(labelIndex, "property")));
 
 			if (col != null) {
@@ -4124,8 +4126,8 @@ public class Excel {
 				Log.Debug("Excel/ReadActionSection : Action is a Comment");
 				Log.Debug("Excel/ReadActionSection : End of the Function.");
 				actionObj.isComment = true;
-				HSSFCell actionDefine = worksheet.getRow(index).getCell(
-						(short) (actionIndex));
+				Cell actionDefine = worksheet.getRow(index).getCell(
+						(Integer) (actionIndex));
 				// System.out.println("The name "+GetCellValueAsString(actionDefine));
 				if (GetCellValueAsString(actionDefine).toLowerCase().trim()
 						.contains("#define_arg")) {
@@ -4136,7 +4138,7 @@ public class Excel {
 
 				return null;
 			}
-			
+
 			if(property==null){
 				actionObj.property=" ";
 			}else{
@@ -4173,7 +4175,7 @@ public class Excel {
 				Log.Debug("Excel/ReadActionSection : Action Description "
 						+ actionObj.actionDescription);
 			}
-			col = worksheet.getRow(index).getCell((short) (actionIndex));
+			col = worksheet.getRow(index).getCell((Integer) (actionIndex));
 			if (col == null) {
 				Log.Debug(String
 						.format("Excel/ReadActionSection :Not able to read the value for action name from cell  at Row/Col(%d/%d)",
@@ -4201,7 +4203,7 @@ public class Excel {
 				testCaseID = testCase.testCaseID;
 				userObj = testCase.userObj;
 			} else {
-				col = worksheet.getRow(index).getCell((short) (testcaseIndex));
+				col = worksheet.getRow(index).getCell((Integer) (testcaseIndex));
 
 				if (col == null) {
 					throw new Exception(
@@ -4265,10 +4267,10 @@ public class Excel {
 						.format("Excel/ReadActionSection :Not able to read the value for step from cell  at Row/Col(%d/%d)",
 								index, getKey(labelIndex, "step")));
 				actionObj.step = StringUtils.EMPTY;
-			} else if (col.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
+			} else if (col.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				actionObj.step = Integer.toString((int) col
 						.getNumericCellValue());
-				
+
 			} else {
 				actionObj.step = GetCellValueAsString(col);
 			}
@@ -4316,7 +4318,7 @@ public class Excel {
 
 						argumentValue = FindInMacroAndEnvTable(argumentValue,
 								nameSpace);
-						
+
 
 						Log.Debug("Excel/ReadActionSection : AFTER CALLING FindInMacroAndEnvTable -> Row["
 								+ index
@@ -4399,21 +4401,21 @@ public class Excel {
 	// / <param name="labelIndex">Hashtable which store the labels that is part
 	// of the TestCase.</param>
 	private void FindTotalActionVerificationArgs(
-			Hashtable<Short, String> labelIndex)throws Throwable {
+			Hashtable<Integer, String> labelIndex)throws Throwable {
 		Log.Debug("Excel/FindTotalActionVerificationArgs : Start of Function.");
 		{
 
 			// / Re-initializing these values to null.
 			// / so that the same function can be used for both TestCase and
-			// Abstract Test Case Sheet
+			// Abstract Test Case Excel
 			TotalVerificationArgs = 0;
 			TotalActionArgs = 0;
 
 			// / Loop over the list, writing out the value
-			Set<Short> it = labelIndex.keySet();
+			Set<Integer> it = labelIndex.keySet();
 
 			List<String> actionVer = new ArrayList<String>();
-			for (short key : it) {
+			for (Integer key : it) {
 				String value = labelIndex.get(key).toString();
 				Log.Debug("Excel/FindTotalActionVerificationArgs : Value of the Key is -> "
 						+ value);
@@ -4470,7 +4472,7 @@ public class Excel {
 		Log.Debug("Excel/FindTotalActionVerificationArgs : End of Function.");
 	}
 
-	// / Function specifically used for the TestCase Sheet. It is used to
+	// / Function specifically used for the TestCase Excel. It is used to
 	// identify the Verification/Action arguments position
 	// / inside the Excel sheet..i.e. the Column position where the Arguments
 	// belong
@@ -4485,10 +4487,10 @@ public class Excel {
 	// case is getting started</returns>
 	// / NOTE: This is just a Dummy Function now and can be considered as
 	// OBSOLETE. (NO MORE USED FOR ANY USEFUL PURPOSE).
-	private int GetActionVerificationMap(HSSFSheet worksheet,
-			Hashtable<Short, String> labelIndex,
-			Hashtable<Short, String> mapHashTable) {
-		Log.Debug("Excel/GetActionVerificationMap: Start of the Function to find the Mapping of the Verification/Action arguments against the Excel Sheet columns");
+	private int GetActionVerificationMap(Sheet worksheet,
+			Hashtable<Integer, String> labelIndex,
+			Hashtable<Integer, String> mapHashTable) {
+		Log.Debug("Excel/GetActionVerificationMap: Start of the Function to find the Mapping of the Verification/Action arguments against the Excel Excel columns");
 		int testCaseIndex = 0;
 		int index = 2;
 		try {
@@ -4508,13 +4510,14 @@ public class Excel {
 			Log.Debug("Excel/GetActionVerificationMap: verificationIndex = "
 					+ verificationIndex);
 
-			HSSFCell col;
+			Cell col;
 
 			for (; index <= worksheet.getLastRowNum(); index++) {
 				Log.Debug("Excel/GetActionVerificationMap: Reading Index ["
 						+ index + "] of the TestCase sheet");
 
-				col = worksheet.getRow(index).getCell((short) testCaseIndex);
+				col = worksheet.getRow(index).getCell((Integer) testCaseIndex);
+
 				if (col == null) {
 					throw new Exception(
 							String.format(
@@ -4524,7 +4527,7 @@ public class Excel {
 
 				String valueInTestCaseColumn = GetCellValueAsString(col);
 
-				col = worksheet.getRow(index).getCell((short) actionIndex);
+				col = worksheet.getRow(index).getCell((Integer) actionIndex);
 				if (col == null) {
 					new Exception(
 							String.format(
@@ -4535,7 +4538,7 @@ public class Excel {
 				String valueInActionColumn = GetCellValueAsString(col);
 
 				col = worksheet.getRow(index)
-						.getCell((short) verificationIndex);
+						.getCell((Integer) verificationIndex);
 				String valueInVerificationColumn = "";
 				if (col != null) {
 					valueInVerificationColumn = GetCellValueAsString(col);
@@ -4556,7 +4559,7 @@ public class Excel {
 				if (StringUtils.isNotBlank(valueInActionColumn)) {
 					String actionName = GetCellValueAsString(
 							worksheet.getRow(index)
-									.getCell((short) actionIndex))
+									.getCell((Integer) actionIndex))
 							.toLowerCase();
 					Log.Debug("Excel/GetActionVerificationMap: Index [" + index
 							+ "] Action Name is " + actionName);
@@ -4568,13 +4571,13 @@ public class Excel {
 				if (StringUtils.isNotBlank(valueInVerificationColumn)) {
 					String verificationName = GetCellValueAsString(
 							worksheet.getRow(index).getCell(
-									(short) verificationIndex)).toLowerCase();
+									(Integer) verificationIndex)).toLowerCase();
 					Log.Debug("Excel/GetActionVerificationMap: Index [" + index
 							+ "] verification Name is {1} " + verificationName);
 					// Do nothing now..This is just a Dummy function.
 				}
 			}
-			Log.Debug("Excel/GetActionVerificationMap: End of the Function to find the Mapping of the Verification/Action arguments against the Excel Sheet columns. Index values Returned is : "
+			Log.Debug("Excel/GetActionVerificationMap: End of the Function to find the Mapping of the Verification/Action arguments against the Excel Excel columns. Index values Returned is : "
 					+ index);
 		} catch (Exception e) {
 			Log.Error("Excel/GetActionVerificationMap: Exception occured, exception message is : "
@@ -4585,13 +4588,13 @@ public class Excel {
 
 	// / Function to read the TestCase sheet
 	// / <param name="workBook">Object of WorkBook</param>
-	public void ReadTestCaseSheet(HSSFWorkbook workBook, String nameSpace)
+	public void ReadTestCaseSheet(Workbook workBook, String nameSpace)
 			throws Exception, MoleculeDefinitionException ,Throwable{
 
 		String testCaseSheetName = TestCaseSheetName;
 		Log.Debug("Excel/ReadTestCaseSheet : Start of the Function with TestCaseSheetName as "
 				+ testCaseSheetName);
-		HSSFSheet workSheet = null;
+		Sheet workSheet = null;
 
 		Log.Debug("Excel/ReadTestCaseSheet : The worksheet object created");
 		Log.Debug("Excel/ReadTestCaseSheet : Reading the WorkSheet "
@@ -4622,7 +4625,7 @@ public class Excel {
 		}
 
 		try {
-			Log.Debug("Excel/ReadTestCaseSheet : Getting the values from the TestCase Sheet. Calling GetTestCaseSheetValues ......");
+			Log.Debug("Excel/ReadTestCaseSheet : Getting the values from the TestCase Excel. Calling GetTestCaseSheetValues ......");
 			try{
 			GetTestCaseSheetValues(workSheet, nameSpace);
 			}catch(Exception e){
@@ -4630,7 +4633,7 @@ public class Excel {
 			}
 			Log.Debug("Excel/ReadTestCaseSheet : The values from the TestCase sheet is read successfully.");
 		} catch (Exception ex) {
-			String error = "Excel/ReadTestCaseSheet : Error occured while getting the values from TestCase Sheet "
+			String error = "Excel/ReadTestCaseSheet : Error occured while getting the values from TestCase Excel "
 					+ testCaseSheetName
 					+ ". Exception Message is "
 					+ ex.getMessage() + "\n\n";
@@ -4645,17 +4648,17 @@ public class Excel {
 	// read the TestCase sheet and will
 	// / populate the values in the DataStructures appropriately.
 	// / <param name="worksheet"></param>
-	private void GetTestCaseSheetValues(HSSFSheet worksheet, String nameSpace)
+	private void GetTestCaseSheetValues(Sheet worksheet, String nameSpace)
 			throws Exception, MoleculeDefinitionException , Throwable{
-		Hashtable<Short, String> _mapHashTable = new Hashtable<Short, String>();
+		Hashtable<Integer, String> _mapHashTable = new Hashtable<Integer, String>();
 		int index = 1;
 		try {
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Start of Function to read Test Case sheet");
 
-			// / Read the Labels from the TestCase Sheet and find their index in
+			// / Read the Labels from the TestCase Excel and find their index in
 			// the TestSheet
-			Hashtable<Short, String> labelIndex = new Hashtable<Short, String>();
+			Hashtable<Integer, String> labelIndex = new Hashtable<Integer, String>();
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Calling getLabelIndex for Test Case sheet");
 			GetLabelIndex(worksheet, labelIndex);
@@ -4701,15 +4704,15 @@ public class Excel {
 			Log.Debug("Excel/GetTestCaseSheetValues : Started reading the TestCase Excel sheet at Index -> "
 					+ index);
 
-			HSSFCell col=null;
+			Cell col=null;
 			String description = null;
 			for (; index <= worksheet.getLastRowNum(); index++) {
 				Log.Debug("Excel/GetTestCaseSheetValues : Reading the TestCase Excel sheet at Index -> "
 						+ index);
 				String valueInTestCaseColumn = null;
-				// System.out.println("The GetTestCAse :: "+worksheet.getRow(index).getCell((short)testCaseIndex));
+				// System.out.println("The GetTestCAse :: "+worksheet.getRow(index).getCell((Integer)testCaseIndex));
 				try{
-					col = worksheet.getRow(index).getCell((short) testCaseIndex);
+					col = worksheet.getRow(index).getCell((Integer) testCaseIndex);
 				}catch(Exception e){
 					Log.Debug("Warn: Exception in "+nameSpace+" due to empty line or cell in line number "+(index+1)+". "+e.getMessage());
 					continue;
@@ -4724,13 +4727,13 @@ public class Excel {
 						&& valueInTestCaseColumn.toLowerCase()
 								.equals("comment")) {
 					description = GetCellValueAsString(worksheet.getRow(index)
-							.getCell((short) (testCaseIndex + 1)));
+							.getCell((Integer) (testCaseIndex + 1)));
 					// System.out.println("\nTest case Description::GETTESTCASE:: "+description);
 					if (StringUtils.isNotBlank(description)
 							&& index == worksheet.getLastRowNum()) {
 						// System.out.println("The comment is provided in last row. ");
 						throw new Exception("Comment cannot be provided in "
-								+ nameSpace + ".xls Sheet: testcase Row: "
+								+ nameSpace + ".xls Excel: testcase Row: "
 								+ worksheet.getLastRowNum());
 					}
 					Log.Debug("Excel/GetTestCaseSheetValues : This is a Comment Section/Row..Ignoring this as this is of no use to Automation. ");
@@ -4740,7 +4743,7 @@ public class Excel {
 				// / First checking for the Verification Methods
 				String valueInVerificationColumn = null;
 
-				col = worksheet.getRow(index).getCell((short) verifyIndex);
+				col = worksheet.getRow(index).getCell((Integer) verifyIndex);
 				if (col != null) {
 					valueInVerificationColumn = GetCellValueAsString(col);
 				}
@@ -4777,7 +4780,7 @@ public class Excel {
 				// / The read the Action
 				String valueInActionColumn = null;
 
-				col = worksheet.getRow(index).getCell((short) actionIndex);
+				col = worksheet.getRow(index).getCell((Integer) actionIndex);
 				if (col != null) {
 					valueInActionColumn = GetCellValueAsString(col);
 				}
