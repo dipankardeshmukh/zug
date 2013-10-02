@@ -319,7 +319,7 @@ Section "MainSection" SEC01
       AccessControl::GrantOnFile \
       "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
       
-      CopyFiles `$Java_SOURCE_TEXT\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
+      ;CopyFiles `$Java_SOURCE_TEXT\bin\java.exe` `$INSTDIR\ZUG\ZUG.exe`
       CopyFiles `$INSTDIR\ZUG\lib\sqlitejdbc-v056.jar` `$Java_SOURCE_TEXT\lib\ext\`
       
       ${If} ${RunningX64}
