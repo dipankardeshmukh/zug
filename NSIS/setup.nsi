@@ -128,7 +128,7 @@ Function .onInit
     quit
   Continue:
   
-  IfFileExists $R0\ZUG\ZUG.exe 0 FirstTimeInstall
+  IfFileExists $R0\ZUG\automature-zug.jar 0 FirstTimeInstall
      StrCpy $INSTDIR "$R0"
      StrCpy $Update "TRUE"
      IfSilent J1 0 
@@ -330,7 +330,7 @@ Section "MainSection" SEC01
       
       ExecWait "$INSTDIR\ZUG\Setup.cmd"
       
-      nsExec::ExecToStack '"$INSTDIR\ZUG\runzug.Bat"'
+      nsExec::ExecToStack '"$INSTDIR\ZUG\zug.bat"'
       Delete "$TEMP\automature-zug-bin.zip"
   
   ${EndIf}
@@ -430,8 +430,8 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
   createDirectory "$SMPROGRAMS\Automature\ZUG"
   CreateShortCut "$SMPROGRAMS\Automature\ZUG\uninstall.lnk" "$INSTDIR\ZUG\uninstZUG.exe" "" "$INSTDIR\ZUG\Images\Zug.ico"
-  CreateShortCut "$SMPROGRAMS\Automature\ZUG\ZUG.lnk" "$INSTDIR\ZUG\runzug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
-  CreateShortCut "$DESKTOP\ZUG.lnk" "$INSTDIR\ZUG\runzug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
+  CreateShortCut "$SMPROGRAMS\Automature\ZUG\ZUG.lnk" "$INSTDIR\ZUG\zug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
+  CreateShortCut "$DESKTOP\ZUG.lnk" "$INSTDIR\ZUG\zug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico" 0 SW_SHOWMINIMIZED
 SectionEnd
 
 
@@ -456,11 +456,10 @@ Section Uninstall
   RMDir "$SMPROGRAMS\Automature\ZUG"
   File "DeleteZug.cmd"
   ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Automature-ZUG" "Zugpath"
- IfFileExists $R0\ZUG\ZUG.exe 0 +3
+ IfFileExists $R0\ZUG\automature-zug.jar 0 +3
   Execwait '"$TEMP\DeleteZug.cmd" "$R0\ZUG"'
   Goto +2
     MessageBox MB_OK "Cannot find Zug path in the registry. Please delete the folder ZUG manually"
-  Delete "$R0\ZUG\ZUG.exe"
    ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$R0\ZUG"
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
