@@ -7,7 +7,7 @@
     <groupId>com.automature</groupId>
     <artifactId>automature-zug</artifactId>
     <packaging>jar</packaging>
-    <version>${BUILD_NUMBER}</version>
+    <version>%Zug_Version%.%BUILD_ID%.%BUILD_NUMBER%</version>
     <name>Zug Automation Engine</name>
     <url>http://www.automature.com/products/zug</url>
 
