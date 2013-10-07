@@ -299,7 +299,7 @@ Section "MainSection" SEC01
       ${If} $IsSilent == "TRUE"
         ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Extracting automature-zug-bin.zip file in $INSTDIR .$\r$\n`
       ${EndIf}
-      !insertmacro ZIPDLL_EXTRACT "$TEMP\ZUG.zip" "$INSTDIR" "<ALL>"
+      !insertmacro ZIPDLL_EXTRACT "$TEMP\automature-zug-bin.zip" "$INSTDIR" "<ALL>"
       IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
     interchange: 
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
