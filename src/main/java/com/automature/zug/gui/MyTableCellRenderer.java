@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-class MyTableCellRenderer extends  DefaultTableCellRenderer {
+public class MyTableCellRenderer extends  DefaultTableCellRenderer {
 
 	HashMap<Point,String> map;
 	public MyTableCellRenderer(HashMap<Point,String> map){
@@ -21,15 +21,19 @@ class MyTableCellRenderer extends  DefaultTableCellRenderer {
 	
   public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
+
 	  	super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);     
-    	setText(value !=null ? value.toString() : "");
+
+        setText(value !=null ? value.toString() : "");
     	Set s=map.keySet();
 		Iterator it=s.iterator();
+
 		while(it.hasNext()){
+
 			Point p=(Point)it.next();
-			int row=(int)p.getX(),col=(int)p.getY()+1;
+			int row=(int)p.getX(),col=(int)p.getY();
 			if(row==rowIndex && vColIndex==col){
-			//	System.out.println("Setting tool tip for "+row+" "+col);
+
 				setToolTipText(map.get(p));
 				setForeground(Color.RED);
 				return this;
@@ -37,8 +41,7 @@ class MyTableCellRenderer extends  DefaultTableCellRenderer {
 		}
 		setForeground(Color.BLACK);
 		setToolTipText("");
-	//	setForeground(Color.blue);
-		
+
         return this;
     }
 }
