@@ -21,6 +21,7 @@ import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
 import com.automature.zug.util.ZipUtility;
 
+
 public class DavosReporter implements Reporter {
 
 	static DavosClient davosclient = null;
@@ -192,7 +193,9 @@ public class DavosReporter implements Reporter {
 	/**
 	 * gets the topologyset id from topologysetname
 	 * 
-	 * @throws Throwable
+	 * @param String
+	 *            topologysetname return String the topologysetid
+	 * @throws Throwable 
 	 */
 	private String getTopologySetId()
 			throws Throwable {
@@ -626,5 +629,21 @@ public class DavosReporter implements Reporter {
 			throw new ReportingException(e.getMessage());
 		}
 	}
+
+
+
+	@Override
+	public void setTestCycleTopologySetValues(String env_list ) throws ReportingException {
+		try{
+			String testcycle_id=this.testCycleId,topologyset_id=this.topologySetId,machine_name=SysEnv.ComputerName,role_name=this.testSuiteRole,envr_list=env_list;
+			//System.out.println("TC_ID="+testcycle_id+"TOPO_ID="+topologyset_id+"MAC_NAME="+machine_name+"ROLE_NAME="+role_name+"ENV_LIST"+env_list);
+			davosclient.setTestCycleTopologySetValues(testcycle_id, topologyset_id, machine_name, role_name, envr_list);
+		}catch(Exception e){
+			throw new ReportingException(e.getMessage());
+		}
+	}
+	
+	
+	
 
 }
