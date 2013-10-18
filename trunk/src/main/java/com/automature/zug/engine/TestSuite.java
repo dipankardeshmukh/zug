@@ -9,12 +9,12 @@ import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
 
 public class TestSuite {
-	
+
 	TestCase[] testcases;
 	static String testSuitName = StringUtils.EMPTY;
 	static	String testSuiteId =  StringUtils.EMPTY;
 	static String testSuitRole = StringUtils.EMPTY;
-	
+
 	static String baseTestCaseID = StringUtils.EMPTY;
 	private static String testsToRepeat = StringUtils.EMPTY;
 	static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
@@ -34,29 +34,29 @@ public class TestSuite {
 	static boolean firstTestCaseExecuted=false;
 	static boolean implicitEnvMolecule=false;
 	private static String implicitEnvMoleculeName="zenv_sensor"; 
-		
-	
+
+
 	private static void clearStaticMembers(){
-		
+
 		errorMessageDuringTestCaseExecution.clear();
 		errorMessageDuringMoleculeCaseExecution.clear();
 		threadIdForTestCases.clear();
 		abstractTestCase.clear(); 
-		 _testStepStopper.clear();
-		 executedTestCaseData.clear();
-		 implicitTSMoleculeName="zstep_verify";
-		 implicitTCMoleculeName="zcase_verify";
-		 implicitEnvMoleculeName="zenv_sensor";
-		 testSuitName = StringUtils.EMPTY;
-		 testSuiteId =  StringUtils.EMPTY;
-		 testSuitRole = StringUtils.EMPTY;
-		 testsToRepeat = StringUtils.EMPTY;
-		 initWorkedFine = true;
+		_testStepStopper.clear();
+		executedTestCaseData.clear();
+		implicitTSMoleculeName="zstep_verify";
+		implicitTCMoleculeName="zcase_verify";
+		implicitEnvMoleculeName="zenv_sensor";
+		testSuitName = StringUtils.EMPTY;
+		testSuiteId =  StringUtils.EMPTY;
+		testSuitRole = StringUtils.EMPTY;
+		testsToRepeat = StringUtils.EMPTY;
+		initWorkedFine = true;
 
 	}
-	
+
 	static void cleanUP(){
-		
+
 		clearStaticMembers();
 		initWorkedFine = true;
 		_testPlanStopper = false;
@@ -65,9 +65,9 @@ public class TestSuite {
 		firstTestCaseExecuted=false;
 		implicitEnvMolecule=false;
 	}
-	
+
 	private void implicitTestCaseCall(TestCase test)throws Exception{
-		
+
 		if(implicitTCMolecule && !(test.testCaseID.toLowerCase().equalsIgnoreCase("cleanup")) && !(test.testCaseID.toLowerCase().equalsIgnoreCase("init"))){
 			Molecule implicitMolecule=abstractTestCase.get(implicitTCMoleculeName);
 			implicitMolecule.setCallingtTestCaseSTACK(test.stackTrace);
@@ -79,32 +79,48 @@ public class TestSuite {
 			implicitMolecule.setCallingtTestCaseSTACK(test.stackTrace);
 			implicitMolecule.setParentTestCaseID(test.parentTestCaseID);
 			implicitMolecule.run();
+
+			if(Controller.opts.dbReporting)
+			{
+				try{
+					//Controller.reporter.setTestCycleTopologySetValues(ContextVar.getContextVar("ZEnv_Values"));
+					if(!ContextVar.getContextVar("ZEnv_Values").isEmpty())
+					 Controller.reporter.setTestCycleTopologySetValues(ContextVar.getContextVar("ZEnv_Values"));
+					else{
+						Log.Error("ZEnv_Values list is empty");
+					}
+				}
+				catch(Exception e)
+				{
+					Log.Error("Exeption while saving environment list :"+e.getMessage());
+				}
+			}
 		}
 	}
-	
+
 	private void initializeImplicitCallsValues(){
 
 		implicitTCMoleculeName=Excel.mainNameSpace+"."+implicitTCMoleculeName;
 		implicitTSMoleculeName=Excel.mainNameSpace+"."+implicitTSMoleculeName;
 		implicitEnvMoleculeName=Excel.mainNameSpace+"."+implicitEnvMoleculeName;
-		
+
 		if(abstractTestCase.containsKey(implicitTCMoleculeName)){
 			implicitTCMolecule=true;
-	//		System.out.println("implicitTCMolecule= "+implicitTCMolecule);
+			//		System.out.println("implicitTCMolecule= "+implicitTCMolecule);
 		}
 		if(abstractTestCase.containsKey(implicitTSMoleculeName)){
 			implicitTSMolecule=true;
-	//		System.out.println("implicitTSMolecule="+implicitTSMolecule);
+			//		System.out.println("implicitTSMolecule="+implicitTSMolecule);
 		}
 		if(abstractTestCase.containsKey(implicitEnvMoleculeName)){
-	//		System.out.println("implicitENVMolecule="+implicitEnvMoleculeName);
+			//		System.out.println("implicitENVMolecule="+implicitEnvMoleculeName);
 			implicitEnvMolecule=true;
 		}
-	//	System.out.println("implicit values initialized");
+		//	System.out.println("implicit values initialized");
 	}
-	
 
-	
+
+
 	public void run() throws 
 	DavosExecutionException,Exception,Throwable {
 		//System.out.println("Test Suite run:"+Excel._indexedMacroTable.toString());
@@ -115,7 +131,7 @@ public class TestSuite {
 		System.out.println("\n*** Start Executing the testcases ***\n ");
 
 		initializeImplicitCallsValues();
-		
+
 		// Harness Specific ContextVariable to store AH_TPSTARTTIME = Timestamp
 		// when Test Plan execution started
 		// ZUG Specific ContextVariable to store ZUG_TPSTARTTIME = Timestamp
@@ -154,13 +170,13 @@ public class TestSuite {
 
 				if (test.testCaseID.compareToIgnoreCase("init") != 0) {
 					if (StringUtils.isNotBlank(Controller.opts.manualTestCaseID)) {
-/*
+						/*
 						if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
 								test.testCaseID.toLowerCase().trim())) {	
-	*/						// if
-							// (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim()))
-							// {
-							
+						 */						// if
+						// (!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim()))
+						// {
+
 						if(!Controller.opts.testCaseIds.contains(test.testCaseID.toLowerCase().trim()))	{
 							testcasenotfound = true;
 							continue;
@@ -185,7 +201,7 @@ public class TestSuite {
 								// message("The generated Id 0a "+tempTest.testCaseID);
 								tempTest.run();
 								this.implicitTestCaseCall(tempTest);
-							
+
 							} else {
 								// message("The generated Id 0b "+test.testCaseID);
 								test.run();
@@ -270,7 +286,7 @@ public class TestSuite {
 
 						if (StringUtils.isNotBlank(Controller.opts.manualTestCaseID)) {
 							//if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
-								//	test.testCaseID.toLowerCase().trim())) {
+							//	test.testCaseID.toLowerCase().trim())) {
 							if(!Controller.opts.testCaseIds.contains(test.testCaseID.toLowerCase().trim()))	{
 								continue;
 							}
@@ -358,7 +374,7 @@ public class TestSuite {
 								+ test.testCaseID
 								+ " is a Automated TestCase. Calling controller.RunTestCase... ");
 						// Function to run and Execute the TestCase
-					
+
 						test.run();
 						this.implicitTestCaseCall(test);
 						TestSuite.firstTestCaseExecuted=true;
@@ -413,9 +429,9 @@ public class TestSuite {
 						// message("The manual commandline 1b " +
 						// manualTestCaseID + "\n The Testcase ids " +
 						// test.testCaseID);
-					//	if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
+						//	if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
 						//		test.testCaseID.toLowerCase().trim())) {
-							// if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
+						// if(!manualTestCaseID.equalsIgnoreCase(test.testCaseID.trim())){
 						if(!Controller.opts.testCaseIds.contains(test.testCaseID.toLowerCase().trim()))	{
 							testcasenotpresent = true;
 
@@ -530,7 +546,7 @@ public class TestSuite {
 						// manualTestCaseID + "\n The Testcase ids " +
 						// test.testCaseID);
 						if (StringUtils.isNotBlank(Controller.opts.manualTestCaseID)) {
-						//	if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
+							//	if (!Controller.opts.manualTestCaseID.toLowerCase().equals(
 							//		test.testCaseID.toLowerCase().trim())) {
 							if(!Controller.opts.testCaseIds.contains(test.testCaseID.toLowerCase().trim()))	{
 								continue;
