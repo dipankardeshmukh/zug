@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -15,6 +16,7 @@ public class MoleculesSheet {
 
     private Vector header;
     private Vector data;
+    private ArrayList<String> moleculeID = new ArrayList<String>();
     private	int actionColumn;
     private int verifyColumn;
 
@@ -50,11 +52,20 @@ public class MoleculesSheet {
         int line=1;
         //AtomHandler ah=new AtomHandler(scriptLocation);
         while(it.hasNext()){
+
             Row myRow = (Row) it.next();
 
             Vector cellStoreVector=new Vector();
             cellStoreVector.addElement(line);
             int n=myRow.getLastCellNum();
+
+            Cell cell=myRow.getCell(0);
+            if(cell!=null){
+                String moleculeId=cell.getStringCellValue();
+                if(moleculeId!=null && !moleculeId.isEmpty() && StringUtils.isNotBlank(moleculeId) && !moleculeId.equalsIgnoreCase("comment")){
+                    moleculeID.add(moleculeId);
+                }
+            }
 
             for(int i=0;i<=n;i++){
                 Cell myCell=myRow.getCell(i);
@@ -87,6 +98,13 @@ public class MoleculesSheet {
         panel.add(scrollPane);
 
         return panel;
+    }
+
+    public boolean moleculeExist(String name){
+
+        if(moleculeID.contains(name))return true;
+        else return false;
+
     }
 
 }

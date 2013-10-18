@@ -9,12 +9,14 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 
 public class ConfigSheet {
 
     private Vector data;
+
 
 
     public String getTestSuiteName() {
@@ -62,6 +64,7 @@ public class ConfigSheet {
         while(it.hasNext()){
 
             Row row = (Row) it.next();
+
             Vector singleRow =new Vector();
             singleRow.addElement(line);
             int n=row.getLastCellNum();
@@ -79,6 +82,43 @@ public class ConfigSheet {
 
     public Vector getData(){
         return data;
+    }
+
+
+    public List<String> getScriptLocations() {
+
+        String scriptLocations = null;
+        Iterator it = data.iterator();
+
+        while (it.hasNext()){
+
+            Vector row = (Vector) it.next();
+
+            if(row.get(0).toString().equalsIgnoreCase("ScriptLocation") && row.get(1)!=null && !row.get(1).toString().isEmpty()){
+                scriptLocations = row.get(1).toString();
+            }
+
+        }
+
+        List<String> list = new ArrayList<String>();
+
+        String[] locations = scriptLocations.split(";");
+
+        for(String loc : locations){
+
+            File f = new File(loc);
+
+            if(f.exists()){                              // TODO: Update for relative paths
+
+                ZugGUI.message("[WARNING] Invalid ScriptLocation : "+ loc);
+                continue;
+
+            }
+
+            list.add(loc);
+        }
+
+        return list;
     }
 
 

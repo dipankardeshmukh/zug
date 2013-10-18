@@ -1,18 +1,20 @@
 package com.automature.zug.gui.sheets;
 
-
+import com.automature.zug.engine.Controller;
+import com.automature.zug.engine.BuildInAtom;
 import com.automature.zug.gui.Excel;
 import com.automature.zug.gui.ZugGUI;
+import com.automature.zug.util.ExtensionInterpreterSupport;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.List;
 
 public class SpreadSheet {
 
@@ -24,6 +26,7 @@ public class SpreadSheet {
     private MoleculesSheet moleculesSheet;
 
     private HashMap<String, SpreadSheet> includeFiles = new HashMap<String, SpreadSheet>();
+    private List<String> scriptLocations = new ArrayList<String>();
 
 
     public String getAbsolutePath() {
@@ -68,7 +71,7 @@ public class SpreadSheet {
             while(it.hasNext()){
                 String currentFile = (String) it.next();
                 if(readFiles.contains(currentFile)){
-                     ZugGUI.message("WARNING: Recursive include file detected! Ignoring file: "+currentFile);
+                    ZugGUI.message("WARNING: Recursive include file detected! Ignoring file: "+currentFile);
                 }else{
                     SpreadSheet sh = includeFiles.get(currentFile);
                     return sh.getIncludeFile(file,readFiles);
@@ -91,7 +94,12 @@ public class SpreadSheet {
     }
 
     public JPanel getTestCasesSheetPanel() {
-        return testCasesSheet.getPanel();
+        try {
+            return testCasesSheet.getPanel();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 
     public JPanel getMoleculesSheetPanel() {
@@ -113,7 +121,7 @@ public class SpreadSheet {
         return panel;
     }
 
-    public void readIncludeFiles(Set<String> readFiles) throws Exception {
+    public void readIncludeFiles() throws Exception {
 
         Iterator it = configSheet.getData().iterator();
 
@@ -135,13 +143,14 @@ public class SpreadSheet {
 
                         if(s==null || s.isEmpty()) continue;
 
-                        if(readFiles.contains(s)){
+                        SpreadSheet sp = ZugGUI.spreadSheet.getIncludeFile(s, new HashSet<String>());
 
-                            ZugGUI.message("\nWARNING: Recursive include file detected! Ignoring file: "+s+ " included by "+this.absolutePath);
+                        if(sp!=null){
+
+                            ZugGUI.message("\nWARNING: Recursive include file detected! Ignoring file: " + s + " included by " + this.absolutePath);
 
                         }else{
 
-                            readFiles.add(s);
                             SpreadSheet sh = new SpreadSheet();
                             File fileToRead = new File(s);
 
@@ -152,7 +161,7 @@ public class SpreadSheet {
                             }
 
                             sh.readSpreadSheet(s);
-                            this.includeFiles.put(s, sh);
+                            includeFiles.put(s, sh);
 
                         }
 
@@ -178,7 +187,8 @@ public class SpreadSheet {
 
             configSheet = new ConfigSheet();
             configSheet.readData(wb.getSheet("Config"));
-            readIncludeFiles(ZugGUI.allIncludeFiles);
+
+            readIncludeFiles();
 
             macroSheet = new MacroSheet();
             macroSheet.readHeader(wb.getSheet("Macros"));
@@ -198,6 +208,79 @@ public class SpreadSheet {
             e.printStackTrace();
         }
         return true;
+    }
+
+    public boolean verifyExistence(String step) throws Exception {
+
+        if(step.startsWith("&")){
+
+            if(step.contains(".")){
+
+                String nameSpaceMolecule[] = step.split("\\.");
+                String nameSpace =nameSpaceMolecule[0].replaceFirst("&","");
+                String mol = step.split("\\.")[1];
+
+                for(String path : ZugGUI.spreadSheet.includeFiles.keySet()){
+
+                    File fName = new File(path);
+
+                    if(fName.getName().contains(nameSpace)){
+
+                        return this.getIncludeFile(path, new HashSet<String>()).getMoleculesSheet().moleculeExist(mol);
+                    }
+                }
+
+                return false;
+
+            }else{
+
+                return this.getMoleculesSheet().moleculeExist(step.replaceFirst("&",""));
+
+            }
+
+        }else if(step.startsWith("@")){
+
+
+            String iniSL=null;
+            try{
+                iniSL= ExtensionInterpreterSupport.getNode("//root//configurations//scriptlocation");
+                String[] locations = iniSL.split(";");
+                for(String loc : locations){
+
+                    File f = new File(loc+step.replaceFirst("@",""));
+                    if(f.exists()) return true;
+
+                }
+
+            }catch(Exception e){
+                ZugGUI.message("\nException while reading script location "+ e.getMessage());
+            }
+
+            return false;
+
+        }else if(step.contains(".")){
+
+            try{
+
+                String pkgName = step.split("\\.")[0];
+                String atomName = step.split("\\.")[1];
+
+                if(Controller.invokeAtoms.containsKey(pkgName.toLowerCase())){
+                    return Controller.invokeAtoms.get(pkgName.toLowerCase()).methodExists(atomName);
+                }
+
+            }catch (Exception e){
+
+                throw new Exception("Exception while verifying in-process atom: "+ step+e.getMessage());
+            }
+
+            return false;
+
+        }else if(BuildInAtom.buildIns.contains(step.toLowerCase())){
+            return true;
+        }
+
+        return false;
     }
 
 
