@@ -4,14 +4,13 @@ package com.automature.zug.gui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import com.automature.zug.gui.sheets.SpreadSheet;
 import org.jdesktop.application.Action;
@@ -37,6 +36,9 @@ public class TaskPane extends JPanel {
     private JXTaskPane linkedFiles;
     private JXTaskPane reporting;
     private JXTaskPane reference;
+
+    private JTree testCaseTree;
+    private DefaultMutableTreeNode testCaseTreeNode;
 
     public TaskPane() {
 
@@ -81,7 +83,7 @@ public class TaskPane extends JPanel {
         run.setTitle("Run                                                                ");
 
         run.setCollapsed(true);
-        tpc.add(run);
+        //tpc.add(run);
 
 
         executionSummary = new JXTaskPane();
@@ -95,7 +97,7 @@ public class TaskPane extends JPanel {
         contextVariables.setName("seeAlsoGroup");
         contextVariables.setTitle("Context Variables                                     ");
         contextVariables.setCollapsed(true);
-        tpc.add(contextVariables);
+        //tpc.add(contextVariables);
 
 
         linkedFiles = new JXTaskPane();
@@ -108,14 +110,14 @@ public class TaskPane extends JPanel {
         reporting.setName("seeAlsoGroup");
         reporting.setTitle("Reporting                                                    ");
         reporting.setCollapsed(true);
-        tpc.add(reporting);
+        //tpc.add(reporting);
 
 
         reference = new JXTaskPane();
         reference.setName("detailsGroup");
         reference.setTitle("Reference                                                   ");
         reference.setCollapsed(true);
-        tpc.add(reference);
+        //tpc.add(reference);
 
         add(new JScrollPane(tpc));
         //add(tpc);
@@ -165,20 +167,20 @@ public class TaskPane extends JPanel {
 
         ApplicationActionMap map = Application.getInstance().getContext().getActionMap(this);
 
-        run.add(map.get("email"));
-        executionSummary.add(map.get("delete"));
 
-        contextVariables.add(map.get("write"));
+
+        testCaseTree = new JTree(getTestCaseTree(ZugGUI.spreadSheet.getTestCasesSheet().getTestCaseIds()));
+        JScrollPane treeViewTestCase = new JScrollPane(testCaseTree);
+        treeViewTestCase.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        treeViewTestCase.setPreferredSize(new Dimension(100,200));
+        executionSummary.add(treeViewTestCase);
 
         JTree tree = new JTree(getSheetTree(ZugGUI.spreadSheet));
-
         JScrollPane treeView = new JScrollPane(tree);
         treeView.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        treeView.setPreferredSize(new Dimension(100,200));
-
+        treeView.setPreferredSize(new Dimension(100,150));
         linkedFiles.add(treeView);
-        reporting.add(map.get("help"));
-        reference.add(map.get("help"));
+
 
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -194,6 +196,19 @@ public class TaskPane extends JPanel {
 
     }
 
+    private DefaultMutableTreeNode getTestCaseTree(ArrayList Ids){
+
+        testCaseTreeNode = new DefaultMutableTreeNode(ZugGUI.spreadSheet.getAbsolutePath());
+        Iterator it = Ids.iterator();
+
+        while (it.hasNext()){
+
+            String id = it.next().toString();
+            testCaseTreeNode.add(new DefaultMutableTreeNode(id));
+
+        }
+        return testCaseTreeNode;
+    }
 
     private DefaultMutableTreeNode getSheetTree(SpreadSheet sh){
 
@@ -210,20 +225,19 @@ public class TaskPane extends JPanel {
         return node;
     }
 
+    public void highlightTestCase(String tcID){
 
-    @Action
-    public void email() { }
+         Enumeration en = testCaseTreeNode.children();
 
-    @Action
-    public void delete() { }
+        while (en.hasMoreElements()) {
 
-    @Action
-    public void write() { }
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) en.nextElement();
 
-    @Action
-    public void exploreInternet() { }
+            if(node.toString().equalsIgnoreCase(tcID) || tcID.startsWith(node.toString()+"\\"))
+            testCaseTree.setSelectionPath( new TreePath(node.getPath()));
 
-    @Action
-    public void help() { }
+        }
+
+    }
 }
 
