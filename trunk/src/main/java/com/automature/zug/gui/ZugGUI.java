@@ -22,7 +22,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 public class ZugGUI {
 
 	private static JFrame frame;
-	private static GUIDisplayPane displayPane;
+	private static GUIDisplayPane guiDisplayPane;
 	private static OptionsPanel ops;
 	 
 	private static GuiMenuBar guiMenuBar;
@@ -30,7 +30,7 @@ public class ZugGUI {
 	static boolean runningStatus=false;
 
     public static SpreadSheet spreadSheet;
-    public static Set<String> allIncludeFiles;
+
 
 	public void initialize(String []params) {
 		 
@@ -87,27 +87,27 @@ public class ZugGUI {
 		ops.createOptionsPanel();
 		frame.getContentPane().add(ops.getOptionsPanel(),BorderLayout.NORTH);
 
-        displayPane=new GUIDisplayPane();
-        frame.getContentPane().add(displayPane.getDisplayPane(), BorderLayout.CENTER);
-        displayPane.redirectSystemStreams();
+        guiDisplayPane=new GUIDisplayPane();
+        frame.getContentPane().add(guiDisplayPane.getDisplayPane(), BorderLayout.CENTER);
+        guiDisplayPane.redirectSystemStreams();
         frame.setVisible(true);
 	}
   
 	static SheetDisplayPane getSheetDisplayPane(){
-		return displayPane.getSheetDisplayPane();
+		return guiDisplayPane.getSheetDisplayPane();
 	}
 
     static GUIDisplayPane getDisplayPane(){
-        return displayPane;
+        return guiDisplayPane;
     }
 
     static void spitDisplay(){
-                displayPane.splitTab();
+                guiDisplayPane.splitTab();
     }
 
 	public void createDebugger(){
 		
-		ops.createDebugger(displayPane.getSheetDisplayPane().getSheetNames());
+		ops.createDebugger(guiDisplayPane.getSheetDisplayPane().getSheetNames());
 		ops.enableDebuggerOptions();
 		ops.showDebuggerControls();
 		guiMenuBar.enableDebuggerOptions();
@@ -175,9 +175,8 @@ public class ZugGUI {
 	}
 
     private static void loadSpreadSheet(String fileName) throws Exception {
-        spreadSheet = new SpreadSheet();
-        allIncludeFiles = new HashSet<String>();
 
+        spreadSheet = new SpreadSheet();
         spreadSheet.readSpreadSheet(fileName);
     }
 
@@ -236,7 +235,7 @@ public class ZugGUI {
 	}
 	
 	public static void message(String msg){
-		displayPane.sendConsoleMessage(msg);
+		guiDisplayPane.sendConsoleMessage(msg);
 	}
 
 	public static void enableFrame(){
@@ -257,43 +256,48 @@ public class ZugGUI {
 	}
 	
 	public static void clearConsole(){
-		displayPane.clearConsole();
+		guiDisplayPane.clearConsole();
 	}
 	
 	public static DebuggerConsole getDebugger(){
 		return ops.getDebugger();
 	}
-	
-	
+
 	public static void addTestSuiteTabToDisplay(SpreadSheet sh){
-        displayPane.addSheetDisplayPane(sh);
+        guiDisplayPane.addSheetDisplayPane(sh);
 		IconsPanel.od.createPanels();
 	}
- 
+
+    public void showRunningTestCase(String id){
+        guiDisplayPane.highlightTestCase(id);
+    }
+
 	public void showRunningTestStep(int n){
-		displayPane.getSheetDisplayPane().showRunningTestStep(n);
+
+		guiDisplayPane.getSheetDisplayPane().showRunningTestStep(n);
 	}
+
 	public void showRunningMoleculeStep(String name,int n,int start){
-		displayPane.getSheetDisplayPane().showRunningMoleculeStep(name,n,start);
+		guiDisplayPane.getSheetDisplayPane().showRunningMoleculeStep(name,n,start);
 	}
 	
 	public static void removeAllTabs(){
-		displayPane.initialize();
+		guiDisplayPane.initialize();
 	}
 	
 	public static void initialize(){
 		ops.hideDebuggerControls();
-		displayPane.clearConsole();
+		guiDisplayPane.clearConsole();
 		IconsPanel.disableDebugger();
 		updateFrame();
 	}
 	
 	public static void showConsole(){
-		displayPane.showConsole();
+		guiDisplayPane.showConsole();
 	}
 	
 	public static void showTestSuite(){
-		displayPane.showTestSuite();
+		guiDisplayPane.showTestSuite();
 	}
 	
 	public static void showRunZUGCommand(){
