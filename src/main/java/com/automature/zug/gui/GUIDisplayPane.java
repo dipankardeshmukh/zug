@@ -141,5 +141,7 @@ public class GUIDisplayPane {
         consoleDisplay.redirectSystemStreams();
     }
 
-
+    public void highlightTestCase(String id){
+        taskPane.highlightTestCase(id);
+    }
 }
