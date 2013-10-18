@@ -722,8 +722,6 @@ public class Molecule extends TestCase {
 	/**
 	 * Method to get the index of Positional argument
 	 * 
-	 * @param testmoleculedefn
-	 *            ArrayList<String>
 	 * @return indexno Integer
 	 */
 	// TODO this method is total broken discuss and change it
@@ -772,8 +770,6 @@ public class Molecule extends TestCase {
 	/**
 	 * Function to check the consistent of the arguments.
 	 * 
-	 * @param arguments
-	 *            arguments as ArrayList<String>
 	 * @return boolean true or false
 	 */
 	private boolean isParameterPassingConsistent() throws Exception {
@@ -873,7 +869,6 @@ public class Molecule extends TestCase {
 
 	/**
 	 * 
-	 * @param argumentValues
 	 * @param moleculeDefn
 	 * @param callarg
 	 * @return true && true
@@ -972,7 +967,7 @@ public class Molecule extends TestCase {
 
 		tempTestCase.threadID = (String) TestSuite.threadIdForTestCases
 				.get(callingtTestCaseSTACK);
-		tempTestCase.stackTrace = callingtTestCaseSTACK + "_" + this.stackTrace;
+		tempTestCase.stackTrace = callingtTestCaseSTACK + "&" + this.stackTrace;
 		tempTestCase.parentTestCaseID = parentTestCaseID;
 		Action[] actions = new Action[this.actions.size()];
 		this.actions.toArray(actions);
@@ -1504,9 +1499,10 @@ public class Molecule extends TestCase {
 		}
 
 		try {
-			Controller.message("\n******************** Running Molecule "
-					+ tempTestCase.stackTrace
-					+ " ***************************\n");
+
+            Controller.message("\n********************************************************************************");
+			Controller.message("Running Molecule : "
+					+ tempTestCase.stackTrace);
 			// Now everything is ready. Call the RunTestCase Function.
 			tempTestCase.isConcurrentMoleculeCall = this.isConcurrentMoleculeCall;
 		//	System.out.println("Mol run tempPTCI"+tempTestCase.parentTestCaseID);
@@ -1519,9 +1515,8 @@ public class Molecule extends TestCase {
 			throw new Exception(ex.getMessage());
 			// }
 		} finally {
-			Controller.message("\n******************** Molecule "
-					+ tempTestCase.stackTrace
-					+ " Execution Finished **************************\n\n");
+            Controller.message("********************************************************************************");
+			Controller.message("Molecule Execution Finished : " + tempTestCase.stackTrace);
 		}
 		Log.Debug("Molecule/RunAbstractTestCase: End of function with a new TestCase. TestCase ID is "
 				+ this.testCaseID);
