@@ -1,3 +1,4 @@
+
 package com.automature.zug.reporter;
 
 import java.util.HashMap;
@@ -27,4 +28,7 @@ public interface Reporter {
 					throws ReportingException, InterruptedException ;
 	public void destroySession(String sessionId)throws ReportingException;
 	
+	public void setTestCycleTopologySetValues(String env_list )throws ReportingException ;
+
+
 }
