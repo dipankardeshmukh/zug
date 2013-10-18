@@ -115,7 +115,7 @@ class TestCase
 				+ this.testCaseID + " and count = " + count);
 
 		TestCase tempTestCase = new TestCase(this);
-		tempTestCase.testCaseID = this.testCaseID + "_" + count;
+		tempTestCase.testCaseID = this.testCaseID + "\\" + count;
 		Log.Debug("TestCase/GenerateNewTestCaseID: tempTestCase.testCaseID = "
 				+ tempTestCase.testCaseID);
 
@@ -300,7 +300,7 @@ class TestCase
 	 * This will be executed on a separate thread..This will run the expanded
 	 * test case.
 	 * 
-	 * @param testcaseObj
+	 *
 	 */
 	
 	private void runExpandedTestCase() throws 
@@ -455,6 +455,7 @@ class TestCase
 					count++;
 					try{
 						if(Controller.guiFlag){
+                            Controller.gui.showRunningTestCase(action.testCaseID);
 							Controller.gui.showRunningTestStep(action.lineNumber);
 						}
 					}catch(Exception e){
@@ -1099,7 +1100,7 @@ class TestCase
 			}
 
 		} finally {
-			Controller.message("********************************************************************************** ");
+			Controller.message("********************************************************************************");
 
 		}
 	}
@@ -1110,7 +1111,7 @@ class TestCase
 	/**
 	 * Check the command line Testcase contains ,
 	 * 
-	 * @param testcase
+	 * @param tempcom
 	 * 
 	 * @return testcase
 	 */
@@ -1712,7 +1713,7 @@ class TestCase
 								}
 
 							}
-							tempTestCase.testCaseID += "_"
+							tempTestCase.testCaseID += "\\"
 									+ testcase_partial_id;
 						}
 						// message("Coming to this end. 11 "+count);
@@ -1759,7 +1760,7 @@ class TestCase
 										testcase_partial_id = real_value[1];
 									}
 								}
-								tempTestCase.testCaseID += "_"
+								tempTestCase.testCaseID += "\\"
 										+ testcase_partial_id;
 
 							}
