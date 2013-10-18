@@ -1,23 +1,37 @@
 package com.automature.zug.reporter;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Hashtable;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+
+
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ActionOnDuplicate;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
 import br.eti.kinoshita.testlinkjavaapi.constants.TestImportance;
-import br.eti.kinoshita.testlinkjavaapi.model.*;
+import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
+import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
+import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+
 import com.automature.zug.engine.Controller;
 import com.automature.zug.engine.ExecutedTestCase;
 import com.automature.zug.exceptions.ReportingException;
 import com.automature.zug.util.Log;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Hashtable;
 
 public class TestLinkReporter implements Reporter{
 
@@ -324,6 +338,12 @@ public class TestLinkReporter implements Reporter{
 	}
 	
 	public void destroySession(String sessionId)throws ReportingException{
+		
+	}
+
+	@Override
+	public void setTestCycleTopologySetValues(String env_list )throws ReportingException  {
+		// TODO Auto-generated method stub
 		
 	}
 
