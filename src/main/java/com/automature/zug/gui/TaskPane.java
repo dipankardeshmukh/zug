@@ -88,7 +88,7 @@ public class TaskPane extends JPanel {
 
         executionSummary = new JXTaskPane();
         executionSummary.setName("officeGroup");
-        executionSummary.setCollapsed(true);
+        //executionSummary.setCollapsed(true);
         executionSummary.setTitle("Execution Summary                                     ");
         tpc.add(executionSummary);
 

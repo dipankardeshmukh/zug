@@ -193,8 +193,8 @@ public class DavosReporter implements Reporter {
 	/**
 	 * gets the topologyset id from topologysetname
 	 * 
-	 * @param String
-	 *            topologysetname return String the topologysetid
+	 *
+	 * @return String topologysetid
 	 * @throws Throwable 
 	 */
 	private String getTopologySetId()
@@ -637,7 +637,7 @@ public class DavosReporter implements Reporter {
 		try{
 			String testcycle_id=this.testCycleId,topologyset_id=this.topologySetId,machine_name=SysEnv.ComputerName,role_name=this.testSuiteRole,envr_list=env_list;
 			//System.out.println("TC_ID="+testcycle_id+"TOPO_ID="+topologyset_id+"MAC_NAME="+machine_name+"ROLE_NAME="+role_name+"ENV_LIST"+env_list);
-			davosclient.setTestCycleTopologySetValues(testcycle_id, topologyset_id, machine_name, role_name, envr_list);
+			//davosclient.setTestCycleTopologySetValues(testcycle_id, topologyset_id, machine_name, role_name, envr_list);
 		}catch(Exception e){
 			throw new ReportingException(e.getMessage());
 		}

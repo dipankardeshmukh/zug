@@ -91,7 +91,7 @@ public class DebuggerControls {
 				}
 			}
 		});
-		breakPoint.setIcon(new ImageIcon(System.getProperty("user.dir")+"\\Images\\BreakPoint.jpg"));
+		breakPoint.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/BreakPoint.jpg"));
 		breakPoint.setBounds(0, 0, 33, 33);
 	
 	}
@@ -105,7 +105,7 @@ public class DebuggerControls {
 					dc.sendResumeSignal();
 			}
 		});
-		resume.setIcon(new ImageIcon(System.getProperty("user.dir")+"\\Images\\resume.jpg"));
+		resume.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/resume.jpg"));
 		resume.setBounds(40, 0, 33, 33);
 	}
 	
@@ -121,7 +121,7 @@ public class DebuggerControls {
 			}
 		});
 		
-		singleStep.setIcon(new ImageIcon(System.getProperty("user.dir")+"\\Images\\singlestep.jpg"));
+		singleStep.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/singlestep.jpg"));
 		singleStep.setBounds(80, 0, 33, 33);
 	}
 	
@@ -135,7 +135,7 @@ public class DebuggerControls {
 				}
 			}
 		});
-		viewCV.setIcon(new ImageIcon(System.getProperty("user.dir")+"\\Images\\view.png"));
+		viewCV.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/view.png"));
 		viewCV.setBackground(Color.WHITE);
 		viewCV.setBounds(120, 0, 33, 33);
 	}
@@ -151,7 +151,7 @@ public class DebuggerControls {
 			}
 		});
 		
-		pause.setIcon(new ImageIcon(System.getProperty("user.dir")+"\\Images\\pause.png"));
+		pause.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/pause.png"));
 		pause.setBounds(160, 0, 33, 33);
 	}
 	
@@ -165,7 +165,7 @@ public class DebuggerControls {
 				}
 			}
 		});
-		viewBP.setIcon(new ImageIcon(System.getProperty("user.dir")+"\\Images\\viewBP.png"));
+		viewBP.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/viewBP.png"));
 		viewBP.setToolTipText("View break points");
 		viewBP.setBackground(Color.WHITE);
 		viewBP.setBounds(200, 0, 33, 33);

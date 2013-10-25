@@ -98,8 +98,15 @@ public class GUIDisplayPane {
     }
 
     public void addTaskPane(){
-        mainPanel.add(taskPane);
-        ZugGUI.updateFrame();
+
+        if(IconsPanel.getFileName()!=null){
+
+            mainPanel.add(taskPane);
+            ZugGUI.updateFrame();
+
+        }else {
+            JOptionPane.showMessageDialog(null, "Select test suite first!");
+        }
     }
 
     public JTextArea getConsole(){

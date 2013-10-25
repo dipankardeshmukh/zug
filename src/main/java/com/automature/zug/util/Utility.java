@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 
 import com.automature.zug.util.Log;
+
 import java.lang.management.ManagementFactory;
 
 public class Utility {
@@ -35,7 +36,7 @@ public class Utility {
     public static final int MB = 1024 * 1024;
     public static final long MEM_1MB_bytes = 1048576;
     public static final long MEM_1GB_bytes = 1073741824;
-     public static com.sun.management.OperatingSystemMXBean osMbean;
+    public static com.sun.management.OperatingSystemMXBean osMbean;
 
     /**
      * gets the current date time in specific format......
@@ -48,51 +49,51 @@ public class Utility {
         return sdf.format(cal.getTime());
     }
     /**
-     * 
+     *
      * @return date as string
      */
-public static String getCurrentDateAsString()
-{
-    Calendar cal = Calendar.getInstance();
+    public static String getCurrentDateAsString()
+    {
+        Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW_1);
         return sdf.format(cal.getTime());
-}
+    }
     public static Date dateNow() {
 
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         return cal.getTime();
     }
-    
+
     public static List<String> removeDuplicatesFromArrayList(List<String> duplicateList)
     {
-    	//System.out.println("duplicate list "+duplicateList);
-    	int size=duplicateList.size();
-    	int out=0;
-    	final Set<String> encountered=new HashSet<String>();
-    	for(Iterator<String> iter=duplicateList.iterator();iter.hasNext();)
-     	{
-final String obj = iter.next();
-    		final boolean first=encountered.add(obj);
-    		if(!first)
-        	{
-        		iter.remove();
-        	}
-        
-    	}
-    	List<String> uniqueList=new ArrayList<String>();
-    	for (Iterator iterator = encountered.iterator(); iterator.hasNext();) {
-			String element = (String) iterator.next();
-			uniqueList.add(element);
-			
-		}
-    	
-    	//System.out.println("unique list "+uniqueList);
-    	return uniqueList;
-    	
+        //System.out.println("duplicate list "+duplicateList);
+        int size=duplicateList.size();
+        int out=0;
+        final Set<String> encountered=new HashSet<String>();
+        for(Iterator<String> iter=duplicateList.iterator();iter.hasNext();)
+        {
+            final String obj = iter.next();
+            final boolean first=encountered.add(obj);
+            if(!first)
+            {
+                iter.remove();
+            }
+
+        }
+        List<String> uniqueList=new ArrayList<String>();
+        for (Iterator iterator = encountered.iterator(); iterator.hasNext();) {
+            String element = (String) iterator.next();
+            uniqueList.add(element);
+
+        }
+
+        //System.out.println("unique list "+uniqueList);
+        return uniqueList;
+
     }
     /**
-     * 
+     *
      * @param list
      * @param elemnt
      * @param pos_index
@@ -100,29 +101,29 @@ final String obj = iter.next();
      */
     public static ArrayList<?> addingElementToArrayList(ArrayList<?> list,Object elemnt,int pos_index)
     {
-    	//System.out.println("Method is called with "+pos_index);
-    	ArrayList<Object> finalList=new ArrayList<Object>();
+        //System.out.println("Method is called with "+pos_index);
+        ArrayList<Object> finalList=new ArrayList<Object>();
 //Implementing the arraylist addition code.
-    	//System.out.println("The total size is "+list.size());
-    	Object temstorelm=list.get(pos_index);
-    	
-    	
-    	for(int i=0;i<list.size();i++)
-    	{
-    		
-    		if(i==pos_index)
-    		{
-    		finalList.add(pos_index, elemnt);
-    		finalList.add(pos_index+1, temstorelm);
-    		}
-    		else{
-    		finalList.add(list.get(i));
-    		}
-    		
-    	}
-    	
-    	//System.out.println("Final List size is "+finalList.size());
-    	return finalList;
+        //System.out.println("The total size is "+list.size());
+        Object temstorelm=list.get(pos_index);
+
+
+        for(int i=0;i<list.size();i++)
+        {
+
+            if(i==pos_index)
+            {
+                finalList.add(pos_index, elemnt);
+                finalList.add(pos_index+1, temstorelm);
+            }
+            else{
+                finalList.add(list.get(i));
+            }
+
+        }
+
+        //System.out.println("Final List size is "+finalList.size());
+        return finalList;
     }
 
     /**
@@ -320,7 +321,7 @@ final String obj = iter.next();
 
     /**
      * Replaces each escape character in string with \<escape character>
-     * 
+     *
      * @param value string in which escape characters to be replace.
      * @return string with all escape character replaced by \<escape character>
      * e.g Biel: will be returned as Biel\:
@@ -345,9 +346,9 @@ final String obj = iter.next();
         return sb.toString();
     }
 
-    /** 
+    /**
      * Delete content of directory
-     * @param path Directory which is to be clean.
+     * @param Dirpath Directory which is to be clean.
      * @return void
      */
     public static void CleanDir(String Dirpath) throws Exception {
@@ -384,12 +385,12 @@ final String obj = iter.next();
      */
     public static String getMaxJVMMemorySize(Runtime runtime) {
         Double result = new Double(runtime.maxMemory() / MB);
-              return result.toString();
+        return result.toString();
 
 
     }
 
-  
+
 
     /***
      * Function to check the Memory usage and show the Used Memory used
@@ -401,7 +402,7 @@ final String obj = iter.next();
     public static String getUsedJVMMemory(Runtime runtime) {
 
         Double result = new Double((runtime.totalMemory() - runtime.freeMemory()) / MB);
-        
+
         return result.toString();
 
     }
@@ -414,7 +415,7 @@ final String obj = iter.next();
      */
     public static String getFreeJVMMemory(Runtime runtime) {
         Double result = new Double(runtime.freeMemory() / MB);
-        
+
         return result.toString();
 
     }
@@ -422,15 +423,14 @@ final String obj = iter.next();
     /**
      *getPhysicalMemory method to get the Machine Physical Memory in GB or MB
      *
-     * @param returns String 
-     * 
-     *             
+     * @return String
+     *
      */
     public static String getPhysicalMemory() {
         String physical_memory = null;
-       osMbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        osMbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         long physical_memory_bytes = osMbean.getTotalPhysicalMemorySize();
-if(physical_memory_bytes>MEM_1MB_bytes && physical_memory_bytes<MEM_1GB_bytes)
+        if(physical_memory_bytes>MEM_1MB_bytes && physical_memory_bytes<MEM_1GB_bytes)
         {
             Integer physical_mem_mb=(int)physical_memory_bytes/(1024*1024);
             physical_memory=physical_mem_mb.toString()+"MB";
@@ -444,37 +444,34 @@ if(physical_memory_bytes>MEM_1MB_bytes && physical_memory_bytes<MEM_1GB_bytes)
 
         return physical_memory;
     }
-     /**
+    /**
      *getCpuUsage method to get the Machine Cpu Usage in
      *
-     * @param returns String 
-     * 
-     *             
+     * @return String
+     *
+     *
      */
     public static String getCpuUsage()
     {
-       String cpu_usage;
-       osMbean=(com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
-       
-       cpu_usage=new Long(osMbean.getProcessCpuTime()).toString()+" nanosec";
-       
-        
-        
+        String cpu_usage;
+        osMbean=(com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
+
+        cpu_usage=new Long(osMbean.getProcessCpuTime()).toString()+" nanosec";
+
+
+
         return cpu_usage;
     }
-      /**
+    /**
      *getCpuUsage method to get the Machine Cpu Usage in
      *
-     * @param returns String 
-     * 
-     *             
      */
     public static String getFreePhysicalMemory()
     {
-       String physical_free_memory = null;
-       osMbean=(com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
-       long physical_free_memory_bytes = osMbean.getFreePhysicalMemorySize();
-if(physical_free_memory_bytes>MEM_1MB_bytes && physical_free_memory_bytes<MEM_1GB_bytes)
+        String physical_free_memory = null;
+        osMbean=(com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
+        long physical_free_memory_bytes = osMbean.getFreePhysicalMemorySize();
+        if(physical_free_memory_bytes>MEM_1MB_bytes && physical_free_memory_bytes<MEM_1GB_bytes)
         {
             Integer physical_mem_mb=(int)physical_free_memory_bytes/(1024*1024);
             physical_free_memory=physical_mem_mb.toString()+"MB";
@@ -484,9 +481,9 @@ if(physical_free_memory_bytes>MEM_1MB_bytes && physical_free_memory_bytes<MEM_1G
             Integer physical_mem_gb=(int)physical_free_memory_bytes/(1024*1024*1024);
             physical_free_memory=physical_mem_gb.toString()+"GB";
         }
-       
-        
-        
+
+
+
         return physical_free_memory;
     }
     /**
@@ -494,70 +491,91 @@ if(physical_free_memory_bytes>MEM_1MB_bytes && physical_free_memory_bytes<MEM_1G
      */
     public static String getNumericMatch(String content)
     {
-    	Pattern patner=Pattern.compile("[0-9]");
-    	Matcher matcher = patner.matcher(content);
-    	String matching="";
-    	if(matcher.find())
-    	{
-    		matching=content.substring(matcher.start(),matcher.regionEnd());
-    		//System.out.println("Matched "+matcher.group() + " "+content.substring(matcher.start(),matcher.regionEnd()));
-    	}
-    	return matching;
+        Pattern patner=Pattern.compile("[0-9]");
+        Matcher matcher = patner.matcher(content);
+        String matching="";
+        if(matcher.find())
+        {
+            matching=content.substring(matcher.start(),matcher.regionEnd());
+            //System.out.println("Matched "+matcher.group() + " "+content.substring(matcher.start(),matcher.regionEnd()));
+        }
+        return matching;
     }
     /**
-     * 
+     *
      * @param list
      * @param elemnt
      * @param pos_index
      * @return finalList
      */
-    
+
     public static ArrayList<?> insertElementToArrayList(ArrayList<?> list,Object elemnt,int pos_index)
     {
 
-    	ArrayList<Object> finalList=new ArrayList<Object>();
+        ArrayList<Object> finalList=new ArrayList<Object>();
 //Implementing the arraylist addition code.
-    	Object temstorelm=list.get(pos_index);
+        Object temstorelm=list.get(pos_index);
 
-    	System.out.println("The total size is "+list.size());
-    	for(int i=0;i<list.size();i++)
-    	{
+        System.out.println("The total size is "+list.size());
+        for(int i=0;i<list.size();i++)
+        {
 
-    		if(i==pos_index)
-    		{
-    		finalList.add(pos_index, elemnt);
-    		finalList.add(pos_index+1, temstorelm);
-    		}
-    		else{
-    		finalList.add(list.get(i));
-    		}
+            if(i==pos_index)
+            {
+                finalList.add(pos_index, elemnt);
+                finalList.add(pos_index+1, temstorelm);
+            }
+            else{
+                finalList.add(list.get(i));
+            }
 
-    	}
+        }
 
 
-    	return finalList;
+        return finalList;
     }
     /**
-     * 
+     *
      * @param list
      * @param pos_index
      * @return finalList
      */
-public static ArrayList<?> deleteElementFromArrayList(ArrayList<?> list,int pos_index)
+    public static ArrayList<?> deleteElementFromArrayList(ArrayList<?> list,int pos_index)
     {
-    ArrayList<Object> finalList=new ArrayList<Object>();
-    Object tempobjelemt=list.get(pos_index);
-    System.out.println("The Total size is "+list.size());
-    for(int i=0;i<list.size();i++)
-    {
-        if(i==pos_index)
+        ArrayList<Object> finalList=new ArrayList<Object>();
+        Object tempobjelemt=list.get(pos_index);
+        System.out.println("The Total size is "+list.size());
+        for(int i=0;i<list.size();i++)
         {
+            if(i==pos_index)
+            {
 
-        }else
-        {
-            finalList.add(list.get(i));
+            }else
+            {
+                finalList.add(list.get(i));
+            }
         }
+        return  finalList;
     }
-    return  finalList;
+
+    public static String getAppdataDirectory(){
+
+        String OS = System.getProperty("os.name").toUpperCase();
+
+        if (OS.toLowerCase().contains("windows")){
+            return System.getenv("APPDATA");
+        }
+        else if (OS.toLowerCase().contains("mac os x")) {
+            return System.getenv("HOME") + "/Library/Application " + "Support";
 }
+        else if (OS.toLowerCase().contains("linux")) {
+            return System.getenv("HOME");
+        }
+
+        return System.getProperty("user.dir");
+
+    }
+
+
+
 }

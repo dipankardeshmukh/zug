@@ -160,8 +160,8 @@ public class SpreadSheet {
                                 s = f.getParent()+File.separator+s;
                             }
 
-                            sh.readSpreadSheet(s);
-                            includeFiles.put(s, sh);
+                            if(sh.readSpreadSheet(s))
+                             includeFiles.put(s, sh);
 
                         }
 
@@ -177,6 +177,12 @@ public class SpreadSheet {
 
         if(!new File(filePath).isAbsolute())
             throw new Exception("SpreadSheet/readSpreadSheet expects file paths to be absolute");
+
+        if(!new File(filePath).exists()){
+            ZugGUI.message("Spreadsheet/readSpreadSheet: Could find file - "+filePath);
+            return false;
+        }
+
 
         try {
             absolutePath = filePath;
@@ -226,7 +232,9 @@ public class SpreadSheet {
 
                     if(fName.getName().contains(nameSpace)){
 
-                        return this.getIncludeFile(path, new HashSet<String>()).getMoleculesSheet().moleculeExist(mol);
+                        SpreadSheet sp = this.getIncludeFile(path, new HashSet<String>());
+                        if(sp!=null)
+                        return sp.getMoleculesSheet().moleculeExist(mol);
                     }
                 }
 
