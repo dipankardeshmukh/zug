@@ -56,7 +56,7 @@ public class HelpMenu {
 			public void actionPerformed(ActionEvent e) {
 				if (Desktop.isDesktopSupported()) {
 				    try {
-				    	SysEnv env=new SysEnv();
+				    	//SysEnv env=new SysEnv();
 				    	String filePath=System.getProperty("user.dir")+SysEnv.SLASH+"Input Files"+SysEnv.SLASH+"ZUG User Manual.pdf";
 				        File myFile = new File(filePath);
 				        Desktop.getDesktop().open(myFile);

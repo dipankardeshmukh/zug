@@ -28,6 +28,12 @@ public class IconsPanel {
     static String debugger_icon_path;
 
 
+
+    static String console_icon_path;
+    static String sheet_icon_path;
+    static String split_icon_path;
+
+
 	static private boolean optionButtonProd = false,
 			optionButtonPerf = false;
 	static private JButton show;
@@ -86,6 +92,17 @@ public class IconsPanel {
         IconsPanel.debugger_icon_path = debugger_icon_path;
     }
 
+    public static void setConsole_icon_path(String console_icon_path) {
+        IconsPanel.console_icon_path = console_icon_path;
+    }
+
+    public static void setSheet_icon_path(String sheet_icon_path) {
+        IconsPanel.sheet_icon_path = sheet_icon_path;
+    }
+
+    public static void setSplit_icon_path(String split_icon_path) {
+        IconsPanel.split_icon_path = split_icon_path;
+    }
 
 	public static String getFileName() {
 		return fileName;
@@ -346,7 +363,7 @@ public class IconsPanel {
 		btnProduction.setBounds(217, 0, 33, 33);
         btnProduction.setContentAreaFilled(false);
         btnProduction.setBorderPainted(false);
-		btnProduction.setIcon(new ImageIcon(System.getProperty("user.dir") + "\\Images\\production.png"));
+		btnProduction.setIcon(new ImageIcon(System.getProperty("user.dir") + "/Images/production.png"));
         iconPanel.add(btnProduction);
 		btnProduction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -371,7 +388,7 @@ public class IconsPanel {
 		btnPerformance.setBounds(245, 0, 33, 33);
         btnPerformance.setContentAreaFilled(false);
         btnPerformance.setBorderPainted(false);
-		btnPerformance.setIcon(new ImageIcon(System.getProperty("user.dir")	+ "\\Images\\performance.png"));
+		btnPerformance.setIcon(new ImageIcon(System.getProperty("user.dir")	+ "/Images/performance.png"));
 		iconPanel.add(btnPerformance);
 		btnPerformance.setBackground(Color.LIGHT_GRAY);
         btnPerformance.addActionListener(new ActionListener() {
@@ -397,7 +414,7 @@ public class IconsPanel {
 		btnDevelopment.setBounds(275, 0, 33, 33);
         btnDevelopment.setContentAreaFilled(false);
         btnDevelopment.setBorderPainted(false);
-		btnDevelopment.setIcon(new ImageIcon(System.getProperty("user.dir")+ "\\Images\\development.png"));
+		btnDevelopment.setIcon(new ImageIcon(System.getProperty("user.dir")+ "/Images/development.png"));
 		iconPanel.add(btnDevelopment);
 		btnDevelopment.setBackground(Color.LIGHT_GRAY);
         JMenuBar menuBar_1 = new JMenuBar() {
@@ -495,34 +512,57 @@ public class IconsPanel {
         iconPanel.add(JV4);
         //iconPanel.addSeparator(new Dimension(20,20));
 
-        split = new JButton("Split");
-        split.setMargin(new Insets(0,0,0,0));
+
+        split = new JButton("");
         split.setToolTipText("Split the display");
-        split.setBounds(350, 0, 40, 33);
+        split.setBounds(350, 0, 33, 33);
         split.setContentAreaFilled(false);
         split.setBorderPainted(false);
+        split.setIcon(new ImageIcon(System.getProperty("user.dir")
+                + split_icon_path));
         iconPanel.add(split);
+        split.setBackground(Color.LIGHT_GRAY);
 
-        console = new JButton("Console");
-        console.setMargin(new Insets(0,0,0,0));
-        console.setToolTipText("Split the display");
-        console.setBounds(390, 0, 60, 33);
+
+        console = new JButton("");
+        //console.setMargin(new Insets(0,0,0,0));
+        console.setToolTipText("Show Console only");
+        console.setBounds(380, 0, 33, 33);
         console.setContentAreaFilled(false);
         console.setBorderPainted(false);
+        console.setIcon(new ImageIcon(System.getProperty("user.dir")
+                + console_icon_path));
         iconPanel.add(console);
+        console.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        console.setForeground(Color.DARK_GRAY);
+        console.setBackground(Color.LIGHT_GRAY);
+        console.setBorder(null);
+        console.setFocusable(false);
 
-        sheet = new JButton("Sheet");
-        sheet.setMargin(new Insets(0,0,0,0));
-        sheet.setToolTipText("Split the display");
-        sheet.setBounds(450, 0, 45, 33);
+
+        sheet = new JButton("");
+        //sheet.setMargin(new Insets(0,0,0,0));
+        sheet.setToolTipText("Show sheet only");
+        sheet.setBounds(410, 0, 33, 33);
         sheet.setContentAreaFilled(false);
         sheet.setBorderPainted(false);
+        sheet.setIcon(new ImageIcon(System.getProperty("user.dir")
+                + sheet_icon_path));
         iconPanel.add(sheet);
+        sheet.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        sheet.setForeground(Color.DARK_GRAY);
+        sheet.setBackground(Color.LIGHT_GRAY);
+        sheet.setBorder(null);
+        sheet.setFocusable(false);
 
-        toggleTaskPane = new JButton("Toggle");
+        JSeparator JV5 = new JSeparator(SwingConstants.VERTICAL);
+        JV5.setBounds(445,5,20, 20);
+        iconPanel.add(JV5);
+
+        toggleTaskPane = new JButton("SideBar");
         toggleTaskPane.setMargin(new Insets(0,0,0,0));
-        toggleTaskPane.setToolTipText("Split the display");
-        toggleTaskPane.setBounds(510, 0, 45, 33);
+        toggleTaskPane.setToolTipText("Toggle Property Bar Display");
+        toggleTaskPane.setBounds(450, 0, 100, 33);
         toggleTaskPane.setContentAreaFilled(false);
         toggleTaskPane.setBorderPainted(false);
         iconPanel.add(toggleTaskPane);
@@ -659,6 +699,7 @@ public class IconsPanel {
         toggleTaskPane.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
 
                 if(ZugGUI.getDisplayPane().getDisplayPane().getComponentCount()>1){
 

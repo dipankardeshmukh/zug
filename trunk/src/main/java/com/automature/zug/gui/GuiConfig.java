@@ -36,6 +36,9 @@ public class GuiConfig {
                 boolean stop = false;
                 boolean clearscreen = false;
                 boolean debug = false;
+                boolean console = false;
+                boolean sheet = false;
+                boolean split = false;
 
                 public void startElement(String uri, String localName,String qName,
                                          Attributes attributes) throws SAXException {
@@ -70,6 +73,18 @@ public class GuiConfig {
 
                     if (qName.equalsIgnoreCase("debugger-icon")) {
                         debug = true;
+                    }
+
+                    if (qName.equalsIgnoreCase("console-icon")) {
+                        console = true;
+                    }
+
+                    if (qName.equalsIgnoreCase("sheet-icon")) {
+                        sheet = true;
+                    }
+
+                    if (qName.equalsIgnoreCase("split-icon")) {
+                        split = true;
                     }
                 }
 
@@ -120,8 +135,20 @@ public class GuiConfig {
                         debug=false;
                     }
 
+                    if (console) {
+                        IconsPanel.setConsole_icon_path(new String(ch, start, length));
+                        console=false;
+                    }
 
+                    if (sheet) {
+                        IconsPanel.setSheet_icon_path(new String(ch, start, length));
+                        sheet=false;
+                    }
 
+                    if (split) {
+                        IconsPanel.setSplit_icon_path(new String(ch, start, length));
+                        split=false;
+                    }
 
                 }
 

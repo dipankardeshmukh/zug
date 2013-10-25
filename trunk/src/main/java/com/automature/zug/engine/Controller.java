@@ -32,7 +32,7 @@ import java.util.Map.Entry;
 //import DatabaseLayer.Testplan;
 public class Controller extends Thread {
 	// Variables for checking Program options
-	private static SysEnv sysenv=new SysEnv();
+	private static SysEnv sysenv;
 	private String helpMessage = StringUtils.EMPTY;
 	private String versionMessage = StringUtils.EMPTY;
 	static Excel readExcel;
@@ -47,7 +47,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.1.0";
+	private static String Version = "ZUG Premium 7.1.2";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -1488,7 +1488,7 @@ public class Controller extends Thread {
 	 */
 	public static void main(String[] args)throws InterruptedException,
 	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
-		SysEnv sysenv=new SysEnv();
+		sysenv = new SysEnv();
 		guiFlag = false;
 		//		if (args.length > 1) {
 		for (String arg : args) {
