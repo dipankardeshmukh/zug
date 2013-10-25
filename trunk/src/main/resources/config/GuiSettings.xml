@@ -9,5 +9,8 @@
     <stop-icon>/Images/stop.png</stop-icon>
     <clear-screen-icon>/Images/broom.png</clear-screen-icon>
     <debugger-icon>/Images/bug.png</debugger-icon>
+    <console-icon>/Images/console.png</console-icon>
+    <sheet-icon>/Images/sheet.png</sheet-icon>
+    <split-icon>/Images/split.png</split-icon>
 	</icons>
 </root>
