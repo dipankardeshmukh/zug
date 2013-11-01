@@ -24,7 +24,7 @@ public class SheetDisplayPane extends JPanel {
 	private  HashMap<String, String> externalSheets;
 	public static ArrayList testCaseIds;
 
-	SheetDisplayPane(SpreadSheet sh){
+	SheetDisplayPane(SpreadSheet sh) throws Exception {
 
 		tabbedPane = new JTabbedPane(JTabbedPane.VERTICAL);
 		tabbedPane.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -33,6 +33,12 @@ public class SheetDisplayPane extends JPanel {
         addTab("Macros",null,sh.getMacroSheetPanel(),null);
         addTab("TestCases",null,sh.getTestCasesSheetPanel(),null);
         addTab("Molecules",null,sh.getMoleculesSheetPanel(),null);
+
+        if(sh.getAbsolutePath().equalsIgnoreCase(ZugGUI.spreadSheet.getAbsolutePath())){
+            tabbedPane.setSelectedIndex(2);
+        }else{
+            tabbedPane.setSelectedIndex(3);
+        }
 
 /*		try{
 			ExcelHandler ex=new ExcelHandler(fileName);
@@ -85,8 +91,8 @@ public class SheetDisplayPane extends JPanel {
 			}*/
 
 			if(i==actionColumn+1||i==verifyColumn+1){
-			//	column.setCellRenderer(new MyTableCellRenderer(excel.messageMap));
-				column.setCellRenderer(new MyTableCellRenderer(excel.messageMap));
+			//	column.setCellRenderer(new CustomTableCellRenderer(excel.messageMap));
+				column.setCellRenderer(new CustomTableCellRenderer(excel.messageMap));
 			}
 		}
 

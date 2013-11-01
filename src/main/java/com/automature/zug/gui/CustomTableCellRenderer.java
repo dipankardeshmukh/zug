@@ -12,19 +12,21 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class MyTableCellRenderer extends  DefaultTableCellRenderer {
+public class CustomTableCellRenderer extends  DefaultTableCellRenderer {
 
 	HashMap<Point,String> map;
-	public MyTableCellRenderer(HashMap<Point,String> map){
+	public CustomTableCellRenderer(HashMap<Point, String> map){
 		this.map=map;
 	}
 	
   public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
 
-	  	super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);     
+	  Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
 
-        setText(value !=null ? value.toString() : "");
+      c.setBackground(table.getModel().getValueAt(rowIndex,1).toString().equalsIgnoreCase("comment")? new Color(0x00, 0xB0, 0x00) : Color.WHITE);
+
+      setText(value !=null ? value.toString() : "");
     	Set s=map.keySet();
 		Iterator it=s.iterator();
 

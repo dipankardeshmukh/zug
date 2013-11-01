@@ -129,6 +129,10 @@ public class ZugGUI {
 		params.add(fileName);
 		params.addAll(IconsPanel.getOptions());
 		params.addAll(al);
+
+        String selectedTestCases = guiDisplayPane.getSelectedTestCases();
+        if(selectedTestCases!=null)
+        params.add(selectedTestCases);
 	/*	al=IconsPanel.getList();
 		if(al!=null && al.size()!=0)
 		{
@@ -160,19 +164,20 @@ public class ZugGUI {
 		*/
 		return params;
 	}
-	
-	public static void loadFile() throws Exception {
-		String fileName=IconsPanel.getFileName();
-		if (fileName != null) {
-			ZugGUI.setTitle(fileName.substring(fileName
-					.lastIndexOf("\\") + 1));
-				ZugGUI.clearOptions();
-				ZugGUI.initialize();
-                ZugGUI.loadSpreadSheet(fileName);
-				ZugGUI.addTestSuiteTabToDisplay(spreadSheet);
-		}	
-		
-	}
+
+    public static void loadFile(boolean reload) throws Exception {
+        String fileName=IconsPanel.getFileName();
+        if (fileName != null) {
+            ZugGUI.setTitle(fileName.substring(fileName
+                    .lastIndexOf("\\") + 1));
+            if(!reload)
+                ZugGUI.clearOptions();
+            ZugGUI.initialize();
+            ZugGUI.loadSpreadSheet(fileName);
+            ZugGUI.addTestSuiteTabToDisplay(spreadSheet);
+        }
+
+    }
 
     private static void loadSpreadSheet(String fileName) throws Exception {
 
@@ -263,13 +268,22 @@ public class ZugGUI {
 		return ops.getDebugger();
 	}
 
-	public static void addTestSuiteTabToDisplay(SpreadSheet sh){
+	public static void addTestSuiteTabToDisplay(SpreadSheet sh) throws Exception {
         guiDisplayPane.addSheetDisplayPane(sh);
 		IconsPanel.od.createPanels();
 	}
 
-    public void showRunningTestCase(String id){
-        guiDisplayPane.highlightTestCase(id);
+    public static void bringTestSuiteTabToDisplay(SpreadSheet sh) throws Exception {
+        guiDisplayPane.bringSheetDisplayPane(sh);
+
+    }
+
+    public void updateTestCaseStatus(String id, boolean status){
+        guiDisplayPane.updateTestCaseStatus(id, status);
+    }
+
+    public void showRunningTestCase(String id, boolean selected){
+        guiDisplayPane.highlightTestCase(id, selected);
     }
 
 	public void showRunningTestStep(int n){

@@ -20,6 +20,7 @@ public class GUIDisplayPane {
 
     JPanel mainPanel = new JPanel();
     private JTabbedPane tabbedPane;
+
     private static ConsoleDisplay consoleDisplay = new ConsoleDisplay();
     private static SheetDisplayPane sheetDisplay;
     private static TaskPane taskPane;
@@ -49,12 +50,12 @@ public class GUIDisplayPane {
         tabbedPane.addTab(title, icon, component, tip);
     }
 
-    public void addSheetDisplayPane(SpreadSheet sp){
+    public void addSheetDisplayPane(SpreadSheet sp) throws Exception {
 
         sheetDisplay =new SheetDisplayPane(sp);
         this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
 
-        if(taskPane!=null && !taskPane.getParentSpreadSheet().equalsIgnoreCase(ZugGUI.spreadSheet.getAbsolutePath())){
+        if(taskPane!=null){
             mainPanel.remove(taskPane);
             taskPane=null;
         }
@@ -69,6 +70,13 @@ public class GUIDisplayPane {
             mainPanel.add(taskPane);
         }
 
+        splitTab();
+    }
+
+    public void bringSheetDisplayPane(SpreadSheet sp) throws Exception {
+
+        sheetDisplay =new SheetDisplayPane(sp);
+        this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
 
     }
 
@@ -148,7 +156,15 @@ public class GUIDisplayPane {
         consoleDisplay.redirectSystemStreams();
     }
 
-    public void highlightTestCase(String id){
-        taskPane.highlightTestCase(id);
+    public void highlightTestCase(String id, boolean selected){
+        taskPane.highlightTestCase(id, selected);
+    }
+
+    public void updateTestCaseStatus(String id, boolean status){
+        taskPane.updateTestCaseStatus(id,status);
+    }
+
+    public String getSelectedTestCases(){
+        return taskPane.getSelectedTestCases();
     }
 }

@@ -102,7 +102,7 @@ public class SpreadSheet {
         return null;
     }
 
-    public JPanel getMoleculesSheetPanel() {
+    public JPanel getMoleculesSheetPanel() throws Exception {
         return moleculesSheet.getPanel();
     }
 

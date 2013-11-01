@@ -124,7 +124,7 @@ public class OptionDialog extends JDialog {
 		otherOptPanel=new OtherOptionPanel();
 		viewIncludeSheetPanel();
 	}
-	
+
 	public void updateChildPanel(JPanel panel){
 		if(childConentPanel!=null){
 			contentPanel.remove(childConentPanel);
@@ -138,11 +138,7 @@ public class OptionDialog extends JDialog {
 	public void viewIncludeSheetPanel(){
 		updateChildPanel(includePanel);
 	}
-	
-	public void viewTestCaseIDPanel(){
-		updateChildPanel(tcIDPanel)	;
-	}
-	
+
 	public void viewReportingPanel(){
 		updateChildPanel(reportingOptions);
 	}
@@ -158,14 +154,13 @@ public class OptionDialog extends JDialog {
 	public ArrayList<String> getOptions(){
 		ArrayList<String> options=new ArrayList<String>();
 		options.addAll(includePanel.getOptions());
-		options.addAll(tcIDPanel.getOptions());
+		//options.addAll(tcIDPanel.getOptions());
 		options.addAll(reportingOptions.getOptions());
 		options.addAll(otherOptPanel.getOptions());
 		return options;
 	}
 	
 	public class OptionButtonsPanel extends JPanel {
-		private final Action action = new SwingAction();
 		private final Action action_1 = new SwingAction_1();
 		private final Action action_2 = new SwingAction_2();
 		private final Action action_3 = new SwingAction_3();
@@ -184,6 +179,7 @@ public class OptionDialog extends JDialog {
 			gbl_panel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
 			gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 			setLayout(gbl_panel);
+
 			{
 				JLabel lblZugOptions = new JLabel("ZUG Options");
 				lblZugOptions.setForeground(Color.BLUE);
@@ -198,20 +194,9 @@ public class OptionDialog extends JDialog {
 				gbc_lblZugOptions.gridy = 0;
 				add(lblZugOptions, gbc_lblZugOptions);
 			}
+
 			{
-				JButton btnAdd = new JButton("Test Cases");
-				btnAdd.setFont(new Font("Tahoma", Font.BOLD, 11));
-				btnAdd.setAction(action);
-				//	btnAdd.setAction(action);
-				GridBagConstraints gbc_btnAdd = new GridBagConstraints();
-				gbc_btnAdd.fill = GridBagConstraints.BOTH;
-				gbc_btnAdd.insets = new Insets(0, 0, 5, 0);
-				gbc_btnAdd.gridx = 0;
-				gbc_btnAdd.gridy = 1;
-				add(btnAdd, gbc_btnAdd);
-			}
-			{
-				JButton btnRemove = new JButton("Include Sheets");
+				JButton btnRemove = new JButton("Include Files");
 				btnRemove.setFont(new Font("Tahoma", Font.BOLD, 11));
 				btnRemove.setAction(action_1);
 				//	btnRemove.setAction(action_1);
@@ -248,19 +233,10 @@ public class OptionDialog extends JDialog {
 			
 		}
 
-		private class SwingAction extends AbstractAction {
-			public SwingAction() {
-				putValue(NAME, "Test Cases");
-				putValue(SHORT_DESCRIPTION, "Some short description");
-			}
-			public void actionPerformed(ActionEvent e) {
-				viewTestCaseIDPanel();
-			}
-		}
 		private class SwingAction_1 extends AbstractAction {
 			public SwingAction_1() {
-				putValue(NAME, "Include Sheets");
-				putValue(SHORT_DESCRIPTION, "Some short description");
+				putValue(NAME, "Include Files");
+				putValue(SHORT_DESCRIPTION, "Command line Include Files");
 			}
 			public void actionPerformed(ActionEvent e) {
 				viewIncludeSheetPanel();
@@ -269,7 +245,7 @@ public class OptionDialog extends JDialog {
 		private class SwingAction_2 extends AbstractAction {
 			public SwingAction_2() {
 				putValue(NAME, "Reporting");
-				putValue(SHORT_DESCRIPTION, "Some short description");
+				putValue(SHORT_DESCRIPTION, "Reporting options");
 			}
 			public void actionPerformed(ActionEvent e) {
 				viewReportingPanel();
@@ -278,7 +254,7 @@ public class OptionDialog extends JDialog {
 		private class SwingAction_3 extends AbstractAction {
 			public SwingAction_3() {
 				putValue(NAME, "Others");
-				putValue(SHORT_DESCRIPTION, "Some short description");
+				putValue(SHORT_DESCRIPTION, "Other options");
 			}
 			public void actionPerformed(ActionEvent e) {
 				viewOtherOptionPanel();

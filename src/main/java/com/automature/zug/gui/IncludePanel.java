@@ -1,5 +1,7 @@
 package com.automature.zug.gui;
 
+import com.automature.zug.util.Log;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -41,7 +43,7 @@ public class IncludePanel extends JPanel {
 	private final Action action = new SwingAction();
 	private final Action action_1 = new SwingAction_1();
 	private final Action action_2 = new SwingAction_2();
-	String panelName=" Molecule Sheets";
+	String panelName=" External Sheets";
 	/**
 	 * Create the panel.
 	 */
@@ -148,16 +150,10 @@ public class IncludePanel extends JPanel {
 		
 	}
 	
-	private void chooseFile(){
-		JFileChooser chooser = new JFileChooser();
-		
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"Microsoft Excel Documents", "xls");
-		chooser.setAcceptAllFileFilterUsed(false);
-		chooser.setFileFilter(filter);
-		int returnVal = chooser.showOpenDialog(null);
+	private void chooseFile() throws Exception {
+		JFileChooser chooser = GuiUtils.chooseFile();
 		String fileName=null;
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		if (chooser != null) {
 			fileName = chooser.getSelectedFile().getAbsolutePath();
 		}
 		if(fileName!=null){
@@ -170,26 +166,16 @@ public class IncludePanel extends JPanel {
 	private class SwingAction extends AbstractAction {
 		public SwingAction() {
 			putValue(NAME, "Add");
-			putValue(SHORT_DESCRIPTION, "Add Molecule Sheets");
+			putValue(SHORT_DESCRIPTION, "Add External Sheets");
 		}
 		public void actionPerformed(ActionEvent e) {
-			chooseFile();
-			/*JFileChooser chooser = new JFileChooser();
-			
-			FileNameExtensionFilter filter = new FileNameExtensionFilter(
-					"Microsoft Excel Documents", "xls");
-			chooser.setAcceptAllFileFilterUsed(false);
-			chooser.setFileFilter(filter);
-			int returnVal = chooser.showOpenDialog(null);
-			String fileName=null;
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				fileName = chooser.getSelectedFile().getAbsolutePath();
-			}
-			if(fileName!=null){
-				if(!listModel.contains(fileName)){
-					listModel.addElement(fileName);
-				}
-			}*/
+
+            try {
+                chooseFile();
+            } catch (Exception e1) {
+                Log.Error("IncludePanel/SwingAction: Error while choosing file. "+e1.getMessage());
+            }
+
 		}
 	}
 	
@@ -197,7 +183,7 @@ public class IncludePanel extends JPanel {
 		
 		public SwingAction_1() {
 			putValue(NAME, "remove");
-			putValue(SHORT_DESCRIPTION, "remove molecule sheet from test suite");
+			putValue(SHORT_DESCRIPTION, "Remove external sheet from test suite");
 		}
 		public void actionPerformed(ActionEvent e) {
 			if(listModel.getSize()==0){

@@ -68,6 +68,11 @@ public class MacroSheet {
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+        table.getColumnModel().getColumn(0).setPreferredWidth(30);
+        table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table.getColumnModel().getColumn(2).setPreferredWidth(400);
+        table.getColumnModel().getColumn(3).setPreferredWidth(400);
+
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane);
 

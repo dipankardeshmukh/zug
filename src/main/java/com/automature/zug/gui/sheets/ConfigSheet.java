@@ -20,7 +20,21 @@ public class ConfigSheet {
 
 
     public String getTestSuiteName() {
-        return "";
+
+        String testsuiteName = null;
+        Iterator it = data.iterator();
+
+        while (it.hasNext()){
+
+            Vector row = (Vector) it.next();
+
+            if(row.get(0).toString().equalsIgnoreCase("Test Suite Name") && row.get(1)!=null && !row.get(1).toString().isEmpty()){
+                testsuiteName = row.get(1).toString();
+            }
+
+        }
+
+        return testsuiteName;
     }
 
     public void setTestSuiteName(String testSuiteName) {
@@ -44,10 +58,16 @@ public class ConfigSheet {
         header.add("Line");
         header.add("");
         header.add("");
+
         JTable table = new JTable(data,header);
 
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+
+        table.getColumnModel().getColumn(0).setPreferredWidth(30);
+        table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table.getColumnModel().getColumn(2).setPreferredWidth(400);
 
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane);
