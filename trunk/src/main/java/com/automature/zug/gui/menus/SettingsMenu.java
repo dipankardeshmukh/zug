@@ -40,7 +40,7 @@ public class SettingsMenu {
 
 	public SettingsMenu(){
 
-		mnSettings = new JMenu("Settings");
+		mnSettings = new JMenu("Options");
 
 		mnMode = new JMenu("Mode");
 		mnSettings.add(mnMode);
@@ -68,19 +68,19 @@ public class SettingsMenu {
 		chckbxNoVerify = new JCheckBoxMenuItem("NoVerify");
 		mnSettings.add(chckbxNoVerify);
 
-		chckbxRepeat = new JCheckBoxMenuItem("Repeat");
-		mnSettings.add(chckbxRepeat);
+	//	chckbxRepeat = new JCheckBoxMenuItem("Repeat");
+	//	mnSettings.add(chckbxRepeat);
 		
 		chckbxDebugger=new JCheckBoxMenuItem("Debugger");
 		mnSettings.add(chckbxDebugger);
 
 		mnSettings.addSeparator();
 		
-		mntmMacros = new JMenuItem("Macro Column");
-		mnSettings.add(mntmMacros);
+		//mntmMacros = new JMenuItem("Macro Column");
+		//mnSettings.add(mntmMacros);
 
-		mntmIncludes = new JMenuItem("Include Files");
-		mnSettings.add(mntmIncludes);
+		//mntmIncludes = new JMenuItem("Include Files");
+		//mnSettings.add(mntmIncludes);
 
 	//	mntmLogfile = new JMenuItem("Logfile");
 	//	mnSettings.add(mntmLogfile);
@@ -173,7 +173,7 @@ public class SettingsMenu {
 			}
 		});
 		
-		chckbxRepeat.addActionListener(new ActionListener() {
+/*		chckbxRepeat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(chckbxRepeat.isSelected())
 					IconsPanel.chckbxNoExecute.setSelected(true);
@@ -181,11 +181,11 @@ public class SettingsMenu {
 					IconsPanel.chckbxNoExecute.setSelected(false);
 				}
 			}
-		});
+		});*/
 		
 		opgui= new MoreOptionActionListener(); 
-		mntmMacros.addActionListener(opgui);
-		mntmIncludes.addActionListener(opgui);
+		//mntmMacros.addActionListener(opgui);
+		//mntmIncludes.addActionListener(opgui);
 		
 	}
 	
@@ -199,7 +199,7 @@ public class SettingsMenu {
 	//	chckbxDebug.setSelected(true);
 		chckbxVerbose.setSelected(true);
 		chckbxAutorecover.setSelected(false);
-		chckbxRepeat.setSelected(false);
+	//	chckbxRepeat.setSelected(false);
 	
 
 	}
@@ -210,7 +210,7 @@ public class SettingsMenu {
 	//	chckbxDebug.setSelected(false);
 		chckbxVerbose.setSelected(false);
 		chckbxAutorecover.setSelected(false);
-		chckbxRepeat.setSelected(true);
+	//	chckbxRepeat.setSelected(true);
 	
 
 	}
@@ -221,7 +221,7 @@ public class SettingsMenu {
 	//	chckbxDebug.setSelected(false);
 		chckbxVerbose.setSelected(false);
 		chckbxAutorecover.setSelected(true);
-		chckbxRepeat.setSelected(false);
+	//	chckbxRepeat.setSelected(false);
 	
 
 	}

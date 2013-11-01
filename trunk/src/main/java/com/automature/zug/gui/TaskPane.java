@@ -1,18 +1,20 @@
 package com.automature.zug.gui;
 
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import com.automature.zug.gui.sheets.SpreadSheet;
+import com.automature.zug.util.Log;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationActionMap;
@@ -25,8 +27,6 @@ import org.jdesktop.swingx.VerticalLayout;
 @SuppressWarnings("serial")
 public class TaskPane extends JPanel {
 
-
-
     private String parentSpreadSheet;
 
     private JXButton hide;
@@ -37,7 +37,8 @@ public class TaskPane extends JPanel {
     private JXTaskPane reporting;
     private JXTaskPane reference;
 
-    private JTree testCaseTree;
+    private JPanel testCasePanel;
+    private JCheckBox allTestCases = new JCheckBox(new File(ZugGUI.spreadSheet.getAbsolutePath()).getName(), true);
     private DefaultMutableTreeNode testCaseTreeNode;
 
     public TaskPane() {
@@ -47,6 +48,22 @@ public class TaskPane extends JPanel {
         createTaskPane();
         Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
         bind();
+
+        allTestCases.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                boolean flag = allTestCases.isSelected();
+                Component[] comps = testCasePanel.getComponents();
+
+                for (int i =1; i<comps.length; i++) {
+
+                    JCheckBox ch = (JCheckBox)comps[i];
+                    ch.setSelected(flag);
+
+                }
+            }
+        });
     }
 
     public String getParentSpreadSheet() {
@@ -169,8 +186,8 @@ public class TaskPane extends JPanel {
 
 
 
-        testCaseTree = new JTree(getTestCaseTree(ZugGUI.spreadSheet.getTestCasesSheet().getTestCaseIds()));
-        JScrollPane treeViewTestCase = new JScrollPane(testCaseTree);
+        testCasePanel = getTestCasePanel(ZugGUI.spreadSheet.getTestCasesSheet().getTestCaseIds());
+        JScrollPane treeViewTestCase = new JScrollPane(testCasePanel);
         treeViewTestCase.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         treeViewTestCase.setPreferredSize(new Dimension(100,200));
         executionSummary.add(treeViewTestCase);
@@ -186,28 +203,45 @@ public class TaskPane extends JPanel {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 if(e.getNewLeadSelectionPath().getLastPathComponent().toString().equalsIgnoreCase(ZugGUI.spreadSheet.getAbsolutePath())){
-                    ZugGUI.addTestSuiteTabToDisplay(ZugGUI.spreadSheet);
+                    try {
+                        ZugGUI.bringTestSuiteTabToDisplay(ZugGUI.spreadSheet);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                 }else{
                     Set<String> filesRead = new HashSet<String>();
-                    ZugGUI.addTestSuiteTabToDisplay(ZugGUI.spreadSheet.getIncludeFile(e.getNewLeadSelectionPath().getLastPathComponent().toString(),filesRead ));
+                    try {
+                        ZugGUI.bringTestSuiteTabToDisplay(ZugGUI.spreadSheet.getIncludeFile(e.getNewLeadSelectionPath().getLastPathComponent().toString(),filesRead ));
+                    } catch (Exception e1) {
+                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                 }
             }
         });
 
     }
 
-    private DefaultMutableTreeNode getTestCaseTree(ArrayList Ids){
+    private JPanel getTestCasePanel(ArrayList Ids){
 
-        testCaseTreeNode = new DefaultMutableTreeNode(ZugGUI.spreadSheet.getAbsolutePath());
+        //testCaseTreeNode = new DefaultMutableTreeNode(ZugGUI.spreadSheet.getAbsolutePath());
         Iterator it = Ids.iterator();
+        JPanel tcPanel = new JPanel();
+        tcPanel.setLayout(new BoxLayout(tcPanel, BoxLayout.Y_AXIS));
+        tcPanel.setBackground(Color.white);
+        tcPanel.setBorder(new EmptyBorder(10, 10, 10, 10) );
+
+        tcPanel.add(allTestCases);
 
         while (it.hasNext()){
 
-            String id = it.next().toString();
-            testCaseTreeNode.add(new DefaultMutableTreeNode(id));
+            JCheckBox id = new JCheckBox(it.next().toString(),true);
+            id.setBackground(Color.white);
+            if(id.getText().equalsIgnoreCase("init") || id.getText().equalsIgnoreCase("cleanup"))
+                id.setEnabled(false);
+            tcPanel.add(id.getText(),id);
 
         }
-        return testCaseTreeNode;
+        return tcPanel;
     }
 
     private DefaultMutableTreeNode getSheetTree(SpreadSheet sh){
@@ -225,19 +259,77 @@ public class TaskPane extends JPanel {
         return node;
     }
 
-    public void highlightTestCase(String tcID){
+    public void highlightTestCase(String tcID, boolean selected){
 
-         Enumeration en = testCaseTreeNode.children();
+        Component[] comps = testCasePanel.getComponents();
 
-        while (en.hasMoreElements()) {
+        for (int i =1; i<comps.length; i++) {
 
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) en.nextElement();
+            JCheckBox ch = (JCheckBox)comps[i];
 
-            if(node.toString().equalsIgnoreCase(tcID) || tcID.startsWith(node.toString()+"\\"))
-            testCaseTree.setSelectionPath( new TreePath(node.getPath()));
+            if(ch.getText().equalsIgnoreCase(tcID) || tcID.startsWith(ch.getText()+"\\")){
+                if(selected)
+                    ch.setBackground(Color.LIGHT_GRAY);
+                else
+                    ch.setBackground(Color.white);
+            }
+        }
+    }
 
+    public void updateTestCaseStatus(String tcID, boolean testCaseStatus){
+
+        try {
+
+            Component[] comps = testCasePanel.getComponents();
+
+            for (int i =1; i<comps.length; i++) {
+
+                JCheckBox ch = (JCheckBox)comps[i];
+
+                if(ch.getText().equalsIgnoreCase(tcID) || tcID.startsWith(ch.getText()+"\\")){
+
+                    if(testCaseStatus && !ch.getForeground().equals(Color.RED))      // ignore if the test case failed previously
+                        ch.setForeground(new Color(0x00, 0x70, 0x00));        //  very dark green
+                    else
+                        ch.setForeground(Color.RED);
+
+                }
+            }
+        } catch (Exception e) {
+
+            Log.Error("TaskPane/updateTestCaseStatus: Error while updating test case status on Property Bar. "+e.getMessage());
         }
 
     }
+
+
+    public String getSelectedTestCases(){
+
+        boolean selective_execution = false;
+        String selectedTestCases = "";
+        Component[] comps = testCasePanel.getComponents();
+
+        for (int i =1; i<comps.length; i++) {
+
+            JCheckBox ch = (JCheckBox)comps[i];
+
+                if(ch.isSelected()){
+                    selectedTestCases+=ch.getText()+",";
+                }else{
+                    selective_execution=true;
+                }
+        }
+
+        if(selective_execution){
+
+            if(selectedTestCases.endsWith(","))
+                     selectedTestCases = selectedTestCases.substring(0,selectedTestCases.length() - 1);
+
+            return "-testcaseid=" + selectedTestCases;
+        }
+
+        return null;
+    }
+
 }
 

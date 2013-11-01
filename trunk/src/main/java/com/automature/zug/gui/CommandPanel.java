@@ -40,7 +40,7 @@ public class CommandPanel {
 		return cmdPanel;
 	}
 	public void setCommand(ArrayList command){
-		String cmd="runzug";
+		String cmd="zug";
 		if(command!=null){
 			for(Object ob:command){
 				if(!ob.toString().startsWith("-pwd"))
@@ -52,7 +52,7 @@ public class CommandPanel {
 	
 	public void setCommand(String command){
 		
-		textArea_1.setText("runzug "+command);
+		textArea_1.setText("zug "+command);
 	}
 	public void appendCommand(String param){
 		textArea_1.append(param);

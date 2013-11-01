@@ -35,7 +35,8 @@ public class IconsPanel {
 
 
 	static private boolean optionButtonProd = false,
-			optionButtonPerf = false;
+			               optionButtonPerf = false,
+                           optionButtonDev = false;
 	static private JButton show;
 	//static public JCheckBox chckbxDebug;
 	static public JCheckBox chckbxVerbose;
@@ -173,22 +174,22 @@ public class IconsPanel {
 		chckbxAutorecover.setForeground(Color.DARK_GRAY);
 		chckbxAutorecover.setBackground(Color.WHITE);
 
-		chckbxNoExecute = new JCheckBox("NoExecute");
+		chckbxNoExecute   = new JCheckBox("NoExecute    ");
 		mnNewMenu.add(chckbxNoExecute);
 		chckbxNoExecute.setForeground(Color.DARK_GRAY);
 		chckbxNoExecute.setBackground(Color.WHITE);
 
-		chckbxNoVerify = new JCheckBox("NoVerify");
+		chckbxNoVerify    = new JCheckBox("NoVerify       ");
 		mnNewMenu.add(chckbxNoVerify);
 		chckbxNoVerify.setForeground(Color.DARK_GRAY);
 		chckbxNoVerify.setBackground(Color.WHITE);
 
-		chckbxVerbose = new JCheckBox("Verbose");
+		chckbxVerbose     = new JCheckBox("Verbose       ");
 		mnNewMenu.add(chckbxVerbose);
 		chckbxVerbose.setForeground(Color.DARK_GRAY);
 		chckbxVerbose.setBackground(Color.WHITE);
 		
-		chckbxDebugger=new JCheckBox("Debugger");
+		chckbxDebugger    = new JCheckBox("Debugger     ");
 		mnNewMenu.add(chckbxDebugger);
 		chckbxDebugger.setForeground(Color.DARK_GRAY);
 		chckbxDebugger.setBackground(Color.WHITE);
@@ -199,9 +200,10 @@ public class IconsPanel {
 		chckbxNoVerify.setSelected(false);		
 //		chckbxDebug.setSelected(true);
 		chckbxVerbose.setSelected(true);
-		chckbxAutorecover.setSelected(false);
+		chckbxAutorecover.setSelected(true);
 	//	chckbxNoExecute.setSelected(false);
-		chckbxDebugger.setSelected(false);
+		chckbxDebugger.setSelected(true);
+        optionButtonDev = true;
 
 	}
 
@@ -211,6 +213,7 @@ public class IconsPanel {
 //		chckbxDebug.setSelected(false);
 		chckbxVerbose.setSelected(false);
 		chckbxAutorecover.setSelected(false);
+        chckbxDebugger.setSelected(false);
 		//chckbxNoExecute.setSelected(true);
 		optionButtonPerf = true;
 
@@ -218,10 +221,11 @@ public class IconsPanel {
 
 	public static void setProductionOptions() {
 		
-		chckbxNoVerify.setSelected(false);		
+		chckbxNoVerify.setSelected(true);
 	//	chckbxDebug.setSelected(false);
 		chckbxVerbose.setSelected(false);
 		chckbxAutorecover.setSelected(true);
+        chckbxDebugger.setSelected(false);
 	//	chckbxNoExecute.setSelected(false);
 		optionButtonProd = true;
 
@@ -266,7 +270,7 @@ public class IconsPanel {
             public void actionPerformed(ActionEvent arg0) {
                 if(fileName!=null && StringUtils.isNotBlank(fileName)){
                     try {
-                        ZugGUI.loadFile();
+                        ZugGUI.loadFile(true);
                     } catch (Exception e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
@@ -294,6 +298,17 @@ public class IconsPanel {
 				mnNewMenu.doClick();
 			}
 		});
+
+
+        JMenuBar menuBar_1 = new JMenuBar();
+        menuBar_1.setBounds(35, 30, 5, 4);
+        iconPanel.add(menuBar_1);
+        menuBar_1.setBackground(Color.LIGHT_GRAY);
+        menuBar_1.setBorderPainted(false);
+        menuBar_1.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuBar_1.setMargin(new Insets(1, 1, 1, 1));
+        initializeMenuOption();
+        menuBar_1.add(mnNewMenu);
 
 
 		final JButton btnNewButton = new JButton();
@@ -359,7 +374,7 @@ public class IconsPanel {
         //iconPanel.addSeparator(new Dimension(20,20));
 
 		final JButton btnProduction = new JButton("");
-		btnProduction.setToolTipText("Production");
+		btnProduction.setToolTipText("Production mode");
 		btnProduction.setBounds(217, 0, 33, 33);
         btnProduction.setContentAreaFilled(false);
         btnProduction.setBorderPainted(false);
@@ -368,23 +383,15 @@ public class IconsPanel {
 		btnProduction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setProductionOptions();
-				optionButtonPerf = false;
-				btnNewButton.doClick();
+                optionButtonProd = true;
+			    btnProduction.setSelected(true);
 			}
 		});
-		btnProduction.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {
-				btnProduction.setBackground(Color.LIGHT_GRAY);
-			}
 
-			public void mousePressed(MouseEvent e) {
-				btnProduction.setBackground(Color.LIGHT_GRAY);
-			}
-		});
 
 
 		final JButton btnPerformance = new JButton("");
-		btnPerformance.setToolTipText("Performance");
+		btnPerformance.setToolTipText("Performance mode");
 		btnPerformance.setBounds(245, 0, 33, 33);
         btnPerformance.setContentAreaFilled(false);
         btnPerformance.setBorderPainted(false);
@@ -393,47 +400,30 @@ public class IconsPanel {
 		btnPerformance.setBackground(Color.LIGHT_GRAY);
         btnPerformance.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				optionButtonProd = false;
-
-				btnNewButton.doClick();
-			}
-		});
-		btnPerformance.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {
-				btnPerformance.setBackground(Color.WHITE);
-			}
-
-			public void mousePressed(MouseEvent e) {
-				btnPerformance.setBackground(Color.LIGHT_GRAY);
+                setPerformanceOptions();
+                optionButtonPerf = true;
+                btnPerformance.setSelected(true);
 			}
 		});
 
 
 		final JButton btnDevelopment = new JButton("");
-		btnDevelopment.setToolTipText("Development");
+		btnDevelopment.setToolTipText("Development mode");
 		btnDevelopment.setBounds(275, 0, 33, 33);
         btnDevelopment.setContentAreaFilled(false);
         btnDevelopment.setBorderPainted(false);
 		btnDevelopment.setIcon(new ImageIcon(System.getProperty("user.dir")+ "/Images/development.png"));
 		iconPanel.add(btnDevelopment);
 		btnDevelopment.setBackground(Color.LIGHT_GRAY);
-        JMenuBar menuBar_1 = new JMenuBar() {
-			private static final long serialVersionUID = 1L;
+        btnDevelopment.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setDevelopmentOptions();
+                optionButtonDev = true;
+                btnDevelopment.setSelected(true);
+            }
+        });
 
-			protected void paintComponent(Graphics g) {
 
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setColor(Color.WHITE);
-				g2.fillRect(0, 0, getWidth(), getHeight());
-			}
-		};
-		menuBar_1.setBounds(35, 30, 5, 4);
-		iconPanel.add(menuBar_1);
-		menuBar_1.setBorderPainted(false);
-		menuBar_1.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		menuBar_1.setMargin(new Insets(1, 1, 1, 1));
-		initializeMenuOption();
-		menuBar_1.add(mnNewMenu);
 
 
 
@@ -751,7 +741,7 @@ public class IconsPanel {
 		int returnVal = chooser.showOpenDialog(iconPanel.getRootPane());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			fileName = chooser.getSelectedFile().getAbsolutePath();
-			ZugGUI.loadFile();
+			ZugGUI.loadFile(false);
 		}
 		
 	}
