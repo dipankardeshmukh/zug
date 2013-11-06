@@ -190,7 +190,7 @@ public class IconsPanel {
 		chckbxVerbose.setBackground(Color.WHITE);
 		
 		chckbxDebugger    = new JCheckBox("Debugger     ");
-		mnNewMenu.add(chckbxDebugger);
+		//mnNewMenu.add(chckbxDebugger);
 		chckbxDebugger.setForeground(Color.DARK_GRAY);
 		chckbxDebugger.setBackground(Color.WHITE);
 	}
@@ -202,7 +202,7 @@ public class IconsPanel {
 		chckbxVerbose.setSelected(true);
 		chckbxAutorecover.setSelected(true);
 	//	chckbxNoExecute.setSelected(false);
-		chckbxDebugger.setSelected(true);
+	//	chckbxDebugger.setSelected(true);
         optionButtonDev = true;
 
 	}
