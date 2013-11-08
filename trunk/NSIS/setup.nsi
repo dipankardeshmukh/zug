@@ -248,7 +248,7 @@ Function CredentialPage
     Abort
   ${EndIf}
   
-  !insertmacro MUI_HEADER_TEXT "Davos Config Settings" "Set Test Management Framework configuration settings. You can skip this, if you do not want reporing of your test results."
+  !insertmacro MUI_HEADER_TEXT "Davos Config Settings" "Set Test Management Framework configuration settings. You can skip this, if you do not want reporting of your test results."
 	#Create Dialog and quit if error
 	nsDialogs::Create 1018
 	Pop $Dialog
