@@ -12,5 +12,6 @@
     <console-icon>/Images/console.png</console-icon>
     <sheet-icon>/Images/sheet.png</sheet-icon>
     <split-icon>/Images/split.png</split-icon>
+    <sidebar-icon>/Images/sidebar.png</sidebar-icon>
 	</icons>
 </root>

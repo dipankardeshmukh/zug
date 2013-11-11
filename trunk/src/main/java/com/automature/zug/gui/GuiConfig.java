@@ -30,15 +30,18 @@ public class GuiConfig {
 
                 boolean browse = false;
                 boolean reload = false;
+
                 boolean options = false;
                 boolean moreoptions = false;
                 boolean execute = false;
                 boolean stop = false;
                 boolean clearscreen = false;
                 boolean debug = false;
+
                 boolean console = false;
                 boolean sheet = false;
                 boolean split = false;
+                boolean sidebar = false;
 
                 public void startElement(String uri, String localName,String qName,
                                          Attributes attributes) throws SAXException {
@@ -85,6 +88,10 @@ public class GuiConfig {
 
                     if (qName.equalsIgnoreCase("split-icon")) {
                         split = true;
+                    }
+
+                    if (qName.equalsIgnoreCase("sidebar-icon")) {
+                        sidebar = true;
                     }
                 }
 
@@ -148,6 +155,11 @@ public class GuiConfig {
                     if (split) {
                         IconsPanel.setSplit_icon_path(new String(ch, start, length));
                         split=false;
+                    }
+
+                    if (sidebar) {
+                        IconsPanel.setSidebar_icon_path(new String(ch, start, length));
+                        sidebar=false;
                     }
 
                 }

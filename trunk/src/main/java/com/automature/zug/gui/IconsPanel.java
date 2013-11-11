@@ -32,6 +32,7 @@ public class IconsPanel {
     static String console_icon_path;
     static String sheet_icon_path;
     static String split_icon_path;
+    static String sidebar_icon_path;
 
 
 	static private boolean optionButtonProd = false,
@@ -103,6 +104,10 @@ public class IconsPanel {
 
     public static void setSplit_icon_path(String split_icon_path) {
         IconsPanel.split_icon_path = split_icon_path;
+    }
+
+    public static void setSidebar_icon_path(String sidebar_icon_path) {
+        IconsPanel.sidebar_icon_path = sidebar_icon_path;
     }
 
 	public static String getFileName() {
@@ -549,12 +554,14 @@ public class IconsPanel {
         JV5.setBounds(445,5,20, 20);
         iconPanel.add(JV5);
 
-        toggleTaskPane = new JButton("SideBar");
-        toggleTaskPane.setMargin(new Insets(0,0,0,0));
+        toggleTaskPane = new JButton();
+        //toggleTaskPane.setMargin(new Insets(0,0,0,0));
         toggleTaskPane.setToolTipText("Toggle Property Bar Display");
-        toggleTaskPane.setBounds(450, 0, 100, 33);
+        toggleTaskPane.setBounds(450, 0, 33, 33);
         toggleTaskPane.setContentAreaFilled(false);
         toggleTaskPane.setBorderPainted(false);
+        toggleTaskPane.setIcon(new ImageIcon(System.getProperty("user.dir")
+                + sidebar_icon_path));
         iconPanel.add(toggleTaskPane);
 
 		mnNewMenu.setVisible(true);
