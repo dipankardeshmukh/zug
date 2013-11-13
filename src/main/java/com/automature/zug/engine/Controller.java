@@ -47,7 +47,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.1.5";
+	private static String Version = "ZUG Premium 7.1.6";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -70,6 +70,7 @@ public class Controller extends Thread {
 	public static String ZUG_LOGFILENAME = "";
 	// Initiating AtomInvoker
 	// public static AtomInvoker invokeAtoms=null;
+    public static final String inprocess_packages_file_path = "//root//inprocesspackages//file-path//inprocesspackage";
 	public static final String inprocess_jar_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
 	public static final String inprocess_jar_xml_tag_attribute_name = "name";
 	public static final String native_inprocess_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
