@@ -52,25 +52,25 @@ public class ExtensionInterpreterSupport {
     public static List<Double> jvm_max_memory_list=new ArrayList<Double>();
     public Set<String> inprocesspackageError = new HashSet<String>();
 
-   
-    public static String getNode(String path)throws Exception{
-    
-          String filename = "ZugINI.xml";
-          Document document = null;
-          try {
-              document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(filename));
-              document.getDocumentElement().normalize();
-          } catch (Exception FileLoadException) {
-              Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + filename);
-              throw FileLoadException;
 
-          }
-          Node ele = org.apache.xpath.XPathAPI.selectSingleNode(document, path);//.selectNodeList(document, path);
-          if(ele==null)
-        	  return null;
-          return ele.getTextContent();
+    public static String getNode(String path)throws Exception{
+
+        String filename = "ZugINI.xml";
+        Document document = null;
+        try {
+            document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(filename));
+            document.getDocumentElement().normalize();
+        } catch (Exception FileLoadException) {
+            Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + filename);
+            throw FileLoadException;
+
+        }
+        Node ele = org.apache.xpath.XPathAPI.selectSingleNode(document, path);//.selectNodeList(document, path);
+        if(ele==null)
+            return null;
+        return ele.getTextContent();
     }
-    
+
     private static ArrayList<ExtensionInterpreterSupport> readConfigFile() throws Exception {
         String Pathlist = new String(System.getenv(SysEnv.PATH_CHECK));
         ArrayList<ExtensionInterpreterSupport> extensionList = new ArrayList<ExtensionInterpreterSupport>();
@@ -285,62 +285,71 @@ public class ExtensionInterpreterSupport {
             document.getDocumentElement().normalize();
         } catch (Exception fileLoadException) {
             Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + filename);
-//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
             throw fileLoadException;
         }
+
         ExtensionInterpreterSupport jarinterpreter = new ExtensionInterpreterSupport();
-        NodeList locationList = org.apache.xpath.XPathAPI.selectNodeList(document,Controller.inprocess_jar_xml_tag_path);
+        NodeList locationList;
+        boolean oldZugINI = false;
+
+        locationList = org.apache.xpath.XPathAPI.selectNodeList(document,Controller.inprocess_packages_file_path);
+
+        if (locationList.getLength()<1){
+            oldZugINI = true;
+            Log.Error("[WARNING] Package: "+attributeValue+". Please update the ZugINI format, the current format is deprecated and may not be supported in future releases.");
+            locationList = org.apache.xpath.XPathAPI.selectNodeList(document,Controller.inprocess_jar_xml_tag_path);
+        }
+
         ArrayList<String> forJar = new ArrayList<String>();
         HashMap<String, ArrayList<String>> builtinpackagemap = new HashMap<String, ArrayList<String>>();
 
+        for (int i=0; i < locationList.getLength(); i++) {
 
-        for (int i = 0; i < locationList.getLength(); i++) {
-            Element pathElement = (Element) locationList.item(i);
-            if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)) {
-                
-            	if(pathElement.getAttribute("language").equalsIgnoreCase("Java"))
-            	{
-            		Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
-                jarinterpreter.jarfilepath = path_node.getTextContent();
+            Node inprocessPackage =  locationList.item(i);
+            String inprocessPackageName = inprocessPackage.getAttributes().getNamedItem("name").getNodeValue();
+            String inprocessPackageLanguage = inprocessPackage.getAttributes().getNamedItem("language").getNodeValue();
 
-                forJar.add(jarinterpreter.jarfilepath);
-                Node jar_package_arch = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "jar-package");
-                jarinterpreter.jarpackage = jar_package_arch.getTextContent();
-                forJar.add(jarinterpreter.jarpackage);
-                Node class_name = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "class-name");
-                jarinterpreter.classname = class_name.getTextContent();
-                forJar.add(jarinterpreter.classname);
-                builtinpackagemap.put(pathElement.getAttribute("name"), forJar);
-//System.out.println("HASHMAP\t"+builtinpackagemap);
-                break;
-            	}
-            	else{
-            		inprocesspackageError.add(attributeValue);
-            		
-//            		Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
-//                    jarinterpreter.jarfilepath = path_node.getTextContent();
-//
-//                    forJar.add(jarinterpreter.jarfilepath);
-//                    Node jar_package_arch = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "jar-package");
-//                    jarinterpreter.jarpackage = jar_package_arch.getTextContent();
-//                    forJar.add(jarinterpreter.jarpackage);
-//                    Node class_name = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "class-name");
-//                    jarinterpreter.classname = class_name.getTextContent();
-//                    forJar.add(jarinterpreter.classname);
-            		
-                    builtinpackagemap.put(pathElement.getAttribute("name"), forJar);
-                    //break;
-            	}
+            if (inprocessPackageName.equalsIgnoreCase(attributeValue)) {
 
+                if(inprocessPackageLanguage.equalsIgnoreCase("Java"))
+                {
+
+                    if(oldZugINI){
+                        Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(inprocessPackage, "file-path");
+                        jarinterpreter.jarfilepath = path_node.getTextContent();
+                    }else{
+                        jarinterpreter.jarfilepath = inprocessPackage.getParentNode().getAttributes().getNamedItem("dir").getNodeValue();
+                    }
+
+                    forJar.add(jarinterpreter.jarfilepath);
+                    Node jar_package_arch = org.apache.xpath.XPathAPI.selectSingleNode(inprocessPackage, "jar-package");
+                    jarinterpreter.jarpackage = jar_package_arch.getTextContent();
+
+                    forJar.add(jarinterpreter.jarpackage);
+                    Node class_name = org.apache.xpath.XPathAPI.selectSingleNode(inprocessPackage, "class-name");
+                    jarinterpreter.classname = class_name.getTextContent();
+
+                    forJar.add(jarinterpreter.classname);
+                    builtinpackagemap.put(inprocessPackageName, forJar);
+
+                    break;
+                }
+                else{
+
+                    inprocesspackageError.add(attributeValue);
+                    builtinpackagemap.put(inprocessPackageName, forJar);
+                }
             }
-          
-          
             forJar.clear();
-          
         }
+
 
         return builtinpackagemap;
     }
+
+
+
+
 
     public String[] reteriveXmlTagAttributeValue(String tagarchitechture, String attributeName) throws Exception {
         String filename = "ZugINI.xml";
@@ -363,15 +372,15 @@ public class ExtensionInterpreterSupport {
             attributevalue[i] = pathElement.getAttribute(attributeName);
 
         }
-       
-        
+
+
         return attributevalue;
     }
     /*
      * Reads the attribute key=value pair 
      * as packagename=language
      */
-     public HashMap<String,String> reteriveXmlTagAttributeValuesPair(String tagarchitechture) throws Exception {
+    public HashMap<String,String> reteriveXmlTagAttributeValuesPair(String tagarchitechture) throws Exception {
         String filename = "ZugINI.xml";
         File file = new File(filename);
         Document document;
@@ -392,8 +401,8 @@ public class ExtensionInterpreterSupport {
             attributevalue.put(pathElement.getAttribute("name"),pathElement.getAttribute("language"));
 
         }
-       
-        
+
+
         return attributevalue;
     }
     /*Reads a Configuration for Cartesian Product memorysize and mvm cardinality
@@ -435,24 +444,24 @@ public class ExtensionInterpreterSupport {
                 Element mvm_config_node = (Element) mvm_config_node_list.item(j);
                 mvm_config_map.put(mvm_config_node.getAttribute("jvm-max-memorysize"), mvm_config_node.getTextContent());
                 jvm_max_memory_list.add(new Double(mvm_config_node.getAttribute("jvm-max-memorysize")));
-               // System.out.println("jvm-max-memorysize:: " + mvm_config_node.getAttribute("jvm-max-memorysize") + " cardinality:: " + mvm_config_node.getTextContent());
+                // System.out.println("jvm-max-memorysize:: " + mvm_config_node.getAttribute("jvm-max-memorysize") + " cardinality:: " + mvm_config_node.getTextContent());
             }
 
 
         }
-       
+
         //return configurationMap;
         return mvm_config_map;
     }
-    
+
     /*Reads a native inprocess package architecture
      *
      * @param atrributeValue
      *                      as String
      * returns a HashMap with specific configuration.
      */
-  public HashMap<String, ArrayList<String>> readNativePackageArchitecture(String attributeValue) throws Exception {
- String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+    public HashMap<String, ArrayList<String>> readNativePackageArchitecture(String attributeValue) throws Exception {
+        String Path = new String(System.getenv(SysEnv.PATH_CHECK));
         String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
         Log.Debug("Environment variable Path + " + Path);
         String filename = "ZugINI.xml";
@@ -463,7 +472,7 @@ public class ExtensionInterpreterSupport {
             document.getDocumentElement().normalize();
         } catch (Exception fileLoadException) {
             Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + filename);
-			//Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
+            //Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
             throw fileLoadException;
         }
         //System.out.println("The Zug INI "+filename+" document "+document.getDocumentURI());
@@ -475,7 +484,7 @@ public class ExtensionInterpreterSupport {
 
         for (int i = 0; i < locationList.getLength(); i++) {
             Element pathElement = (Element) locationList.item(i);
-           // System.out.println("The elementss "+pathElement.getAttribute("language")+"The name "+pathElement.getAttribute("name"));
+            // System.out.println("The elementss "+pathElement.getAttribute("language")+"The name "+pathElement.getAttribute("name"));
             if (pathElement.getAttribute("name").equalsIgnoreCase(attributeValue)&&pathElement.getAttribute("language").equalsIgnoreCase("dll")) {
                 Node path_node = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "file-path");
                 nativeinterpreter.nativefilepath = path_node.getTextContent();
@@ -484,7 +493,7 @@ public class ExtensionInterpreterSupport {
                 Node jar_package_arch = org.apache.xpath.XPathAPI.selectSingleNode(pathElement, "dll-name");
                 nativeinterpreter.nativedllname = jar_package_arch.getTextContent();
                 forNativeLib.add(nativeinterpreter.nativedllname);
-                       
+
                 nativepackagemap.put(pathElement.getAttribute("name"), forNativeLib);
 //System.out.println("HASHMAP\t"+nativepackagemap);
                 break;
@@ -492,7 +501,7 @@ public class ExtensionInterpreterSupport {
             forNativeLib.clear();
         }
         return nativepackagemap;
-}
+    }
    /*Reads a COM inprocess package architecture
      *
      * @param atrributeValue
@@ -500,8 +509,8 @@ public class ExtensionInterpreterSupport {
      * returns a HashMap with specific configuration.
      */
 
-  public HashMap<String, ArrayList<String>> readCOMPackageArchitecture(String attributeValue) throws Exception {
- String Path = new String(System.getenv(SysEnv.PATH_CHECK));
+    public HashMap<String, ArrayList<String>> readCOMPackageArchitecture(String attributeValue) throws Exception {
+        String Path = new String(System.getenv(SysEnv.PATH_CHECK));
         String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
         Log.Debug("Environment variable Path + " + Path);
         String filename = "ZugINI.xml";
@@ -531,7 +540,7 @@ public class ExtensionInterpreterSupport {
 
                 forCOMLib.add(COMinterpreter.comprogid);
 
-                       
+
                 COMpackagemap.put(pathElement.getAttribute("name"), forCOMLib);
 //System.out.println("HASHMAP\t"+nativepackagemap);
                 break;
@@ -539,5 +548,5 @@ public class ExtensionInterpreterSupport {
             forCOMLib.clear();
         }
         return COMpackagemap;
-}
+    }
 }
