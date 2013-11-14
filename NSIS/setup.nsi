@@ -283,7 +283,7 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOutPath "$TEMP"
   SetOverwrite on
-  File "automature-zug-bin.zip"
+  File "*.zip"
  
  ;=================================  UPDATE ========================================================= 
   ${If} $Update == "TRUE"
@@ -297,9 +297,9 @@ Section "MainSection" SEC01
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.temp"
     donot_backup:  
       ${If} $IsSilent == "TRUE"
-        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Extracting automature-zug-bin.zip file in $INSTDIR .$\r$\n`
+        ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Extracting *.zip file in $INSTDIR .$\r$\n`
       ${EndIf}
-      !insertmacro ZIPDLL_EXTRACT "$TEMP\automature-zug-bin.zip" "$INSTDIR" "<ALL>"
+      !insertmacro ZIPDLL_EXTRACT "$TEMP\*.zip" "$INSTDIR" "<ALL>"
       IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
     interchange: 
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
@@ -314,7 +314,7 @@ Section "MainSection" SEC01
 ;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx UPDATE  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX     
   ${Else}
  
-      !insertmacro ZIPDLL_EXTRACT "$TEMP\automature-zug-bin.zip" "$INSTDIR" "<ALL>"
+      !insertmacro ZIPDLL_EXTRACT "$TEMP\*.zip" "$INSTDIR" "<ALL>"
       
       AccessControl::GrantOnFile \
       "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
@@ -331,7 +331,7 @@ Section "MainSection" SEC01
       ExecWait "$INSTDIR\ZUG\Setup.cmd"
       
       nsExec::ExecToStack '"$INSTDIR\ZUG\zug.bat"'
-      Delete "$TEMP\automature-zug-bin.zip"
+      Delete "$TEMP\*.zip"
   
   ${EndIf}
   
