@@ -20,7 +20,7 @@ public class InProcessAtom  implements Atom{
 			type = "Action";
 			isAction = true;
 		} else {
-			type = "verification";
+			type = "Verification";
 		}
 		HiPerfTimer hft=null;
 		try {
@@ -53,8 +53,8 @@ public class InProcessAtom  implements Atom{
 			}
 			
 			Controller.message(String.format(
-					"[%s] Execution Started "+type+" %s with values %s ",
-					action.stackTrace.toUpperCase(), action.name,
+					"[%s] "+type+" %s Execution STARTED With Arguments %s ",
+					action.stackTrace.toUpperCase(), action.name.toUpperCase(),
 					action.arguments));
 			for (String pkg_name : new ExtensionInterpreterSupport()
 			.reteriveXmlTagAttributeValue(

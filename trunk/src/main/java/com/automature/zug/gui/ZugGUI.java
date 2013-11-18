@@ -114,7 +114,11 @@ public class ZugGUI {
 		updateFrame();
 		//ops.showDebuggerControls();
 	}
-	
+
+    public static void setFormatOutput(boolean val){
+        guiDisplayPane.setFormatOuput(val);
+    }
+
 	public static JFrame getFrame(){
 		return frame;
 	}
@@ -292,7 +296,7 @@ public class ZugGUI {
 	}
 
 	public void showRunningMoleculeStep(String name,int n,int start){
-		guiDisplayPane.getSheetDisplayPane().showRunningMoleculeStep(name,n,start);
+		//guiDisplayPane.getSheetDisplayPane().showRunningMoleculeStep(name,n,start);
 	}
 	
 	public static void removeAllTabs(){

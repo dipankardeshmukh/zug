@@ -117,8 +117,12 @@ public class GUIDisplayPane {
         }
     }
 
-    public JTextArea getConsole(){
+    public JTextPane getConsole(){
         return consoleDisplay.getConsoleDisplay();
+    }
+
+    public void setFormatOuput(boolean val){
+        consoleDisplay.setFormatOutput(val);
     }
 
     public void sendConsoleMessage(String msg) {

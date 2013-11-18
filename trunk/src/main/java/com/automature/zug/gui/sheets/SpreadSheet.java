@@ -255,7 +255,7 @@ public class SpreadSheet {
                 String[] locations = iniSL.split(";");
                 for(String loc : locations){
 
-                    File f = new File(loc+step.replaceFirst("@",""));
+                    File f = new File(loc+File.separator+step.replaceFirst("@",""));
                     if(f.exists()) return true;
 
                 }

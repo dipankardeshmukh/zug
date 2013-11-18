@@ -1,76 +1,113 @@
 <root>
-    <languages>
-        <language name="Ruby">
-            <extension>rb</extension>
-            <interpreter>ruby</interpreter>
-            <path>C:\Ruby\bin</path>
-            <option></option>
-        </language>
-        <language name="Executable">
-            <extension>exe</extension>
-            <interpreter>cmd</interpreter>
-            <path></path>
-            <option>start /c</option>
-        </language>
-        <language name="Perl">
-            <extension>pl</extension>
-            <interpreter>perl.exe</interpreter>
-            <option></option>
-            <path></path>
-        </language>
-        <language name="Python">
-            <extension>py</extension>
-            <interpreter>python.exe</interpreter>
-            <option></option>
-            <path>"C:\Program Files(x86)\Python\bin\"</path>
-        </language>
-        <language name="Visual Basic Script">
-            <extension>vbs</extension>
-            <interpreter>wscript.exe</interpreter>
-            <option></option>
-            <path>C:\windows\system32</path>
-        </language>
-        <language name="java jar">
-            <extension>jar</extension>
-            <interpreter>zug.exe</interpreter>
-            <option>-jar</option>
-            <path>C:\ZUG</path>
-        </language>
-        <language name="java class">
-            <extension>class</extension>
-            <interpreter>zug.exe</interpreter>
-            <option></option>
-            <path>C:\ZUG</path>
-        </language>
-        <language name="Batch File">
-            <extension>bat</extension>
-            <interpreter>cmd</interpreter>
-            <option>start /c</option>
-            <path></path>
-        </language>
-	</languages>
-	<inprocesspackages>
-	    <!--inprocesspackage name="" language="">
-	      <file-path></file-path>
-	      <jar-package></jar-package>
-	      <class-name></class-name>
-	    </inprocesspackage-->
-	</inprocesspackages>
-              
+  <languages>
+              	<language name="Ruby">
+              		<extension>rb</extension>
+              		<interpreter>ruby</interpreter>
+              		<path>C:\Ruby\bin</path>
+              		<option></option>
+              	</language>
+              	<language name="Executable">
+              		<extension>exe</extension>
+              		<interpreter>cmd</interpreter>
+              		<path></path>
+              		<option>start /c</option>
+              	</language>
+              	<language name="Perl">
+              		<extension>pl</extension>
+              		<interpreter>perl.exe</interpreter>
+              		<option></option>
+              		<path></path>
+              	</language>
+              	<language name="Python">
+              		<extension>py</extension>
+              		<interpreter>python.exe</interpreter>
+              		<option></option>
+              		<path>"C:\Program Files(x86)\Python\bin\"</path>
+              	</language>
+              	<language name="Visual Basic Script">
+              		<extension>vbs</extension>
+              		<interpreter>wscript.exe</interpreter>
+              		<option></option>
+              		<path>C:\windows\system32</path>
+              	</language>
+              	<language name="java jar">
+              		<extension>jar</extension>
+              		<interpreter>zug.exe</interpreter>
+              		<option>-jar</option>
+              		<path>C:\ZUG</path>
+              	</language>
+              	<language name="java class">
+              		<extension>class</extension>
+              		<interpreter>zug.exe</interpreter>
+              		<option></option>
+              		<path>C:\ZUG</path>
+              	</language>
+              	<language name="Batch File">
+              		<extension>bat</extension>
+              		<interpreter>cmd</interpreter>
+              		<option>start /c</option>
+              		<path></path>
+              	</language>
+  	</languages>
+    <inprocesspackages>
+      <file-path dir="C:\Program Files (x86)\Automature\ZUOZ\Inprocess">
+                <inprocesspackage name="ZString" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zstring</jar-package>
+                    <class-name>StringOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZXml" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zxml</jar-package>
+                    <class-name>XMLOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZRest" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zrest</jar-package>
+                    <class-name>WebServiceOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZFileOps" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zfileops</jar-package>
+                    <class-name>FileOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZJson" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zjson</jar-package>
+                    <class-name>JSONOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZMath" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zmath</jar-package>
+                    <class-name>MathOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZDB" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zdb</jar-package>
+                    <class-name>DBOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZFTP" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zftpops</jar-package>
+                    <class-name>FtpOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZPOP3" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zpop3</jar-package>
+                    <class-name>POP3Operation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZGeo" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zgeo</jar-package>
+                    <class-name>GeoOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZBrowser" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zbrowser</jar-package>
+                    <class-name>BrowserOperation</class-name>
+                </inprocesspackage>
+        </file-path>
+    </inprocesspackages>
     <configurations>
-        <mvm-configuration jvm-max-memorysize="853">4000</mvm-configuration>
-        <mvm-configuration jvm-max-memorysize="455">3000</mvm-configuration>
-        <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
-        <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
-
-	    <scriptlocation></scriptlocation>
-
-        <dbhostname></dbhostname>
-
-        <dbname></dbname>
-
-        <dbusername></dbusername>
-
-        <dbuserpassword></dbuserpassword>
+                <mvm-configuration jvm-max-memorysize="853">4000</mvm-configuration>
+                <mvm-configuration jvm-max-memorysize="455">3000</mvm-configuration>
+                <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
+                <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
+                <scriptlocation>C:\Users\Debabrata\Documents</scriptlocation>
+                <dbhostname></dbhostname>
+                <dbname></dbname>
+                <dbusername></dbusername>
+                <dbuserpassword></dbuserpassword>
     </configurations>
+              
+
 </root>

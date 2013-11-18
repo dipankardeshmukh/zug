@@ -44,7 +44,7 @@ public class BuildInAtom implements Atom {
 							(String) action.arguments.get(0), threadID);
 
 					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s Execution STARTED With Arguments %s",
+							+ " %s Execution STARTED With Arguments [%s]",
 							action.stackTrace.toUpperCase(),
 							action.name.toUpperCase(), arg));
 					Controller.CreateContextVariable(arg);
@@ -103,7 +103,7 @@ public class BuildInAtom implements Atom {
 				}
 			} else {
 				Controller.message(String.format("\n[%s] " + typeName
-						+ " %s Executed With NO Arguments",
+						+ " %s Executed With Arguments []",
 						action.stackTrace.toUpperCase(),
 						action.name.toUpperCase()));
 			}
@@ -172,7 +172,7 @@ public class BuildInAtom implements Atom {
 				}
 			} else {
 				Controller.message(String.format("\n[%s] " + typeName
-						+ " %s Executed With NO Arguments",
+						+ " %s SUCCESSFULLY Executed",
 						action.stackTrace.toUpperCase(),
 						action.name.toUpperCase()));
 			}
@@ -278,15 +278,16 @@ public class BuildInAtom implements Atom {
 
 					}
 				}
-				Controller.message(String.format("[%s] Executed " + typeName
-						+ " %s with values %s ",
-						action.stackTrace.toUpperCase(), action.name,
+
+				Controller.message("\n\n"+String.format("[%s] " + typeName
+						+ " %s Execution STARTED With Arguments %s ",
+						action.stackTrace.toUpperCase(), action.name.toUpperCase(),
 						action.arguments));
 				// RunVerification(action, threadID);
 			} else {
-				Controller.message(String.format("[%s] Executed " + typeName
-						+ " %s with No Values %s ",
-						action.stackTrace.toUpperCase(), action.name,
+				Controller.message("\n\n"+String.format("[%s] " + typeName
+						+ " %s Execution STARTED With Arguments %s ",
+						action.stackTrace.toUpperCase(), action.name.toUpperCase(),
 						action.arguments));
 			}
 		} else if (action.name.trim().equalsIgnoreCase("GetValueAtIndex")) {

@@ -260,7 +260,7 @@ public class OutProcessAtom implements Atom{
 			Log.Debug(String
 					.format("OutProcessAtom/ExecuteCommand :Started the Process for the Command %s with Arguments as %s . ",
 							command, argument.toString()));
-			Controller.message("Command to be run "+commandparam.toString());
+			//Controller.message("Command to be run "+commandparam.toString());
 			process = pr.start();
 
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
@@ -436,7 +436,7 @@ public class OutProcessAtom implements Atom{
 	 * 
 	 * @param action
 	 *            Action Object to Execute
-	 * @param user
+	 * @param threadID
 	 *            User to perform/execute this action.
 	 */
 	public void run(GTuple action, String threadID) throws Exception {
@@ -490,7 +490,7 @@ public class OutProcessAtom implements Atom{
 			if (StringUtils.isBlank(arguments.toString())) {
 				Controller
 						.message(String
-								.format("\n[%s] "+type+" %s Execution STARTED With NO Arguments  ",
+								.format("\n[%s] "+type+" %s Execution STARTED With Arguments ",
 										action.stackTrace.toUpperCase(),
 										action.name.toUpperCase()));
 			} else {
