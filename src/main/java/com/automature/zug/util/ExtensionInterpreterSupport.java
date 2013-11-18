@@ -51,6 +51,8 @@ public class ExtensionInterpreterSupport {
     //List of mvm configuration java max memory size
     public static List<Double> jvm_max_memory_list=new ArrayList<Double>();
     public Set<String> inprocesspackageError = new HashSet<String>();
+    private static boolean ZugINIWarningMessage = true;
+
 
 
     public static String getNode(String path)throws Exception{
@@ -296,7 +298,10 @@ public class ExtensionInterpreterSupport {
 
         if (locationList.getLength()<1){
             oldZugINI = true;
-            Log.Error("[WARNING] Package: "+attributeValue+". Please update the ZugINI format, the current format is deprecated and may not be supported in future releases.");
+            if(ZugINIWarningMessage){
+                ZugINIWarningMessage = false;
+                Log.Error("[WARNING] Please update the ZugINI format, the current format is deprecated and may not be supported in future releases, refer to Zuoz Reference Guide(v6.6) for details.");
+            }
             locationList = org.apache.xpath.XPathAPI.selectNodeList(document,Controller.inprocess_jar_xml_tag_path);
         }
 

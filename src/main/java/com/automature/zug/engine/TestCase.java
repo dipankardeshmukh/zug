@@ -329,7 +329,7 @@ class TestCase
             Log.Debug("TestCase/RunExpandedTestCase : Running TestCase ID "
                     + this.testCaseID);
             Controller.message("******************************************************************************** ");
-            Controller.message("\nRunning TestCase ID " + this.testCaseID
+            Controller.message("\n\nRunning TestCase ID " + this.testCaseID
                     + " On(Current Date): " + Utility.getCurrentDateAsString());
 
             if(Controller.guiFlag)

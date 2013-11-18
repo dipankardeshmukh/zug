@@ -18,6 +18,7 @@ public class ViewMenu {
 	private JCheckBoxMenuItem chckbxmntmCommandLine;
 	private JCheckBoxMenuItem chckbxmntmDebugger;
 	private JCheckBoxMenuItem chckbxmntmBreakPoints;
+    private JCheckBoxMenuItem formatOutput;
 	private JMenuItem chckbxmntmAtoms;
 
 	public ViewMenu(){
@@ -36,7 +37,10 @@ public class ViewMenu {
 		chckbxmntmCommandLine = new JCheckBoxMenuItem("Command Line");
 		chckbxmntmCommandLine.setSelected(true);
 		mnView.add(chckbxmntmCommandLine);
-		
+
+        formatOutput = new JCheckBoxMenuItem("Format Console");
+        formatOutput.setSelected(true);
+        mnView.add(formatOutput);
 		//mnView.addSeparator();
 
 		chckbxmntmDebugger = new JCheckBoxMenuItem("Debugger Controls");
@@ -112,7 +116,18 @@ public class ViewMenu {
 				va.setVisible(true);
 			}
 		});
-		
+
+        formatOutput.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(formatOutput.isSelected()){
+                    ZugGUI.setFormatOutput(true);
+                }else{
+                    ZugGUI.setFormatOutput(false);
+                }
+            }
+        });
+
 	}
 	
 	public JMenu getMnView() {
