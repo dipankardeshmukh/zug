@@ -488,7 +488,8 @@ class TestCase
 
 
                         //	if(checkBreakPoint(i)){
-                        ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
+                        //ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
+                        ArrayList al=Controller.breakpoints.get("testcases");
 
                         if(al!=null){
                             //System.out.println("array list"+al.toString());

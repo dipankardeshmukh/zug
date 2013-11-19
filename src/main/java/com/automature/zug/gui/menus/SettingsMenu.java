@@ -72,7 +72,7 @@ public class SettingsMenu {
 	//	mnSettings.add(chckbxRepeat);
 		
 		chckbxDebugger=new JCheckBoxMenuItem("Debugger");
-	//	mnSettings.add(chckbxDebugger);
+		mnSettings.add(chckbxDebugger);
 
 		mnSettings.addSeparator();
 		
