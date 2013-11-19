@@ -161,8 +161,8 @@ public class Molecule extends TestCase {
 				if(Controller.opts.debugger){	
 					String name="";
 					//System.out.println("Name space ="+act.nameSpace);
-					name=act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)?"Molecules":act.nameSpace;
-				
+					//name=act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)?"Molecules":act.nameSpace;
+				    name="molecules";
 					List<Integer> al=Controller.breakpoints.get(name);
 					if(al!=null){
 						if(al.contains(act.lineNumber)){

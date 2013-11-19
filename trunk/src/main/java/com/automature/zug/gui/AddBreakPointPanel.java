@@ -41,7 +41,7 @@ public class AddBreakPointPanel {
 		panel_1.setLayout(new GridLayout(0, 2, 0, 0));
 		panel_1.setMaximumSize(new Dimension(350,350));
 
-		lblNewLabel = new JLabel("Choose Excel");
+		lblNewLabel = new JLabel("Choose Sheet");
 		panel_1.add(lblNewLabel);
 
 		lblChooseTestStep = new JLabel("Choose Test Step");
