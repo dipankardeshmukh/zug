@@ -23,9 +23,11 @@ public class SheetDisplayPane extends JPanel {
 	private JTabbedPane tabbedPane; 
 	private  HashMap<String, String> externalSheets;
 	public static ArrayList testCaseIds;
+    private SpreadSheet sp;
 
 	SheetDisplayPane(SpreadSheet sh) throws Exception {
 
+        sp = sh;
 		tabbedPane = new JTabbedPane(JTabbedPane.VERTICAL);
 		tabbedPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 
@@ -66,7 +68,9 @@ public class SheetDisplayPane extends JPanel {
 		this.add(tabbedPane, BorderLayout.CENTER);
 	}
 
-
+    public SpreadSheet getSpreadSheet(){
+        return sp;
+    }
 	private JPanel getPanel(Excel excel){
 
 		JPanel panel = new JPanel(new BorderLayout());
@@ -134,7 +138,10 @@ public class SheetDisplayPane extends JPanel {
 		}
 	}
 
-	public void showRunningTestStep(int n){
+	public void showRunningTestStep(int n) throws Exception {
+
+        //ZugGUI.getDisplayPane().bringSheetDisplayPane(ZugGUI.spreadSheet);
+
         tabbedPane.setSelectedIndex(2);
 		JPanel jp=(JPanel)tabbedPane.getComponentAt(2);
 		JScrollPane sp=(JScrollPane)jp.getComponent(0);

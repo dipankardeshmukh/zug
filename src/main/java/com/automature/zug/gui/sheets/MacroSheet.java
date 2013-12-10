@@ -22,7 +22,7 @@ public class MacroSheet {
 
         header=new Vector();
         Iterator it = sheet.rowIterator();
-        header.add("Line");
+        header.add("");
         if(it.hasNext()){
             Row row = (Row) it.next();
             int n=row.getLastCellNum();
@@ -41,7 +41,7 @@ public class MacroSheet {
         data = new Vector();
         Iterator it = sheet.rowIterator();
         it.next();
-        int line=1;
+        int line=2;
 
         while(it.hasNext()){
 

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import com.automature.zug.engine.Controller;
 
 public class DebuggerControls {
 
@@ -17,7 +18,10 @@ public class DebuggerControls {
 	private JButton singleStep;
 	private JButton viewCV;
 	private JButton pause;
-	private JButton viewBP;
+
+    private JButton viewBP;
+    private JButton clearBP;
+
 	private JPanel panel;
     private JPanel debuugerToolBar;
 	private DebuggerConsole dc;
@@ -34,8 +38,8 @@ public class DebuggerControls {
 		breakPoint = new JButton("");
         breakPoint.setContentAreaFilled(false);
         breakPoint.setBorderPainted(false);
-		initializeBreakPointButton();
-		debuugerToolBar.add(breakPoint);
+		//initializeBreakPointButton();
+		//debuugerToolBar.add(breakPoint);
         //controlPanel.add(breakPoint);
 		
 		resume = new JButton("");
@@ -55,8 +59,8 @@ public class DebuggerControls {
 		viewCV = new JButton();
         viewCV.setContentAreaFilled(false);
         viewCV.setBorderPainted(false);
-		initializeViewCVButton();
-        debuugerToolBar.add(viewCV);
+		//initializeViewCVButton();
+        //debuugerToolBar.add(viewCV);
 		//controlPanel.add(viewCV);
 		
 		pause = new JButton();
@@ -69,10 +73,17 @@ public class DebuggerControls {
 		viewBP = new JButton("");
         viewBP.setContentAreaFilled(false);
         viewBP.setBorderPainted(false);
-		initializeViewBPButton();
-		debuugerToolBar.add(viewBP);
+		//initializeViewBPButton();
+		//debuugerToolBar.add(viewBP);
 		//controlPanel.add(viewBP);
-		
+
+        clearBP = new JButton("");
+        clearBP.setContentAreaFilled(false);
+        clearBP.setBorderPainted(false);
+        initializeClearBPButton();
+        debuugerToolBar.add(clearBP);
+
+
 		panel.add(debuugerToolBar);
 	//	panel.setPreferredSize(new Dimension(767,60));
 		panel.setVisible(true);
@@ -105,8 +116,8 @@ public class DebuggerControls {
 					dc.sendResumeSignal();
 			}
 		});
-		resume.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/resume.jpg"));
-		resume.setBounds(40, 0, 33, 33);
+		resume.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/resume.png"));
+		resume.setBounds(0, 0, 33, 33);
 	}
 	
 	private void initializeSingleStepButton(){
@@ -121,8 +132,8 @@ public class DebuggerControls {
 			}
 		});
 		
-		singleStep.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/singlestep.jpg"));
-		singleStep.setBounds(80, 0, 33, 33);
+		singleStep.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/singlestep.png"));
+		singleStep.setBounds(40, 0, 33, 33);
 	}
 	
 	private void initializeViewCVButton(){
@@ -152,7 +163,7 @@ public class DebuggerControls {
 		});
 		
 		pause.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/pause.png"));
-		pause.setBounds(160, 0, 33, 33);
+		pause.setBounds(80, 0, 33, 33);
 	}
 	
 	private void initializeViewBPButton(){
@@ -170,6 +181,23 @@ public class DebuggerControls {
 		viewBP.setBackground(Color.WHITE);
 		viewBP.setBounds(200, 0, 33, 33);
 	}
+
+    private void initializeClearBPButton(){
+
+        clearBP.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                if(dc !=null){
+                    ZugGUI.removeAllBreakPoints();
+                    Controller.removeAllBreakPoints();
+                    ZugGUI.updateFrame();
+                }
+            }
+        });
+        clearBP.setIcon(new ImageIcon(System.getProperty("user.dir")+"/Images/clearbreakpoint.png"));
+        clearBP.setToolTipText("Clear break points");
+        clearBP.setBackground(Color.WHITE);
+        clearBP.setBounds(120, 0, 33, 33);
+    }
 	
 	public JPanel getDebuggerControlPanel(){
 		return panel;

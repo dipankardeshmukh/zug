@@ -92,7 +92,8 @@ public class LicenseValidator
     	try
     	{
     		boolean dateValid = false;
-    		Calendar today = Calendar.getInstance(); 
+    		Calendar today = Calendar.getInstance();
+            if (Controller.opts.isVersionRequest())
     		System.out.println("Current date is : " +
     			today.get(Calendar.YEAR)
     			+ "-" + (today.get(Calendar.MONTH) + 1)
@@ -100,6 +101,7 @@ public class LicenseValidator
     			);
     		
     		Calendar expiryDate = userInfo.getExpiryDate();
+            if (Controller.opts.isVersionRequest())
     		System.out.println("Expiry date is  : " +
 				expiryDate.get(Calendar.YEAR)
 	    		+ "-" + (expiryDate.get(Calendar.MONTH) + 1)

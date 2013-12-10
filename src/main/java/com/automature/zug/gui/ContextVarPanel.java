@@ -8,12 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
 import com.automature.zug.engine.Controller;
@@ -22,7 +17,7 @@ public class ContextVarPanel {
 	public JPanel panel_3;
 	JComboBox cvComboBox;
 	JTextArea cvValueTextArea;
-	private JButton btnSave=new JButton("save");
+	private JButton btnSave=new JButton("SAVE");
 	private ArrayList cvList=null;
 	
 	public ContextVarPanel(){
@@ -30,24 +25,35 @@ public class ContextVarPanel {
 	}
 	
 	public void initialization(){
+
 		panel_3 = new JPanel();
+        panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
 		panel_3.setVisible(false);
 		panel_3.setBackground(Color.white);
-		cvValueTextArea=new JTextArea();
-		cvComboBox=new JComboBox();
+
+        cvValueTextArea=new JTextArea();
+        cvValueTextArea.setRows(2);
 		cvValueTextArea.setAutoscrolls(true);
 		cvValueTextArea.setEditable(false);
-		//	cvValueTextArea.setPreferredSize(new Dimension(150,100));
+
 		DefaultCaret caret1 = (DefaultCaret)cvValueTextArea.getCaret();
 		caret1.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		final JScrollPane scrollPane1 = new JScrollPane(cvValueTextArea);
-		scrollPane1.setPreferredSize(new Dimension(300,70));
+		//scrollPane1.setPreferredSize(new Dimension(300,70));
 		scrollPane1.setAutoscrolls(true);
-		final JButton btnEditCV=new JButton("Edit values");
+        JPanel buttonPanel = new JPanel();
+		final JButton btnEditCV=new JButton("EDIT");
+        final JButton btnLoadCV=new JButton("LOAD");
+
+        cvComboBox=new JComboBox();
 		panel_3.add(cvComboBox);
 		panel_3.add(scrollPane1);
-		panel_3.add(btnEditCV);
-		panel_3.add(btnSave);
+
+        buttonPanel.add(btnLoadCV);
+        buttonPanel.add(btnEditCV);
+        buttonPanel.add(btnSave);
+
+        panel_3.add(buttonPanel);
 		btnSave.setVisible(false);
 		
 		cvComboBox.addActionListener(new ActionListener() {
@@ -81,9 +87,14 @@ public class ContextVarPanel {
 				Controller.upDateContextVar(name, value);
 				JOptionPane.showMessageDialog(panel_3, "Context Variable value updated");
 			}
-		});	
-		
-		
+		});
+
+        btnLoadCV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshList();
+            }
+        });
 
 	}
 	

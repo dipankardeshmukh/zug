@@ -25,6 +25,12 @@ public class GUIDisplayPane {
     private static SheetDisplayPane sheetDisplay;
     private static TaskPane taskPane;
 
+    private enum DisplayMode {
+        CONSOLE, SHEET, SPLIT
+    }
+
+    private static DisplayMode displayMode = null;
+
     public GUIDisplayPane() {
 
         tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
@@ -64,19 +70,50 @@ public class GUIDisplayPane {
             taskPane = new TaskPane();
             Toolkit tk = Toolkit.getDefaultToolkit();
             int xSize = ((int) tk.getScreenSize().getWidth());
-            int gameWidth = (int) (Math.round(xSize * 0.20));
-            taskPane.setMaximumSize(new Dimension(gameWidth,(int)tk.getScreenSize().getHeight()));
+            int gameWidth = (int) (Math.round(xSize * .23));
+            taskPane.setPreferredSize(new Dimension(gameWidth,(int)tk.getScreenSize().getHeight()));
+            taskPane.setMaximumSize(new Dimension(350,(int)tk.getScreenSize().getHeight()));
             //taskPane.setAlignmentY(SwingConstants.TOP);
             mainPanel.add(taskPane);
         }
 
-        splitTab();
+        if(displayMode==null){
+            splitTab();
+        }
+        else{
+            setPreviousDisplayMode();
+        }
+
     }
+
+    private void setPreviousDisplayMode() {
+        if(displayMode.compareTo(DisplayMode.SPLIT)==0){
+            splitTab();
+        }else if(displayMode.compareTo(DisplayMode.SHEET)==0){
+            showTestSuite();
+        }else{
+            showConsole();
+        }
+    }
+
+
+
+
+    public SpreadSheet getSpreadSheet(){
+        return sheetDisplay.getSpreadSheet();
+    }
+
 
     public void bringSheetDisplayPane(SpreadSheet sp) throws Exception {
 
         sheetDisplay =new SheetDisplayPane(sp);
-        this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
+        //this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
+        if((displayMode==null) || (displayMode.compareTo(DisplayMode.CONSOLE)==0)){
+            splitTab();
+        }
+        else{
+            setPreviousDisplayMode();
+        }
 
     }
 
@@ -89,11 +126,30 @@ public class GUIDisplayPane {
                     consoleDisplay.getConsole(), sheetDisplay);
             splitview.setResizeWeight(.5d);
             this.addTab("Split view", null, splitview, null);
+            displayMode = DisplayMode.SPLIT;
         }
         else {
             JOptionPane.showMessageDialog(null, "Select test suite first!");
         }
     }
+
+    public void showConsole(){
+        this.addTab("Console", null, consoleDisplay.getConsole(), null);
+        displayMode = DisplayMode.CONSOLE;
+    }
+
+    public void showTestSuite(){
+        if(IconsPanel.getFileName()!=null){
+            this.addTab("Excel", null, sheetDisplay, null);
+            displayMode = DisplayMode.SHEET;
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Select test suite first!");
+        }
+    }
+
+
+
 
     public JPanel getDisplayPane(){
         return mainPanel;
@@ -115,6 +171,10 @@ public class GUIDisplayPane {
         }else {
             JOptionPane.showMessageDialog(null, "Select test suite first!");
         }
+    }
+
+    public TaskPane getTaskPane(){
+        return taskPane;
     }
 
     public JTextPane getConsole(){
@@ -139,18 +199,7 @@ public class GUIDisplayPane {
         tabbedPane.addTab("Console", null, consoleDisplay.getConsole(), null);
     }
 
-    public void showConsole(){
-        this.addTab("Console", null, consoleDisplay.getConsole(), null);
-    }
 
-    public void showTestSuite(){
-        if(IconsPanel.getFileName()!=null){
-            this.addTab("Excel", null, sheetDisplay, null);
-        }
-        else {
-            JOptionPane.showMessageDialog(null, "Select test suite first!");
-        }
-    }
 
     SheetDisplayPane getSheetDisplayPane(){
         return sheetDisplay;

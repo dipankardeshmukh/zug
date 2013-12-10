@@ -27,12 +27,14 @@ import org.jdesktop.swingx.VerticalLayout;
 @SuppressWarnings("serial")
 public class TaskPane extends JPanel {
 
+    JXTaskPaneContainer tpc = new JXTaskPaneContainer();
     private String parentSpreadSheet;
 
     private JXButton hide;
     private JXTaskPane run;
     private JXTaskPane executionSummary;
     private JXTaskPane contextVariables;
+    private JXTaskPane breakPoints;
     private JXTaskPane linkedFiles;
     private JXTaskPane reporting;
     private JXTaskPane reference;
@@ -40,6 +42,8 @@ public class TaskPane extends JPanel {
     private JPanel testCasePanel;
     private JCheckBox allTestCases = new JCheckBox(new File(ZugGUI.spreadSheet.getAbsolutePath()).getName(), true);
     private DefaultMutableTreeNode testCaseTreeNode;
+
+    private ContextVarPanel cvPane;
 
     public TaskPane() {
 
@@ -72,9 +76,10 @@ public class TaskPane extends JPanel {
 
     private void createTaskPane() {
 
-        JXTaskPaneContainer tpc = new JXTaskPaneContainer();
+
+        //JPanel tpc = new JPanel();
         tpc.setLayout(new VerticalLayout(0));
-        tpc.setBorder(getBorder());
+        //tpc.setBorder(getBorder());
 
 
         //JPanel tpc = new JPanel();
@@ -91,7 +96,7 @@ public class TaskPane extends JPanel {
         hide.setBackground(Color.LIGHT_GRAY);
 
         //hide.setMargin(new Insets(0,0,0,0));
-        tpc.add(hide);
+        //tpc.add(hide);
 
         run = new JXTaskPane();
         run.setName("systemGroup");
@@ -104,17 +109,11 @@ public class TaskPane extends JPanel {
 
 
         executionSummary = new JXTaskPane();
+        executionSummary = new JXTaskPane();
         executionSummary.setName("officeGroup");
         //executionSummary.setCollapsed(true);
         executionSummary.setTitle("Execution Summary                                     ");
         tpc.add(executionSummary);
-
-
-        contextVariables = new JXTaskPane();
-        contextVariables.setName("seeAlsoGroup");
-        contextVariables.setTitle("Context Variables                                     ");
-        contextVariables.setCollapsed(true);
-        //tpc.add(contextVariables);
 
 
         linkedFiles = new JXTaskPane();
@@ -122,6 +121,8 @@ public class TaskPane extends JPanel {
         linkedFiles.setTitle("Linked Files                                               ");
         linkedFiles.setCollapsed(true);
         tpc.add(linkedFiles);
+
+
 
         reporting = new JXTaskPane();
         reporting.setName("seeAlsoGroup");
@@ -182,10 +183,6 @@ public class TaskPane extends JPanel {
 
     private void bind() {
 
-        ApplicationActionMap map = Application.getInstance().getContext().getActionMap(this);
-
-
-
         testCasePanel = getTestCasePanel(ZugGUI.spreadSheet.getTestCasesSheet().getTestCaseIds());
         JScrollPane treeViewTestCase = new JScrollPane(testCasePanel);
         treeViewTestCase.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -218,7 +215,6 @@ public class TaskPane extends JPanel {
                 }
             }
         });
-
     }
 
     private JPanel getTestCasePanel(ArrayList Ids){
@@ -257,6 +253,37 @@ public class TaskPane extends JPanel {
             node.add(getSheetTree(sheet));
         }
         return node;
+    }
+
+
+
+    public void getContextVarPanel(){
+
+        JPanel cvPanel = new JPanel();
+        cvPanel.setLayout(new BoxLayout(cvPanel, BoxLayout.Y_AXIS));
+        cvPanel.setBackground(Color.white);
+        cvPanel.setBorder(new EmptyBorder(10, 10, 10, 10) );
+
+        cvPane = new ContextVarPanel();
+        cvPane.panel_3.setVisible(true);
+        cvPanel.add(cvPane.panel_3);
+
+        contextVariables = new JXTaskPane();
+        contextVariables.setName("seeAlsoGroup");
+        contextVariables.setTitle("Context Variables                                     ");
+        contextVariables.setCollapsed(true);
+        contextVariables.add(cvPanel);
+
+        tpc.add(contextVariables);
+
+    }
+
+    public void removeContextVarPanel(){
+        try{
+            tpc.remove(contextVariables);
+        }catch (Exception e){
+            //Log.Error("Could not remove context var panel from sidebar. Exception: "+e.getMessage());
+        }
     }
 
     public void highlightTestCase(String tcID, boolean selected){

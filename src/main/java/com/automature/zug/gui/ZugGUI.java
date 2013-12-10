@@ -101,16 +101,15 @@ public class ZugGUI {
         return guiDisplayPane;
     }
 
-    static void spitDisplay(){
-                guiDisplayPane.splitTab();
-    }
-
 	public void createDebugger(){
 		
 		ops.createDebugger(guiDisplayPane.getSheetDisplayPane().getSheetNames());
 		ops.enableDebuggerOptions();
 		ops.showDebuggerControls();
 		guiMenuBar.enableDebuggerOptions();
+
+        guiDisplayPane.getTaskPane().getContextVarPanel();
+
 		updateFrame();
 		//ops.showDebuggerControls();
 	}
@@ -226,8 +225,10 @@ public class ZugGUI {
 			ops.hideDebuggerControls();
 			IconsPanel.disableDebugger();
 			guiMenuBar.disableDebuggerOptions();
-			updateFrame();
-			IconsPanel.enableExecuteButton();
+            IconsPanel.enableExecuteButton();
+            guiDisplayPane.getTaskPane().removeContextVarPanel();
+            updateFrame();
+
 		}
 	}
 
@@ -282,6 +283,10 @@ public class ZugGUI {
 
     }
 
+    public static SpreadSheet getVisibleSpreadSheet(){
+        return guiDisplayPane.getSpreadSheet();
+    }
+
     public void updateTestCaseStatus(String id, boolean status){
         guiDisplayPane.updateTestCaseStatus(id, status);
     }
@@ -290,7 +295,7 @@ public class ZugGUI {
         guiDisplayPane.highlightTestCase(id, selected);
     }
 
-	public void showRunningTestStep(int n){
+	public void showRunningTestStep(int n) throws Exception {
 
 		guiDisplayPane.getSheetDisplayPane().showRunningTestStep(n);
 	}
@@ -309,7 +314,11 @@ public class ZugGUI {
 		IconsPanel.disableDebugger();
 		updateFrame();
 	}
-	
+
+    static void spitDisplay(){
+        guiDisplayPane.splitTab();
+    }
+
 	public static void showConsole(){
 		guiDisplayPane.showConsole();
 	}
@@ -331,6 +340,7 @@ public class ZugGUI {
 	public static void showDebugger(){
 		ops.showDebuggerControls();
 		IconsPanel.showDebuggerButton();
+
 		
 	}
 	public static void hideDebugger(){
@@ -343,4 +353,8 @@ public class ZugGUI {
 		
 	}
 
+    public static void removeAllBreakPoints() {
+
+        ZugGUI.spreadSheet.removeAllBreakPoints();
+    }
 }

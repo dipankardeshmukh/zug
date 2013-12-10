@@ -1,16 +1,23 @@
 package com.automature.zug.gui.sheets;
 
+import com.automature.zug.engine.Controller;
 import com.automature.zug.gui.CustomTableCellRenderer;
 import com.automature.zug.gui.CustomTableRowRenderer;
 import com.automature.zug.gui.ZugGUI;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,16 +28,21 @@ public class MoleculesSheet {
 
     private Vector header;
     private Vector data;
-    private ArrayList<String> moleculeID = new ArrayList<String>();
+    private ArrayList<String> moleculeIDs = new ArrayList<String>();
     private	int actionColumn;
     private int verifyColumn;
     private HashMap<Point, String> missingActionMap=new HashMap<Point, String>();
+
+    JTable table = null;
 
     public void readHeader(Sheet sheet){
 
         header=new Vector();
         Iterator it = sheet.rowIterator();
-        header.add("Line");
+
+        header.add("");
+        header.add("");
+
         if(it.hasNext()){
             Row row = (Row) it.next();
             int n=row.getLastCellNum();
@@ -41,9 +53,9 @@ public class MoleculesSheet {
                 header.addElement(myCell==null?"":myCell);
                 if(myCell!=null){
                     if(myCell.getStringCellValue().equalsIgnoreCase("Action")){
-                        actionColumn=myCell.getColumnIndex();
+                        actionColumn=myCell.getColumnIndex()+2;
                     }else if(myCell.getStringCellValue().equalsIgnoreCase("Verify")){
-                        verifyColumn=myCell.getColumnIndex();
+                        verifyColumn=myCell.getColumnIndex()+2;
                     }
                 }
             }
@@ -55,21 +67,25 @@ public class MoleculesSheet {
         data = new Vector();
         Iterator it = mySheet.rowIterator();
         it.next();
-        int line=1;
+        int line=2;
         //AtomHandler ah=new AtomHandler(scriptLocation);
         while(it.hasNext()){
 
             Row myRow = (Row) it.next();
 
             Vector cellStoreVector=new Vector();
+
+            cellStoreVector.addElement("");
             cellStoreVector.addElement(line);
+
             int n=myRow.getLastCellNum();
 
             Cell cell=myRow.getCell(0);
+
             if(cell!=null){
                 String moleculeId=cell.getStringCellValue();
                 if(moleculeId!=null && !moleculeId.isEmpty() && StringUtils.isNotBlank(moleculeId) && !moleculeId.equalsIgnoreCase("comment")){
-                    moleculeID.add(moleculeId);
+                    moleculeIDs.add(moleculeId.toLowerCase());
                 }
             }
 
@@ -109,15 +125,37 @@ public class MoleculesSheet {
                 Object myCell= myRow.get(i);
 
                 if(i==actionColumn||i==verifyColumn){
-                    if(myCell!=null && !ZugGUI.spreadSheet.verifyExistence(myCell.toString()))
-                        missingActionMap.put(new Point(k,i),"Missing definition");
+                    if(myCell!=null ){
+                        if(myCell.toString().startsWith("&") && !myCell.toString().contains(".")){
+                            if(!moleculeExist(myCell.toString().replace("&","")))
+                                missingActionMap.put(new Point(k,i),"Missing definition");
+                        }
+                        else if(!ZugGUI.spreadSheet.verifyExistence(myCell.toString()))
+                            missingActionMap.put(new Point(k,i),"Missing definition");
+                    }
                 }
 
             }
 
         }
 
-        JTable table = new JTable(data, header);
+        table = new JTable(data, header){
+
+            public boolean isCellEditable(int row,int column){
+                if(column==0 || column==1) return false;
+                return true;
+            }
+            public Class getColumnClass(int column) {
+                Class clazz = String.class;
+                switch (column) {
+                    case 0:
+                        clazz = Icon.class;
+                        break;
+                }
+                return clazz;
+            }
+        }; ;
+
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumn column = null;
@@ -125,30 +163,73 @@ public class MoleculesSheet {
         column = table.getColumnModel().getColumn(0);
         column.setPreferredWidth(30);
 
-        for (int i = 1; i <table.getColumnCount(); i++) {
+        column = table.getColumnModel().getColumn(1);
+        column.setPreferredWidth(30);
+
+        for (int i = 2; i <table.getColumnCount(); i++) {
 
             column = table.getColumnModel().getColumn(i);
             column.setCellRenderer(new CustomTableRowRenderer());
 
             if(i==actionColumn||i==verifyColumn){
                 column.setCellRenderer(new CustomTableCellRenderer(missingActionMap));
-                column.setPreferredWidth(150);
             }
 
-
+            ZugGUI.spreadSheet.adjustColumnSizes(table,i,10);
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane);
+
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+
+                try {
+                    JTable target = (JTable)e.getSource();
+                    //int row = target.getSelectedRow();
+                    int row = target.rowAtPoint(e.getPoint());
+                    int column = target.getSelectedColumn();
+
+                    if(column==0 && !target.getValueAt(row,2).toString().equalsIgnoreCase("comment")){
+
+                        File file = new File(ZugGUI.getVisibleSpreadSheet().getAbsolutePath());
+                        String nameSpace = FilenameUtils.removeExtension(file.getName()).toLowerCase();
+
+                        if(target.getValueAt(row,0).getClass().getName().equalsIgnoreCase("javax.swing.ImageIcon")){
+                            target.setValueAt("",row,0);
+                            Object[] rows = new Object[1];
+                            rows[0] = String.valueOf(row+1);
+                            Controller.removeBreakPoints(nameSpace, rows);
+                        }else{
+
+                            ImageIcon breakpointIcon = new ImageIcon("Images/breakpoint.png");
+                            target.setValueAt(breakpointIcon,row,0);
+                            Controller.setBreakPoint(nameSpace, String.valueOf(row+1));
+
+                        }
+                    }
+                } catch (Exception e1) {
+                    // ignore click events outside the table
+                }
+
+            }
+        });
+
 
         return panel;
     }
 
     public boolean moleculeExist(String name){
 
-        if(moleculeID.contains(name))return true;
+        if(moleculeIDs.contains(name.toLowerCase()))return true;
         else return false;
 
     }
 
+    public void removeAllBreakPoints(){
+        if(table!=null)
+            for(int i=0;i<table.getRowCount();i++)
+                table.setValueAt("",i,0);
+
+    }
 }
