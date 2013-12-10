@@ -151,6 +151,7 @@ public class Molecule extends TestCase {
 				}*/
 				final Action act = this.actions.get(i);
 				count++;
+
 				if(Controller.guiFlag){
 					if(act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)){
 						Controller.gui.showRunningMoleculeStep("Molecules", act.lineNumber,start);
@@ -163,7 +164,7 @@ public class Molecule extends TestCase {
 					//System.out.println("Name space ="+act.nameSpace);
 					//name=act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)?"Molecules":act.nameSpace;
 				    name="molecules";
-					List<Integer> al=Controller.breakpoints.get(name);
+					List<Integer> al=Controller.breakpoints.get(act.nameSpace);
 					if(al!=null){
 						if(al.contains(act.lineNumber)){
 							//	Controller.sendMessageToDebugger((Object)act);

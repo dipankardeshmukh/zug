@@ -126,9 +126,9 @@ public class TestSuite {
 		//System.out.println("Test Suite run:"+Excel._indexedMacroTable.toString());
 		//System.out.println("Test Suite run:"+Excel._macroSheetHashTable.toString());
 		Log.Debug("TestSuite/RunTestCaseForMain : Start of function");
-		System.out.println("\n*** Number of TestCase in Chur Sheet "
+		System.out.println("\n*** Number of TestCase : "
 				+ testcases.length + " ***\n ");
-		System.out.println("\n*** Start Executing the testcases ***\n ");
+		System.out.println("\n*** Starting Execution of TestCases ***\n ");
 
 		initializeImplicitCallsValues();
 

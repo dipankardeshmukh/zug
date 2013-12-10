@@ -9,6 +9,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -242,7 +245,7 @@ public class SpreadSheet {
 
             }else{
 
-                return this.getMoleculesSheet().moleculeExist(step.replaceFirst("&",""));
+                //return this.getMoleculesSheet().moleculeExist(step.replaceFirst("&",""));
 
             }
 
@@ -291,6 +294,46 @@ public class SpreadSheet {
         return false;
     }
 
+    public void adjustColumnSizes(JTable table, int column, int margin) {
+        DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
+        TableColumn col = colModel.getColumn(column);
+        int width;
 
+        TableCellRenderer renderer = col.getHeaderRenderer();
+        if (renderer == null) {
+            renderer = table.getTableHeader().getDefaultRenderer();
+        }
+        Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, 0);
+        width = comp.getPreferredSize().width;
+
+        for (int r = 0; r < table.getRowCount(); r++) {
+            renderer = table.getCellRenderer(r, column);
+            comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, column), false, false, r, column);
+            int currentWidth = comp.getPreferredSize().width;
+            width = Math.max(width, currentWidth);
+        }
+
+        width += 2 * margin;
+
+        if(column==3){
+            col.setPreferredWidth(120);
+            col.setWidth(120);
+        }else{
+
+            col.setPreferredWidth(width);
+            col.setWidth(width);
+        }
+    }
+
+    public void removeAllBreakPoints() {
+
+        ZugGUI.spreadSheet.getTestCasesSheet().removeAllBreakPoints();
+        ZugGUI.spreadSheet.getMoleculesSheet().removeAllBreakPoints();
+
+        for (String s : includeFiles.keySet()) {
+             includeFiles.get(s).getMoleculesSheet().removeAllBreakPoints();
+        }
+
+    }
 
 }

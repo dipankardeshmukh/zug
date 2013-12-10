@@ -47,7 +47,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.1.8";
+	private static String Version = "ZUG Premium 7.2.0";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -368,6 +368,13 @@ public class Controller extends Thread {
 		}
 	}
 
+
+    public static void removeAllBreakPoints(){
+        if(breakpoints!=null)
+            breakpoints.clear();
+    }
+
+
 	public static void setStepOver(){
 		Controller.stepOver=true;
 		Controller.pause=false;
@@ -498,13 +505,13 @@ public class Controller extends Thread {
 					.get(s);
 		}
 		if (executedTestCase.length > 0) {
-			message("\nFollowing are the Details of the TestCases Result Executed by ZUG Version -> "
+			message("\nSummary of the TestCases Result Executed by ZUG Version : "
 					+ Version);
 
 			message("\nTestCase ID \t Status \t Time Taken(In milli-seconds) \t Comments\n ");
 			if (!opts.verbose) {
 				System.out
-				.println("\nFollowing are the Details of the TestCases Result Executed by ZUG Version -> "
+				.println("\nSummary of the TestCases Result Executed by ZUG Version : "
 						+ Version);
 				System.out
 				.println("***********************************************************************************************************");
@@ -1592,7 +1599,8 @@ public class Controller extends Thread {
 				}
 			}
 		}
-		Controller.harnessPIDValue = Integer
+
+        Controller.harnessPIDValue = Integer
 				.parseInt((java.lang.management.ManagementFactory
 						.getRuntimeMXBean().getName().split("@"))[0]);
 
@@ -1710,12 +1718,12 @@ public class Controller extends Thread {
 					System.exit(0);
 				}
 			}
-			Controller.message("Zug is Valid "
-					+ licenseValid.userInfo.companyName);
-			if (!opts.verbose) {
-				System.out.println("Zug is Valid "
-						+ licenseValid.userInfo.companyName);
-			}
+			//Controller.message("Zug is Valid "
+			//		+ licenseValid.userInfo.companyName);
+			//if (!opts.verbose) {
+			//	System.out.println("Zug is Valid "
+			//			+ licenseValid.userInfo.companyName);
+			//}
 
 		} catch (Exception e) {
 			Log.Error("Failed to validate your License copy");
@@ -1861,17 +1869,17 @@ public class Controller extends Thread {
 			Controller
 			.message("\n******************************************************************************** ");
 			Controller
-			.message("\nTotal time taken to initialize the Harness is -> "
-					+ Controller.initializationTime + " milli Seconds.");
+			.message("\nTotal time taken to initialize : "
+					+ Controller.initializationTime + " milliseconds.");
 			Controller
 			.message("\n******************************************************************************** ");
 			if (!opts.verbose) {
 				System.out
 				.println("\n******************************************************************************** ");
 				System.out
-				.println("\nTotal time taken to initialize the Harness is -> "
+				.println("\nTotal time taken to initialize : "
 						+ controller.initializationTime
-						+ " milli Seconds.");
+						+ " milliseconds.");
 				System.out
 				.println("\n******************************************************************************** ");
 			}
@@ -2011,16 +2019,16 @@ public class Controller extends Thread {
 		Controller
 		.message("\n******************************************************************************** ");
 		Controller
-		.message("\nTotal time taken to execute all the test cases (End to End) is -> "
-				+ controller.executionTime + " milli Seconds.");
+		.message("\nTotal time taken to execute all the test cases (End to End) : "
+				+ controller.executionTime + " milliseconds.");
 		Controller
 		.message("\n******************************************************************************** ");
 		if (!opts.verbose) {
 			System.out
 			.println("\n******************************************************************************** ");
 			System.out
-			.println("\nTotal time taken to execute all the test cases (End to End) is -> "
-					+ controller.executionTime + " milli Seconds.");
+			.println("\nTotal time taken to execute all the test cases (End to End) : "
+					+ controller.executionTime + " milliseconds.");
 			System.out
 			.println("\n******************************************************************************** ");
 		}

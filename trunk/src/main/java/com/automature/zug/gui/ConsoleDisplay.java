@@ -103,7 +103,16 @@ public class ConsoleDisplay {
 
     private void format(String text){
 
-        if(text.replace("\n","").startsWith("Reading the TestCases Input Sheet")){
+
+        if(text.replace("\n","").startsWith("Total time taken to initialize :")){
+
+            formatText(text, "Total time taken to initialize :",new Color(12, 202, 66),"", "Testsuite");
+
+        }else if(text.replace("\n","").startsWith("Total time taken to execute all the test cases (End to End) :")){
+
+            formatText(text, "Total time taken to execute all the test cases (End to End) :",new Color(12, 202, 66),"", "Testsuite");
+
+        }else if(text.replace("\n","").startsWith("Reading the TestCases Input Sheet")){
 
             formatText(text, "Reading the TestCases Input Sheet",new Color(0x05, 0x88, 0xCA),"", "Testsuite");
 
@@ -117,7 +126,7 @@ public class ConsoleDisplay {
 
         }else if(text.replace("\n","").startsWith("Running TestCase ID")){
 
-            formatText(text, "Running TestCase ID",new Color(0x05, 0xCA, 0xCA),"On","Testsuite");
+            formatText(text, "Running TestCase ID",new Color(0x05, 0xCA, 0xCA),"On","Testcase");
 
         }else if(text.replace("\n","").startsWith("Running Molecule :")){
 

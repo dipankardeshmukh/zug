@@ -18,13 +18,13 @@ public class CustomTableCellRenderer extends  DefaultTableCellRenderer {
 	public CustomTableCellRenderer(HashMap<Point, String> map){
 		this.map=map;
 	}
-	
+
   public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
 
 	  Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
 
-      c.setBackground(table.getModel().getValueAt(rowIndex,1).toString().equalsIgnoreCase("comment")? new Color(0x00, 0xB0, 0x00) : Color.WHITE);
+      c.setBackground(table.getModel().getValueAt(rowIndex,2).toString().equalsIgnoreCase("comment")? new Color(0x00, 0xB0, 0x00) : Color.WHITE);
 
       setText(value !=null ? value.toString() : "");
     	Set s=map.keySet();

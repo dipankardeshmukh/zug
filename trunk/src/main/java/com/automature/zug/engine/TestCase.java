@@ -330,7 +330,7 @@ class TestCase
                     + this.testCaseID);
             Controller.message("******************************************************************************** ");
             Controller.message("\n\nRunning TestCase ID " + this.testCaseID
-                    + " On(Current Date): " + Utility.getCurrentDateAsString());
+                    + " On : " + Utility.getCurrentDateAsString());
 
             if(Controller.guiFlag)
                 Controller.gui.showRunningTestCase(this.testCaseID, true);
@@ -474,6 +474,7 @@ class TestCase
                     {
                         return;
                     }
+
                     if(Controller.opts.debugger){
 					/*	try{
 							if(Controller.opts.debugger){
@@ -489,7 +490,7 @@ class TestCase
 
                         //	if(checkBreakPoint(i)){
                         //ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
-                        ArrayList al=Controller.breakpoints.get("testcases");
+                        ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
 
                         if(al!=null){
                             //System.out.println("array list"+al.toString());
@@ -1036,7 +1037,7 @@ class TestCase
                     this.testCaseID));
             Controller.message(String.format(
                     "\n\nSTATUS : PASS For TestCase ID %s ",
-                    this.testCaseID + " On(Current Date): "
+                    this.testCaseID + " On : "
                             + Utility.getCurrentDateAsString()));
 
             if(Controller.guiFlag){
@@ -1083,7 +1084,7 @@ class TestCase
                     + this.parentTestCaseID + " **************************");
             Controller.		message(String.format(
                     "\n\nSTATUS : FAIL For TestCase ID %s ",
-                    this.testCaseID + " On(Current Date): "
+                    this.testCaseID + " On : "
                             + Utility.getCurrentDateAsString()));
 
             if(Controller.guiFlag){

@@ -1,9 +1,6 @@
 package com.automature.zug.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -19,9 +16,10 @@ public class CommandPanel {
 	CommandPanel(){
 		
 		cmdPanel = new JPanel();
+        cmdPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		cmdPanel.setBackground(Color.WHITE);
 		cmdPanel.setLayout(new GridLayout(0, 1, 0, 0));
-		cmdPanel.setPreferredSize(new Dimension(967,20));
+		//cmdPanel.setPreferredSize(new Dimension(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,0)));
 		cmdPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,5));
 		JScrollPane scrollPane_1 = new JScrollPane();
 		textArea_1 = new JTextArea();
