@@ -47,7 +47,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.2.0";
+	private static String Version = "ZUG Premium 7.2.1";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -700,25 +700,24 @@ public class Controller extends Thread {
 			String newLocation = "";
 
 			ArrayList<String> locations=new ArrayList<String>();
-			for (String spits : spliArr) {
-				if(spits==null){
+			for (String splits : spliArr) {
+				if(splits==null){
 					continue;
 				}
-				String[] temp0 = spits.split("\\\\");
-				if (!temp0[0].contains(":")) {
-					if (testSuiteLoc != null) {
-						temp0[0] = testSuiteLoc;
-						newLocation = temp0[0] + SysEnv.SLASH+ spits;
-					} else {
-						temp0[0] = opts.filelocation;
-						newLocation = temp0[0] + spits;
-					}
-					locations.add(newLocation);
-				}else{
-					if(!locations.contains(spits)){
-						locations.add(spits);
-					}
-				}
+                File f = new File(splits);
+
+                if(f.isAbsolute()){
+                    if(!locations.contains(splits)){
+                        locations.add(splits);
+                    }
+                }else{
+                    if (testSuiteLoc != null) {
+                        newLocation = testSuiteLoc + File.separator + splits;
+                    } else {
+                        newLocation = opts.filelocation + splits;
+                    }
+                    locations.add(newLocation);
+                }
 			}
 			String str="";
 			for(String loc:locations){
