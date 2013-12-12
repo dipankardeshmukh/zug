@@ -33,7 +33,7 @@ public class OutProcessAtom implements Atom{
 					return workingDirectory;
 				}
 			} else {
-				File f = new File(workingDirectory + SysEnv.SLASH + command);
+				File f = new File(workingDirectory + File.separator + command);
 				if (f.exists()) {
 					Log.Debug(String
 							.format("OutProcessAtomFindWorkingDirectory: Found with argument as %s when Working Directory value is %s",
@@ -171,8 +171,8 @@ public class OutProcessAtom implements Atom{
 			}
 		}
 		if (SysEnv.OS_FLAG) {
-			workingDirectory = Utility.TrimStartEnd(workingDirectory, '/', 1);
-			workingDirectory = Utility.TrimStartEnd(workingDirectory, '\\', 1);
+			//workingDirectory = Utility.TrimStartEnd(workingDirectory, '/', 1);
+			//workingDirectory = Utility.TrimStartEnd(workingDirectory, '\\', 1);
 			actualCommand = new File(workingDirectory, command)
 					.getCanonicalPath();// Removed the method getCanonical Path
 		} else {
