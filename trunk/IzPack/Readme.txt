@@ -1,5 +1,7 @@
-ZUG
 
+This is a text file named "Readme.txt" in the Zug
+installation directory, and can be printed directly from any text
+editor, once the files have been unpacked.
 
 
 License Activation:
@@ -15,15 +17,76 @@ Steps to activate your license.
 
 
 
-System Requirements:
+System Requirements for Windows, OS X & Linux
 Make sure that your system meets the minimum requirements to run Zug installer:
                 •  Internet Connection.
-                •  A Unzip software.
+                •  An Unzip software.
                 •  0.5 GB of available hard disk space.
                 •  Command Prompt.
 		            •  Java(TM) SE Runtime Environment(32bit) 1.6 (update 21)
-		            •  Microsoft .Net Framework v3.5
-             
+		            •  Microsoft .Net Framework v3.5  (Optional)
+                
+ Installation
+ =============
+ 
+ Windows
+ -------- 
+ 
+Before you begin the installation, it is strongly recommended that you have the administrator privileges over your machine to run the Zug installer.
+
+
+• To install zug on windows, download the installation file installZug.jar from the company website www.automature.com and save it in a desired location. 
+
+• Download installZug.jar file and save it in a desired location.
+
+• To run the installer, type the following at the command prompt. 
+		 java -jar installZug.jar
+
+• The installation welcome screen shows up. The installation setup screens will guide you and through the installation. When On clicking Next, the ZUG Setup Installation wizard will guide you step by step through the installation procedure.Once finished, select Done.
+
+• The default installation folder is C:\Program Files\Automature.
+
+• Copy and paste the Zug.Licence.Key in Zug folder. 
+
+• Launch the Zug GUI by typing zug -gui at the command prompt.   
+
+
+OS X
+----- 
+For installing ZUG in OS X 
+
+• Download installZug.jar from Automature website (www.automature.com) and save it in a preferred location. 
+ 
+• To run the installer type the following at the command prompt.  
+  sudo java -jar installZug.jar
+
+• The installation welcome screen shows up. The installation setup screens will guide you and through the installation. When On clicking Next, the ZUG Setup Installation wizard will guide you step by step through the installation procedure.Once finished, select Done.
+
+• The default installation folder is /Applications/Automature/Zug.
+
+
+• Copy and paste the Zug.Licence.Key in Zug folder. 
+
+• Launch the Zug GUI by typing zug -gui at the command prompt. 
+
+
+ Linux
+ ------
+ For installing ZUG in Linux 
+ 
+• Download installZug.jar from Automature website (www.automature.com) and save it in a preferred location. 
+
+• To run the installer, type the following at the command prompt.  
+           sudo java -jar installZug.jar
+
+• The installation welcome screen shows up. The installation setup screens will guide you and through the installation. On clicking Next, the ZUG Setup Installation screens will guide you step by step through the installation procedure.Once finished, select Done.
+
+• The default installation folder is /usr/lib/Automature.
+
+• Copy and paste the Zug.Licence.Key in Zug folder. 
+ 
+• Launch the Zug GUI by typing zug -gui at the command prompt. 
+            
              
 New Feature:
 Zug3.0 version now can call the external java jar files as builtin atoms through chur spreadsheet. To make it happen the ZugINI.xml parsing is need. Inside the Zug installation directory the ZugINI.xml file can be edited to by putting the values in the tags of 
