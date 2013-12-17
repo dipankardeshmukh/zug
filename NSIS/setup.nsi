@@ -17,6 +17,7 @@ var /global Update
 var /global JavaSOURCE
 var /global JavaBROWSESOURCE
 var /global JavaSOURCETEXT
+var /global ZipName
 
 Var Java_SOURCE_TEXT
 var dialog
@@ -281,7 +282,7 @@ FunctionEnd
 
 
 Section "MainSection" SEC01
-  ;Delete "$TEMP\automature-zug-bin-*.zip"
+  Delete "$TEMP\automature-zug-bin-*.zip"
   SetOutPath "$TEMP"
   SetOverwrite on
   File "automature-zug-bin-*.zip"
@@ -300,7 +301,12 @@ Section "MainSection" SEC01
       ${If} $IsSilent == "TRUE"
         ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Extracting *.zip file in $INSTDIR .$\r$\n`
       ${EndIf}
-      !insertmacro ZIPDLL_EXTRACT "$TEMP\automature-zug-bin-*.zip" "$INSTDIR" "<ALL>"
+      
+      IfFileExists "$TEMP\automature-zug-bin-*.zip" 0 continue1
+          StrCpy $ZipName "$TEMP\automature-zug-bin-*.zip"
+        !insertmacro ZIPDLL_EXTRACT "$ZipName" "$INSTDIR" "<ALL>"
+      continue1:
+      
       IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
     interchange: 
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
@@ -336,7 +342,7 @@ Section "MainSection" SEC01
   
   ${EndIf}
   
-     ;Delete "$TEMP\automature-zug-bin-*.zip"
+     Delete "$TEMP\automature-zug-bin-*.zip"
  ; ================================ Add new XML tags ================================================
         
       
