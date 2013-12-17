@@ -307,6 +307,14 @@ Section "MainSection" SEC01
         !insertmacro ZIPDLL_EXTRACT "$ZipName" "$INSTDIR" "<ALL>"
       continue1:
       
+      IfFileExists "$INSTDIR\ZUG\runzug.bat"  0 jumpdeletebatch
+                  Delete "runzug.bat"
+      jumpdeletebatch:
+      
+      IfFileExists "$INSTDIR\ZUG\zug.jar"  0 jumpdeletejar
+                  Delete "zug.jar"
+      jumpdeletejar:
+      
       IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
     interchange: 
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
@@ -321,7 +329,12 @@ Section "MainSection" SEC01
 ;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx UPDATE  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX     
   ${Else}
  
-      !insertmacro ZIPDLL_EXTRACT "$TEMP\automature-zug-bin-*.zip" "$INSTDIR" "<ALL>"
+      
+      
+      IfFileExists "$TEMP\automature-zug-bin-*.zip" 0 continue1
+          StrCpy $ZipName "$TEMP\automature-zug-bin-*.zip"
+          !insertmacro ZIPDLL_EXTRACT "$ZipName" "$INSTDIR" "<ALL>"
+      continue1:
       
       AccessControl::GrantOnFile \
       "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
