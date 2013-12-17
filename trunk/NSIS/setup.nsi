@@ -281,7 +281,7 @@ FunctionEnd
 
 
 Section "MainSection" SEC01
-  Delete "$TEMP\automature-zug-bin-*.zip"
+  ;Delete "$TEMP\automature-zug-bin-*.zip"
   SetOutPath "$TEMP"
   SetOverwrite on
   File "automature-zug-bin-*.zip"
@@ -336,7 +336,7 @@ Section "MainSection" SEC01
   
   ${EndIf}
   
-     Delete "$TEMP\automature-zug-bin-*.zip"
+     ;Delete "$TEMP\automature-zug-bin-*.zip"
  ; ================================ Add new XML tags ================================================
         
       
