@@ -308,11 +308,13 @@ Section "MainSection" SEC01
       ;continue1:
       
       IfFileExists "$INSTDIR\ZUG\runzug.bat"  0 jumpdeletebatch
-                  Delete "runzug.bat"
+                  MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
+                  Abort
       jumpdeletebatch:
       
       IfFileExists "$INSTDIR\ZUG\zug.jar"  0 jumpdeletejar
-                  Delete "zug.jar"
+                  MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
+                  Abort
       jumpdeletejar:
       
       IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
