@@ -282,7 +282,7 @@ FunctionEnd
 
 
 Section "MainSection" SEC01
-  ;Delete "$TEMP\automature-zug-bin-*.zip"
+  Delete "$TEMP\automature-zug-bin-*.zip"
   SetOutPath "$TEMP"
   SetOverwrite on
   File "automature-zug-bin-${Zug_Version}.zip"
@@ -333,7 +333,7 @@ Section "MainSection" SEC01
       
       ;IfFileExists "$TEMP\automature-zug-bin-${Zug_Version}.zip" 0 continue2
           ;StrCpy $ZipName $TEMP\automature-zug-bin-*.zip
-          MessageBox MB_OK "($ZipName)"
+          ;MessageBox MB_OK "($ZipName)"
           !insertmacro ZIPDLL_EXTRACT "$ZipName" "$INSTDIR" "<ALL>"
       ;continue2:
       
@@ -356,7 +356,7 @@ Section "MainSection" SEC01
   
   ${EndIf}
   
-    ; Delete "$TEMP\automature-zug-bin-*.zip"
+     Delete "$TEMP\automature-zug-bin-*.zip"
  ; ================================ Add new XML tags ================================================
         
       
