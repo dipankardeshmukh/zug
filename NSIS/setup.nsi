@@ -282,11 +282,11 @@ FunctionEnd
 
 
 Section "MainSection" SEC01
-  Delete "$TEMP\automature-zug-bin-*.zip"
+  ;Delete "$TEMP\automature-zug-bin-*.zip"
   SetOutPath "$TEMP"
   SetOverwrite on
-  File "automature-zug-bin-*.zip"
- 
+  File "automature-zug-bin-${Zug_Version}.zip"
+  StrCpy $ZipName "$TEMP\automature-zug-bin-${Zug_Version}.zip"
  ;=================================  UPDATE ========================================================= 
   ${If} $Update == "TRUE"
   
@@ -302,10 +302,10 @@ Section "MainSection" SEC01
         ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Extracting *.zip file in $INSTDIR .$\r$\n`
       ${EndIf}
       
-      IfFileExists "$TEMP\automature-zug-bin-*.zip" 0 continue1
-          StrCpy $ZipName "$TEMP\automature-zug-bin-*.zip"
+      ;IfFileExists "$TEMP\automature-zug-bin-*.zip" 0 continue1
+          ;StrCpy $ZipName "$TEMP\automature-zug-bin-*.zip"
         !insertmacro ZIPDLL_EXTRACT "$ZipName" "$INSTDIR" "<ALL>"
-      continue1:
+      ;continue1:
       
       IfFileExists "$INSTDIR\ZUG\runzug.bat"  0 jumpdeletebatch
                   Delete "runzug.bat"
@@ -331,10 +331,11 @@ Section "MainSection" SEC01
  
       
       
-      IfFileExists "$TEMP\automature-zug-bin-*.zip" 0 continue1
-          StrCpy $ZipName "$TEMP\automature-zug-bin-*.zip"
+      ;IfFileExists "$TEMP\automature-zug-bin-${Zug_Version}.zip" 0 continue2
+          ;StrCpy $ZipName $TEMP\automature-zug-bin-*.zip
+          MessageBox MB_OK "($ZipName)"
           !insertmacro ZIPDLL_EXTRACT "$ZipName" "$INSTDIR" "<ALL>"
-      continue1:
+      ;continue2:
       
       AccessControl::GrantOnFile \
       "$INSTDIR\ZUG" "(BU)" "GenericRead + GenericWrite"
@@ -355,7 +356,7 @@ Section "MainSection" SEC01
   
   ${EndIf}
   
-     Delete "$TEMP\automature-zug-bin-*.zip"
+    ; Delete "$TEMP\automature-zug-bin-*.zip"
  ; ================================ Add new XML tags ================================================
         
       
