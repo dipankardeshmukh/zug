@@ -129,21 +129,21 @@ Function .onInit
     quit
   Continue:
   
-    IfFileExists $R0\ZUG\automature-zug.jar 0 FirstTimeInstall
-     StrCpy $INSTDIR "$R0"
-     StrCpy $Update "TRUE"
-     
-     IfFileExists "$INSTDIR\ZUG\runzug.bat"  0 jumpdeletebatch
+       IfFileExists "$R0\ZUG\runzug.bat"  0 jumpdeletebatch
      ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Please do not use /S option for first time installation.$\r$\n`
                   MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
                   Abort
       jumpdeletebatch:
       
-      IfFileExists "$INSTDIR\ZUG\zug.jar"  0 jumpdeletejar
+      IfFileExists "$R0\ZUG\zug.jar"  0 jumpdeletejar
       ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version…...$\r$\n`
                   MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
                   Abort
       jumpdeletejar:
+  
+    IfFileExists $R0\ZUG\automature-zug.jar 0 FirstTimeInstall
+     StrCpy $INSTDIR "$R0"
+     StrCpy $Update "TRUE"
       
      IfSilent J1 0 
         MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Upgrading ZUG, keeping your previous settings. Do you want to continue?" IDYES +2
