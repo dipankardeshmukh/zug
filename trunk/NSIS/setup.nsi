@@ -129,9 +129,22 @@ Function .onInit
     quit
   Continue:
   
-  IfFileExists $R0\ZUG\automature-zug.jar 0 FirstTimeInstall
+    IfFileExists $R0\ZUG\automature-zug.jar 0 FirstTimeInstall
      StrCpy $INSTDIR "$R0"
      StrCpy $Update "TRUE"
+     
+     IfFileExists "$INSTDIR\ZUG\runzug.bat"  0 jumpdeletebatch
+     ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Please do not use /S option for first time installation.$\r$\n`
+                  MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
+                  Abort
+      jumpdeletebatch:
+      
+      IfFileExists "$INSTDIR\ZUG\zug.jar"  0 jumpdeletejar
+      ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version…...$\r$\n`
+                  MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
+                  Abort
+      jumpdeletejar:
+      
      IfSilent J1 0 
         MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Upgrading ZUG, keeping your previous settings. Do you want to continue?" IDYES +2
         quit
@@ -306,17 +319,7 @@ Section "MainSection" SEC01
           ;StrCpy $ZipName "$TEMP\automature-zug-bin-*.zip"
         !insertmacro ZIPDLL_EXTRACT "$ZipName" "$INSTDIR" "<ALL>"
       ;continue1:
-      
-      IfFileExists "$INSTDIR\ZUG\runzug.bat"  0 jumpdeletebatch
-                  MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
-                  Abort
-      jumpdeletebatch:
-      
-      IfFileExists "$INSTDIR\ZUG\zug.jar"  0 jumpdeletejar
-                  MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
-                  Abort
-      jumpdeletejar:
-      
+       
       IfFileExists $INSTDIR\ZUG\ZugINI.xml.temp interchange donot_interchange
     interchange: 
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.bak"
