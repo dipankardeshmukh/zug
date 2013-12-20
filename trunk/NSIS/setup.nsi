@@ -490,9 +490,10 @@ Section Uninstall
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
   Delete "$R0\*.*"
+    Delete "$DESKTOP\ZUG.lnk"
+  Delete "$SMPROGRAMS\Automature\ZUG\uninstall.lnk"
+  Delete "$SMPROGRAMS\Automature\ZUG\ZUG.lnk"
+  RMDir "$SMPROGRAMS\Automature\ZUG"
   Delete "$INSTDIR\uninstZUG.exe"
-  Delete "$DESKTOP\ZUG.lnk" "$INSTDIR\ZUG\zug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico"
-  Delete "$SMPROGRAMS\Automature\ZUG\ZUG.lnk" "$INSTDIR\ZUG\zug.bat" "-gui" "$INSTDIR\ZUG\Images\Zug.ico"
-  Delete "$SMPROGRAMS\Automature\ZUG\uninstall.lnk" "$INSTDIR\ZUG\uninstZUG.exe" "" "$INSTDIR\ZUG\Images\Zug.ico"
   SetAutoClose true
 SectionEnd
