@@ -16,7 +16,7 @@ echo ---------------------------------------------------------------------------
 
 #echo  "The Zug install directory "$ZUG_HOME
 cd /Applications/Automature/ZUG
-sudo java -jar /Applications/Automature/ZUG/automature-zug.jar $*  -pwd=$pwd
+java -jar /Applications/Automature/ZUG/automature-zug.jar $*  -pwd=$pwd
 
 echo --------------------------------------------------------------------------------
 echo Automation Finished.
