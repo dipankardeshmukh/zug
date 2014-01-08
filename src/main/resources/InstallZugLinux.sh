@@ -6,3 +6,6 @@ case ":$PATH:" in
     sudo echo "PATH=$PATH:/usr/lib/automature/ZUG">/etc/environment
     ;;
 esac
+sudo mkdir $HOME/ZUG\ Logs
+sudo chmod a+rw $HOME/ZUG\ Logs
+sudo chmod a+rw /usr/lib/automature/ZUG
