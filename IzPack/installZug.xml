@@ -50,19 +50,16 @@
     
     <variables> 
       <variable name="TargetPanel.dir.windows" value="${ENV[programfiles(x86)]}${FILE_SEPARATOR}automature" condition="win32"/>
-    <variable name="TargetPanel.dir.windows" value="${ENV[programfiles]}${FILE_SEPARATOR}automature" condition="win64"/>
+      <variable name="TargetPanel.dir.windows" value="${ENV[programfiles]}${FILE_SEPARATOR}automature" condition="win64"/>
       <variable name="TargetPanel.dir.unix" value="/usr/lib/automature" condition="izpack.linuxinstall"/>
-      <variable name="TargetPanel.dir.mac" value="/Applications/Automature" condition="izpack.macinstall"/>
-      <variable name="default.downloadLoc" value="${ENV[APPDATA]}${FILE_SEPARATOR}Automature${FILE_SEPARATOR}ZUG" condition="izpack.windowsinstall"/>
-      <variable name="default.downloadLoc" value="/usr/share/automature/ZUG" condition="izpack.linuxinstall"/>
-      <variable name="default.downloadLoc" value="/Applications/Automature/ZUG" condition="izpack.macinstall"/>
+      <variable name="TargetPanel.dir.macosx" value="/Applications/Automature" condition="izpack.macinstall"/>
     </variables>
   
     <variables>
         <variable name="INSTALL_PATH" checkonce="true" condition="izpack.linuxinstall" value="$TargetPanel.dir.unix"/>
         <variable name="INSTALL_PATH" checkonce="true" condition="installonwindows64" value="$TargetPanel.dir.windows"/>
         <variable name="INSTALL_PATH" checkonce="true" condition="installonwindows32" value="$TargetPanel.dir.windows"/>
-        <variable name="INSTALL_PATH" checkonce="true" condition="izpack.macinstall" value="$TargetPanel.dir.mac"/>
+        <variable name="INSTALL_PATH" checkonce="true" condition="izpack.macinstall" value="TargetPanel.dir.macosx"/>
     </variables>
 
 <!--
@@ -144,46 +141,8 @@
            </executable>
            <executable targetfile="$INSTALL_PATH${FILE_SEPARATOR}ZUG${FILE_SEPARATOR}InstallZugLinux.sh" stage="postinstall" keep="true" condition="izpack.linuxinstall">
            </executable>
-           <executable targetfile="$INSTALL_PATH${FILE_SEPARATOR}ZUG${FILE_SEPARATOR}InstallZugMac.sh" stage="postinstall" keep="true" condition="izpack.macinstall">
-           </executable>       
-          <!-- <file src="generateXML.jar" targetdir="$INSTALL_PATH" /> -->
-          <!-- <file src="create_config.sh" targetdir="$INSTALL_PATH" /> -->
-         <!--            
-            <executable targetfile="${INSTALL_PATH}${FILE_SEPARATOR}generateXML.jar" type="jar" stage="postinstall" failure="ask" keep="true" condition="install">
-              <args>
-                <arg value="xml_file_loc=${INSTALL_PATH}${FILE_SEPARATOR}NYON-CLIENT"/>
-                <arg value="davos_ip=$IPAddress"/>
-                <arg value="davos_port=$Port"/>
-                <arg value="davos_username=$DavosUserName"/>
-                <arg value="davos_password=$DavosPassword"/>
-              </args>
-            </executable>
-            <executable targetfile="${INSTALL_PATH}${FILE_SEPARATOR}generateXML.jar" type="jar" stage="postinstall" failure="ask" keep="true" condition="install">
-              <args>
-                <arg value="xml_file_loc=${INSTALL_PATH}${FILE_SEPARATOR}NYON-SERVER"/>
-                <arg value="log_loc=$DOWNLOADLoc"/>
-                <arg value="download_loc=$DOWNLOADLoc"/>
-                <arg value="davos_ip=$IPAddress"/>
-                <arg value="davos_port=$Port"/>
-                <arg value="davos_username=$DavosUserName"/>
-                <arg value="davos_password=$DavosPassword"/>
-              </args>
-            </executable>
-              
-            <executable targetfile="$INSTALL_PATH${FILE_SEPARATOR}NYON-SERVER${FILE_SEPARATOR}RegisterAsService.cmd" stage="postinstall" keep="true" condition="izpack.windowsinstall">
-              <args>
-                <arg value="${INSTALL_PATH}${FILE_SEPARATOR}NYON-SERVER"/>
-                <arg value="$DOWNLOADLoc"/>
-              </args>
-            </executable>
-            <executable targetfile="$INSTALL_PATH${FILE_SEPARATOR}create_config.sh" stage="postinstall" keep="true" condition="izpack.linuxinstall">
-              <args>
-                <arg value="$INSTALL_PATH"/>
-                <arg value="$DOWNLOADLoc"/>
-                <arg value="$DOWNLOADLoc"/>
-              </args>
-            </executable> 
-          -->         
+           <executable targetfile="/Applications/Automature/ZUG/InstallZugMac.sh" stage="postinstall" keep="true" condition="izpack.macinstall">
+           </executable>         
         </pack>
     </packs>
 
