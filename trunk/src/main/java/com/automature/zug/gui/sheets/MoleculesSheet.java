@@ -175,6 +175,12 @@ public class MoleculesSheet {
                 column.setCellRenderer(new CustomTableCellRenderer(missingActionMap));
             }
 
+            for(int j=0;j<table.getRowCount();j++){
+                if(table.getValueAt(j,i)==null){
+                    table.setValueAt("",j,i);
+                }
+            }
+
             ZugGUI.spreadSheet.adjustColumnSizes(table,i,10);
         }
 
