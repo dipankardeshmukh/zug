@@ -2,8 +2,6 @@
 #Automation - It contains command to run automature-zug.jar - The Automation Framework.
 # ©Copyright 2009 Automature Inc.. All Rights Reserved.
 
-#setting the fileformat for this script
-:set fileformat=unix
 #Clears the Terminal Window
 clear
 
