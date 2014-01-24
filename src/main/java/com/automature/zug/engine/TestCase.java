@@ -1072,6 +1072,7 @@ class TestCase
             }
         } catch (Exception ex) {
             //System.out.println("Inside test case exception");
+            Controller.incrementTestCaseFailCount();
             String failureReason = String
                     .format("Status FAILED FOR Worksheet %s TestCase ID (%s:%s). Exception MESSAGE IS : \n%s .\nCause:%s",
                             this.nameSpace, this.parentTestCaseID,
