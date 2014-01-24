@@ -97,7 +97,7 @@ public class Controller extends Thread {
 	public static HashMap<String ,List> atomPerformance=new HashMap<String,List>();
 	boolean listen=true;
 	ServerSocket sock = null;
-
+  private static int testCaseFailCount = 0;
 	/*
 	 * Constructor that initializes the program options.
 	 */
@@ -105,6 +105,10 @@ public class Controller extends Thread {
 		stop=true;
 		pause=false;
 		stepInto=false;
+	}
+
+  public static void incrementTestCaseFailCount(){
+		testCaseFailCount++;
 	}
 
 	public Controller() {
@@ -1299,7 +1303,7 @@ public class Controller extends Thread {
 		}else{
 			// Log.Debug(" DoHarnessCleanup/Main : USING System.Environment.Exit(0) to EXIT ");
 			System.out.println("\nExiting ZUG");
-			System.exit(0);
+			System.exit(testCaseFailCount);
 		}
 	}
 
