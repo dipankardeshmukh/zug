@@ -187,11 +187,6 @@ public class Molecule extends TestCase {
 					continue;
 				}
 
-				count++;
-				if (StringUtils.isBlank(act.name)) {
-					continue;
-				}
-
 				Log.Debug("Molecule/RunExpandedTestCaseForMolecule:  Action : "
 						+ act.name + " has Step Number as : " + act.step);
 
