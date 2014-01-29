@@ -4,6 +4,9 @@ import org.apache.commons.lang.StringUtils;
 
 import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
+import org.apache.poi.util.StringUtil;
+
+import java.util.ArrayList;
 
 public class Argument {
 	
@@ -97,11 +100,25 @@ public class Argument {
 		int indexer = -1;
 		// Log.Debug("Argument/DoSomeFineTuning : Checking for the Occurance of % and their Indexes in Variable :"
 		// + variable);
-		for (char varChar : variable.toCharArray()) {
+
+        char prev_char; // previous character to check if the % was escaped
+        prev_char = ' ';
+        String escapedVar= "";
+        ArrayList<Integer> escapedIndexes = new ArrayList<Integer>();
+
+        for (char varChar : variable.toCharArray()) {
 			indexer++;
 			// Log.Debug(String.format("Argument/DoSomeFineTuning : Working at Indexes[%d]=%s in Variable %s.",
 			// indexer, varChar, variable));
-			if (varChar == '%') {
+
+            // keep the indexes of escaped % signs
+            if(varChar == '%' && prev_char == '\\'){
+                escapedIndexes.add(indexer-1);
+                prev_char=varChar;
+                continue;
+            }
+
+			if (varChar == '%' && prev_char != '\\') {
 				// Log.Debug(String.format("Argument/DoSomeFineTuning : Indexes=%d in Variable %s.",
 				// indexer, variable));
 				if (firstOccuranceOfPercentage >= 0) {
@@ -115,7 +132,20 @@ public class Argument {
 					// indexer, variable));
 				}
 			}
+            prev_char=varChar;
 		}
+
+        // replace \% signs with %
+        char[] charValues = variable.toCharArray();
+        for(int i=0;i<variable.toCharArray().length;i++){
+
+            if(escapedIndexes.contains(i))
+                continue;
+            escapedVar+=String.valueOf(charValues[i]);
+        }
+
+        if(!escapedVar.isEmpty())
+            variable=escapedVar;
 		// message("THe first Occurrance is "+firstOccuranceOfPercentage+"\n The second Ouccurance "+secondOccuranceOfPercentage);
 
 		Log.Debug(String
