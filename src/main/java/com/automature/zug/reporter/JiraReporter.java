@@ -1,21 +1,13 @@
 package com.automature.zug.reporter;
 
-import br.eti.kinoshita.testlinkjavaapi.constants.ActionOnDuplicate;
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
-import br.eti.kinoshita.testlinkjavaapi.constants.TestImportance;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
-import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+
 
 import com.automature.jira.exceptions.JiraExecutionException;
-import com.automature.zug.businesslogics.TestCaseResult;
 import com.automature.zug.engine.Controller;
 import com.automature.zug.engine.ExecutedTestCase;
 import com.automature.zug.exceptions.ReportingException;
 import com.automature.zug.util.Log;
-import com.automature.zug.util.Utility;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
