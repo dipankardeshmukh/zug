@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -61,13 +62,16 @@ public class GUIDisplayPane {
         sheetDisplay =new SheetDisplayPane(sp);
         this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
 
+        ArrayList<JCheckBox> TestCaseSelectState = new ArrayList<JCheckBox>();
         if(taskPane!=null){
+            TestCaseSelectState = taskPane.getSelectedTestCaseIds();
             mainPanel.remove(taskPane);
             taskPane=null;
         }
 
         if(taskPane==null){
             taskPane = new TaskPane();
+            taskPane.setSelectedTestCaseIds(TestCaseSelectState);
             Toolkit tk = Toolkit.getDefaultToolkit();
             int xSize = ((int) tk.getScreenSize().getWidth());
             int gameWidth = (int) (Math.round(xSize * .23));

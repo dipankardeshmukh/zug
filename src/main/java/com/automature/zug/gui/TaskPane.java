@@ -63,7 +63,8 @@ public class TaskPane extends JPanel {
                 for (int i =1; i<comps.length; i++) {
 
                     JCheckBox ch = (JCheckBox)comps[i];
-                    ch.setSelected(flag);
+                    if(!ch.getText().equalsIgnoreCase("init") && !ch.getText().equalsIgnoreCase("cleanup"))
+                        ch.setSelected(flag);
 
                 }
             }
@@ -168,12 +169,12 @@ public class TaskPane extends JPanel {
 
         detailsGroup.add(area);*/
 
-    hide.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            ZugGUI.getDisplayPane().removeTaskPane();
-        }
-    });
+        hide.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ZugGUI.getDisplayPane().removeTaskPane();
+            }
+        });
 
 
     }
@@ -230,7 +231,7 @@ public class TaskPane extends JPanel {
 
         while (it.hasNext()){
 
-            JCheckBox id = new JCheckBox(it.next().toString(),true);
+            JCheckBox id = new JCheckBox(it.next().toString(), true);
             id.setBackground(Color.white);
             if(id.getText().equalsIgnoreCase("init") || id.getText().equalsIgnoreCase("cleanup"))
                 id.setEnabled(false);
@@ -239,6 +240,28 @@ public class TaskPane extends JPanel {
         }
         return tcPanel;
     }
+
+    public ArrayList<JCheckBox> getSelectedTestCaseIds(){
+
+        ArrayList<JCheckBox> chList = new ArrayList<JCheckBox>();
+
+        for(Component c : testCasePanel.getComponents()){
+                chList.add((JCheckBox)c);
+        }
+
+        return chList;
+    }
+
+    public void setSelectedTestCaseIds(ArrayList<JCheckBox> chList){
+
+        for(Component c : testCasePanel.getComponents()){
+            for(JCheckBox ch : chList){
+                if (ch.getText().equalsIgnoreCase(((JCheckBox)c).getText()))
+                    ((JCheckBox)c).setSelected(ch.isSelected());
+            }
+        }
+    }
+
 
     private DefaultMutableTreeNode getSheetTree(SpreadSheet sh){
 
@@ -340,17 +363,17 @@ public class TaskPane extends JPanel {
 
             JCheckBox ch = (JCheckBox)comps[i];
 
-                if(ch.isSelected()){
-                    selectedTestCases+=ch.getText()+",";
-                }else{
-                    selective_execution=true;
-                }
+            if(ch.isSelected()){
+                selectedTestCases+=ch.getText()+",";
+            }else{
+                selective_execution=true;
+            }
         }
 
         if(selective_execution){
 
             if(selectedTestCases.endsWith(","))
-                     selectedTestCases = selectedTestCases.substring(0,selectedTestCases.length() - 1);
+                selectedTestCases = selectedTestCases.substring(0,selectedTestCases.length() - 1);
 
             return "-testcaseid=" + selectedTestCases;
         }
