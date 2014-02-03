@@ -1072,7 +1072,11 @@ class TestCase
             }
         } catch (Exception ex) {
             //System.out.println("Inside test case exception");
-            Controller.incrementTestCaseFailCount();
+            if(ex.getClass().getSimpleName().contains("ReportingException")){        		
+        		Log.Error("Failed to report failure for "+this.testCaseID +". Exception MESSAGE IS : "+ex.getMessage());
+        	}else{
+        		 Controller.incrementTestCaseFailCount();
+        	}
             String failureReason = String
                     .format("Status FAILED FOR Worksheet %s TestCase ID (%s:%s). Exception MESSAGE IS : \n%s .\nCause:%s",
                             this.nameSpace, this.parentTestCaseID,
