@@ -9,6 +9,7 @@ import com.automature.zug.businesslogics.TestCaseResult;
 import com.automature.zug.exceptions.MoleculeDefinitionException;
 import com.automature.zug.gui.ZugGUI;
 import com.automature.zug.reporter.DavosReporter;
+import com.automature.zug.reporter.JiraReporter;
 import com.automature.zug.reporter.Reporter;
 import com.automature.zug.reporter.TestLinkReporter;
 import com.automature.zug.util.ExtensionInterpreterSupport;
@@ -1825,12 +1826,14 @@ public class Controller extends Thread {
 				// If the Validation is successful. ... then its the turn of the
 				// Test Plan and Test Cases to be Inserted to the Database.
 				Hashtable connectionParam=controller.getConnectionParams();
-				//System.out.println("DB name ="+controller.dBName);
-
+				//System.out.println("DB name ="+controller.dBName);	
 				if(controller.dBName.equalsIgnoreCase("testlink")){
 					reporter=new TestLinkReporter(connectionParam);
 					//	System.out.println("Testlink obejct created");
 					frameWork=controller.dBName;
+				}else if(controller.dBName.equalsIgnoreCase("jira")){
+					reporter=new JiraReporter(connectionParam);
+					frameWork="Jira";
 				}else{
 					reporter=new DavosReporter(connectionParam);
 					frameWork="Davos";
