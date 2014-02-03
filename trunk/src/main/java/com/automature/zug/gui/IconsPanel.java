@@ -207,7 +207,7 @@ public class IconsPanel {
 		chckbxVerbose.setSelected(true);
 		chckbxAutorecover.setSelected(true);
 	//	chckbxNoExecute.setSelected(false);
-	//	chckbxDebugger.setSelected(true);
+		chckbxDebugger.setSelected(true);
         optionButtonDev = true;
 
 	}
