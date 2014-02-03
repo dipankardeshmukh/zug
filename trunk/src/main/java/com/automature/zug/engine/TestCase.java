@@ -365,7 +365,7 @@ class TestCase
                     if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
                             .compareToIgnoreCase("init") == 0)) {
                         Log.Debug(String
-                                .format("TestCase/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result Davos.",
+                                .format("TestCase/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result.",
                                         this.testCaseID,
                                         this.testCaseDescription));
                         // SaveTestCase(test.testCaseID,
@@ -375,13 +375,14 @@ class TestCase
                         try {
                             Controller.reporter.SaveTestCaseResultEveryTime(tData);
                             Log.Debug(String
-                                    .format("TestCase/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result Davos.",
+                                    .format("TestCase/RunExpandedTestCase : SUCCESSFULLY SAVED Expanded Testcase ID %s with Description %s to Result.",
                                             this.testCaseID,
                                             this.testCaseDescription));
 
                         } catch (ReportingException de) {
                             Log.Error(String
-                                    .format("Failure in sending request to Davos.\n Davos Call: testexecutiondetail/write \nRequests sent: testcaseid=%s,testcasedescription=%s,testcycleid=%s,testcaseresult=%s ..... topologysetid=%s \nError Message: %s",
+                                    .format("Failure in sending request to %s.\n Call: testexecutiondetail/write \nRequests sent: testcaseid=%s,testcasedescription=%s,testcycleid=%s,testcaseresult=%s ..... topologysetid=%s \nError Message: %s",
+                                    		Controller.reporter.getClass().getSimpleName(),
                                             tData.testCaseID,
                                             tData.testcasedescription,
                                             Controller.opts.testCycleId, tData.testCaseStatus,
@@ -398,7 +399,8 @@ class TestCase
                                     this.testCaseID, TestSuite.testSuitName);
                         } catch (ReportingException de) {
                             Log.Error(String
-                                    .format("Failure in sending request to Davos.\n Davos Call: variables/write \nRequests sent: testsuitename=%s,testcaseidentifier=%s .... \nError Message: %s ",
+                                    .format("Failure in sending request to %s .\n Call: variables/write \nRequests sent: testsuitename=%s,testcaseidentifier=%s .... \nError Message: %s ",
+                                    		Controller.reporter.getClass().getSimpleName(),
                                             TestSuite.testSuitName, this.testCaseID,
                                             de.getMessage()));
                             if(Controller.guiFlag){
