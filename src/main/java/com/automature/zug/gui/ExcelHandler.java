@@ -1,5 +1,7 @@
 package com.automature.zug.gui;
 
+import com.automature.zug.util.Log;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +69,7 @@ public class ExcelHandler {
 			AddToExternalSheets(mainExcel.getIncludeList());
 			readIncludedSheets();
 		}catch(Exception e){
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 	

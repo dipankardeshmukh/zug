@@ -5,6 +5,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
+import com.automature.zug.util.Log;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
@@ -277,7 +278,7 @@ public class IconsPanel {
                     try {
                         ZugGUI.loadFile(true);
                     } catch (Exception e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
                     }
                 }
             }
@@ -658,7 +659,7 @@ public class IconsPanel {
                 try {
                     chooseFile();
                 } catch (Exception e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    Log.Error(e1.getMessage());
                 }
             }
 		});

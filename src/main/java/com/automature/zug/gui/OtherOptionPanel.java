@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Action;
 
+import com.automature.zug.util.Log;
 import org.apache.commons.lang.StringUtils;
 
 public class OtherOptionPanel extends JPanel {
@@ -348,7 +349,7 @@ public class OtherOptionPanel extends JPanel {
 			});
 			frame.setVisible(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 	private class SwingAction extends AbstractAction {

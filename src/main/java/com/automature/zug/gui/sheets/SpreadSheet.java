@@ -5,6 +5,7 @@ import com.automature.zug.engine.BuildInAtom;
 import com.automature.zug.gui.Excel;
 import com.automature.zug.gui.ZugGUI;
 import com.automature.zug.util.ExtensionInterpreterSupport;
+import com.automature.zug.util.Log;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
@@ -100,7 +101,7 @@ public class SpreadSheet {
         try {
             return testCasesSheet.getPanel();
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
         }
         return null;
     }
@@ -214,7 +215,7 @@ public class SpreadSheet {
         }catch (FileNotFoundException f){
             ZugGUI.message("\nWARNING: The file could not be found - "+filePath);
         }catch (Exception e) {
-            e.printStackTrace();
+            Log.Error(e.getMessage());
         }
         return true;
     }

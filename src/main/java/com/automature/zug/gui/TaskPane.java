@@ -204,14 +204,14 @@ public class TaskPane extends JPanel {
                     try {
                         ZugGUI.bringTestSuiteTabToDisplay(ZugGUI.spreadSheet);
                     } catch (Exception e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        Log.Error(e1.getMessage());
                     }
                 }else{
                     Set<String> filesRead = new HashSet<String>();
                     try {
                         ZugGUI.bringTestSuiteTabToDisplay(ZugGUI.spreadSheet.getIncludeFile(e.getNewLeadSelectionPath().getLastPathComponent().toString(),filesRead ));
                     } catch (Exception e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        Log.Error(e1.getMessage());
                     }
                 }
             }

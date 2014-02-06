@@ -15,6 +15,7 @@ import javax.swing.UIManager;
 
 
 import com.automature.zug.engine.Controller;
+import com.automature.zug.util.Log;
 
 
 import java.awt.Color;
@@ -49,7 +50,7 @@ public class DebuggerConsole {
 		try{
 			initialize();
 		}catch(Exception e){
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 		debuggerPanel.setVisible(true);
 	}

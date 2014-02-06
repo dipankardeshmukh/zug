@@ -8,6 +8,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import com.automature.zug.gui.IconsPanel;
+import com.automature.zug.util.Log;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class FileMenu {
@@ -56,7 +57,7 @@ public class FileMenu {
                 try {
                     IconsPanel.chooseFile();
                 } catch (Exception e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    Log.Error(e1.getMessage());
                 }
             }
 		});

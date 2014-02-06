@@ -1,5 +1,7 @@
 package com.automature.zug.gui;
 
+import com.automature.zug.util.Log;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -220,7 +222,7 @@ public class TestCaseIDPanel extends JPanel {
 			frame.getContentPane().add(new TestCaseIDPanel(al), BorderLayout.CENTER);
 			frame.setVisible(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 	

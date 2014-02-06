@@ -55,7 +55,7 @@ public class ViewAtoms extends JDialog {
 //				va.setVisible(true);
 //				
 //			} catch (Exception e) {
-//				e.printStackTrace();
+//				Log.Error(e.getMessage());
 //			}
 //		}
 
