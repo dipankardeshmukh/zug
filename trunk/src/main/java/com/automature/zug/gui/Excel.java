@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.automature.zug.util.Log;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -233,7 +234,7 @@ public class Excel {
 			scriptLocation=scriptLocation.replaceAll(";(;)+", ";");
 			
 		}catch(Exception e){
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 	
@@ -257,12 +258,12 @@ public class Excel {
 			}
 			
 		}catch (Exception e){
-			e.printStackTrace(); 
+			Log.Error(e.getMessage());
 		}finally{
 			try{
 				closeFiles();
 			}catch(Exception e){
-				e.printStackTrace();
+				Log.Error(e.getMessage());
 			}
 		}
 	}

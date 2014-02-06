@@ -13,6 +13,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.automature.zug.gui.IconsPanel;
 import com.automature.zug.gui.ZugGUI;
+import com.automature.zug.util.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -169,7 +170,7 @@ public class GuiConfig {
             saxParser.parse("GuiSettings.xml", handler);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.Error(e.getMessage());
         }
 
     }

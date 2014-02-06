@@ -1,6 +1,8 @@
 package com.automature.zug.gui;
 
 
+import com.automature.zug.util.Log;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
@@ -52,7 +54,7 @@ public class IncludeFileDialog extends JDialog {
 			dialog.setVisible(true);
 			ComponentMover cmpMover=new ComponentMover(dialog);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 

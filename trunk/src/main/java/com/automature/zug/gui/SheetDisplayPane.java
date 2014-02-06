@@ -59,7 +59,7 @@ public class SheetDisplayPane extends JPanel {
 			}
 			externalSheets=ex.getExternalSheets();
 		}catch(Exception e){
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 			System.err.println("SheetDisplayPane Exception "+e.getMessage()+"\nCause "+e.getCause());
 		}*/
 
@@ -160,7 +160,7 @@ public class SheetDisplayPane extends JPanel {
             JTable table = getTable(pos);
             table.setRowSelectionInterval(start,n-1);
         }catch(Exception e){
-            //e.printStackTrace();
+            //Log.Error(e.getMessage());
         }
     }
 
@@ -205,7 +205,7 @@ public class SheetDisplayPane extends JPanel {
 			JTable table = getTable(pos);
 			table.setRowSelectionInterval(n-1, n-1);
 		}catch(Exception e){
-			//	e.printStackTrace();
+			//	Log.Error(e.getMessage());
 		}
 	}
 

@@ -17,6 +17,7 @@ import java.util.Set;
 import com.automature.zug.engine.Controller;
 import com.automature.zug.gui.menus.GuiMenuBar;
 import com.automature.zug.gui.sheets.SpreadSheet;
+import com.automature.zug.util.Log;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class ZugGUI {
@@ -218,7 +219,7 @@ public class ZugGUI {
 		try{
 			Controller.oldmain(params.toArray(new String[params.size()]));
 		}catch(Throwable t){
-			t.printStackTrace();
+            Log.Error(t.getMessage());
 		}finally{
 			ZugGUI.message("\n\nExecution Finished\n\n");
 			runningStatus=false;

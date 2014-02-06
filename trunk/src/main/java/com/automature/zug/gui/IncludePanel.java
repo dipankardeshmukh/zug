@@ -219,7 +219,7 @@ public class IncludePanel extends JPanel {
 			
 			frame.setVisible(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 }

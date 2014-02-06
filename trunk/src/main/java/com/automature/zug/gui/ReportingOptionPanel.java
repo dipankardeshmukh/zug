@@ -18,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.border.EmptyBorder;
 import javax.swing.SwingConstants;
 
+import com.automature.zug.util.Log;
 import org.apache.commons.lang.StringUtils;
 import java.awt.Font;
 import java.awt.SystemColor;
@@ -377,7 +378,7 @@ public class ReportingOptionPanel extends JPanel {
 			});
 			frame.setVisible(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 	

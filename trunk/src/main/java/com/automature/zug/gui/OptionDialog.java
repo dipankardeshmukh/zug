@@ -1,5 +1,7 @@
 package com.automature.zug.gui;
 
+import com.automature.zug.util.Log;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -52,7 +54,7 @@ public class OptionDialog extends JDialog {
 			dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.Error(e.getMessage());
 		}
 	}
 

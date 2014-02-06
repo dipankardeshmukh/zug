@@ -1,5 +1,6 @@
 package com.automature.zug.gui;
 
+import com.automature.zug.util.Log;
 import org.apache.commons.lang.StringUtils;
 
 import java.awt.*;
@@ -96,7 +97,7 @@ public class ConsoleDisplay {
                 textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), splitPatter+sections[1]+"\n", null);
 
         } catch (BadLocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
@@ -159,12 +160,12 @@ public class ConsoleDisplay {
             try {
                 for(int i=0; i< StringUtils.countMatches(name[0],"&");i++)
                     textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), "\t", null);
-                textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), actionType+" ", null);
-                textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), atomName[0], AtomColor);
-                textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), "Execution STARTED With Arguments", null);
-                textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), atomName[1], ArgColor);
+                    textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), actionType+" ", null);
+                    textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), atomName[0], AtomColor);
+                    textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), "Execution STARTED With Arguments", null);
+                    textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), atomName[1], ArgColor);
             } catch (BadLocationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Log.Error(e.getMessage());
             }
 
         }else if(text.replace("\n","").contains("SUCCESSFULLY Executed")){
@@ -194,7 +195,7 @@ public class ConsoleDisplay {
                 textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), "SUCCESSFULLY Executed ", null);
 
             } catch (BadLocationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
             }
 
         }else if(text.startsWith("Molecule Execution Finished :")){
@@ -214,7 +215,7 @@ public class ConsoleDisplay {
                 if(text.replace("\n","").startsWith("*")) text=text.replace("*","");
                 textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), text, null);
             } catch (BadLocationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
             }
         }
     }
@@ -228,7 +229,7 @@ public class ConsoleDisplay {
             try {
                 textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), text, null);
             } catch (BadLocationException e) {
-                e.printStackTrace();
+                Log.Error(e.getMessage());
             }
         }
 
@@ -266,7 +267,7 @@ public class ConsoleDisplay {
                     try {
                         textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), String.valueOf((char) b), errColor);
                     } catch (BadLocationException e) {
-                        e.printStackTrace();
+                        Log.Error(e.getMessage());
                     }
                 }
 
@@ -278,7 +279,7 @@ public class ConsoleDisplay {
                     try {
                         textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), new String(b, off, len), errColor);
                     } catch (BadLocationException e) {
-                        e.printStackTrace();
+                        Log.Error(e.getMessage());
                     }
                 }
 
