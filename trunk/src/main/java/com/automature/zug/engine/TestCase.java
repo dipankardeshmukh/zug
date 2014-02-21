@@ -8,12 +8,11 @@ import java.util.Hashtable;
 import java.util.List;
 
 import java.util.Stack;
-
+import com.automature.zug.gui.ZugGUI;
 import org.apache.commons.lang.StringUtils;
 
 
 import com.automature.zug.exceptions.ReportingException;
-import com.automature.zug.gui.ZugGUI;
 import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
 
@@ -308,12 +307,12 @@ class TestCase
 
         Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
-
+        int testStepTimeout = Integer.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000;
 
         Log.Debug("TestCase/RunExpandedTestCase : Setting ZUG_TCID as ->"
                 + this.testCaseID);
         // Harness Specific ContextVariable to store Generated TestCase ID
-        ContextVar.setContextVar("ZUG_TCID"+Thread.currentThread().getId(), this.testCaseID);
+        ContextVar.setContextVar("ZUG_TCID" + Thread.currentThread().getId(), this.testCaseID);
         Log.Debug("TestCase/RunExpandedTestCase : Successfully SET ZUG_TCID as ->"
                 + this.testCaseID);
 
@@ -338,7 +337,7 @@ class TestCase
             // Harness Specific ContextVariable to store AH_TCSTARTTIME
             // ZUG Specific ContextVariable to store ZUG_TCSTARTTIME = Timestamp
             // when Test Case execution started
-            ContextVar.setContextVar("ZUG_TCSTARTTIME"+Thread.currentThread().getId(), Utility.dateAsString());
+            ContextVar.setContextVar("ZUG_TCSTARTTIME" + Thread.currentThread().getId(), Utility.dateAsString());
             // Method Return Variable names and Values.
             // message("Testcase is coming to RunExpandTestCase:"+ContextVar.getContextVar("ZUG_TCSTARTTIME")
             // );
@@ -575,7 +574,7 @@ class TestCase
 
                         // Context Variable to store Timestamp when Test Step
                         // execution started
-                        ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
+                        ContextVar.setContextVar("ZUG_TSSTARTTIME" + Thread.currentThread().getId(),
                                 Utility.dateAsString());
                         thread.start();
 
@@ -590,8 +589,7 @@ class TestCase
                                 ((Thread) ThreadPool.get(t)).join();
                             } else {
                                 ((Thread) ThreadPool.get(t))
-                                        .join(Integer
-                                                .parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
+                                        .join(testStepTimeout);
                                 if (((Thread) ThreadPool.get(t)).isAlive()) {
                                     ((Thread) ThreadPool.get(t)).interrupt();
                                     TestSuite._testStepStopper.put(this.parentTestCaseID,
@@ -648,7 +646,7 @@ class TestCase
 
                         // Context Variable to store Timestamp when Test Step
                         // execution started
-                        ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
+                        ContextVar.setContextVar("ZUG_TSSTARTTIME" + Thread.currentThread().getId(),
                                 Utility.dateAsString());
 
                         thread.start();
@@ -673,8 +671,7 @@ class TestCase
                         ((Thread) ThreadPool.get(t)).join();
                     } else {
                         ((Thread) ThreadPool.get(t))
-                                .join(Integer
-                                        .parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
+                                .join(testStepTimeout);
                         if (((Thread) ThreadPool.get(t)).isAlive()) {
                             ((Thread) ThreadPool.get(t)).interrupt();
                             TestSuite._testStepStopper.put(this.parentTestCaseID, true);
@@ -794,7 +791,7 @@ class TestCase
 
                                     // Context Variable to store Timestamp when
                                     // Test Step execution started
-                                    ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
+                                    ContextVar.setContextVar("ZUG_TSSTARTTIME" + Thread.currentThread().getId(),
                                             Utility.dateAsString());
 
                                     thread.start();
@@ -810,8 +807,7 @@ class TestCase
                                             ((Thread) ThreadPool.get(t)).join();
                                         } else {
                                             ((Thread) ThreadPool.get(t))
-                                                    .join(Integer
-                                                            .parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
+                                                    .join(testStepTimeout);
 
                                             if (((Thread) ThreadPool.get(t))
                                                     .isAlive()) {
@@ -851,7 +847,7 @@ class TestCase
 
                                     // Context Variable to store Timestamp when
                                     // Test Step execution started
-                                    ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
+                                    ContextVar.setContextVar("ZUG_TSSTARTTIME" + Thread.currentThread().getId(),
                                             Utility.dateAsString());
                                     thread.start();
                                     ThreadPool.add(thread);
@@ -918,7 +914,7 @@ class TestCase
 
                                     // Context Variable to store Timestamp when
                                     // Test Step execution started
-                                    ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
+                                    ContextVar.setContextVar("ZUG_TSSTARTTIME" + Thread.currentThread().getId(),
                                             Utility.dateAsString());
 
                                     thread.start();
@@ -934,8 +930,7 @@ class TestCase
                                             ((Thread) ThreadPool.get(t)).join();
                                         } else {
                                             ((Thread) ThreadPool.get(t))
-                                                    .join(Integer
-                                                            .parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
+                                                    .join(testStepTimeout);
                                             if (((Thread) ThreadPool.get(t))
                                                     .isAlive()) {
                                                 ((Thread) ThreadPool.get(t)).interrupt();
@@ -973,7 +968,7 @@ class TestCase
 
                                     // Context Variable to store Timestamp when
                                     // Test Step execution started
-                                    ContextVar.setContextVar("ZUG_TSSTARTTIME"+Thread.currentThread().getId(),
+                                    ContextVar.setContextVar("ZUG_TSSTARTTIME" + Thread.currentThread().getId(),
                                             Utility.dateAsString());
                                     thread.start();
                                     ThreadPool.add(thread);
@@ -1003,8 +998,7 @@ class TestCase
                             ((Thread) ThreadPool.get(t)).join();
                         } else {
                             ((Thread) ThreadPool.get(t))
-                                    .join(Integer
-                                            .parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000);
+                                    .join(testStepTimeout);
 
                             if (((Thread) ThreadPool.get(t)).isAlive()) {
                                 ((Thread) ThreadPool.get(t)).interrupt();
