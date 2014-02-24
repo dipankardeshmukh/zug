@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.util.HashMap;
@@ -63,6 +64,8 @@ public class MacroSheet {
     public JPanel getPanel(){
 
         JPanel panel = new JPanel(new BorderLayout());
+
+        UIManager.put("Table.gridColor", new ColorUIResource(Color.gray));
         JTable table = new JTable(data, header);
 
         table.setFillsViewportHeight(true);

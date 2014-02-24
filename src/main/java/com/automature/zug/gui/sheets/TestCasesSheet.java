@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.TableColumn;
 import javax.swing.text.TableView;
 import java.awt.*;
@@ -133,6 +134,7 @@ public class TestCasesSheet {
             }
         }
 
+        UIManager.put("Table.gridColor", new ColorUIResource(Color.gray));
         table = new JTable(data, header){
 
             public boolean isCellEditable(int row,int column){
