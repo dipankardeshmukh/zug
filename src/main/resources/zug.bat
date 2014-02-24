@@ -24,3 +24,5 @@ popd
 :: restoring the environment changes.
 endlocal
 set /p delBuild=press ENTER to close the window
+
+ren C:\Program Files\Automature\ZUG\ZugINI.xml.Windows ZugINI.xml
