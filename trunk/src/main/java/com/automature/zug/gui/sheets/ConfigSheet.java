@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -59,6 +60,7 @@ public class ConfigSheet {
         header.add("");
         header.add("");
 
+        UIManager.put("Table.gridColor", new ColorUIResource(Color.gray));
         JTable table = new JTable(data,header);
 
         table.setFillsViewportHeight(true);

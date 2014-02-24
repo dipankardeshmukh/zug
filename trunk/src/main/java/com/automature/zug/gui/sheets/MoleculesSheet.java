@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -139,6 +140,7 @@ public class MoleculesSheet {
 
         }
 
+        UIManager.put("Table.gridColor", new ColorUIResource(Color.gray));
         table = new JTable(data, header){
 
             public boolean isCellEditable(int row,int column){
