@@ -128,7 +128,7 @@ public class JiraReporter  implements Reporter {
 		Log.Debug("JiraReporter/ValidateDatabaseEntries() : Validating database entries.");
 		try{
 			this.projectId = api.getProductId(projectName);
-			this.versionId = api.getVersionId(projectId, versionName);
+			this.versionId = api.getVersionId(projectName, versionName);
 			this.testId = api.createMeta(projectId);
 			this.testcycleId = api.createTestCycle(testcycleName, buildName, projectId, versionId);
 		}catch(JiraExecutionException e){
