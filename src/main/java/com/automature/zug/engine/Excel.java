@@ -6,6 +6,7 @@
 package com.automature.zug.engine;
 
 import com.automature.zug.exceptions.MoleculeDefinitionException;
+import com.automature.zug.exceptions.ReportingException;
 import com.automature.zug.util.ExtensionInterpreterSupport;
 import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
@@ -63,7 +64,7 @@ public class Excel {
 	private List<String> _externalSheets = new ArrayList<String>();
 	private static HashMap<String, String> externalSheets = new HashMap<String, String>();
 	// A hashtable to store the Values(Name/Value pair) from the Macro Excel
-	 static Hashtable<String, String> _macroSheetHashTable = new Hashtable<String, String>();
+	static Hashtable<String, String> _macroSheetHashTable = new Hashtable<String, String>();
 	public static Hashtable<String, String> _indexedMacroTable = new Hashtable<String, String>();
 	// A hashtable to store the UserName and its Object contain its credentials
 	// from the User Excel
@@ -151,8 +152,8 @@ public class Excel {
 			int timeout;
 			if ((timeout = Integer.parseInt((String) _macroSheetHashTable
 					.get(AppendNamespace("TESTPLAN_TIMEOUT", mainNameSpace)))) == 0) // Timeout
-																						// in
-																						// milliSecond.
+				// in
+				// milliSecond.
 			{
 				return timeout;
 			} else {
@@ -172,8 +173,8 @@ public class Excel {
 			int timeout;
 			if ((timeout = Integer.parseInt((String) _macroSheetHashTable
 					.get(AppendNamespace("TESTSTEP_TIMEOUT", mainNameSpace)))) == 0) // Timeout
-																						// in
-																						// milliSecond.
+				// in
+				// milliSecond.
 			{
 				return timeout;
 			} else {
@@ -205,17 +206,17 @@ public class Excel {
 	public String ScriptLocation() {
 		String scriptLocation = _configSheetHashTable.get(_configSheetKeys[0]) != null ? (String) _configSheetHashTable
 				.get(_configSheetKeys[0]) : null;
-		String iniSL=null;
-		try{
-			iniSL=ExtensionInterpreterSupport.getNode(scriptLocationsTag);//.getNodesValues(scriptLocationsTag);
-		}catch(Exception e){
+				String iniSL=null;
+				try{
+					iniSL=ExtensionInterpreterSupport.getNode(scriptLocationsTag);//.getNodesValues(scriptLocationsTag);
+				}catch(Exception e){
 
-		}
-		if(scriptLocation==null)
-			scriptLocation=iniSL;
-		else if(iniSL!=null && !iniSL.isEmpty())
-			scriptLocation+=";"+iniSL+";";
-		return scriptLocation;
+				}
+				if(scriptLocation==null)
+					scriptLocation=iniSL;
+				else if(iniSL!=null && !iniSL.isEmpty())
+					scriptLocation+=";"+iniSL+";";
+				return scriptLocation;
 	}
 
 	public String IncludeMolecules() {
@@ -280,7 +281,7 @@ public class Excel {
 						System.exit(0);
 					}
 				}
-						}
+			}
 		} catch (IOException e) {
 
 		}catch(Exception e){
@@ -355,39 +356,44 @@ public class Excel {
 
 	/**
 	 * @return the Test Plan Name.
+	 * @throws ReportingException 
+	 * @throws IOException 
 	 */
-	public String TestSuitName() {
+	public String TestSuitName() throws ReportingException, IOException {
 		String testSuitName = null;
-		try {
+		
 			ConsoleReader reader = new ConsoleReader();
 			if (_configSheetHashTable.get(_configSheetKeys[5]) != null) {
 				testSuitName = (String) _configSheetHashTable
 						.get(_configSheetKeys[5]);
 			}
-
 			up: while (true) {
 				if (StringUtils.isBlank(testSuitName)) {
-					testSuitName = reader
+					/*testSuitName = reader
 							.readLine("\nEnter the Test Suite Name : ");
-					continue up;
+
+					 */	
+					throw new ReportingException("Testsuite name not found. Please provide testsuite name in Config Sheet of input file :"+getXlsFilePath());
+					
+					 //continue up;
 				} else {
 					_configSheetHashTable.put(_configSheetKeys[5],
 							testSuitName.trim());
 					break up;
 				}
 			}
-		} catch (Exception e) {
-		}
+		 
 		return testSuitName;
 	}
 
 	/**
 	 * @return the Test Plan Role.
+	 * @throws Exception 
 	 *
 	 */
-	public String TestSuitRole() {
+	public String TestSuitRole() throws ReportingException, IOException {
 		String testSuitRole = null;
-		try {
+		
 			ConsoleReader reader = new ConsoleReader();
 			if (_configSheetHashTable.get(_configSheetKeys[6]) != null) {
 				testSuitRole = (String) _configSheetHashTable
@@ -396,17 +402,19 @@ public class Excel {
 
 			up: while (true) {
 				if (StringUtils.isBlank(testSuitRole)) {
-					testSuitRole = reader
+					/*testSuitRole = reader
 							.readLine("\nEnter valid Test Suite Role (like client, server, etc). ");
-					continue up;
+					continue up;*/
+					throw new ReportingException("Testsuite role not found. Please provide testsuite role in Config Sheet of input file :"+getXlsFilePath());
+					
+					
 				} else {
 					_configSheetHashTable.put(_configSheetKeys[6],
 							testSuitRole.trim());
 					break up;
 				}
-			}
-		} catch (IOException e) {
-		}
+			
+		} 
 		return testSuitRole;
 	}
 
@@ -580,7 +588,7 @@ public class Excel {
 		// " The NUMBER of MVM in XML " +
 		// xml_mvm_cardinality+" config "+Controller.mvmconfiguration);
 		HashMap<String, String> temp_map = new ExtensionInterpreterSupport()
-				.readConfigurationForCartestisanProduct();
+		.readConfigurationForCartestisanProduct();
 		Set<String> temp_map_key = temp_map.keySet();
 		Iterator<String> set_key_iterator = temp_map_key.iterator();
 		while (set_key_iterator.hasNext()) {
@@ -596,8 +604,8 @@ public class Excel {
 
 				if (memory < xml_memory && memory > 1) {
 					xml_cardinality = default_cardinality;// java max memory
-															// lowest than the
-															// definitions.....
+					// lowest than the
+					// definitions.....
 					if (cardinality <= xml_cardinality) {
 						checkOptimality = true;
 					} else
@@ -759,7 +767,7 @@ public class Excel {
 	@SuppressWarnings("unchecked")
 	public void ReadExcel(String inputFileName,
 			boolean verificationSwitchingFlag, boolean compileMode)
-			throws Exception, MoleculeDefinitionException, Throwable {
+					throws Exception, MoleculeDefinitionException, Throwable {
 		FileInputStream inputFile = null;
 
 		try {
@@ -803,7 +811,7 @@ public class Excel {
 			Log.Debug("Excel/openExcelFile : Creating new workbook object ");
 
 			// / Create a workbook using the File System
-            _workBook = WorkbookFactory.create(inputFile);
+			_workBook = WorkbookFactory.create(inputFile);
 			//_workBook = new Workbook(inputFileSystem);
 			Log.Debug(String.format(
 					"Excel/ReadExcel : The excel File %s opened successfully",
@@ -1087,8 +1095,8 @@ public class Excel {
 			if (Controller.opts.nyonserver) {
 				System.out.println(xmlfile.createXMLFile()); // creates a XML
 			} // file is
-				// Generated for
-				// the includes
+			// Generated for
+			// the includes
 		} catch (Exception ex) {
 
 			Log.Error(String
@@ -1344,21 +1352,21 @@ public class Excel {
 			//System.out.println("row iterator initialized");
 			//do {
 			int line=0;
-			 while (rowIter.hasNext()){
+			while (rowIter.hasNext()){
 				// System.out.println("at line "+line);
 				boolean keyflag = false, valueflag = false;
 				Row myRow = (Row) rowIter.next();
 				Iterator cellIter = myRow.cellIterator();
 				int col=0;
 				while (cellIter.hasNext()) {
-			//		System.out.println("col no"+col);
+					//		System.out.println("col no"+col);
 					Cell myCell = (Cell) cellIter.next();
 
 					if (myCell.getColumnIndex() == key) {
 
 						strKey = GetCellValueAsString(myCell);
 						//if(StringUtils.isNotEmpty(strKey)||StringUtils.isNotBlank(strKey))
-							keyflag = true;
+						keyflag = true;
 
 					}
 					if (myCell.getColumnIndex() == defValue
@@ -1385,7 +1393,7 @@ public class Excel {
 						}
 					}
 				}
-			//	System.out.println("str key"+strKey+"\t str value"+strValue);
+				//	System.out.println("str key"+strKey+"\t str value"+strValue);
 				// / If this is a Macros sheet then Expand the Value before
 				// adding it to the Hashtable..
 				if (sheetname.equals("macros")) {
@@ -1408,10 +1416,10 @@ public class Excel {
 					//System.out.println("strkey coming "+strKey+" strkey value "+strValue);
 					if(!strKey.isEmpty())
 					{
-				//		System.out.println("The key is not empty "+strKey);
+						//		System.out.println("The key is not empty "+strKey);
 						strKey = AppendNamespace(strKey, nameSpace);
-					strValue = ExpandMacrosValue(strValue.trim(),
-							strKey.trim(), nameSpace); // modify
+						strValue = ExpandMacrosValue(strValue.trim(),
+								strKey.trim(), nameSpace); // modify
 					}
 
 				}
@@ -1440,16 +1448,16 @@ public class Excel {
 								} else {
 									nSMkey = temp[0];
 									commandline_include = temp[1];
-								//	System.out.println("Name space"+nSMkey);
-								//	System.out.println("File:"+commandline_include);
+									//	System.out.println("Name space"+nSMkey);
+									//	System.out.println("File:"+commandline_include);
 								}
 							}
 							if (commandline_include.contains(":")
 									|| commandline_include.startsWith("/")) {
 								commmandline_includelist += commandline_include;// Changes
-																				// the
-																				// include
-																				// molecule
+								// the
+								// include
+								// molecule
 								if (!nSMkey.isEmpty())
 									namespaceMap.put(commandline_include,
 											nSMkey);
@@ -1475,18 +1483,18 @@ public class Excel {
 										}
 										commandline_include=p+commandline_include.substring(lastIndex+1,commandline_include.length());
 										actualPath +=commandline_include;
-									//	System.out.println("IF/Command Line Include:"+commandline_include);
+										//	System.out.println("IF/Command Line Include:"+commandline_include);
 									}
 									else{
-											actualPath += inputxlsfile.getParent()
-											+ SysEnv.SLASH
-											+ commandline_include;
-								//			System.out.println("ELse/Command Line Include:"+commandline_include);
+										actualPath += inputxlsfile.getParent()
+												+ SysEnv.SLASH
+												+ commandline_include;
+										//			System.out.println("ELse/Command Line Include:"+commandline_include);
 									}
 									if (!nSMkey.isEmpty())
 										namespaceMap.put(actualPath, nSMkey);
 									actualPath += ",";
-								//	System.out.println("Command Line Include:"+commandline_include);
+									//	System.out.println("Command Line Include:"+commandline_include);
 								}
 								// System.out.println(actualPath+":"+nSMkey);
 								// namespaceMap.put(actualPath,nSMkey);
@@ -1539,15 +1547,15 @@ public class Excel {
 											}
 											Path=p+Path.substring(lastIndex+1,Path.length());
 											actualPath +=Path;
-										//	System.out.println("IF/Command Line Include:"+commandline_include);
+											//	System.out.println("IF/Command Line Include:"+commandline_include);
 										}else{
-										actualPath += inputxlsfile.getParent()
-												+ SysEnv.SLASH + Path + ",";
+											actualPath += inputxlsfile.getParent()
+													+ SysEnv.SLASH + Path + ",";
 										}// System.out.println(Path+" This the actual Path\t"+actualPath);
-								//		System.out.println("Files:"+actualPath);
+										//		System.out.println("Files:"+actualPath);
 										inlcudelist += actualPath+",";
 									} // AddToExternalSheets(strKey,
-										// actualPath);
+									// actualPath);
 								}
 							}
 							// forDebug("GetKeyValuePair:: The full path ---> "
@@ -1613,7 +1621,7 @@ public class Excel {
 	public String ExpandMacrosValue(String macroValue, String macroKey,
 			String nameSpace) throws Exception {
 		try {
-		//	System.out.println("Macro value :"+macroValue+"\tmacroKey:"+macroKey+"\tnameSpace:"+nameSpace);
+			//	System.out.println("Macro value :"+macroValue+"\tmacroKey:"+macroKey+"\tnameSpace:"+nameSpace);
 			String macroValExpander = "..";
 			Log.Debug(String
 					.format("Excel/ExpandMacrosValue : Start of the Function with macroValue = %s",
@@ -1700,19 +1708,19 @@ public class Excel {
 									+ "'");
 							_macroSheetHashTable.put(newMacroKey.toLowerCase(),
 									newMacroValue);
-					//		System.out.println("value in macro table"+newMacroKey.toLowerCase()+"-"+newMacroValue);
+							//		System.out.println("value in macro table"+newMacroKey.toLowerCase()+"-"+newMacroValue);
 							String indexMacroKey[] = newMacroKey.split("\\.");
 							if(indexMacroKey[0].substring(1).equalsIgnoreCase(mainNameSpace)){
-                                _indexedMacroTable.put(
-                                        indexMacroKey[1].toLowerCase(),
-                                        newMacroValue.trim());
-                               // System.out.println("\nExcel/putting the value in inedexed table"+indexMacroKey[1].toLowerCase().toLowerCase()+","+newMacroValue.trim());
-                            }else{
-                                _indexedMacroTable.put(newMacroKey.toLowerCase(),newMacroValue.trim());
-                              //  System.out.println(newMacroKey+":"+newMacroValue);
-                            //    System.out.println("\nExcel/putting the value in inedexed table"+newMacroKey.toLowerCase()+","+newMacroValue.trim());
-                            }
-						/*	_indexedMacroTable.put(
+								_indexedMacroTable.put(
+										indexMacroKey[1].toLowerCase(),
+										newMacroValue.trim());
+								// System.out.println("\nExcel/putting the value in inedexed table"+indexMacroKey[1].toLowerCase().toLowerCase()+","+newMacroValue.trim());
+							}else{
+								_indexedMacroTable.put(newMacroKey.toLowerCase(),newMacroValue.trim());
+								//  System.out.println(newMacroKey+":"+newMacroValue);
+								//    System.out.println("\nExcel/putting the value in inedexed table"+newMacroKey.toLowerCase()+","+newMacroValue.trim());
+							}
+							/*	_indexedMacroTable.put(
 									indexMacroKey[1].toLowerCase(),
 									newMacroValue.trim());*/
 							count++;
@@ -1730,12 +1738,12 @@ public class Excel {
 								tempStringToExpand, nameSpace);
 						String newMacroKey = macroKey + "#"
 								+ tempStringToExpand.substring(1);
-					//	System.out.println("tempMacroToExpand "+tempMacroToExpand+"\tnewMacroKey"+newMacroKey);
+						//	System.out.println("tempMacroToExpand "+tempMacroToExpand+"\tnewMacroKey"+newMacroKey);
 						if (_macroSheetHashTable.containsKey(tempMacroToExpand)) {
 							Log.Debug("Excel/ExpandMacrosValue : Index Macro key found");
 							String newMacroValue = _macroSheetHashTable
 									.get(tempMacroToExpand);
-					//		System.out.println("New macro value:"+newMacroValue);
+							//		System.out.println("New macro value:"+newMacroValue);
 							Log.Debug("Excel/ExpandMacrosValue : Comparing indexes of Macros");
 							_macroSheetHashTable.put(newMacroKey.toLowerCase(),
 									newMacroValue);
@@ -2173,7 +2181,7 @@ public class Excel {
 	// / 3. Prototypes Excel
 	// / Provided they are present.
 	private void ReadExternalSheets(String inputFileName) throws Exception,
-			MoleculeDefinitionException, Throwable {
+	MoleculeDefinitionException, Throwable {
 
 		File inputFile = null;
 		FileInputStream inFile = null;
@@ -2521,8 +2529,8 @@ public class Excel {
 		try {
 			workSheet = workBook.getSheet(prototypeSheetName);
 			if (workSheet == null) // throw new
-			// Exception("Excel/ReadPrototypesSheet : Could not find the prototypeSheetName "
-			// + prototypeSheetName );
+				// Exception("Excel/ReadPrototypesSheet : Could not find the prototypeSheetName "
+				// + prototypeSheetName );
 			{
 				return;
 			}
@@ -2617,7 +2625,7 @@ public class Excel {
 				// / If this is a comment then Ignore
 				if (valueInNameColumn != null
 						&& valueInNameColumn.toLowerCase().trim()
-								.equalsIgnoreCase("comment")) {
+						.equalsIgnoreCase("comment")) {
 					Cell col = workSheet.getRow(index).getCell(
 							(Integer) (nameIndex + 1));
 
@@ -2736,7 +2744,7 @@ public class Excel {
 								+ GetCellValueAsString(myCell));
 						indexHashtable.put(myCell.getColumnIndex(),
 								GetCellValueAsString(myCell).toLowerCase()
-										.trim());
+								.trim());
 					}
 				}
 			}
@@ -2807,7 +2815,7 @@ public class Excel {
 			String property = GetCellValueAsString(
 					worksheet.getRow(index).getCell(
 							getKey(labelIndex, "property"))).toLowerCase()
-					.trim();
+							.trim();
 			String[] setProperties = property.split(",");
 
 			for (int i = 0; i < setProperties.length; i++) {
@@ -2869,7 +2877,7 @@ public class Excel {
 	// / <param name="argumentsIndex"></param>
 	private Arguments ReadArgumentsSection(Sheet workSheet,
 			Hashtable<Integer, String> labelIndex, int index, int argumentsIndex)
-			throws Exception {
+					throws Exception {
 		Arguments arguments = new Arguments();
 
 		try {
@@ -3100,7 +3108,7 @@ public class Excel {
 					col = worksheet.getRow(index).getCell(
 							((Integer) (testCaseIndex)));
 				}catch(Exception e){
-//					e.printStackTrace();
+					//					e.printStackTrace();
 					Log.Error("Warn: Exception in molecule sheet of "+nameSpace+" due to empty line or cell in line number "+(index+1)+". "+e.getMessage());
 					continue;
 				}
@@ -3115,7 +3123,7 @@ public class Excel {
 				// / If this is a comment then Ignore
 				if (StringUtils.isNotBlank(valueInTestCaseColumn)
 						&& valueInTestCaseColumn.toLowerCase()
-								.equals("comment")) {
+						.equals("comment")) {
 					// System.out.println("if comment valid ");
 					col = worksheet.getRow(index).getCell(
 							((Integer) (testCaseIndex + 1)));
@@ -3219,8 +3227,8 @@ public class Excel {
 
 						// System.out.println("Test case object coming upto  "+_forTestcaseMolecule.get(actionObj.testCaseID));
 						abstractTestCase
-								.put(AppendNamespace(testCase.testCaseID,
-										nameSpace),(Molecule) testCase);
+						.put(AppendNamespace(testCase.testCaseID,
+								nameSpace),(Molecule) testCase);
 
 					}
 
@@ -3241,7 +3249,7 @@ public class Excel {
 					}
 					// System.out.println("mol defn "+actionObj._actionmoleculeArgDefn);
 					testCase._testcasemoleculeArgDefn
-							.addAll(actionObj._actionmoleculeArgDefn);
+					.addAll(actionObj._actionmoleculeArgDefn);
 					description = null;
 					// System.out.println("The control coming to 3d");
 				}
@@ -3271,8 +3279,8 @@ public class Excel {
 
 					if (testCase != null) {
 						abstractTestCase
-								.put(AppendNamespace(testCase.testCaseID,
-										nameSpace),(Molecule) testCase);
+						.put(AppendNamespace(testCase.testCaseID,
+								nameSpace),(Molecule) testCase);
 
 					}
 				}
@@ -3364,7 +3372,7 @@ public class Excel {
 				return null;
 			}
 			if (StringUtils.isNotBlank(verifyObj.name)) // system.out.print("\nverification Name "
-			// +verifyObj.verificationName);
+				// +verifyObj.verificationName);
 			{
 				//check if it is a action?
 				Log.Debug("Excel/ReadVerificationSection : Row[" + index
@@ -3404,9 +3412,9 @@ public class Excel {
 				 * +user+" exists in the User Excel"); userObj =
 				 * (UserData)_userSheetHashTable.get(user); }
 				 */col = worksheet.getRow(index).getCell((Integer) testcaseIndex);
-				if (col != null) {
-					testCaseID = GetCellValueAsString(col);
-				}
+				 if (col != null) {
+					 testCaseID = GetCellValueAsString(col);
+				 }
 
 			}
 
@@ -3502,7 +3510,7 @@ public class Excel {
 					}
 					if (StringUtils.isNotBlank(argumentValue)) {
 						verifyObj.actualArguments
-								.add(argumentValue);
+						.add(argumentValue);
 						// system.out.print("\nverification argumentValue "
 						// +argumentValue);
 
@@ -3792,10 +3800,10 @@ public class Excel {
 					tempValue = AppendNamespace(tempValue, nameSpace);
 					tempValue = "$" + tempValue;
 
-					 tempValue = _macroSheetHashTable.get(tempValue);
-					 if(tempValue==null){
-						 tempValue=splitVariableToFind[1].substring(1).toLowerCase();
-					 }
+					tempValue = _macroSheetHashTable.get(tempValue);
+					if(tempValue==null){
+						tempValue=splitVariableToFind[1].substring(1).toLowerCase();
+					}
 
 				}/*
 				 * else if(tempValue.startsWith("$") && !tempValue.contains("%")
@@ -3938,7 +3946,7 @@ public class Excel {
 			str[0]=nameOfVariable;
 			return str;
 		}
-/*
+		/*
 		String[] stringToReturn = nameOfVariable.split("=");
 		if (stringToReturn.length <= 2) {
 			return stringToReturn;
@@ -3958,7 +3966,7 @@ public class Excel {
 
 			return tempStringToReturn;
 		}
-		*/
+		 */
 	}
 	private TestCase ReadTestCase(Sheet worksheet,
 			Hashtable<Integer, String> labelIndex, int index, int testCaseIndex,
@@ -3996,7 +4004,7 @@ public class Excel {
 							index, testCase.testCaseID));
 			// System.out.print("\nTest Case ID "+ testCase.testCaseID);
 			if (StringUtils.isNotBlank(testCase.testCaseID)) // system.out.print("\nTest Case ID "+
-																// testCase.testCaseID);
+				// testCase.testCaseID);
 			{
 				testCase.parentTestCaseID = testCase.testCaseID;
 			}
@@ -4076,9 +4084,9 @@ public class Excel {
 			 * , index, testCase.user)); testCase.userObj =
 			 * (UserData)_userSheetHashTable.get(testCase.user) ; }
 			 */Log.Debug("Excel/ReadTestCase : End of the Function with Row Index = "
-					+ index
-					+ " and  Index of testCaseIndex column as : "
-					+ testCaseIndex);
+					 + index
+					 + " and  Index of testCaseIndex column as : "
+					 + testCaseIndex);
 		} catch (Exception e) {
 			Log.Error("Excel/ReadTestCase : Exception occured while reading test caseswith Row Index = "
 					+ index + " .Exception message is : " + e.getMessage());
@@ -4188,7 +4196,7 @@ public class Excel {
 
 			if (actionObj.name != null && actionObj.name != " "
 					&& actionObj.name != "") // system.out.print("\nAction Name "
-													// + actionObj.actionName);
+				// + actionObj.actionName);
 			{
 				Log.Debug("\n"
 						+ String.format(
@@ -4314,7 +4322,7 @@ public class Excel {
 						actionObj.actualArguments.add(argumentValue);
 						// system.out.print("\nAction ArgValue " +
 						// argumentValue);
-						 //System.out.println("THE Argument sent "+argumentValue+" namt "+nameSpace);
+						//System.out.println("THE Argument sent "+argumentValue+" namt "+nameSpace);
 
 						argumentValue = FindInMacroAndEnvTable(argumentValue,
 								nameSpace);
@@ -4342,7 +4350,7 @@ public class Excel {
 								+ " = NULL/EMPTY. So not inserting the value to the actionObj.actionArguments Arraylist. ");
 					}
 				}
-				 //System.out.println("The action argument "+actionObj.actionArguments);
+				//System.out.println("The action argument "+actionObj.actionArguments);
 			}
 
 			// / If Compilation is ON THEN Check in more detail...
@@ -4559,7 +4567,7 @@ public class Excel {
 				if (StringUtils.isNotBlank(valueInActionColumn)) {
 					String actionName = GetCellValueAsString(
 							worksheet.getRow(index)
-									.getCell((Integer) actionIndex))
+							.getCell((Integer) actionIndex))
 							.toLowerCase();
 					Log.Debug("Excel/GetActionVerificationMap: Index [" + index
 							+ "] Action Name is " + actionName);
@@ -4627,7 +4635,7 @@ public class Excel {
 		try {
 			Log.Debug("Excel/ReadTestCaseSheet : Getting the values from the TestCase Excel. Calling GetTestCaseSheetValues ......");
 			try{
-			GetTestCaseSheetValues(workSheet, nameSpace);
+				GetTestCaseSheetValues(workSheet, nameSpace);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -4674,7 +4682,7 @@ public class Excel {
 					+ TotalVerificationArgs);
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Calling GetActionVerificationMap to read the Header from the Excel sheet.");
-			 GetActionVerificationMap(worksheet, labelIndex,
+			GetActionVerificationMap(worksheet, labelIndex,
 					_mapHashTable);
 
 			Log.Debug("Excel/GetTestCaseSheetValues : Read the Header from the TestCase Excel sheet. Index returned is -> "
@@ -4725,7 +4733,7 @@ public class Excel {
 
 				if (valueInTestCaseColumn != null
 						&& valueInTestCaseColumn.toLowerCase()
-								.equals("comment")) {
+						.equals("comment")) {
 					description = GetCellValueAsString(worksheet.getRow(index)
 							.getCell((Integer) (testCaseIndex + 1)));
 					// System.out.println("\nTest case Description::GETTESTCASE:: "+description);
@@ -4799,7 +4807,7 @@ public class Excel {
 								_mapHashTable, index, actionIndex,
 								TestCaseSheetName, null, testCaseIndex,
 								nameSpace);
-						
+
 					} else {
 						actionObj = ReadActionSection(worksheet, labelIndex,
 								_mapHashTable, index, actionIndex,
@@ -4808,7 +4816,7 @@ public class Excel {
 					}
 					//System.out.println("Excel/"+actionObj.arguments);
 					ArrayList<Action> tempActions = new ArrayList<Action>();
-				
+
 				}
 				// Else if this is a new test case
 				if (StringUtils.isNotBlank(valueInTestCaseColumn)) {
