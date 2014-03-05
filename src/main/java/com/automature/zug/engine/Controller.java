@@ -1609,16 +1609,16 @@ public class Controller extends Thread {
 						.getRuntimeMXBean().getName().split("@"))[0]);
 
 		logger=new Log();
+        System.setProperty("ZUG_LOGFILENAME",ZUG_LOGFILENAME);
 		opts =new ProgramOptions();
 		testsuite=new TestSuite();
 		Controller.readExcel = new Excel();
 
 		final Controller controller = new Controller();
 		String frameWork="";
-		controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
+	//	controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
 		
-		ContextVar.setContextVar("ZUG_LOGFILENAME",
-				Controller.ZUG_LOGFILENAME);
+		ContextVar.setContextVar("ZUG_LOGFILENAME",Controller.ZUG_LOGFILENAME);
 		
 		ContextVar.setContextVar("ZEnv_Values", SysEnv.getEnvProps());
 		
