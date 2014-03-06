@@ -56,6 +56,8 @@ public class JiraReporter  implements Reporter {
 	String testsuiteName=null;
 	String buildName=null;
 
+    String topologysetName=null;
+
 	String testId=null;
 	JiraClient api;
 	
@@ -71,6 +73,7 @@ public class JiraReporter  implements Reporter {
 		this.testplandetails=(String)ht.get("testplanpath");
 
 		this.testsuiteName=(String)ht.get("testsuitename");
+        this.topologysetName =(String)ht.get( "topologysetname");
 
 		String[] objects = this.testplandetails.split(":");
 		switch(objects.length){
@@ -130,7 +133,7 @@ public class JiraReporter  implements Reporter {
 			this.projectId = api.getProductId(projectName);
 			this.versionId = api.getVersionId(projectName, versionName);
 			this.testId = api.createMeta(projectId);
-			this.testcycleId = api.createTestCycle(testcycleName, buildName, projectId, versionId);
+			this.testcycleId = api.createTestCycle(testcycleName, buildName, projectId, versionId, topologysetName);
 		}catch(JiraExecutionException e){
 			Log.Error("JiraReporter/ValidateDatabaseEntries() : Error while validating database entries. The Exception is "+e.getMessage());   
 			return false;
