@@ -135,7 +135,7 @@
         <pack name="ZUG" required="yes">
         <description>Choose this option if this machine is where you will execute your test on</description>         
         
-           <file unpack="true" src="automature-zug-bin-7.2.13.zip" targetdir="$INSTALL_PATH" />
+           <file unpack="true" src="automature-zug-bin-7.2.14.zip" targetdir="$INSTALL_PATH" />
            
            <executable targetfile="${INSTALL_PATH}${FILE_SEPARATOR}ZUG${FILE_SEPARATOR}SetZugPath.bat" stage="postinstall" keep="true" condition="izpack.windowsinstall">
            </executable>
