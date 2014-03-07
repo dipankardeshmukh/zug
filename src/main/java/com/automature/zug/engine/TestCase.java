@@ -1065,7 +1065,13 @@ class TestCase
                     Controller.reporter.SaveTestCaseResultEveryTime(tData);
                     // message("Data is saved through davos");
                 }
+            }else if(TestSuite.baseTestCaseID.equalsIgnoreCase("init")){
+
+                TestSuite.initExecuted = true;
             }
+
+
+
         } catch (Exception ex) {
             //System.out.println("Inside test case exception");
             if(ex.getClass().getSimpleName().contains("ReportingException")){        		
@@ -1120,8 +1126,14 @@ class TestCase
                     Controller.reporter.SaveTestCaseResultEveryTime(tData);
                 }
             } else {
+
+                if(TestSuite.baseTestCaseID.equalsIgnoreCase("init"))
+                    TestSuite.initExecuted = true;
+
                 TestSuite.initWorkedFine = false;
+
             }
+
 
         } finally {
             Controller.message("********************************************************************************");
