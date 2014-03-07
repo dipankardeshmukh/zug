@@ -20,7 +20,10 @@ public class TestSuite {
 	static Hashtable<String, String> errorMessageDuringTestCaseExecution = new Hashtable<String, String>();
 	static Hashtable<String, String> errorMessageDuringMoleculeCaseExecution = new Hashtable<String, String>();
 	static Hashtable<String, String> threadIdForTestCases = new Hashtable<String, String>();
+
 	static boolean initWorkedFine = true;
+    static boolean initExecuted = false;
+
 	static Hashtable<String, Molecule> abstractTestCase = new Hashtable<String, Molecule>();
 	static Hashtable<String, Prototype> prototypeHashTable = null;
 	static Boolean _testPlanStopper = false;
@@ -116,10 +119,31 @@ public class TestSuite {
 			//		System.out.println("implicitENVMolecule="+implicitEnvMoleculeName);
 			implicitEnvMolecule=true;
 		}
-		//	System.out.println("implicit values initialized");
+		    //      System.out.println("implicit values initialized");
 	}
 
 
+    public long waitForInitToComplete(long duration) throws InterruptedException {
+
+
+        boolean initPresent = false;
+        long initStartTime = System.currentTimeMillis();
+        long timeOut = System.currentTimeMillis() + (duration * 1000);
+
+        for (TestCase test : testcases) {
+            if(test.testCaseID.equalsIgnoreCase("init"))
+                initPresent=true;
+        }
+
+        if(initPresent){
+            while(!initExecuted || (timeOut < System.currentTimeMillis())){
+                Thread.sleep(10*1000);
+            }
+        }
+
+        return System.currentTimeMillis() - initStartTime;
+
+    }
 
 	public void run() throws 
 	DavosExecutionException,Exception,Throwable {

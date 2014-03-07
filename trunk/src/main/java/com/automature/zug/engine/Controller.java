@@ -48,7 +48,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.2.13";
+	private static String Version = "ZUG Premium 7.2.14";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -532,8 +532,15 @@ public class Controller extends Thread {
 			testCaseResult.set_testCaseId(executedTestCase[i].testCaseID);
 			testCaseResult
 			.set_testExecution_Time(executedTestCase[i].timeToExecute);
-			testCaseResult.set_status(executedTestCase[i].testCaseStatus);
-			testCaseResult
+
+            if(executedTestCase[i].testCaseStatus.equalsIgnoreCase("running")){
+                testCaseResult.set_status("abort");
+            }
+            else{
+                testCaseResult.set_status(executedTestCase[i].testCaseStatus);
+            }
+
+            testCaseResult
 			.set_comments(executedTestCase[i].testCaseExecutionComments);
 
 			message("\n" + testCaseResult.get_testCaseId() + "\t"
@@ -1934,6 +1941,10 @@ public class Controller extends Thread {
 			});
 
 			thread.start();
+
+            long initExecTime = controller.testsuite.waitForInitToComplete(Integer.parseInt(controller.ReadContextVariable(
+                    "ZUG_TESTSUITE_TIMEOUT")));
+
 			if(opts.dbReporting){
 				Thread dbStimulator = new Thread(new Runnable() {
 					public void run() {
@@ -1950,19 +1961,20 @@ public class Controller extends Thread {
 				});
 				dbStimulator.start();
 			}
-			if (!opts.debugMode) {
-				// wait for thread for specific time
-				String[] tep = controller.ReadContextVariable(
-						"ZUG_TESTSUITE_TIMEOUT").split("\\.");
-				thread.join(Integer.parseInt(tep[0]) * 1000);
+            System.out.println(Integer.parseInt(controller.ReadContextVariable(
+                    "ZUG_TESTSUITE_TIMEOUT"))+ " "+ initExecTime);
+			if(((Integer.parseInt(controller.ReadContextVariable(
+                    "ZUG_TESTSUITE_TIMEOUT"))*1000) - initExecTime ) < 0)
+            {
+                thread.interrupt();
+            }else{
+                thread.join((Integer.parseInt(controller.ReadContextVariable(
+                        "ZUG_TESTSUITE_TIMEOUT"))*1000) - initExecTime);
+            }
 
-			} 
-
-			// Last time again wait for this Thread to get Over....
-			thread.join(Integer.parseInt(controller.ReadContextVariable(
-					"ZUG_TESTSUITE_TIMEOUT")));
 
 			tm.Stop();
+
 			try{
 				controller.sock.close();
 			}catch(Exception e){

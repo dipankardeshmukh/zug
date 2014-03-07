@@ -61,15 +61,16 @@ public class ZugGUI {
 		cmdParams=params;
 		//LineBorder border = new LineBorder(Color.WHITE,4);
 		frame = new JFrame();
+        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir")+"\\Images\\automature.png"));
+        frame.setTitle("Automature Zug");
         frame.setBackground(Color.lightGray);
 		//frame.getRootPane().setBorder(border);
 		frame.getContentPane().setFont(new Font("Tahoma", Font.BOLD, 11));
 		frame.getContentPane().setBackground(Color.lightGray);
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir")+"\\Images\\automature.png"));
 		frame.setSize(783, 595);
 		frame.setPreferredSize(new Dimension(783,590));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("Automature Zug");
+
 		frame.setMaximumSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
 		frame.setResizable(true);
 		frame.setMinimumSize(new Dimension(600,600));
