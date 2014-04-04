@@ -98,6 +98,10 @@
                 <inprocesspackage name="ZBrowser" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zbrowser</jar-package>
                     <class-name>BrowserOperation</class-name>
+                </inprocesspackage>  
+                <inprocesspackage name="ZHTTP" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zhttp</jar-package>
+                    <class-name>ZHTTPOperation</class-name>
                 </inprocesspackage>
         </file-path>
     </inprocesspackages>
