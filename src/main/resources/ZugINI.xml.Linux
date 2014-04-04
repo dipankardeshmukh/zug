@@ -55,7 +55,7 @@
                     <jar-package>com.automature.zuoz.inprocess.zstring</jar-package>
                     <class-name>StringOperation</class-name>
                 </inprocesspackage>
-				<inprocesspackage name="ZMobile" language="java">
+				        <inprocesspackage name="ZMobile" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zmobile</jar-package>
                     <class-name>MobileOperation</class-name>
                 </inprocesspackage>
@@ -98,6 +98,10 @@
                 <inprocesspackage name="ZBrowser" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zbrowser</jar-package>
                     <class-name>BrowserOperation</class-name>
+                </inprocesspackage>
+                <inprocesspackage name="ZHTTP" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zhttp</jar-package>
+                    <class-name>ZHTTPOperation</class-name>
                 </inprocesspackage>
         </file-path>
     </inprocesspackages>
