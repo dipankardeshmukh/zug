@@ -101,7 +101,7 @@
                 </inprocesspackage>  
                 <inprocesspackage name="ZHTTP" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zhttp</jar-package>
-                    <class-name>ZHTTPOperation</class-name>
+                    <class-name>HTTPOperation</class-name>
                 </inprocesspackage>
         </file-path>
     </inprocesspackages>
