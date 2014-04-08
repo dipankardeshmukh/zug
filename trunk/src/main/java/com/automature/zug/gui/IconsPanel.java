@@ -1,11 +1,13 @@
 package com.automature.zug.gui;
 
 import java.awt.*;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import com.automature.zug.util.Log;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
@@ -736,22 +738,31 @@ public class IconsPanel {
 	
 	
 	public static void chooseFile() throws Exception {
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser fileChooser = new JFileChooser();
+		RecentDirectoryChooserPanel chooser=new RecentDirectoryChooserPanel(ZugGUI.getRecenDirectories(),fileChooser);
+		fileChooser.setAccessory(chooser);
 		if(fileName!=null && !fileName.isEmpty()){
-			chooser.setCurrentDirectory(new File(fileName).getParentFile());
+			fileChooser.setCurrentDirectory(new File(fileName).getParentFile());
 		}
 		
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 				"Microsoft Excel Documents", "xls", "xlsx");
 
-		chooser.setAcceptAllFileFilterUsed(false);
-		chooser.setFileFilter(filter);
-		int returnVal = chooser.showOpenDialog(iconPanel.getRootPane());
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.setFileFilter(filter);
+		int returnVal = fileChooser.showOpenDialog(iconPanel.getRootPane());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			fileName = chooser.getSelectedFile().getAbsolutePath();
+			fileName = fileChooser.getSelectedFile().getAbsolutePath();
 			ZugGUI.loadFile(false);
+			ArrayList<String> file=new ArrayList<String>();
+			file.add(fileName);
+			ZugGUI.updateSession(file);
 		}
 		
+	}
+	
+	public static void setFileName(String file){
+		fileName=file;
 	}
 	
 	
