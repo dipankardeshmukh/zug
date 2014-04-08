@@ -69,4 +69,8 @@ public class GuiMenuBar {
 	public JMenuBar getMenuBar(){
 		return menuBar;
 	}
+	
+	public void updateSessionData(){
+		fileMenu.updateSessionData();
+	}
 }
