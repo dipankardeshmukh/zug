@@ -1,6 +1,6 @@
 #!/bin/bash
 #Automation - It contains command to run automature-zug.jar - The Automation Framework.
-#Author:Sankha Sil
+
 # ©Copyright 2009 Automature Inc.. All Rights Reserved.
 
 #setting the fileformat for this script
@@ -16,7 +16,7 @@ echo ---------------------------------------------------------------------------
 
 #echo  "The Zug install directory "$ZUG_HOME
 cd /Applications/Automature/ZUG
-java -Xms380m -Xmx1000m -jar /Applications/Automature/ZUG/automature-zug.jar $*  -pwd=$pwd
+java -Xms512m -Xmx2048m -jar /Applications/Automature/ZUG/automature-zug.jar $*  -pwd=$pwd
 
 echo --------------------------------------------------------------------------------
 echo Automation Finished.
