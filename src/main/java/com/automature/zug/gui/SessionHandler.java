@@ -35,7 +35,7 @@ public class SessionHandler {
 			//System.out.println("Serialized data is saved in "+SESSION_FILE);
 		}catch(IOException i)
 		{
-			i.printStackTrace();
+			System.err.println("[WARN] :Error saving the session "+i.getMessage());
 		}
 
 	}
@@ -64,13 +64,13 @@ public class SessionHandler {
 			fileIn.close();
 		}catch(IOException i)
 		{
-			i.printStackTrace();
-			return;
+			System.err.println("[WARN] :Error retriving the session "+i.getMessage());
+			
 		}catch(ClassNotFoundException c)
 		{
 			//System.out.println("Employee class not found");
-			c.printStackTrace();
-			return;
+			System.err.println("[WARN] :Error retriving the session "+c.getMessage());
+		
 		}
 
 	}
