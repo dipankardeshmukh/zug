@@ -1,5 +1,6 @@
 package com.automature.zug.gui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -7,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.automature.zug.engine.SysEnv;
 
 public class Session implements java.io.Serializable {
 
@@ -33,8 +36,10 @@ public class Session implements java.io.Serializable {
 	}
 	
 	public void addDirectory(String fileName){
-		//System.out.println("file added "+ fileName.substring(0, fileName.lastIndexOf("\\")));
-		recentlyUsedDirectories.add(fileName.substring(0, fileName.lastIndexOf("\\")));
+		File f=new File(fileName);
+		if(f!=null&&f.exists()){
+			recentlyUsedDirectories.add(f.getParent());
+		}
 	}
 
 	
