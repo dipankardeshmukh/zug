@@ -223,6 +223,10 @@ public class ConsoleDisplay {
     public void updateTextArea(String text) {
         //SwingUtilities.invokeLater(new Runnable() {
            // public void run() {
+      if(text.length()>300){
+    		text=text.substring(0,300);
+    	}
+
         if(formatOutput){
             format(text);
         }else{
