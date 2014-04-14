@@ -286,18 +286,23 @@ public class TaskPane extends JPanel {
         cvPanel.setLayout(new BoxLayout(cvPanel, BoxLayout.Y_AXIS));
         cvPanel.setBackground(Color.white);
         cvPanel.setBorder(new EmptyBorder(10, 10, 10, 10) );
-
+        cvPanel.setMinimumSize(new Dimension(200,360));
+        cvPanel.setSize(200,360);
+        cvPanel.setPreferredSize(new Dimension(200,360));
         cvPane = new ContextVarPanel();
-        cvPane.panel_3.setVisible(true);
-        cvPanel.add(cvPane.panel_3);
+        cvPane.setVisible(true);
+        cvPanel.add(cvPane);
 
         contextVariables = new JXTaskPane();
         contextVariables.setName("seeAlsoGroup");
-        contextVariables.setTitle("Context Variables                                     ");
+        contextVariables.setTitle("Context Variables");
         contextVariables.setCollapsed(true);
         contextVariables.add(cvPanel);
-
+        contextVariables.setMinimumSize(new Dimension(200,360));
+        contextVariables.setSize(200, 360);
         tpc.add(contextVariables);
+        
+        
 
     }
 

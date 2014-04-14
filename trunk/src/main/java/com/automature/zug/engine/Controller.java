@@ -48,7 +48,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.2.15";
+	private static String Version = "ZUG Premium 7.2.16";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -78,6 +78,7 @@ public class Controller extends Thread {
 	public static final String inprocess_xml_tag_attribute_language = "language";
 	public static final String reportingXmlTagPath="//root//Reporting-dest";
 	public static final String reportingXmlTagAttribute="name";
+	private static final int MAX_SCREEN_CHAR = 2000;
 	public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
 	public static HashMap<String, AtomInvoker> invoke_native_atoms = new HashMap<String, AtomInvoker>(); 
 	private static volatile String builtin_atom_package_name = "";
@@ -475,13 +476,15 @@ public class Controller extends Thread {
 	public static void message(String msg) {
 		Log.Result(msg);
 		if (opts.verbose) {
-			//	Charset cs=new Charset("US-ASCII","cmdset");
-			/*if(guiFlag){
-				ZugGUI.message(msg);
-			}else{*/
-			System.out.println(msg);
-			//}
-
+			if(guiFlag){
+				if(msg.length()>MAX_SCREEN_CHAR){
+					msg=msg.substring(0,MAX_SCREEN_CHAR);//System.out.println(msg.substring(0, 1000)+"......message truncated");
+				}//else{
+					System.out.println(msg);
+				//}
+			}else{
+				System.out.println(msg);				
+			}
 		}
 	}
 

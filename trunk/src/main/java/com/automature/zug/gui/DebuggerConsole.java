@@ -129,8 +129,8 @@ public class DebuggerConsole {
 	public void showContextVaraiblePane(){
 		debuggerPanel.removeAll();
 		cvpane.refreshList();
-		cvpane.panel_3.setVisible(true);
-		debuggerPanel.add(cvpane.panel_3, BorderLayout.CENTER);
+		cvpane.setVisible(true);
+		debuggerPanel.add(cvpane, BorderLayout.CENTER);
 	//	debuggerPanel.revalidate();
 	//	debuggerPanel.repaint();
 	}

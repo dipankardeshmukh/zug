@@ -288,7 +288,8 @@ public class ZugGUI {
 	}
 
 	public static void message(String msg){
-		guiDisplayPane.sendConsoleMessage(msg);
+		//guiDisplayPane.sendConsoleMessage(msg);
+		System.out.println(msg);
 	}
 
 	public static void enableFrame(){
