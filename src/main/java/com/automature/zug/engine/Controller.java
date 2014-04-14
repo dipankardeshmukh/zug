@@ -478,7 +478,7 @@ public class Controller extends Thread {
 		if (opts.verbose) {
 			if(guiFlag){
 				if(msg.length()>MAX_SCREEN_CHAR){
-					msg=msg.substring(0,MAX_SCREEN_CHAR);//System.out.println(msg.substring(0, 1000)+"......message truncated");
+					msg=msg.substring(0,MAX_SCREEN_CHAR)+"......message truncated";//System.out.println(msg.substring(0, 1000)+"......message truncated");
 				}//else{
 					System.out.println(msg);
 				//}
