@@ -15,11 +15,13 @@ import com.automature.zug.reporter.TestLinkReporter;
 import com.automature.zug.util.ExtensionInterpreterSupport;
 import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
+
 import org.apache.commons.lang.StringUtils;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+
 import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
@@ -48,7 +50,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.2.17";
+	private static String Version = "ZUG Premium 7.2.18";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -78,6 +80,7 @@ public class Controller extends Thread {
 	public static final String inprocess_xml_tag_attribute_language = "language";
 	public static final String reportingXmlTagPath="//root//Reporting-dest";
 	public static final String reportingXmlTagAttribute="name";
+	public static final String ADAPTERPARAMSPATH="//root//configurations//adapter-param";
 	private static final int MAX_SCREEN_CHAR = 2000;
 	public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
 	public static HashMap<String, AtomInvoker> invoke_native_atoms = new HashMap<String, AtomInvoker>(); 
@@ -1353,7 +1356,10 @@ public class Controller extends Thread {
 		}
 	}
 
+	
+	
 	public Hashtable getConnectionParams(){
+		
 		Hashtable<String,String> ht=new Hashtable<String,String>();
 		ht.put("dbUserName".toLowerCase(), dbUserName);
 		ht.put("dBHostName".toLowerCase(),dBHostName );
@@ -1372,6 +1378,12 @@ public class Controller extends Thread {
 		ht.put("BuildId".toLowerCase(), opts.getBuildId());
 		ht.put("buildname", opts.buildName);
 		ht.put("testCycleId".toLowerCase(), opts.getTestCycleId());
+		try {
+			ht.putAll(new ExtensionInterpreterSupport().retriveAdapterParams());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Log.Error("Error reading adapter params : "+e.getMessage());
+		}
 		return ht;
 	}
 	/*
@@ -1988,6 +2000,7 @@ public class Controller extends Thread {
 			if(stop||Controller.errorOccured){
 				controller.DoHarnessCleanup();
 				System.gc();
+		
 				return;
 			}
 			// controller.executionTime = (int)(tm.Duration() / ((double)1000));
