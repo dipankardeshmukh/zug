@@ -244,13 +244,13 @@ public class JiraReporter  implements Reporter {
 
     private int identifyIssueSummaryType(String val)throws Exception{
         Log.Debug("JiraReporter/generateIssueSummary() : Issue Summary detected :"+val);
-        if(val==null || val.isEmpty() || val.toUpperCase().contains(SUMMARY_TYPE1))   {
+        if(val==null || val.isEmpty() || val.equalsIgnoreCase(SUMMARY_TYPE1))   {
             return 0;
         }
-        else if(val.toUpperCase().contains(SUMMARY_TYPE2)){
+        else if(val.equalsIgnoreCase(SUMMARY_TYPE2)){
             return 1;
         }
-        else if(val.toUpperCase().contains(SUMMARY_TYPE3)){
+        else if(val.equalsIgnoreCase(SUMMARY_TYPE3)){
             return 2;
         }
         else
