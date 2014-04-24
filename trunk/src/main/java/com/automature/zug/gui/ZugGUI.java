@@ -271,6 +271,7 @@ public class ZugGUI {
 		}else{
 			sessionHandler.addTestsuite(params.get(0));
 		}
+		sessionHandler.saveSession();
 	//	System.out.println("updated session "+sessionHandler.getSession().toString());
 		guiMenuBar.updateSessionData();
 	}
@@ -354,7 +355,7 @@ public class ZugGUI {
 
 	public static void initialize(){
 		ops.hideDebuggerControls();
-		guiDisplayPane.clearConsole();
+		guiDisplayPane.resetConsole();//.clearConsole();
 		IconsPanel.disableDebugger();
 		updateFrame();
 	}

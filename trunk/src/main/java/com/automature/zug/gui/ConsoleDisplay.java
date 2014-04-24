@@ -1,11 +1,10 @@
 package com.automature.zug.gui;
 
 import com.automature.zug.util.Log;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -15,11 +14,12 @@ import javax.swing.text.*;
 
 public class ConsoleDisplay {
 	
-	private  static  JPanel outputPanel;
-	private  static JScrollPane scrollPane;
+	private JPanel outputPanel;
+
 	//private  static JTextArea textArea= new JTextArea();
-    private static JTextPane textPane = new JTextPane();
-	private  static DefaultCaret caret;
+    private  JTextPane textPane ;
+    private  JTextArea textArea ;
+
     boolean formatOutput=true;
 	
 	ConsoleDisplay(){
@@ -29,29 +29,57 @@ public class ConsoleDisplay {
 		outputPanel.setLocation(0, 300);
 		outputPanel.setPreferredSize(new Dimension(767,278));
 		outputPanel.setLayout(new BorderLayout(0, 0));
-
-		scrollPane = new JScrollPane();
-		outputPanel.add(scrollPane);
-		scrollPane.setAutoscrolls(true);
-		scrollPane.setViewportView(textPane);
-        textPane.setForeground(Color.white);
-        textPane.setBackground(Color.black);
-        //textPane.setOpaque(false);
-        textPane.setFont(Font.getFont(Font.SANS_SERIF));
-        textPane.setEditable(false);
-        textPane.setAutoscrolls(true);
-
-		caret = (DefaultCaret)textPane.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		initializeDisplay();
 
     }
+	
+	public void initializeDisplay(){
+
+		outputPanel.removeAll();
+		if(formatOutput){
+			textPane= new JTextPane();
+			JScrollPane scrollPane = new JScrollPane();
+			outputPanel.add(scrollPane);
+			scrollPane.setAutoscrolls(true);
+			scrollPane.setViewportView(textPane);
+	        textPane.setForeground(Color.white);
+	        textPane.setBackground(Color.black);
+	        //textPane.setOpaque(false);
+	        textPane.setFont(Font.getFont(Font.SANS_SERIF));
+	        textPane.setEditable(false);
+	        textPane.setAutoscrolls(true);
+	        DefaultCaret caret = (DefaultCaret)textPane.getCaret();
+			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		}else{
+			textArea = new JTextArea();
+			JScrollPane scrollPane = new JScrollPane();
+			outputPanel.add(scrollPane);
+			scrollPane.setAutoscrolls(true);
+			scrollPane.setViewportView(textArea);
+			textArea.setForeground(Color.white);
+			textArea.setBackground(Color.black);
+	        //textPane.setOpaque(false);
+			textArea.setFont(Font.getFont(Font.SANS_SERIF));
+			textArea.setEditable(false);
+			textArea.setAutoscrolls(true);
+
+			DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+			
+		}
+	}
 
    public void setFormatOutput(boolean value){
        formatOutput = value;
    }
 
 	public void clearDisplay(){
-        textPane.setText("");
+		if(textPane.isVisible()&& textPane.isShowing()){
+	        textPane.setDocument(new DefaultStyledDocument());	
+		}else{
+			textArea.setText("");
+		}
+
 	}
 	
 	public JPanel getConsole(){
@@ -228,11 +256,10 @@ public class ConsoleDisplay {
         if(formatOutput){
             format(text);
         }else{
-            try {
-                textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), text, null);
-            } catch (BadLocationException e) {
-                Log.Error(e.getMessage());
-            }
+            
+               // textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), text, null);
+            	textArea.append(text);
+
         }
 
 
@@ -295,17 +322,7 @@ public class ConsoleDisplay {
         System.setErr(new PrintStream(err, true));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public void resetConsole() {
+    	initializeDisplay();
+	}
 }

@@ -194,7 +194,8 @@ public class GUIDisplayPane {
     }
 
     public void clearConsole() {
-        consoleDisplay.getConsoleDisplay().setText(" ");
+        consoleDisplay.clearDisplay();
+       
     }
 
     public void initialize(){
@@ -224,4 +225,9 @@ public class GUIDisplayPane {
     public String getSelectedTestCases(){
         return taskPane.getSelectedTestCases();
     }
+
+	public void resetConsole() {
+		// TODO Auto-generated method stub
+		consoleDisplay.resetConsole();
+	}
 }
