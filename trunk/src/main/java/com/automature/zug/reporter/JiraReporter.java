@@ -61,11 +61,7 @@ public class JiraReporter  implements Reporter {
 	String testId=null;
 	JiraClient api;
 
-    int issueSummaryType = 0;
-
-    private final static String SUMMARY_TYPE1="TS:TC";
-    private final static String SUMMARY_TYPE2="TC";
-    private final static String SUMMARY_TYPE3="TC-DATETIME";
+    String issueSummaryType = "";
 
 	protected final static String PASS="1";
 	protected final static String FAIL="2";
@@ -114,8 +110,11 @@ public class JiraReporter  implements Reporter {
 			this.buildName = (String)ht.get("buildtag");
 		}
 
-        this.issueSummaryType = identifyIssueSummaryType((String)ht.get("issueformat"));
-
+        if(ht.get("issueformat").toString().contains("$tc") || ht.get("issueformat").toString().contains("$TC")){
+            this.issueSummaryType = (String)ht.get("issueformat");
+        } else{
+            this.issueSummaryType = (String)ht.get("issueformat")+"$TC";
+        }
 		issues_reported = new HashMap<String, IssueDetails>();
 	}
 
@@ -202,27 +201,13 @@ public class JiraReporter  implements Reporter {
 
 	private String getIssueId(ExecutedTestCase etc)throws Exception{
 		Log.Debug("JiraReporter/getIssueId() : Create new Issue or return the existing issue for Issue Summary "+etc.testCaseID);
-		String mod_summary = null;//this.testsuiteName+":"+etc.testCaseID;
-        switch(this.issueSummaryType){
-            case 0:
-                mod_summary = this.testsuiteName+":"+etc.testCaseID;
-            break;
-            case 1:
-                mod_summary = etc.testCaseID;
-            break;
-            case 2:
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = new Date();
-                Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat timeFormat=new SimpleDateFormat("HH:mm:ss");
-                mod_summary = etc.testCaseID+dateFormat.format(date)+"-"+timeFormat.format(calendar.getTime());
-            break;
-            default:
-                mod_summary = this.testsuiteName+":"+etc.testCaseID;
-        }
+		String mod_summary = this.issueSummaryType;//this.testsuiteName+":"+etc.testCaseID;
         if(mod_summary!=null){
+            mod_summary=mod_summary.replace("$ts", this.testsuiteName).replace("$TS", this.testsuiteName);
+            mod_summary=mod_summary.replace("$tc", etc.testCaseID).replace("$TC", etc.testCaseID);
             mod_summary = mod_summary.replaceAll("\\\\",REPLACE_CAHARACTER).replaceAll("/",REPLACE_CAHARACTER);
         }
+
 		etc.testCaseID=mod_summary;
 		String issueId = null;
 		try{
@@ -241,22 +226,6 @@ public class JiraReporter  implements Reporter {
 		Log.Debug("JiraReporter/getIssueId() : Issus Summary : "+mod_summary+", Issue Id :"+issueId);    	
 		return issueId;
 	}
-
-    private int identifyIssueSummaryType(String val)throws Exception{
-        Log.Debug("JiraReporter/generateIssueSummary() : Issue Summary detected :"+val);
-        if(val==null || val.isEmpty() || val.equalsIgnoreCase(SUMMARY_TYPE1))   {
-            return 0;
-        }
-        else if(val.equalsIgnoreCase(SUMMARY_TYPE2)){
-            return 1;
-        }
-        else if(val.equalsIgnoreCase(SUMMARY_TYPE3)){
-            return 2;
-        }
-        else
-        return 0;
-    }
-
 
 	@Override
 	public void saveTestCaseResults(Hashtable ht) throws ReportingException, Exception {
