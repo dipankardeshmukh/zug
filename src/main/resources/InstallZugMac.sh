@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 sudo mv /Applications/Automature/ZUG/zug.mac /Applications/Automature/ZUG/zug
+if [ ! -e /Applications/Automature/ZUG/ZugINI.xml ]
+ then
 sudo mv /Applications/Automature/ZUG/ZugINI.xml.Mac /Applications/Automature/ZUG/ZugINI.xml
+fi
 sudo rm /Applications/Automature/ZUG/ZugINI.xml.Linux
 sudo rm /Applications/Automature/ZUG/ZugINI.xml.Windows
 sudo chmod 755 /Applications/Automature/ZUG/zug
