@@ -1979,8 +1979,8 @@ public class Controller extends Thread {
 				});
 				dbStimulator.start();
 			}
-            System.out.println(Integer.parseInt(controller.ReadContextVariable(
-                    "ZUG_TESTSUITE_TIMEOUT"))+ " "+ initExecTime);
+          //  System.out.println(Integer.parseInt(controller.ReadContextVariable(
+            //        "ZUG_TESTSUITE_TIMEOUT"))+ " "+ initExecTime);
 			if(((Integer.parseInt(controller.ReadContextVariable(
                     "ZUG_TESTSUITE_TIMEOUT"))*1000) - initExecTime ) < 0)
             {
