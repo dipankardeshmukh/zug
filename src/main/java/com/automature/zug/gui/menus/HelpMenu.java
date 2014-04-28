@@ -42,7 +42,9 @@ public class HelpMenu {
 		
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(mntmAbout.getRootPane(), Controller.getVersionMessage());
+				//JOptionPane.showMessageDialog(mntmAbout.getRootPane(), Controller.getVersionMessage());
+				JOptionPane.showMessageDialog(mntmAbout.getRootPane(), Controller.getVersionMessage(),"About Us",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(System.getProperty("user.dir")+File.separator+"Images"+File.separator+"automature.png"));
+				
 			}
 		});	
 		
