@@ -94,7 +94,6 @@ public class InprocessPackageHolderPanel extends JPanel {
 	}
 
 	private void addEmptyPackagePanel(){
-		System.out.println(centralPanel.getComponents().length);
 		centralPanel.add(new InprocessPackagePanel());
 		this.getParent().validate();
 		this.getParent().repaint();
