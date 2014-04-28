@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class ZugGUI {
 		sessionHandler.retriveSession();
 		//LineBorder border = new LineBorder(Color.WHITE,4);
 		frame = new JFrame();
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir")+"\\Images\\automature.png"));
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir")+File.separator+"Images"+File.separator+"automature.png"));
 		frame.setTitle("Automature Zug");
 		frame.setBackground(Color.lightGray);
 		//frame.getRootPane().setBorder(border);
@@ -428,5 +429,14 @@ public class ZugGUI {
 	public static void loadAndSetFileName(String fileName) throws Exception{
 		IconsPanel.setFileName(fileName);
 		loadFile(fileName, false);
+	}
+	
+	public static void updatePreferences(){
+		try {
+			Controller.loadInProcesses();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error loading Inprocess "+e.getMessage());
+		}
 	}
 }

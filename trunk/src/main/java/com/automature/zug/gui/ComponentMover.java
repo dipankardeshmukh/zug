@@ -11,7 +11,7 @@ public class ComponentMover extends MouseAdapter implements MouseMotionListener{
 	Point mouseDownScreenCoords;
 	Point mouseDownCompCoords;
 	Component comp;
-	ComponentMover(Component cmp){
+	public ComponentMover(Component cmp){
 		comp=cmp;
 		comp.addMouseListener(this);
 		comp.addMouseMotionListener(this);
