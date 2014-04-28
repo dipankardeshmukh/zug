@@ -7,6 +7,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import com.automature.zug.gui.ZugGUI;
+import com.automature.zug.gui.preference.PreferenceDialog;
 
 public class EditMenu {
 	
@@ -18,6 +19,7 @@ public class EditMenu {
 	private JMenuItem mntmNew;
 	//private JMenuItem mntmSet;
 	private JMenuItem mntmRemove;
+	private JMenuItem mnPreference;
 	
 	public EditMenu(){
 		
@@ -45,10 +47,13 @@ public class EditMenu {
 		mntmRemove = new JMenuItem("Remove");
 		mnBreakPoints.add(mntmRemove);
 		disableDebuggerOPtions();
+		mnPreference = new JMenuItem("Preferences");
+		mnEdit.add(mnPreference);
 		addActions();
 	}
 
 	private void addActions(){
+		
 		mnContextVariables.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ZugGUI.showDebugger();
@@ -71,6 +76,12 @@ public class EditMenu {
 			}
 		});
 			
+		mnPreference.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				PreferenceDialog pd=new PreferenceDialog();
+				pd.setVisible(true);
+			}
+		});
 	}
 	
 	public JMenu getMnEdit() {

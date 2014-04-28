@@ -50,7 +50,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.2.19";
+	private static String Version = "ZUG Premium 7.3.0";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -1546,6 +1546,9 @@ public class Controller extends Thread {
 	public static void loadInProcesses()throws Exception{
 		ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
 		Set<Set> errorSet = new HashSet<Set>();
+		if(!invokeAtoms.isEmpty()){
+			invokeAtoms.clear();
+		}
 		if(guiFlag){
 			System.out.println("Loading Inprocess packages please wait.........\n");
 		}
