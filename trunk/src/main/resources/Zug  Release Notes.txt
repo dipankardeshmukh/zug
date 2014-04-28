@@ -1,4 +1,168 @@
-ZUG Release Notes.
+ZUG Change Log
+ 
+The following has been introduced in Ver 7.2.18
+Bugs Fixed
+* Added support for ADAPTERPANELPATH ZugINI.xml
+   
+The following has been introduced in Ver 7.2.17
+Bugs Fixed
+* Changed startup memory size
+* Truncated output to console display
+
+The following has been introduced in Ver 7.2.15
+Bugs Fixed
+* Fix for exit after 4 hours for any test suite
+* ZMobileOps changed to ZMobile in ZugINI.xml
+
+The following has been introduced in Ver 7.2.13
+Bugs Fixed
+* Log filename is converted to system property rather than context variable
+
+The following has been introduced in Ver 7.2.12
+Bugs Fixed
+* Fix for prompt when test suite name is not provided in test suite
+
+The following has been introduced in Ver 7.2.11
+Bugs Fixed
+* Fix for Jira reporter to use the product name
+  
+The following has been introduced in Ver 7.2.10
+Bugs Fixed
+* Fix for the display issues on Mac for test suite display
+* Update for install scripts on all platforms
+
+The following has been introduced in Ver 7.2.9
+Bugs Fixed
+* Modified log messages and redirected to log files
+* Fix for ZUG_TESTSTEP_TIMEOUT context variable
+
+The following has been introduced in Ver 7.2.7
+New Features
+* Jira reporter added
+Bugs Fixed
+* Fix for preserving test case selected state in sidebar
+    
+The following has been introduced in Ver 7.2.6
+Bugs Fixed
+* Fix for escaping % sign in arguments
+ 
+The following has been introduced in Ver 7.2.5
+Bugs Fixed
+* Fix for molecule exception handling failure
+* Test case fail count added as exit value
+
+The following has been introduced in Ver 7.2.4
+Bugs Fixed
+* Fix for ZDB.Query with selecting more than 6 columns
+
+The following has been introduced in Ver 7.2.3
+Bugs Fixed
+* Fix for Mac install script
+* Fix for NullPointerException for certain test suites with NULL values
+
+The following has been introduced in Ver 7.2.2
+New Features
+* 817 Settings that are common to any testsuite contained in the Config worksheet has been moved to a Node-wide INI file, e.g. the ZUGINI.XML, so that it is simpler to have a portable testsuite, which can be reused without modification across different environments, if needed.
+* 833 To tune the performance of atoms at the end of execution Zug reports 10 atoms with longest execution time.Zug now reports the time taken for executing each atom. 
+* 860  All arguments in console which are passed in molecule suite while running a testsuite is visible in the output console.This makesit easy to trace exception while there is an argument mismatch in the molecule. 
+* 884  Zug GUI now has an option to send command line macros. 
+* 895  ZUG now has the capability to send heart beat request to Davos at a particular time intervals and also sends a session destroy request at the end of the execution of the test suite.
+* 948 Zug can now be installed and run in Mac OS X.
+Bugs Fixed
+* Bug#880 Error message is displayed When a macro is passed as a command line argument.
+* Bug#885 An option to select the number of count has been added in the REPEAT option in GUI.
+* Bug#886 While trying to run any testsuite in debug mode through GUI it is throwing NullPointerException failing to run the testsuite.
+* Bug#896 All errors should be re-directed to the error stream. 
+* Bug#898 Zug fails to run test suite if the test command line macros are followed by test suite name. 
+* Bug#920 Zug GUI fails to refrest on clicking 'More Options' button,then closing and clicking it again
+* Bug#921 On clicking 'Browse Test Suite' toolbar icon, values in 'More Options Field' are getting refreshed.
+* Bug#924 Indexed MVM behaves like a Cartesian Product in Verification column.
+* Bug#931 EqualTo (=) sign is ignored when used twice inside macro.
+* Bug#935 Indexed MVM appends a special character if it contains equal sign.
+* Bug#939 Zug GUI Performance mode is not working properly.
+* Bug#940 Zug GUI not working properly.When running a test suite using Zug GUI, it takes testcaseid as default and fails.
+* Bug#941 Zug GUI -excludetestcaseid property fails when GCE is used in a testcase
+* Bug#942 The new Zug GUI interface loads the old 'More Options' interface. 
+* Bug#943 ZugSetup7.1.0.exe is not uninstalling properly.When trying to uninstall zug it is not completely removing zug folder from installed location,it is unable to delete the file   chromedriver.log
+* Bug#949 Zug License file cannot be processed in Mac OS X.
+* Bug#952 In the GUI version, reloading the Testsuite causes all previous settings to be lost.
+* Bug#970 License validity text does not belong in test execution output.
+* 
+Known Issues
+Bug#967 Zug must support platform independent file path specifications.
+
+The Following has been Introduced in v7.1.3 on 01-11-2013
+Bugs Fixed
+* Bug #944 ZugSetup7.1.0 is not showing version.
+* Bug #947 Zug 7.1.0 is not working in 32 bit operating system
+* Bug #952 In the GUI version, reloading the Testsuite causes all previous settings to be lost
+Known Issue
+* Java Heap Error while using Java HotSpot 64 bit Server VM
+ 
+The Following has been Introduced in v7.1.2 on 26-10-2013
+Bugs Fixed
+* Bug #886 Debug mode is not working properly in GUI.
+* Bug #924 Indexed MVM is behaving like Cartesian Product in Verification column.
+* Bug #940 Zug GUI not working properly.
+* Bug #949 Zug License file cannot be processed on Mac platform.
+Known Issue
+* Java Heap Error while using Java HotSpot 64 bit Server VM
+
+The Following has been Introduced in v7.1.0 on 31-08-2013
+Bugs Fixed
+* Bug #837 Zug throws exception when Config Sheet is blank.
+* Bug #883 Zug GUI hangs when 'More Option' window close from task bar.
+* Bug #885 Zug GUI Cannot specify duration for repeat option.
+Known Issue
+* Java Heap Error while using Java HotSpot 64 bit Server VM
+
+The Following has been Introduced in v6.5.1 on 26-07-2013
+New Feature
+#895 ZUG should send heart beat to davos at intervals and send session destroy request
+Bugs Fixed
+* Bug #896 Zug should redirect all its error to the error stream
+Known Issue
+* Java Heap Error while using Java HotSpot 64 bit Server VM
+
+The Following has been Introduced in V 6.4
+New Feature
+#859 ZUG should give the build no of the jenkins
+Bugs Fixed
+* Bug #872 Indexed MVM is not working as intended
+* Bug #519 Zug skipping the first comment
+* Bug #880 Zug fails with null exception with macros as command line argument
+* Bug #877 Relative Script location not working when ZUG is invoked by NYON
+* Bug Conversion to lowercase of the Details of ZUGINI have been eliminated.
+* Bug ZUG_Verify_Exception added
+Known Issue
+* Java Heap Error while using Java HotSpot 64 bit Server VM 
+ 
+The Following has been Introduced in V 6.3
+New Feature
+#833 Need a way to measure the performance of atoms
+Bugs Fixed
+* Bug #837 Zug throws exception when Config Sheet is blank
+* Bug #856 teststep timeout is not working
+* Bug #857 ScriptLocation having null value
+* Bug -testcaseid fix
+
+The Following has been Introduced in V 6.2
+New Feature
+* #817 Config settings not specific to testsuite should not be inside the Test Suite
+* #490 Environment sensing molecules
+* #623 New step Property: Exit Molecule on success or failure
+
+The Following has been Introduced in V6.1
+New Feature
+#821 Overview Mode 
+#489 Implicit molecule execution for each test step and test case
+Bugs Fixed
+* Bug #434 Testcases with same prefix are excuted when test case id is given from command line using -testcaseid
+* Bug #385 Not all actions of the molecule are executed
+* Bug #794 Sudden corruption of testsuites without warning
+* Bug #709 More helpful hint needed when action arguments stray into Verify columns
+* Bug Ignore test step fix for molecule,log fixed
+
 The Following has been Introduced in V6.0
  * Log file location change.
  * Negative property for Molecules as well as for In-Build atoms
@@ -8,7 +172,6 @@ The Following has been Introduced in V6.0
  * Latest Bug fixes #801 #800 #794 #384 #792 #778 #761 #735 #728 #725 #710 #707 #704 #700
  * Latest Feature Request #741 #729 #723 #717 #731
 
-
 The Following has been Introduced in V5.4 (SP3)
  * Multiple Zug running support.
  * Latest Bug fixes #566 #629 #608 #602 #601 #586 #576 #557 #553 #541 #532 #412 #589 #338 #460
@@ -17,16 +180,14 @@ The Following has been Introduced in V5.4 (SP3)
  * Bug #384 is in working progress . Have the blank line errors.
  * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
 
-  
 The Following has been Introduced in V5.3
  * Bug fixed.
  * working directory updated.
+ 
 The Following has been Introduced in V5.2
-
  * BUG fix #176 #282 #327 #343 #398 #408 #409 #410 #422 #442 #446 #448 #449 #452 #482 #504 #505 #520 #531 #557 #564 #563 #566
  * Time Stamp at start and end of testcase execution - Feature Request #548
  * Zug can wait specified no. of millisecond - Feature Request #548
-
 Known Issues:
  * JNI Dll loading Problem for 32bit and 64bit Operating System.
  * Bug #412- When a "comment" is entered in the first row and property column of a molecule, the system throws an exception.
@@ -40,7 +201,8 @@ The Following has been Introduced in *V5.1*
 Known Issues:
  * JNI Dll loading Problem for 32bit and 64bit Operating System.
  * Bug #384 is in working progress . Have the blank line errors.
- * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+ * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.  
+ 
 The Following has been Introduced in *V5.0*
  * SDK folder organised with Java and dll libs
  * Fixed redmine issue for testcase comments Bug #478,Bug #482, Bug #483
@@ -51,9 +213,11 @@ Known Issues:
  * JNI Dll loading Problem for 32bit and 64bit Operating System.
  * Bug #384 is in working progress . Have the blank line errors.
  * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
+  
 The Following has been Introduced in *V4.4*
  * -toplogyset= command line tag added.
  * Fixed redmine issue for testcycleid Bug #462
+ 
 The Following has been Introduced in *V4.3*
  * JNI native Dll atom calling introduced
  * COM Dll Calling introduced. Using Jacob
@@ -62,6 +226,7 @@ Known Issues:
  * JNI Dll loading Problem for 32bit and 64bit Operating System.
  * Bug #384 is in working progress . Have the blank line errors.
  * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.	
+ 
 The Following has been Introduced in *V4.2*
  * Negative Testing fixed
  * Typo fixed.
@@ -78,8 +243,6 @@ The Following has been Introduced in *V4.1*
  Known Issues:
  * Bug #384 is in working progress . Have the blank line errors.
  * All the Exception Messages are not Organized. Shows huge message for a corrupted file or chur spreadsheet.
-
-
 
 The Following has been Introduced in *V4.0*
  * Hibernate data base reporting removed, ZUG now reports the result through Davos Web service. 
@@ -102,8 +265,6 @@ The Following has been Introduced in *V2.3.4*
 The Following has been Introduced in *V2.3.3*
  * BuiltInWebDriver have new method as getTagAttributeValueByTagName,ClickLinkByTagValueAndAttributeValue.
  * New String Package Introduced with new Atoms getSubString,getLength 
- 
-
 
 The Following has been Introduced in *V2.3.2*
  * HtmlUnit Working Completely.
@@ -119,110 +280,60 @@ The Following has been Introduced in *V2.3.2*
  *  It have a new Icon only for Zug.
  *  Minimized Size for Installation.
  *  All functionality Working.   
-                     
-                     
-                     
-                     
+                            
  The Following has been Introduced in *V2.2.1*
-
  New Features 
-
-
 *  It have both Hostname and port number credential for Database Reporting defaut 3306.
 *  It have command line macro Value passing.
 *  It more portable as it is build by the Maven Tool redundant files are discarded.
 *  It have multiple programming language support for the Atoms.
-
-
  Bugs Fixed
-
-
 * The Bug #217 is fixed which was Repeat duration.
 * The Bug #246 is fixed which DB reporting.
 
-
  The Following has been Introduced in *V2.2*
-
  New Features 
-
-
 *  It can include multiple numbers of script locations.
 *  It can include the molecules files from command line.
 *  It can get the present Current working Directory for Executions.
-
-
  Bugs Fixed
-
-
 * The Bug #207 is fixed which was Multiple Include file inclusion
 * The Bug #216 is fixed which was Repeat Count for Test Cases.
 
-
-
-
-
-
-
  The Following has been Introduced in *V2.1.2*
-
  New Features 
-
-
 *  It is now easy to see the expiry date of ZUG while seeing the version of the it.
 *  It have now a new switch which enables to write the testsuites include file names in a XML file.
 *  It is now have a new name for the API for context variable as "Automature.ZugAPI" the HarnnessAPI.DLL is changed to ZugAPI.DLL
-
-
  Bugs Fixed
-
-
 * The Bug #185 is fixed which was having chur syntax parsing problem.
 
-
-
-
  The following has been introduced in *V2.1*
-
  New Feature
-
   Atom folders can be a list of directories, thus allowing atoms from different sources, and serving different purposes, to be organized better
-
-   
+  
  The following has been introduced in *V2.0*
-          
-
  New features
-
   1. Native atom support for many languages, including VBScript, JavaScript, compiled C/C++, etc. Atoms can now be written in any of these languages.
      Additional languages can be supported through a configuration setting
   2. Support for Indexed MVM expansion. It is now possible to designate a family of Multi-valued-macros to be expanded as a single entity, rather than a cross-product.
-
- Changes
-
+  Bugs
   1.The COM DLL has been renamed to ZUGDLL 
   2.Atoms in Zuoz V1 will no longer work with Zug V2.x - please upgrade to ZUOZ V2
 
  The following has been introduced in *1.9*
-
- New Feature
-          
+ New Feature    
     Support of Atom Extension with any interpreter eg: rb with ruby, pl with perl.
-
+    
  The following has been introduced in *1.6*
-
  New Feature
-
      Validates topologysetid during run.
-
  Changes
-
     1.input argument topologysetxml changed to topologysetid.
     2.input argument changed to UNIX like arguments.
 
  The following has been introduced in *1.5*
-
  Bug Fixed
-
      archival of incorrect blank log files
 
 
