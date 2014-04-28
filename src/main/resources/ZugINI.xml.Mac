@@ -55,7 +55,7 @@
                     <jar-package>com.automature.zuoz.inprocess.zstring</jar-package>
                     <class-name>StringOperation</class-name>
                 </inprocesspackage>
-				<inprocesspackage name="ZMobile" language="java">
+               <inprocesspackage name="ZMobile" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zmobile</jar-package>
                     <class-name>MobileOperation</class-name>
                 </inprocesspackage>
@@ -98,10 +98,6 @@
                 <inprocesspackage name="ZBrowser" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zbrowser</jar-package>
                     <class-name>BrowserOperation</class-name>
-                </inprocesspackage>  
-                <inprocesspackage name="ZHTTP" language="java">
-                    <jar-package>com.automature.zuoz.inprocess.zhttp</jar-package>
-                    <class-name>HTTPOperation</class-name>
                 </inprocesspackage>
         </file-path>
     </inprocesspackages>
@@ -110,7 +106,7 @@
               <mvm-configuration jvm-max-memorysize="455">3000</mvm-configuration>
                <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
                <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
-<scriptlocation></scriptlocation>
+<scriptlocation>C:\Users\Debabrata\Documents</scriptlocation>
 				 <dbhostname>192.168.0.55:4567</dbhostname>
 				<dbname>Framework</dbname>
 				<dbusername>davosuser</dbusername>
