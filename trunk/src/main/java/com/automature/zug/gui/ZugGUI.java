@@ -69,6 +69,7 @@ public class ZugGUI {
 		sessionHandler.retriveSession();
 		//LineBorder border = new LineBorder(Color.WHITE,4);
 		frame = new JFrame();
+	
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(System.getProperty("user.dir")+File.separator+"Images"+File.separator+"automature.png"));
 		frame.setTitle("Automature Zug");
 		frame.setBackground(Color.lightGray);
