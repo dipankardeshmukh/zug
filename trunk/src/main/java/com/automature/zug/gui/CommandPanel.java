@@ -8,22 +8,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 
-public class CommandPanel {
+public class CommandPanel extends JPanel{
 
-	JPanel cmdPanel;
+	
 	JTextArea textArea_1;
 	
 	CommandPanel(){
 		
-		cmdPanel = new JPanel();
-        cmdPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		cmdPanel.setBackground(Color.WHITE);
-		cmdPanel.setLayout(new GridLayout(0, 1, 0, 0));
-		//cmdPanel.setPreferredSize(new Dimension(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,0)));
-		cmdPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,5));
+		
+       // cmdPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		setBackground(Color.WHITE);
+		setLayout(new BorderLayout(0,0));
+		setMinimumSize(new Dimension(300,30));
+		setPreferredSize(new Dimension(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,30)));
+		setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,30));
 		JScrollPane scrollPane_1 = new JScrollPane();
 		textArea_1 = new JTextArea();
-		cmdPanel.add(scrollPane_1);
+		add(scrollPane_1,BorderLayout.CENTER);
 		scrollPane_1.setAutoscrolls(true);
 		scrollPane_1.setBackground(Color.WHITE);
 		textArea_1.setBackground(Color.lightGray);
@@ -34,9 +35,7 @@ public class CommandPanel {
 		scrollPane_1.setViewportView(textArea_1);
 	}
 	
-	JPanel getPanel(){
-		return cmdPanel;
-	}
+	
 	public void setCommand(ArrayList command){
 		String cmd="zug";
 		if(command!=null){

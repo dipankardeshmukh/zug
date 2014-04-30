@@ -21,26 +21,26 @@ import java.util.ArrayList;
 
 public class IconsPanel {
 
-    static String  browse_icon_path;
-    static String reload_icon_path;
-    static String options_icon_path;
-    static String more_options_icon_path;
-    static String execute_icon_path;
-    static String stop_icon_path;
-    static String clear_screen_icon_path;
-    static String debugger_icon_path;
+	static String  browse_icon_path;
+	static String reload_icon_path;
+	static String options_icon_path;
+	static String more_options_icon_path;
+	static String execute_icon_path;
+	static String stop_icon_path;
+	static String clear_screen_icon_path;
+	static String debugger_icon_path;
 
 
 
-    static String console_icon_path;
-    static String sheet_icon_path;
-    static String split_icon_path;
-    static String sidebar_icon_path;
+	static String console_icon_path;
+	static String sheet_icon_path;
+	static String split_icon_path;
+	static String sidebar_icon_path;
 
 
 	static private boolean optionButtonProd = false,
-			               optionButtonPerf = false,
-                           optionButtonDev = false;
+			optionButtonPerf = false,
+			optionButtonDev = false;
 	static private JButton show;
 	//static public JCheckBox chckbxDebug;
 	static public JCheckBox chckbxVerbose;
@@ -51,76 +51,76 @@ public class IconsPanel {
 	static private JMenu mnNewMenu = new JMenu();
 	static private String fileName=null;
 	static JPanel iconPanel = new JPanel();
-    //static JToolBar iconPanel = new JToolBar();
+	//static JToolBar iconPanel = new JToolBar();
 	static JButton debugger;
 	static private JButton debuggerClicked;
 	static private JButton btnExecute;
 	private static JButton btnHide;
-    static JButton split;
-    static JButton console;
-    static JButton sheet;
-    static JButton toggleTaskPane;
+	static JButton split;
+	static JButton console;
+	static JButton sheet;
+	static JButton toggleTaskPane;
 	static OptionDialog od=new OptionDialog();
 
 
 
-    public static void setBrowse_icon_path(String browse_icon_path) {
+	public static void setBrowse_icon_path(String browse_icon_path) {
 
-        IconsPanel.browse_icon_path = browse_icon_path;
-    }
+		IconsPanel.browse_icon_path = browse_icon_path;
+	}
 
-    public static void setReload_icon_path(String reload_icon_path) {
-        IconsPanel.reload_icon_path = reload_icon_path;
-    }
+	public static void setReload_icon_path(String reload_icon_path) {
+		IconsPanel.reload_icon_path = reload_icon_path;
+	}
 
-    public static void setOptions_icon_path(String options_icon_path) {
-        IconsPanel.options_icon_path = options_icon_path;
-    }
+	public static void setOptions_icon_path(String options_icon_path) {
+		IconsPanel.options_icon_path = options_icon_path;
+	}
 
-    public static void setMore_options_icon_path(String more_options_icon_path) {
-        IconsPanel.more_options_icon_path = more_options_icon_path;
-    }
+	public static void setMore_options_icon_path(String more_options_icon_path) {
+		IconsPanel.more_options_icon_path = more_options_icon_path;
+	}
 
-    public static void setExecute_icon_path(String execute_icon_path) {
-        IconsPanel.execute_icon_path = execute_icon_path;
-    }
+	public static void setExecute_icon_path(String execute_icon_path) {
+		IconsPanel.execute_icon_path = execute_icon_path;
+	}
 
-    public static void setStop_icon_path(String stop_icon_path) {
-        IconsPanel.stop_icon_path = stop_icon_path;
-    }
+	public static void setStop_icon_path(String stop_icon_path) {
+		IconsPanel.stop_icon_path = stop_icon_path;
+	}
 
-    public static void setClear_screen_icon_path(String clear_screen_icon_path) {
-        IconsPanel.clear_screen_icon_path = clear_screen_icon_path;
-    }
+	public static void setClear_screen_icon_path(String clear_screen_icon_path) {
+		IconsPanel.clear_screen_icon_path = clear_screen_icon_path;
+	}
 
-    public static void setDebugger_icon_path(String debugger_icon_path) {
-        IconsPanel.debugger_icon_path = debugger_icon_path;
-    }
+	public static void setDebugger_icon_path(String debugger_icon_path) {
+		IconsPanel.debugger_icon_path = debugger_icon_path;
+	}
 
-    public static void setConsole_icon_path(String console_icon_path) {
-        IconsPanel.console_icon_path = console_icon_path;
-    }
+	public static void setConsole_icon_path(String console_icon_path) {
+		IconsPanel.console_icon_path = console_icon_path;
+	}
 
-    public static void setSheet_icon_path(String sheet_icon_path) {
-        IconsPanel.sheet_icon_path = sheet_icon_path;
-    }
+	public static void setSheet_icon_path(String sheet_icon_path) {
+		IconsPanel.sheet_icon_path = sheet_icon_path;
+	}
 
-    public static void setSplit_icon_path(String split_icon_path) {
-        IconsPanel.split_icon_path = split_icon_path;
-    }
+	public static void setSplit_icon_path(String split_icon_path) {
+		IconsPanel.split_icon_path = split_icon_path;
+	}
 
-    public static void setSidebar_icon_path(String sidebar_icon_path) {
-        IconsPanel.sidebar_icon_path = sidebar_icon_path;
-    }
+	public static void setSidebar_icon_path(String sidebar_icon_path) {
+		IconsPanel.sidebar_icon_path = sidebar_icon_path;
+	}
 
 	public static String getFileName() {
 		return fileName;
 	}
 
-	
-	
+
+
 	public static ArrayList<String> getOptions() {
-		
+
 		ArrayList<String> arr = new ArrayList<String>();
 		if(chckbxAutorecover.isSelected()){
 			arr.add("-Autorecover");
@@ -128,7 +128,7 @@ public class IconsPanel {
 		if(chckbxVerbose.isSelected()){
 			arr.add("-verbose");
 		}
-	//	arr.add(chckbxDebug.isSelected());
+		//	arr.add(chckbxDebug.isSelected());
 		if(chckbxNoVerify.isSelected()){
 			arr.add("-noverify");
 		}
@@ -138,14 +138,14 @@ public class IconsPanel {
 		if(chckbxDebugger.isSelected()){
 			arr.add("-debugger");
 		}
-		
+
 		return arr;
 	}
 
 	public static void clearOptions(){
 
 		chckbxNoVerify.setSelected(false);		
-	//	chckbxDebug.setSelected(false);
+		//	chckbxDebug.setSelected(false);
 		chckbxVerbose.setSelected(false);
 		chckbxAutorecover.setSelected(false);
 		chckbxNoExecute.setSelected(false);
@@ -154,16 +154,16 @@ public class IconsPanel {
 
 		optionButtonProd = false;
 		optionButtonPerf = false;
-		
+
 		od.clearOption();
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	public static ArrayList<String> getList() {
-		
+
 		//return OptionGUI.al;
 		return od.getOptions();
 	}
@@ -196,7 +196,7 @@ public class IconsPanel {
 		mnNewMenu.add(chckbxVerbose);
 		chckbxVerbose.setForeground(Color.DARK_GRAY);
 		chckbxVerbose.setBackground(Color.WHITE);
-		
+
 		chckbxDebugger    = new JCheckBox("Debugger     ");
 		mnNewMenu.add(chckbxDebugger);
 		chckbxDebugger.setForeground(Color.DARK_GRAY);
@@ -204,99 +204,103 @@ public class IconsPanel {
 	}
 
 	public static void setDevelopmentOptions() {
-		
+
 		chckbxNoVerify.setSelected(false);		
-//		chckbxDebug.setSelected(true);
+		//		chckbxDebug.setSelected(true);
 		chckbxVerbose.setSelected(true);
 		chckbxAutorecover.setSelected(true);
-	//	chckbxNoExecute.setSelected(false);
+		//	chckbxNoExecute.setSelected(false);
 		chckbxDebugger.setSelected(true);
-        optionButtonDev = true;
+		optionButtonDev = true;
 
 	}
 
 	public static void setPerformanceOptions() {
-		
+
 		chckbxNoVerify.setSelected(true);		
-//		chckbxDebug.setSelected(false);
+		//		chckbxDebug.setSelected(false);
 		chckbxVerbose.setSelected(false);
 		chckbxAutorecover.setSelected(false);
-        chckbxDebugger.setSelected(false);
+		chckbxDebugger.setSelected(false);
 		//chckbxNoExecute.setSelected(true);
 		optionButtonPerf = true;
 
 	}
 
 	public static void setProductionOptions() {
-		
+
 		chckbxNoVerify.setSelected(true);
-	//	chckbxDebug.setSelected(false);
+		//	chckbxDebug.setSelected(false);
 		chckbxVerbose.setSelected(false);
 		chckbxAutorecover.setSelected(true);
-        chckbxDebugger.setSelected(false);
-	//	chckbxNoExecute.setSelected(false);
+		chckbxDebugger.setSelected(false);
+		//	chckbxNoExecute.setSelected(false);
 		optionButtonProd = true;
 
 	}
 
 	static void setIconsPanelProperty(final OptionsPanel optionPanel) {
 
+		Dimension size=new Dimension(300,40);
 		iconPanel.setBackground(Color.lightGray);
-        iconPanel.setLayout(null);
-        //iconPanel.setFloatable(true);
+		iconPanel.setLayout(null);
+		iconPanel.setMinimumSize(size);
+		iconPanel.setPreferredSize(new Dimension(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,40)));
+		iconPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,40));
+		//iconPanel.setFloatable(true);
 
-        GuiConfig.loadIcons();
+		GuiConfig.loadIcons();
 
-        final JButton button = new JButton("");
+		final JButton button = new JButton("");
 		button.setToolTipText("Browse test suite file");
 		button.setBounds(0, 0, 33, 33);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        iconPanel.add(button);
+		button.setContentAreaFilled(false);
+		button.setBorderPainted(false);
+		iconPanel.add(button);
 
 
-        button.setIcon(new ImageIcon(System.getProperty("user.dir")
-                + browse_icon_path));
+		button.setIcon(new ImageIcon(System.getProperty("user.dir")
+				+ browse_icon_path));
 		//		+ "\\Images\\browse.png"));
 		button.setHorizontalAlignment(SwingConstants.CENTER);
 		button.setBackground(Color.LIGHT_GRAY);
 
 
-        JButton reloadButton=new JButton("");
-        reloadButton.setToolTipText("reload test suite file");
-        reloadButton.setBounds(35, 0, 33, 33);
-        reloadButton.setContentAreaFilled(false);
-        reloadButton.setBorderPainted(false);
-        iconPanel.add(reloadButton);
-        reloadButton.setIcon(new ImageIcon(System.getProperty("user.dir")
-                + reload_icon_path));
-        reloadButton.setEnabled(true);
-        reloadButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        reloadButton.setBackground(Color.LIGHT_GRAY);
-        reloadButton.setFocusable(false);
-        reloadButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                if(fileName!=null && StringUtils.isNotBlank(fileName)){
-                    try {
-                        ZugGUI.loadFile(true);
-                    } catch (Exception e) {
-                        Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                }
-            }
-        });
+		JButton reloadButton=new JButton("");
+		reloadButton.setToolTipText("reload test suite file");
+		reloadButton.setBounds(35, 0, 33, 33);
+		reloadButton.setContentAreaFilled(false);
+		reloadButton.setBorderPainted(false);
+		iconPanel.add(reloadButton);
+		reloadButton.setIcon(new ImageIcon(System.getProperty("user.dir")
+				+ reload_icon_path));
+		reloadButton.setEnabled(true);
+		reloadButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		reloadButton.setBackground(Color.LIGHT_GRAY);
+		reloadButton.setFocusable(false);
+		reloadButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(fileName!=null && StringUtils.isNotBlank(fileName)){
+					try {
+						ZugGUI.loadFile(true);
+					} catch (Exception e) {
+						Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
+					}
+				}
+			}
+		});
 
 
-        JSeparator JV = new JSeparator(SwingConstants.VERTICAL);
-        JV.setBounds(67,5,20, 20);
-        iconPanel.add(JV);
-        //iconPanel.addSeparator(new Dimension(20,20));
+		JSeparator JV = new JSeparator(SwingConstants.VERTICAL);
+		JV.setBounds(67,5,20, 20);
+		iconPanel.add(JV);
+		//iconPanel.addSeparator(new Dimension(20,20));
 
-        JButton btnOptions = new JButton("");
+		JButton btnOptions = new JButton("");
 		btnOptions.setToolTipText("Options");
 		btnOptions.setBounds(65, 0, 33, 33);
-        btnOptions.setContentAreaFilled(false);
-        btnOptions.setBorderPainted(false);
+		btnOptions.setContentAreaFilled(false);
+		btnOptions.setBorderPainted(false);
 		btnOptions.setIcon(new ImageIcon(System.getProperty("user.dir")
 				+ options_icon_path));
 		iconPanel.add(btnOptions);
@@ -308,22 +312,22 @@ public class IconsPanel {
 		});
 
 
-        JMenuBar menuBar_1 = new JMenuBar();
-        menuBar_1.setBounds(35, 30, 5, 4);
-        iconPanel.add(menuBar_1);
-        menuBar_1.setBackground(Color.LIGHT_GRAY);
-        menuBar_1.setBorderPainted(false);
-        menuBar_1.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuBar_1.setMargin(new Insets(1, 1, 1, 1));
-        initializeMenuOption();
-        menuBar_1.add(mnNewMenu);
+		JMenuBar menuBar_1 = new JMenuBar();
+		menuBar_1.setBounds(35, 30, 5, 4);
+		iconPanel.add(menuBar_1);
+		menuBar_1.setBackground(Color.LIGHT_GRAY);
+		menuBar_1.setBorderPainted(false);
+		menuBar_1.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		menuBar_1.setMargin(new Insets(1, 1, 1, 1));
+		initializeMenuOption();
+		menuBar_1.add(mnNewMenu);
 
 
 		final JButton btnNewButton = new JButton();
 		btnNewButton.setToolTipText("More options");
 		btnNewButton.setBounds(90, 0, 33, 33);
-        btnNewButton.setContentAreaFilled(false);
-        btnNewButton.setBorderPainted(false);
+		btnNewButton.setContentAreaFilled(false);
+		btnNewButton.setBorderPainted(false);
 		btnNewButton.setIcon(new ImageIcon(System.getProperty("user.dir")
 				+ more_options_icon_path));
 		iconPanel.add(btnNewButton);
@@ -338,8 +342,8 @@ public class IconsPanel {
 		btnExecute = new JButton("");
 		btnExecute.setToolTipText("Execute test");
 		btnExecute.setBounds(120, 0, 33, 33);
-        btnExecute.setContentAreaFilled(false);
-        btnExecute.setBorderPainted(false);
+		btnExecute.setContentAreaFilled(false);
+		btnExecute.setBorderPainted(false);
 		btnExecute.setIcon(new ImageIcon(System.getProperty("user.dir")
 				+ execute_icon_path));
 		iconPanel.add(btnExecute);
@@ -349,8 +353,8 @@ public class IconsPanel {
 		final JButton btnStop = new JButton("");
 		btnStop.setToolTipText("Stop");
 		btnStop.setBounds(150, 0, 33, 33);
-        btnStop.setContentAreaFilled(false);
-        btnStop.setBorderPainted(false);
+		btnStop.setContentAreaFilled(false);
+		btnStop.setBorderPainted(false);
 		btnStop.setIcon(new ImageIcon(System.getProperty("user.dir")
 				+ stop_icon_path));
 		iconPanel.add(btnStop);
@@ -360,8 +364,8 @@ public class IconsPanel {
 		JButton button_1 = new JButton("");
 		button_1.setToolTipText("Clear Screen");
 		button_1.setBounds(180, 0, 33, 33);
-        button_1.setContentAreaFilled(false);
-        button_1.setBorderPainted(false);
+		button_1.setContentAreaFilled(false);
+		button_1.setBorderPainted(false);
 		button_1.setIcon(new ImageIcon(System.getProperty("user.dir")
 				+ clear_screen_icon_path));
 		iconPanel.add(button_1);
@@ -376,23 +380,23 @@ public class IconsPanel {
 		});
 
 
-        JSeparator JV2 = new JSeparator(SwingConstants.VERTICAL);
-        JV2.setBounds(213,5,20, 20);
-        iconPanel.add(JV2);
-        //iconPanel.addSeparator(new Dimension(20,20));
+		JSeparator JV2 = new JSeparator(SwingConstants.VERTICAL);
+		JV2.setBounds(213,5,20, 20);
+		iconPanel.add(JV2);
+		//iconPanel.addSeparator(new Dimension(20,20));
 
 		final JButton btnProduction = new JButton("");
 		btnProduction.setToolTipText("Production mode");
 		btnProduction.setBounds(217, 0, 33, 33);
-        btnProduction.setContentAreaFilled(false);
-        btnProduction.setBorderPainted(false);
+		btnProduction.setContentAreaFilled(false);
+		btnProduction.setBorderPainted(false);
 		btnProduction.setIcon(new ImageIcon(System.getProperty("user.dir") + "/Images/production.png"));
-        iconPanel.add(btnProduction);
+		iconPanel.add(btnProduction);
 		btnProduction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setProductionOptions();
-                optionButtonProd = true;
-			    btnProduction.setSelected(true);
+				optionButtonProd = true;
+				btnProduction.setSelected(true);
 			}
 		});
 
@@ -401,16 +405,16 @@ public class IconsPanel {
 		final JButton btnPerformance = new JButton("");
 		btnPerformance.setToolTipText("Performance mode");
 		btnPerformance.setBounds(245, 0, 33, 33);
-        btnPerformance.setContentAreaFilled(false);
-        btnPerformance.setBorderPainted(false);
+		btnPerformance.setContentAreaFilled(false);
+		btnPerformance.setBorderPainted(false);
 		btnPerformance.setIcon(new ImageIcon(System.getProperty("user.dir")	+ "/Images/performance.png"));
 		iconPanel.add(btnPerformance);
 		btnPerformance.setBackground(Color.LIGHT_GRAY);
-        btnPerformance.addActionListener(new ActionListener() {
+		btnPerformance.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-                setPerformanceOptions();
-                optionButtonPerf = true;
-                btnPerformance.setSelected(true);
+				setPerformanceOptions();
+				optionButtonPerf = true;
+				btnPerformance.setSelected(true);
 			}
 		});
 
@@ -418,24 +422,24 @@ public class IconsPanel {
 		final JButton btnDevelopment = new JButton("");
 		btnDevelopment.setToolTipText("Development mode");
 		btnDevelopment.setBounds(275, 0, 33, 33);
-        btnDevelopment.setContentAreaFilled(false);
-        btnDevelopment.setBorderPainted(false);
+		btnDevelopment.setContentAreaFilled(false);
+		btnDevelopment.setBorderPainted(false);
 		btnDevelopment.setIcon(new ImageIcon(System.getProperty("user.dir")+ "/Images/development.png"));
 		iconPanel.add(btnDevelopment);
 		btnDevelopment.setBackground(Color.LIGHT_GRAY);
-        btnDevelopment.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setDevelopmentOptions();
-                optionButtonDev = true;
-                btnDevelopment.setSelected(true);
-            }
-        });
+		btnDevelopment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setDevelopmentOptions();
+				optionButtonDev = true;
+				btnDevelopment.setSelected(true);
+			}
+		});
 
 
 
 
 
-/*
+		/*
 		btnHide = new JButton("");
 		btnHide.setBounds(515, 0, 33, 33);
         btnHide.setContentAreaFilled(false);
@@ -459,20 +463,20 @@ public class IconsPanel {
 		btnHide.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {	
 				optionPanel.hideRunCommand();
-				
+
 				showZugCommandButton();
 				ZugGUI.updateFrame();
 			}
 		});
 		btnHide.setBackground(Color.LIGHT_GRAY);
 
-*/
+		 */
 
 
-        JSeparator JV3 = new JSeparator(SwingConstants.VERTICAL);
-        JV3.setBounds(315,5,20, 20);
-        iconPanel.add(JV3);
-        //iconPanel.addSeparator(new Dimension(20,20));
+		JSeparator JV3 = new JSeparator(SwingConstants.VERTICAL);
+		JV3.setBounds(315,5,20, 20);
+		iconPanel.add(JV3);
+		//iconPanel.addSeparator(new Dimension(20,20));
 
 		debugger = new JButton();
 		debugger.setToolTipText("Show debugger options");
@@ -480,8 +484,8 @@ public class IconsPanel {
 		debuggerClicked.setToolTipText("Hide debugger options");
 		debuggerClicked.setBackground(Color.BLACK);
 		debuggerClicked.setBounds(315, 0, 33, 33);
-        debuggerClicked.setContentAreaFilled(false);
-        debuggerClicked.setBorderPainted(false);
+		debuggerClicked.setContentAreaFilled(false);
+		debuggerClicked.setBorderPainted(false);
 		debuggerClicked.setIcon(new ImageIcon(System.getProperty("user.dir")
 				+ debugger_icon_path));
 		debugger.setEnabled(false);
@@ -501,75 +505,75 @@ public class IconsPanel {
 		debugger.setIcon(new ImageIcon(System.getProperty("user.dir")
 				+ debugger_icon_path));
 		debugger.setBounds(315, 0, 33, 33);
-        debugger.setContentAreaFilled(false);
-        debugger.setBorderPainted(false);
+		debugger.setContentAreaFilled(false);
+		debugger.setBorderPainted(false);
 		iconPanel.add(debugger);
 
-        JSeparator JV4 = new JSeparator(SwingConstants.VERTICAL);
-        JV4.setBounds(345,5,20, 20);
-        iconPanel.add(JV4);
-        //iconPanel.addSeparator(new Dimension(20,20));
+		JSeparator JV4 = new JSeparator(SwingConstants.VERTICAL);
+		JV4.setBounds(345,5,20, 20);
+		iconPanel.add(JV4);
+		//iconPanel.addSeparator(new Dimension(20,20));
 
 
-        split = new JButton("");
-        split.setToolTipText("Split the display");
-        split.setBounds(350, 0, 33, 33);
-        split.setContentAreaFilled(false);
-        split.setBorderPainted(false);
-        split.setIcon(new ImageIcon(System.getProperty("user.dir")
-                + split_icon_path));
-        iconPanel.add(split);
-        split.setBackground(Color.LIGHT_GRAY);
+		split = new JButton("");
+		split.setToolTipText("Split the display");
+		split.setBounds(350, 0, 33, 33);
+		split.setContentAreaFilled(false);
+		split.setBorderPainted(false);
+		split.setIcon(new ImageIcon(System.getProperty("user.dir")
+				+ split_icon_path));
+		iconPanel.add(split);
+		split.setBackground(Color.LIGHT_GRAY);
 
 
-        console = new JButton("");
-        //console.setMargin(new Insets(0,0,0,0));
-        console.setToolTipText("Show Console only");
-        console.setBounds(380, 0, 33, 33);
-        console.setContentAreaFilled(false);
-        console.setBorderPainted(false);
-        console.setIcon(new ImageIcon(System.getProperty("user.dir")
-                + console_icon_path));
-        iconPanel.add(console);
-        console.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        console.setForeground(Color.DARK_GRAY);
-        console.setBackground(Color.LIGHT_GRAY);
-        console.setBorder(null);
-        console.setFocusable(false);
+		console = new JButton("");
+		//console.setMargin(new Insets(0,0,0,0));
+		console.setToolTipText("Show Console only");
+		console.setBounds(380, 0, 33, 33);
+		console.setContentAreaFilled(false);
+		console.setBorderPainted(false);
+		console.setIcon(new ImageIcon(System.getProperty("user.dir")
+				+ console_icon_path));
+		iconPanel.add(console);
+		console.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		console.setForeground(Color.DARK_GRAY);
+		console.setBackground(Color.LIGHT_GRAY);
+		console.setBorder(null);
+		console.setFocusable(false);
 
 
-        sheet = new JButton("");
-        //sheet.setMargin(new Insets(0,0,0,0));
-        sheet.setToolTipText("Show sheet only");
-        sheet.setBounds(410, 0, 33, 33);
-        sheet.setContentAreaFilled(false);
-        sheet.setBorderPainted(false);
-        sheet.setIcon(new ImageIcon(System.getProperty("user.dir")
-                + sheet_icon_path));
-        iconPanel.add(sheet);
-        sheet.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        sheet.setForeground(Color.DARK_GRAY);
-        sheet.setBackground(Color.LIGHT_GRAY);
-        sheet.setBorder(null);
-        sheet.setFocusable(false);
+		sheet = new JButton("");
+		//sheet.setMargin(new Insets(0,0,0,0));
+		sheet.setToolTipText("Show sheet only");
+		sheet.setBounds(410, 0, 33, 33);
+		sheet.setContentAreaFilled(false);
+		sheet.setBorderPainted(false);
+		sheet.setIcon(new ImageIcon(System.getProperty("user.dir")
+				+ sheet_icon_path));
+		iconPanel.add(sheet);
+		sheet.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		sheet.setForeground(Color.DARK_GRAY);
+		sheet.setBackground(Color.LIGHT_GRAY);
+		sheet.setBorder(null);
+		sheet.setFocusable(false);
 
-        JSeparator JV5 = new JSeparator(SwingConstants.VERTICAL);
-        JV5.setBounds(445,5,20, 20);
-        iconPanel.add(JV5);
+		JSeparator JV5 = new JSeparator(SwingConstants.VERTICAL);
+		JV5.setBounds(445,5,20, 20);
+		iconPanel.add(JV5);
 
-        toggleTaskPane = new JButton();
-        //toggleTaskPane.setMargin(new Insets(0,0,0,0));
-        toggleTaskPane.setToolTipText("Toggle Property Bar Display");
-        toggleTaskPane.setBounds(450, 0, 33, 33);
-        toggleTaskPane.setContentAreaFilled(false);
-        toggleTaskPane.setBorderPainted(false);
-        toggleTaskPane.setIcon(new ImageIcon(System.getProperty("user.dir")
-                + sidebar_icon_path));
-        iconPanel.add(toggleTaskPane);
+		toggleTaskPane = new JButton();
+		//toggleTaskPane.setMargin(new Insets(0,0,0,0));
+		toggleTaskPane.setToolTipText("Toggle Property Bar Display");
+		toggleTaskPane.setBounds(450, 0, 33, 33);
+		toggleTaskPane.setContentAreaFilled(false);
+		toggleTaskPane.setBorderPainted(false);
+		toggleTaskPane.setIcon(new ImageIcon(System.getProperty("user.dir")
+				+ sidebar_icon_path));
+		iconPanel.add(toggleTaskPane);
 
 		mnNewMenu.setVisible(true);
 
-/*		btnDevelopment.addActionListener(new ActionListener() {
+		/*		btnDevelopment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setDevelopmentOptions();
 			}
@@ -588,7 +592,7 @@ public class IconsPanel {
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ZugGUI.stopRunningTestSuite();
-				
+
 			}
 		});
 		btnStop.addMouseListener(new MouseAdapter() {
@@ -629,7 +633,7 @@ public class IconsPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				od.setVisible(true);
 				od.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-			/*	ZugGUI.disableFrame();
+				/*	ZugGUI.disableFrame();
 				if (optionButtonProd == false && optionButtonPerf == false) {
 					OptionGUI og = new OptionGUI(false, false, false);
 					og.generateGUI();
@@ -658,12 +662,12 @@ public class IconsPanel {
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-                try {
-                    chooseFile();
-                } catch (Exception e1) {
-                    Log.Error(e1.getMessage());
-                }
-            }
+				try {
+					chooseFile();
+				} catch (Exception e1) {
+					Log.Error(e1.getMessage());
+				}
+			}
 		});
 		button.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
@@ -675,68 +679,68 @@ public class IconsPanel {
 			}
 		});
 
-        split.addActionListener(new ActionListener() {
+		split.addActionListener(new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
-                ZugGUI.spitDisplay();
-            }
-        });
+			public void actionPerformed(ActionEvent e) {
+				ZugGUI.spitDisplay();
+			}
+		});
 
-        console.addActionListener(new ActionListener() {
+		console.addActionListener(new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
-                ZugGUI.showConsole();
-            }
-        });
+			public void actionPerformed(ActionEvent e) {
+				ZugGUI.showConsole();
+			}
+		});
 
-        sheet.addActionListener(new ActionListener() {
+		sheet.addActionListener(new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
-                ZugGUI.showTestSuite();
-            }
-        });
+			public void actionPerformed(ActionEvent e) {
+				ZugGUI.showTestSuite();
+			}
+		});
 
-        toggleTaskPane.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+		toggleTaskPane.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 
 
-                if(ZugGUI.getDisplayPane().getDisplayPane().getComponentCount()>1){
+				if(ZugGUI.getDisplayPane().getDisplayPane().getComponentCount()>1){
 
-                    ZugGUI.getDisplayPane().removeTaskPane();
-                }else
-                {
-                    ZugGUI.getDisplayPane().addTaskPane();
-                }
-            }
-        });
+					ZugGUI.getDisplayPane().removeTaskPane();
+				}else
+				{
+					ZugGUI.getDisplayPane().addTaskPane();
+				}
+			}
+		});
 	}
 
 	public static void enableDebugger(){
 		if(debuggerClicked!=null)
 			debuggerClicked.setEnabled(true);
 	}
-	
+
 	public static void disableDebugger(){
-			try{
-				iconPanel.remove(debugger);
-			}catch(Exception e){
-				
-			}
-			iconPanel.add(debuggerClicked);
-			debuggerClicked.setEnabled(false);
+		try{
+			iconPanel.remove(debugger);
+		}catch(Exception e){
+
+		}
+		iconPanel.add(debuggerClicked);
+		debuggerClicked.setEnabled(false);
 	}
-	
+
 	static void enableExecuteButton(){
 		btnExecute.setEnabled(true);
 	}
-	
+
 	static void disableExecuteButton(){
 		btnExecute.setEnabled(false);
 	}
-	
-	
-	
+
+
+
 	public static void chooseFile() throws Exception {
 		JFileChooser fileChooser = new JFileChooser();
 		RecentDirectoryChooserPanel chooser=new RecentDirectoryChooserPanel(ZugGUI.getRecenDirectories(),fileChooser);
@@ -744,7 +748,7 @@ public class IconsPanel {
 		if(fileName!=null && !fileName.isEmpty()){
 			fileChooser.setCurrentDirectory(new File(fileName).getParentFile());
 		}
-		
+
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 				"Microsoft Excel Documents", "xls", "xlsx");
 
@@ -758,17 +762,17 @@ public class IconsPanel {
 			file.add(fileName);
 			ZugGUI.updateSession(file);
 		}
-		
+
 	}
-	
+
 	public static void setFileName(String file){
 		fileName=file;
 	}
-	
-	
+
+
 	public static void showDebuggerButton()
 	{
-		
+
 		iconPanel.add(debuggerClicked);
 		debuggerClicked.setEnabled(true);
 		iconPanel.remove(debugger);
@@ -787,11 +791,11 @@ public class IconsPanel {
 		iconPanel.add(btnHide);
 		btnHide.setBounds(313, 0, 33, 33);
 	}
-	
+
 	public static void showZugCommandButton(){
 		iconPanel.remove(btnHide);
 		iconPanel.add(show);
 		show.setBounds(313, 0, 33, 33);
 	}
-	
+
 }

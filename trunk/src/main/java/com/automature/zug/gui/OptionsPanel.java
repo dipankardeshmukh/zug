@@ -9,39 +9,37 @@ import javax.swing.border.LineBorder;
 
 import com.automature.zug.gui.menus.GuiMenuBar;
 
-public class OptionsPanel {
+public class OptionsPanel extends JPanel{
 	
-	private JPanel optionsPanel;
+	//private JPanel optionsPanel;
 	private CommandPanel cmdPanel;
 	private LineBorder border1;
 	DebuggerControls debuggerControls;
 	
 	public OptionsPanel() {
 		border1 = new LineBorder(Color.GRAY,1);
-		optionsPanel = new JPanel();
-		optionsPanel.setPreferredSize(new Dimension(767, 55));
-        optionsPanel.setBorder(border1);
-		//optionsPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width, 10));
-		optionsPanel.setBackground(Color.lightGray);
-		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
+		
+		setMinimumSize(new Dimension(767, 80));
+		//optionsPanel.setPreferredSize(new Dimension(767, 130));
+        setBorder(border1);
+		setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width, 110));
+		setBackground(Color.lightGray);
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		debuggerControls=new DebuggerControls();
+		cmdPanel = new CommandPanel();
+        add(IconsPanel.iconPanel);
+        add(cmdPanel);
+        IconsPanel.setIconsPanelProperty(this);
+		
         //optionsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 	}
 	
-	void createOptionsPanel()
-	{
-		debuggerControls=new DebuggerControls();
-		cmdPanel = new CommandPanel();
-        optionsPanel.add(IconsPanel.iconPanel);
-        optionsPanel.add(cmdPanel.getPanel());
-        IconsPanel.setIconsPanelProperty(this);
-	}
 	
-	public JPanel getOptionsPanel(){
-		return optionsPanel;
-	}
+	
+	
 	public JPanel getcmdPanel(){
-		return cmdPanel.getPanel();
+		return cmdPanel;
 	}
 	public CommandPanel getCommandPanel(){
 		return cmdPanel;
@@ -49,44 +47,52 @@ public class OptionsPanel {
 	
 	public void showDebuggerControls(){
 		
-		if(cmdPanel.getPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,150));
-			optionsPanel.add(debuggerControls.getDebuggerControlPanel());
-			optionsPanel.remove(getcmdPanel());
-			optionsPanel.add(getcmdPanel());
+		if(cmdPanel.isDisplayable()){
+		//	optionsPanel.setPreferredSize(new Dimension(767,80));
+			add(debuggerControls.getDebuggerControlPanel());
+			remove(getcmdPanel());
+			add(getcmdPanel());
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,150));
-			optionsPanel.add(debuggerControls.getDebuggerControlPanel());
+		//	optionsPanel.setPreferredSize(new Dimension(767,120));
+			add(debuggerControls.getDebuggerControlPanel());
 		}
+//		ZugGUI.updateFrame();
+		refreshPanel();
 	}
 	public void hideDebuggerControls(){
-		if(cmdPanel.getPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,55));
+		if(cmdPanel.isDisplayable()){
+		//	optionsPanel.setPreferredSize(new Dimension(767,75));
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,55));
+		//	optionsPanel.setPreferredSize(new Dimension(767,45));
 		}
-		optionsPanel.remove(debuggerControls.getDebuggerControlPanel());
+		remove(debuggerControls.getDebuggerControlPanel());
+//		ZugGUI.updateFrame();
+		refreshPanel();
 	}
 	
 	
 	public void showRunCommand(){
 		if(debuggerControls.getDebuggerControlPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,55));
-			optionsPanel.remove(debuggerControls.getDebuggerControlPanel());
-			optionsPanel.add(debuggerControls.getDebuggerControlPanel());
+		//	optionsPanel.setPreferredSize(new Dimension(767,120));
+			remove(debuggerControls.getDebuggerControlPanel());
+			add(debuggerControls.getDebuggerControlPanel());
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,55));
+			//optionsPanel.setPreferredSize(new Dimension(767,80));
 		}
-		optionsPanel.add(getcmdPanel());
+		add(getcmdPanel());
+		//ZugGUI.updateFrame();
+		refreshPanel();
 	}
 	
 	public void hideRunCommand(){
-		optionsPanel.remove(getcmdPanel());
+		remove(getcmdPanel());
 		if(debuggerControls.getDebuggerControlPanel().isDisplayable()){
-			optionsPanel.setPreferredSize(new Dimension(767,55));
+		//	optionsPanel.setPreferredSize(new Dimension(767,80));
 		}else{
-			optionsPanel.setPreferredSize(new Dimension(767,55));
+		//	optionsPanel.setPreferredSize(new Dimension(767,45));
 		}
+//		ZugGUI.updateFrame();
+		refreshPanel();
 	}
 	
 	public void enableDebuggerOptions(){
@@ -98,6 +104,11 @@ public class OptionsPanel {
 	}
 	public DebuggerConsole getDebugger(){
 		return debuggerControls.getDebugger();
+	}
+	
+	public void refreshPanel(){
+		revalidate();
+		repaint();
 	}
 	
 }
