@@ -112,8 +112,8 @@ public class SheetDisplayPane extends JPanel {
 	public void addExtraSheets(HashMap<String, String> nameSpace, String[] sheets){
 
 		try{
-
-			for(String sheet:sheets){
+			sp.readIncludeFiles(nameSpace, sheets);
+		/*	for(String sheet:sheets){
 				if(!externalSheets.containsValue(sheet)){
 					ExcelHandler ex=new ExcelHandler(sheet,externalSheets,false);
 					HashMap map=ex.getSheets();
@@ -132,7 +132,7 @@ public class SheetDisplayPane extends JPanel {
 					}
 					externalSheets=ex.getExternalSheets();	
 				}
-			}	
+			}	*/
 		}catch(Exception e){
 			System.err.println("SheetDisplayPane/AddExtraSHeet Error while adding runtime sheet tabs "+e.getMessage()+"\nCause "+e.getCause());
 		}

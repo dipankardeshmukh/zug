@@ -6,6 +6,7 @@ import com.automature.zug.gui.Excel;
 import com.automature.zug.gui.ZugGUI;
 import com.automature.zug.util.ExtensionInterpreterSupport;
 import com.automature.zug.util.Log;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
@@ -13,6 +14,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,319 +24,363 @@ import java.util.List;
 
 public class SpreadSheet {
 
-    private String absolutePath;
+	private String absolutePath;
 
-    private ConfigSheet configSheet;
-    private MacroSheet macroSheet;
-    private TestCasesSheet testCasesSheet;
-    private MoleculesSheet moleculesSheet;
+	private ConfigSheet configSheet;
+	private MacroSheet macroSheet;
+	private TestCasesSheet testCasesSheet;
+	private MoleculesSheet moleculesSheet;
 
-    private HashMap<String, SpreadSheet> includeFiles = new HashMap<String, SpreadSheet>();
-    private List<String> scriptLocations = new ArrayList<String>();
+	private HashMap<String, SpreadSheet> includeFiles = new HashMap<String, SpreadSheet>();
+	private List<String> scriptLocations = new ArrayList<String>();
 
 
-    public String getAbsolutePath() {
-        return absolutePath;
-    }
+	public String getAbsolutePath() {
+		return absolutePath;
+	}
 
-    public ConfigSheet getConfigSheet() {
-        return configSheet;
-    }
+	public ConfigSheet getConfigSheet() {
+		return configSheet;
+	}
 
-    public MacroSheet getMacroSheet() {
-        return macroSheet;
-    }
+	public MacroSheet getMacroSheet() {
+		return macroSheet;
+	}
 
-    public TestCasesSheet getTestCasesSheet() {
-        return testCasesSheet;
-    }
+	public TestCasesSheet getTestCasesSheet() {
+		return testCasesSheet;
+	}
 
-    public MoleculesSheet getMoleculesSheet() {
-        return moleculesSheet;
-    }
+	public MoleculesSheet getMoleculesSheet() {
+		return moleculesSheet;
+	}
 
-    public HashMap<String, SpreadSheet> getIncludeFiles() {
-        return includeFiles;
-    }
+	public HashMap<String, SpreadSheet> getIncludeFiles() {
+		return includeFiles;
+	}
 
 
 
 
-    public SpreadSheet getIncludeFile(String file, Set<String> readFiles){
+	public SpreadSheet getIncludeFile(String file, Set<String> readFiles){
 
-        readFiles.add(file);
 
-        if(includeFiles.containsKey(file)){
+		readFiles.add(file);
+		if(includeFiles.containsKey(file)){
 
-            return includeFiles.get(file);
+			return includeFiles.get(file);
 
-        }else{
+		}else{
 
-            Iterator it = includeFiles.keySet().iterator();
+			Iterator it = includeFiles.keySet().iterator();
 
-            while(it.hasNext()){
-                String currentFile = (String) it.next();
-                if(readFiles.contains(currentFile)){
-                    ZugGUI.message("WARNING: Recursive include file detected! Ignoring file: "+currentFile);
-                }else{
-                    SpreadSheet sh = includeFiles.get(currentFile);
-                    return sh.getIncludeFile(file,readFiles);
-                }
-            }
-            return null;  // Include File not found
-        }
-    }
+			while(it.hasNext()){
+				String currentFile = (String) it.next();
+				if(readFiles.contains(currentFile)){
+					ZugGUI.message("WARNING: Recursive include file detected! Ignoring file: "+currentFile);
+				}else{
+					SpreadSheet sh = includeFiles.get(currentFile);
+					return sh.getIncludeFile(file,readFiles);
+				}
+			}
+			return null;  // Include File not found
+		}
+	}
 
-    public SpreadSheet(){
+	public SpreadSheet(){
 
-    }
+	}
 
-    public JPanel getConfigSheetPanel() {
-        return configSheet.getPanel();
-    }
+	public JPanel getConfigSheetPanel() {
+		return configSheet.getPanel();
+	}
 
-    public JPanel getMacroSheetPanel() {
-        return macroSheet.getPanel();
-    }
+	public JPanel getMacroSheetPanel() {
+		return macroSheet.getPanel();
+	}
 
-    public JPanel getTestCasesSheetPanel() {
-        try {
-            return testCasesSheet.getPanel();
-        } catch (Exception e) {
-            Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return null;
-    }
+	public JPanel getTestCasesSheetPanel() {
+		try {
+			return testCasesSheet.getPanel();
+		} catch (Exception e) {
+			Log.Error(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
+		}
+		return null;
+	}
 
-    public JPanel getMoleculesSheetPanel() throws Exception {
-        return moleculesSheet.getPanel();
-    }
+	public JPanel getMoleculesSheetPanel() throws Exception {
+		return moleculesSheet.getPanel();
+	}
 
-    private JPanel getPanel(Excel excel){
+	private JPanel getPanel(Excel excel){
 
-        JPanel panel = new JPanel(new BorderLayout());
+		JPanel panel = new JPanel(new BorderLayout());
 
-        JTable table = new JTable(excel.getData(), excel.getHeader());
+		JTable table = new JTable(excel.getData(), excel.getHeader());
 
-        table.setFillsViewportHeight(true);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setFillsViewportHeight(true);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        panel.add(scrollPane);
+		JScrollPane scrollPane = new JScrollPane(table);
+		panel.add(scrollPane);
 
-        return panel;
-    }
+		return panel;
+	}
 
-    public void readIncludeFiles() throws Exception {
+	public void readConfigIncludeFiles() throws Exception {
 
-        Iterator it = configSheet.getData().iterator();
+		Iterator it = configSheet.getData().iterator();
 
-        while (it.hasNext()){
+		while (it.hasNext()){
 
-            Vector row = null;
-            row = (Vector) it.next();
-            Iterator cell = row.iterator();
+			Vector row = null;
+			row = (Vector) it.next();
+			Iterator cell = row.iterator();
 
-            if(cell.hasNext()){
+			if(cell.hasNext()){
 
-                cell.next();  // Exclude the line number
+				cell.next();  // Exclude the line number
 
-                if (cell.next().toString().equalsIgnoreCase("include") && cell.hasNext()){
+				if (cell.next().toString().equalsIgnoreCase("include") && cell.hasNext()){
 
-                    String [] listOfFiles = cell.next().toString().split(";|,");
+					String [] listOfFiles = cell.next().toString().split(";|,");
 
-                    for(String s : listOfFiles){
+					for(String s : listOfFiles){
 
-                        if(s==null || s.isEmpty()) continue;
+						if(s==null || s.isEmpty()) continue;
 
-                        SpreadSheet sp = ZugGUI.spreadSheet.getIncludeFile(s, new HashSet<String>());
+						SpreadSheet sp = ZugGUI.spreadSheet.getIncludeFile(s, new HashSet<String>());
 
-                        if(sp!=null){
+						if(sp!=null){
 
-                            ZugGUI.message("\nWARNING: Recursive include file detected! Ignoring file: " + s + " included by " + this.absolutePath);
+							ZugGUI.message("\nWARNING: Recursive include file detected! Ignoring file: " + s + " included by " + this.absolutePath);
 
-                        }else{
+						}else{
 
-                            SpreadSheet sh = new SpreadSheet();
-                            File fileToRead = new File(s);
+							SpreadSheet sh = new SpreadSheet();
+							File fileToRead = new File(s);
 
-                            if(!fileToRead.isAbsolute()){
+							if(!fileToRead.isAbsolute()){
 
-                                File f = new File(this.absolutePath);
-                                s = f.getParent()+File.separator+s;
-                            }
+								File f = new File(this.absolutePath);
+								s = f.getParent()+File.separator+s;
+							}
 
-                            if(sh.readSpreadSheet(s))
-                             includeFiles.put(s, sh);
+							if(sh.readSpreadSheet(s))
+								includeFiles.put(s, sh);
 
-                        }
+						}
 
-                    }
-                }
+					}
+				}
 
-            }
-        }
+			}
+		}
 
-    }
+	}
 
-    public boolean readSpreadSheet(String filePath) throws Exception {
+	public void readIncludeFiles(HashMap<String, String> nameSpace,String []files) throws Exception{
+		for(String s : files){
+			if(s==null || s.isEmpty()) 
+				continue;
+			String fileNamespace=nameSpace.get(s);
 
-        if(!new File(filePath).isAbsolute())
-            throw new Exception("SpreadSheet/readSpreadSheet expects file paths to be absolute");
+			if(fileNamespace==null){
+				fileNamespace=s;
+			}
+			//System.out.println("name space "+fileNamespace);
+			readIncludeFile(fileNamespace,s);
 
-        if(!new File(filePath).exists()){
-            ZugGUI.message("Spreadsheet/readSpreadSheet: Could find file - "+filePath);
-            return false;
-        }
+		}
+	}
 
+	public void readIncludeFile(String namespace,String fileName) throws Exception{
+		//System.out.println("reading file "+fileName);
+		SpreadSheet sp = ZugGUI.spreadSheet.getIncludeFile(namespace, new HashSet<String>());
 
-        try {
-            absolutePath = filePath;
+		if(sp!=null){
 
-            File file = new File(filePath);
-            FileInputStream inputFile = new FileInputStream(file);
-            Workbook wb = WorkbookFactory.create(inputFile);
+			//ZugGUI.message("\nWARNING: Recursive include file detected! Ignoring file: " + fileName + " included by " + this.absolutePath);
 
-            configSheet = new ConfigSheet();
-            configSheet.readData(wb.getSheet("Config"));
+		}else{
 
-            readIncludeFiles();
+			SpreadSheet sh = new SpreadSheet();
+			File fileToRead = new File(fileName);
+			if(!fileToRead.isAbsolute()){
+				File f = new File(this.absolutePath);
+				String tempFileName = f.getParent()+File.separator+fileName;
+				if(fileName.equalsIgnoreCase(namespace)){
+					namespace=tempFileName;
+				}
+				fileName=tempFileName;
+			}
+			if(sh.readSpreadSheet(fileName)){
+			//	System.out.println("file included "+namespace);
+				includeFiles.put(namespace, sh);
+			}
+				
 
-            macroSheet = new MacroSheet();
-            macroSheet.readHeader(wb.getSheet("Macros"));
-            macroSheet.readData(wb.getSheet("Macros"));
+		}
+	}
 
-            testCasesSheet = new TestCasesSheet();
-            testCasesSheet.readHeader(wb.getSheet("TestCases"));
-            testCasesSheet.readData(wb.getSheet("TestCases"));
+	public boolean readSpreadSheet(String filePath) throws Exception {
 
-            moleculesSheet = new MoleculesSheet();
-            moleculesSheet.readHeader(wb.getSheet("Molecules"));
-            moleculesSheet.readData(wb.getSheet("Molecules"));
+		if(!new File(filePath).isAbsolute())
+			throw new Exception("SpreadSheet/readSpreadSheet expects file paths to be absolute");
 
-        }catch (FileNotFoundException f){
-            ZugGUI.message("\nWARNING: The file could not be found - "+filePath);
-        }catch (Exception e) {
-            Log.Error(e.getMessage());
-        }
-        return true;
-    }
+		if(!new File(filePath).exists()){
+			ZugGUI.message("Spreadsheet/readSpreadSheet: Could find file - "+filePath);
+			return false;
+		}
 
-    public boolean verifyExistence(String step) throws Exception {
 
-        if(step.startsWith("&")){
+		try {
+			absolutePath = filePath;
 
-            if(step.contains(".")){
+			File file = new File(filePath);
+			FileInputStream inputFile = new FileInputStream(file);
+			Workbook wb = WorkbookFactory.create(inputFile);
 
-                String nameSpaceMolecule[] = step.split("\\.");
-                String nameSpace =nameSpaceMolecule[0].replaceFirst("&","");
-                String mol = step.split("\\.")[1];
+			configSheet = new ConfigSheet();
+			configSheet.readData(wb.getSheet("Config"));
 
-                for(String path : ZugGUI.spreadSheet.includeFiles.keySet()){
+			readConfigIncludeFiles();
 
-                    File fName = new File(path);
+			macroSheet = new MacroSheet();
+			macroSheet.readHeader(wb.getSheet("Macros"));
+			macroSheet.readData(wb.getSheet("Macros"));
 
-                    if(fName.getName().contains(nameSpace)){
+			testCasesSheet = new TestCasesSheet();
+			testCasesSheet.readHeader(wb.getSheet("TestCases"));
+			testCasesSheet.readData(wb.getSheet("TestCases"));
 
-                        SpreadSheet sp = this.getIncludeFile(path, new HashSet<String>());
-                        if(sp!=null)
-                        return sp.getMoleculesSheet().moleculeExist(mol);
-                    }
-                }
+			moleculesSheet = new MoleculesSheet();
+			moleculesSheet.readHeader(wb.getSheet("Molecules"));
+			moleculesSheet.readData(wb.getSheet("Molecules"));
 
-                return false;
+		}catch (FileNotFoundException f){
+			ZugGUI.message("\nWARNING: The file could not be found - "+filePath);
+		}catch (Exception e) {
+			Log.Error(e.getMessage());
+		}
+		return true;
+	}
 
-            }else{
+	public boolean verifyExistence(String step) throws Exception {
 
-                //return this.getMoleculesSheet().moleculeExist(step.replaceFirst("&",""));
+		if(step.startsWith("&")){
 
-            }
+			if(step.contains(".")){
 
-        }else if(step.startsWith("@")){
+				String nameSpaceMolecule[] = step.split("\\.");
+				String nameSpace =nameSpaceMolecule[0].replaceFirst("&","");
+				String mol = step.split("\\.")[1];
 
+				for(String path : ZugGUI.spreadSheet.includeFiles.keySet()){
 
-            String iniSL=null;
-            try{
-                iniSL= ExtensionInterpreterSupport.getNode("//root//configurations//scriptlocation");
-                String[] locations = iniSL.split(";");
-                for(String loc : locations){
+					File fName = new File(path);
 
-                    File f = new File(loc+File.separator+step.replaceFirst("@",""));
-                    if(f.exists()) return true;
+					if(fName.getName().contains(nameSpace)){
 
-                }
+						SpreadSheet sp = this.getIncludeFile(path, new HashSet<String>());
+						if(sp!=null)
+							return sp.getMoleculesSheet().moleculeExist(mol);
+					}
+				}
 
-            }catch(Exception e){
-                ZugGUI.message("\nException while reading script location "+ e.getMessage());
-            }
+				return false;
 
-            return false;
+			}else{
 
-        }else if(step.contains(".")){
+				//return this.getMoleculesSheet().moleculeExist(step.replaceFirst("&",""));
 
-            try{
+			}
 
-                String pkgName = step.split("\\.")[0];
-                String atomName = step.split("\\.")[1];
+		}else if(step.startsWith("@")){
 
-                if(Controller.invokeAtoms.containsKey(pkgName.toLowerCase())){
-                    return Controller.invokeAtoms.get(pkgName.toLowerCase()).methodExists(atomName);
-                }
 
-            }catch (Exception e){
+			String iniSL=null;
+			try{
+				iniSL= ExtensionInterpreterSupport.getNode("//root//configurations//scriptlocation");
+				String[] locations = iniSL.split(";");
+				for(String loc : locations){
 
-                throw new Exception("Exception while verifying in-process atom: "+ step+e.getMessage());
-            }
+					File f = new File(loc+File.separator+step.replaceFirst("@",""));
+					if(f.exists()) return true;
 
-            return false;
+				}
 
-        }else if(BuildInAtom.buildIns.contains(step.toLowerCase())){
-            return true;
-        }
+			}catch(Exception e){
+				ZugGUI.message("\nException while reading script location "+ e.getMessage());
+			}
 
-        return false;
-    }
+			return false;
 
-    public void adjustColumnSizes(JTable table, int column, int margin) {
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
-        TableColumn col = colModel.getColumn(column);
-        int width;
+		}else if(step.contains(".")){
 
-        TableCellRenderer renderer = col.getHeaderRenderer();
-        if (renderer == null) {
-            renderer = table.getTableHeader().getDefaultRenderer();
-        }
-        Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, 0);
-        width = comp.getPreferredSize().width;
+			try{
 
-        for (int r = 0; r < table.getRowCount(); r++) {
-            renderer = table.getCellRenderer(r, column);
-            comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, column), false, false, r, column);
-            int currentWidth = comp.getPreferredSize().width;
-            width = Math.max(width, currentWidth);
-        }
+				String pkgName = step.split("\\.")[0];
+				String atomName = step.split("\\.")[1];
 
-        width += 2 * margin;
+				if(Controller.invokeAtoms.containsKey(pkgName.toLowerCase())){
+					return Controller.invokeAtoms.get(pkgName.toLowerCase()).methodExists(atomName);
+				}
 
-        if(column==3){
-            col.setPreferredWidth(120);
-            col.setWidth(120);
-        }else{
+			}catch (Exception e){
 
-            col.setPreferredWidth(width);
-            col.setWidth(width);
-        }
-    }
+				throw new Exception("Exception while verifying in-process atom: "+ step+e.getMessage());
+			}
 
-    public void removeAllBreakPoints() {
+			return false;
 
-        ZugGUI.spreadSheet.getTestCasesSheet().removeAllBreakPoints();
-        ZugGUI.spreadSheet.getMoleculesSheet().removeAllBreakPoints();
+		}else if(BuildInAtom.buildIns.contains(step.toLowerCase())){
+			return true;
+		}
 
-        for (String s : includeFiles.keySet()) {
-             includeFiles.get(s).getMoleculesSheet().removeAllBreakPoints();
-        }
+		return false;
+	}
 
-    }
+	public void adjustColumnSizes(JTable table, int column, int margin) {
+		DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
+		TableColumn col = colModel.getColumn(column);
+		int width;
+
+		TableCellRenderer renderer = col.getHeaderRenderer();
+		if (renderer == null) {
+			renderer = table.getTableHeader().getDefaultRenderer();
+		}
+		Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, 0);
+		width = comp.getPreferredSize().width;
+
+		for (int r = 0; r < table.getRowCount(); r++) {
+			renderer = table.getCellRenderer(r, column);
+			comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, column), false, false, r, column);
+			int currentWidth = comp.getPreferredSize().width;
+			width = Math.max(width, currentWidth);
+		}
+
+		width += 2 * margin;
+
+		if(column==3){
+			col.setPreferredWidth(120);
+			col.setWidth(120);
+		}else{
+
+			col.setPreferredWidth(width);
+			col.setWidth(width);
+		}
+	}
+
+	public void removeAllBreakPoints() {
+
+		ZugGUI.spreadSheet.getTestCasesSheet().removeAllBreakPoints();
+		ZugGUI.spreadSheet.getMoleculesSheet().removeAllBreakPoints();
+
+		for (String s : includeFiles.keySet()) {
+			includeFiles.get(s).getMoleculesSheet().removeAllBreakPoints();
+		}
+
+	}
 
 }

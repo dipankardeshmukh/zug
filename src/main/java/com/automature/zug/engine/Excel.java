@@ -11,7 +11,9 @@ import com.automature.zug.util.ExtensionInterpreterSupport;
 import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
 import com.automature.zug.util.XMLWriter;
+
 import jline.console.ConsoleReader;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -361,28 +363,28 @@ public class Excel {
 	 */
 	public String TestSuitName() throws ReportingException, IOException {
 		String testSuitName = null;
-		
-			ConsoleReader reader = new ConsoleReader();
-			if (_configSheetHashTable.get(_configSheetKeys[5]) != null) {
-				testSuitName = (String) _configSheetHashTable
-						.get(_configSheetKeys[5]);
-			}
-			up: while (true) {
-				if (StringUtils.isBlank(testSuitName)) {
-					/*testSuitName = reader
+
+		ConsoleReader reader = new ConsoleReader();
+		if (_configSheetHashTable.get(_configSheetKeys[5]) != null) {
+			testSuitName = (String) _configSheetHashTable
+					.get(_configSheetKeys[5]);
+		}
+		up: while (true) {
+			if (StringUtils.isBlank(testSuitName)) {
+				/*testSuitName = reader
 							.readLine("\nEnter the Test Suite Name : ");
 
-					 */	
-					throw new ReportingException("Testsuite name not found. Please provide testsuite name in Config Sheet of input file :"+getXlsFilePath());
-					
-					 //continue up;
-				} else {
-					_configSheetHashTable.put(_configSheetKeys[5],
-							testSuitName.trim());
-					break up;
-				}
+				 */	
+				throw new ReportingException("Testsuite name not found. Please provide testsuite name in Config Sheet of input file :"+getXlsFilePath());
+
+				//continue up;
+			} else {
+				_configSheetHashTable.put(_configSheetKeys[5],
+						testSuitName.trim());
+				break up;
 			}
-		 
+		}
+
 		return testSuitName;
 	}
 
@@ -393,27 +395,27 @@ public class Excel {
 	 */
 	public String TestSuitRole() throws ReportingException, IOException {
 		String testSuitRole = null;
-		
-			ConsoleReader reader = new ConsoleReader();
-			if (_configSheetHashTable.get(_configSheetKeys[6]) != null) {
-				testSuitRole = (String) _configSheetHashTable
-						.get(_configSheetKeys[6]);
-			}
 
-			up: while (true) {
-				if (StringUtils.isBlank(testSuitRole)) {
-					/*testSuitRole = reader
+		ConsoleReader reader = new ConsoleReader();
+		if (_configSheetHashTable.get(_configSheetKeys[6]) != null) {
+			testSuitRole = (String) _configSheetHashTable
+					.get(_configSheetKeys[6]);
+		}
+
+		up: while (true) {
+			if (StringUtils.isBlank(testSuitRole)) {
+				/*testSuitRole = reader
 							.readLine("\nEnter valid Test Suite Role (like client, server, etc). ");
 					continue up;*/
-					throw new ReportingException("Testsuite role not found. Please provide testsuite role in Config Sheet of input file :"+getXlsFilePath());
-					
-					
-				} else {
-					_configSheetHashTable.put(_configSheetKeys[6],
-							testSuitRole.trim());
-					break up;
-				}
-			
+				throw new ReportingException("Testsuite role not found. Please provide testsuite role in Config Sheet of input file :"+getXlsFilePath());
+
+
+			} else {
+				_configSheetHashTable.put(_configSheetKeys[6],
+						testSuitRole.trim());
+				break up;
+			}
+
 		} 
 		return testSuitRole;
 	}
@@ -1327,6 +1329,29 @@ public class Excel {
 	// /This function will put the values of different sheets in their
 	// corresponding HashTables
 
+	public Map<String,Integer> getMacroSheetheaders(Sheet worksheet){
+		Iterator<Row> rowIter = worksheet.rowIterator();
+		//System.out.println("row iterator initialized");
+		//do {
+		Map<String,Integer> headers=new  HashMap<String,Integer> ();
+
+		if (rowIter.hasNext()){
+			Row myRow = (Row) rowIter.next();
+			Iterator<Cell> cellIter = myRow.cellIterator();
+			int col=0;
+
+			while (cellIter.hasNext()) {
+				//		System.out.println("col no"+col);
+				Cell myCell = (Cell) cellIter.next();
+				String strKey = GetCellValueAsString(myCell);
+				headers.put(strKey.toLowerCase(),col);
+				col++;
+				//if(StringUtils.isNotEmpty(strKey)||StringUtils.isNotBlank(strKey))
+			}
+		}
+		return headers;
+	}
+
 	void GetKeyValuePair(Sheet worksheet,
 			Hashtable<String, String> hashTable, String sheetname,
 			String nameSpace) throws Exception {
@@ -1335,11 +1360,21 @@ public class Excel {
 		// System.out.println("Name space="+nameSpace+"sheet Name="+sheetname);
 		boolean isMVC = false;
 
+
 		if (sheetname.equals("macros")
 				&& nameSpace != null
 				&& (isMVC = Controller.macroColumnValue.containsKey(nameSpace)) != false) {
-			value = Integer
-					.parseInt(Controller.macroColumnValue.get(nameSpace));
+			//System.out.println(getMacroFileheaders(worksheet));
+			try{
+				value = Integer
+						.parseInt(Controller.macroColumnValue.get(nameSpace));
+
+			}catch(NumberFormatException nfe){
+				Map<String,Integer> map=getMacroSheetheaders(worksheet);
+				String str=Controller.macroColumnValue.get(nameSpace);
+				Integer val=map.get(str);
+				value=val==null?1:val;//System.out.println("value "+value);
+			}
 			// System.out.println("Macro field value of file "+nameSpace+"is "+value);
 		}
 		try {

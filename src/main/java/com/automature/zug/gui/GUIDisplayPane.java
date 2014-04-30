@@ -42,6 +42,7 @@ public class GUIDisplayPane {
 
         mainPanel.add(tabbedPane);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+       
 
 
     }
@@ -55,6 +56,10 @@ public class GUIDisplayPane {
         }
 
         tabbedPane.addTab(title, icon, component, tip);
+    }
+    
+    public void refreshTaskPane(){
+    	taskPane.reInitialize();
     }
 
     public void addSheetDisplayPane(SpreadSheet sp) throws Exception {

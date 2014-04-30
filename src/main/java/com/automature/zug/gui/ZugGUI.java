@@ -103,8 +103,8 @@ public class ZugGUI {
 		//frame.setMenuBar(arg0)
 
 		ops=new OptionsPanel();
-		ops.createOptionsPanel();
-		frame.getContentPane().add(ops.getOptionsPanel(),BorderLayout.NORTH);
+		//ops.createOptionsPanel();
+		frame.getContentPane().add(ops,BorderLayout.NORTH);
 
 		guiDisplayPane=new GUIDisplayPane();
 		frame.getContentPane().add(guiDisplayPane.getDisplayPane(), BorderLayout.CENTER);
@@ -194,9 +194,10 @@ public class ZugGUI {
 					.lastIndexOf("\\") + 1));
 			if(!reload)
 				ZugGUI.clearOptions();
-			ZugGUI.initialize();
+			
 			ZugGUI.loadSpreadSheet(fileName);
 			ZugGUI.addTestSuiteTabToDisplay(spreadSheet);
+			ZugGUI.initialize();
 		}
 	}
 
@@ -376,12 +377,12 @@ public class ZugGUI {
 
 	public static void showRunZUGCommand(){
 		ops.showRunCommand();
-		IconsPanel.hideZugCommandButton();
+		//IconsPanel.hideZugCommandButton();
 
 	}
 	public static void hideRunZUGCommand(){
 		ops.hideRunCommand();
-		IconsPanel.showZugCommandButton();
+		//IconsPanel.showZugCommandButton();
 	}
 
 	public static void showDebugger(){
@@ -397,6 +398,7 @@ public class ZugGUI {
 
 	public void addSheets(HashMap<String, String> nameSpace, String[] sheets) {
 		ZugGUI.getSheetDisplayPane().addExtraSheets(nameSpace, sheets);
+		guiDisplayPane.refreshTaskPane();
 
 	}
 

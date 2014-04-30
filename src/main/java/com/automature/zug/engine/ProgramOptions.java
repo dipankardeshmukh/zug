@@ -205,7 +205,7 @@ public class ProgramOptions {
 				filename = filename.replaceAll(".xls", "");
 			}
 			nameSpace= filename.toLowerCase();
-			Controller.macroColumnValue.put(nameSpace, columnValue);
+			Controller.macroColumnValue.put(nameSpace, columnValue.toLowerCase());
 		}    	
 	}
 

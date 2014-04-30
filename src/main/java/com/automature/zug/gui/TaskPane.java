@@ -180,8 +180,40 @@ public class TaskPane extends JPanel {
     }
 
 
+    public void reInitialize(){
+    	
+    	  linkedFiles.removeAll();
+    	  JTree tree = new JTree(getSheetTree(ZugGUI.spreadSheet));
+          JScrollPane treeView = new JScrollPane(tree);
+          treeView.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+          treeView.setPreferredSize(new Dimension(100,150));
+          linkedFiles.add(treeView);
 
 
+          tree.addTreeSelectionListener(new TreeSelectionListener() {
+              @Override
+              public void valueChanged(TreeSelectionEvent e) {
+                  if(e.getNewLeadSelectionPath().getLastPathComponent().toString().equalsIgnoreCase(ZugGUI.spreadSheet.getAbsolutePath())){
+                      try {
+                          ZugGUI.bringTestSuiteTabToDisplay(ZugGUI.spreadSheet);
+                      } catch (Exception e1) {
+                          Log.Error(e1.getMessage());
+                      }
+                  }else{
+                      Set<String> filesRead = new HashSet<String>();
+                      try {
+                          ZugGUI.bringTestSuiteTabToDisplay(ZugGUI.spreadSheet.getIncludeFile(e.getNewLeadSelectionPath().getLastPathComponent().toString(),filesRead ));
+                      } catch (Exception e1) {
+                          Log.Error(e1.getMessage());
+                      }
+                  }
+              }
+          });
+          linkedFiles.revalidate();
+          linkedFiles.repaint();
+    }
+
+    
     private void bind() {
 
         testCasePanel = getTestCasePanel(ZugGUI.spreadSheet.getTestCasesSheet().getTestCaseIds());
