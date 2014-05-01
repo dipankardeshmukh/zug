@@ -1051,7 +1051,7 @@ public class Controller extends Thread {
 						if(Controller.guiFlag){
 							throw new Throwable();
 						}else{
-							System.exit(0);
+							System.exit(-1);
 						}
 					}
 				}
@@ -1118,7 +1118,7 @@ public class Controller extends Thread {
 			if(Controller.guiFlag){
 				throw new Throwable();
 			}else{
-				System.exit(0);
+				System.exit(-1);
 			}
 		}finally{
 			try{
@@ -1215,7 +1215,7 @@ public class Controller extends Thread {
 					if(Controller.guiFlag){
 						throw new Throwable();
 					}else{
-						System.exit(0);
+						System.exit(-1);
 					}
 				}
 				ListenToPrimitives(iPORT);
@@ -1621,7 +1621,7 @@ public class Controller extends Thread {
 						if(Controller.guiFlag){
 							throw new Throwable();
 						}else{
-							System.exit(0);
+							System.exit(-1);
 						}
 					}
 
@@ -1682,7 +1682,7 @@ public class Controller extends Thread {
 						if(Controller.guiFlag){
 							throw new Throwable();
 						}else{
-							System.exit(0);
+							System.exit(-1);
 						}
 					}
 					if (licenseValid.isDateValid() == false) {
@@ -1690,7 +1690,7 @@ public class Controller extends Thread {
 						if(Controller.guiFlag){
 							throw new Throwable();
 						}else{
-							System.exit(0);
+							System.exit(-1);
 						}
 					}
 					Controller.message("Zug is Valid "
@@ -1702,7 +1702,7 @@ public class Controller extends Thread {
 					if(Controller.guiFlag){
 						throw new Throwable();
 					}else{
-						System.exit(0);
+						System.exit(-1);
 					}
 				}
 
@@ -1736,7 +1736,7 @@ public class Controller extends Thread {
 				if(Controller.guiFlag){
 					throw new Throwable();
 				}else{
-					System.exit(0);
+					System.exit(-1);
 				}
 			}	
 			if (licenseValid.isDateValid() == false) {
@@ -1744,7 +1744,7 @@ public class Controller extends Thread {
 				if(Controller.guiFlag){
 					throw new Throwable();
 				}else{
-					System.exit(0);
+					System.exit(-1);
 				}
 			}
 			//Controller.message("Zug is Valid "
@@ -1760,7 +1760,7 @@ public class Controller extends Thread {
 			if(Controller.guiFlag){
 				throw new Throwable();
 			}else{
-				System.exit(0);
+				System.exit(-1);
 			}
 		}
 
@@ -1959,9 +1959,17 @@ public class Controller extends Thread {
 			});
 
 			thread.start();
-
-            long initExecTime = controller.testsuite.waitForInitToComplete(Integer.parseInt(controller.ReadContextVariable(
-                    "ZUG_TESTSUITE_TIMEOUT")));
+			String testSuiteTimeout=null;
+			try{
+				testSuiteTimeout=Controller.ReadContextVariable("ZUG_TESTSUITE_TIMEOUT");
+				
+			}catch(Exception e){
+				
+			}
+			if(testSuiteTimeout==null){
+				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
+			}
+            long initExecTime = controller.testsuite.waitForInitToComplete(Integer.parseInt(testSuiteTimeout));
 
 			if(opts.dbReporting){
 				Thread dbStimulator = new Thread(new Runnable() {
@@ -1981,13 +1989,21 @@ public class Controller extends Thread {
 			}
           //  System.out.println(Integer.parseInt(controller.ReadContextVariable(
             //        "ZUG_TESTSUITE_TIMEOUT"))+ " "+ initExecTime);
-			if(((Integer.parseInt(controller.ReadContextVariable(
-                    "ZUG_TESTSUITE_TIMEOUT"))*1000) - initExecTime ) < 0)
+			try{
+				testSuiteTimeout=null;
+				testSuiteTimeout=Controller.ReadContextVariable("ZUG_TESTSUITE_TIMEOUT");
+				
+			}catch(Exception e){
+				
+			}
+			if(testSuiteTimeout==null){
+				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
+			}
+			if(((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime ) < 0)
             {
                 thread.interrupt();
             }else{
-                thread.join((Integer.parseInt(controller.ReadContextVariable(
-                        "ZUG_TESTSUITE_TIMEOUT"))*1000) - initExecTime);
+                thread.join((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime);
             }
 
 
@@ -2027,7 +2043,7 @@ public class Controller extends Thread {
 						if(Controller.guiFlag){
 							throw new Throwable();
 						}else{
-							System.exit(0);
+							System.exit(-1);
 						}
 
 					}
@@ -2050,6 +2066,7 @@ public class Controller extends Thread {
 			Log.Error("\nController/Main : Exception Raised while executing the Test Cases in Controller. Exception is "
 					+ ex.getMessage() + " and Stack Trace is : \n");
 			ex.printStackTrace();
+			
 
 		}
 
