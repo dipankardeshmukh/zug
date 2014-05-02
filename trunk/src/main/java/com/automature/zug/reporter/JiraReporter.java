@@ -70,7 +70,7 @@ public class JiraReporter  implements Reporter {
 
 
 	public JiraReporter(Hashtable ht) throws Exception{
-		
+
 		this.hostName = (String)ht.get("dbhostname");
 		this.userName = (String)ht.get("dbusername");
 		this.userPassword =(String)ht.get("dbuserpassword");
@@ -110,13 +110,15 @@ public class JiraReporter  implements Reporter {
 			this.buildName = (String)ht.get("buildtag");
 		}
 		String issueFormat=(String)ht.get("issueformat");
-
-		if(issueFormat!=null && (issueFormat.contains("$tc") || issueFormat.contains("$TC"))){
-			this.issueSummaryType = issueFormat;
-		} else{
-			this.issueSummaryType = issueFormat==null?"":issueFormat+"$TC";
-		}			
-
+		if(issueFormat!=null){
+			if( issueFormat.contains("$tc") || issueFormat.contains("$TC")){
+				this.issueSummaryType = issueFormat;
+			} else{
+				this.issueSummaryType = issueFormat+"$TC";
+			}			
+		}else{
+			this.issueSummaryType="$TS:$TC";
+		}
 		issues_reported = new HashMap<String, IssueDetails>();
 	}
 
