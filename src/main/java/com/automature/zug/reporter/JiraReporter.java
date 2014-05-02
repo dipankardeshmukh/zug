@@ -56,21 +56,21 @@ public class JiraReporter  implements Reporter {
 	String testsuiteName=null;
 	String buildName=null;
 
-    String topologysetName=null;
+	String topologysetName=null;
 
 	String testId=null;
 	JiraClient api;
 
-    String issueSummaryType = "";
+	String issueSummaryType = "";
 
 	protected final static String PASS="1";
 	protected final static String FAIL="2";
 
-    private static final String REPLACE_CAHARACTER="-";
+	private static final String REPLACE_CAHARACTER="-";
 
 
 	public JiraReporter(Hashtable ht) throws Exception{
-		Controller.message("\n\nConnecting to Jira" + hostName);
+		
 		this.hostName = (String)ht.get("dbhostname");
 		this.userName = (String)ht.get("dbusername");
 		this.userPassword =(String)ht.get("dbuserpassword");
@@ -78,7 +78,7 @@ public class JiraReporter  implements Reporter {
 		this.testplandetails=(String)ht.get("testplanpath");
 
 		this.testsuiteName=(String)ht.get("testsuitename");
-        this.topologysetName =(String)ht.get( "topologysetname");
+		this.topologysetName =(String)ht.get( "topologysetname");
 
 		String[] objects = this.testplandetails.split(":");
 		switch(objects.length){
@@ -109,12 +109,14 @@ public class JiraReporter  implements Reporter {
 		}else{
 			this.buildName = (String)ht.get("buildtag");
 		}
+		String issueFormat=(String)ht.get("issueformat");
 
-        if(ht.get("issueformat").toString().contains("$tc") || ht.get("issueformat").toString().contains("$TC")){
-            this.issueSummaryType = (String)ht.get("issueformat");
-        } else{
-            this.issueSummaryType = (String)ht.get("issueformat")+"$TC";
-        }
+		if(issueFormat!=null && (issueFormat.contains("$tc") || issueFormat.contains("$TC"))){
+			this.issueSummaryType = issueFormat;
+		} else{
+			this.issueSummaryType = issueFormat==null?"":issueFormat+"$TC";
+		}			
+
 		issues_reported = new HashMap<String, IssueDetails>();
 	}
 
@@ -202,11 +204,11 @@ public class JiraReporter  implements Reporter {
 	private String getIssueId(ExecutedTestCase etc)throws Exception{
 		Log.Debug("JiraReporter/getIssueId() : Create new Issue or return the existing issue for Issue Summary "+etc.testCaseID);
 		String mod_summary = this.issueSummaryType;//this.testsuiteName+":"+etc.testCaseID;
-        if(mod_summary!=null){
-            mod_summary=mod_summary.replace("$ts", this.testsuiteName).replace("$TS", this.testsuiteName);
-            mod_summary=mod_summary.replace("$tc", etc.testCaseID).replace("$TC", etc.testCaseID);
-            mod_summary = mod_summary.replaceAll("\\\\",REPLACE_CAHARACTER).replaceAll("/",REPLACE_CAHARACTER);
-        }
+		if(mod_summary!=null){
+			mod_summary=mod_summary.replace("$ts", this.testsuiteName).replace("$TS", this.testsuiteName);
+			mod_summary=mod_summary.replace("$tc", etc.testCaseID).replace("$TC", etc.testCaseID);
+			mod_summary = mod_summary.replaceAll("\\\\",REPLACE_CAHARACTER).replaceAll("/",REPLACE_CAHARACTER);
+		}
 
 		etc.testCaseID=mod_summary;
 		String issueId = null;
