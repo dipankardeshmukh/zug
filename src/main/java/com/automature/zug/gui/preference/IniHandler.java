@@ -488,7 +488,10 @@ public class IniHandler {
 					if(s!=null && !s.isEmpty())
 						scLocation+=s+";";
 				}
-				scLocation=scLocation.substring(0,scLocation.length()-1);
+				if(scLocation.length()>1){
+					scLocation=scLocation.substring(0,scLocation.length()-1);					
+				}
+
 			}
 	
 			String configText=getConfigurationAsXML(config, scLocation);
@@ -505,11 +508,12 @@ public class IniHandler {
 
 				System.err.println("Error: Could not found file "+workingDirectory+File.separator+fileName);
 			} catch (IOException e) {  
-
+				
 				System.err.println("Error: saving ini config to file"+e.getMessage());
 			}  
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
 			System.err.println("Error: saving ini config to file"+e.getMessage());
 		}
 		
