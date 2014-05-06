@@ -333,14 +333,18 @@ public class TaskPane extends JPanel {
         contextVariables.setMinimumSize(new Dimension(200,360));
         contextVariables.setSize(200, 360);
         tpc.add(contextVariables);
-        
-        
-
+        refresh();        
     }
 
+    public void refresh(){
+    	tpc.revalidate();
+    	tpc.repaint();
+    }
+    
     public void removeContextVarPanel(){
         try{
             tpc.remove(contextVariables);
+            refresh();
         }catch (Exception e){
             //Log.Error("Could not remove context var panel from sidebar. Exception: "+e.getMessage());
         }

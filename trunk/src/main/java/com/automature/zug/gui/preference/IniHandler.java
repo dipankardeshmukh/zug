@@ -6,8 +6,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -279,7 +281,7 @@ public class IniHandler {
 			DocumentBuilder builder = builderFactory.newDocumentBuilder();
 
 			xmlDocument = builder.parse(file);
-			
+
 			xmlDocument.getDocumentElement().normalize();
 			file.close();
 		}catch (FileNotFoundException e) {
@@ -454,10 +456,10 @@ public class IniHandler {
 		}
 		return convertDomToString(doc);
 	}
-	
 
 
-/*	public static void main(String []args){
+
+	/*	public static void main(String []args){
 		IniHandler ini=new IniHandler();
 		Set s=ini.readInprocessPackages();
 		OutProcessPackage opp=ini.getOutProcessPackages();
@@ -481,7 +483,6 @@ public class IniHandler {
 			String oppText=getLanguagesAsXML(lps);
 			Configurations config=new Configurations();
 			config.setReporterParams(rps);
-			
 			String scLocation="";
 			if(!scriptLocation.isEmpty()){
 				for(String s:scriptLocation){
@@ -490,32 +491,35 @@ public class IniHandler {
 				}
 				if(scLocation.length()>1){
 					scLocation=scLocation.substring(0,scLocation.length()-1);					
-				}
-
+				}	
 			}
-	
 			String configText=getConfigurationAsXML(config, scLocation);
 			String iniXML="<root>"+oppText+inprocessText+configText+"</root>";
+			File ini=new File(workingDirectory+File.separator+fileName);
 			try {  
-				FileOutputStream fop = new FileOutputStream(new File(workingDirectory+File.separator+fileName),false);  
-				
-				byte[] contentInBytes = iniXML.getBytes();  
-				fop.write(contentInBytes);  
-				fop.flush();  
-				fop.close(); 
-			
+				if(ini.exists()){
+					try{
+						AccessController.checkPermission(new FilePermission(workingDirectory+File.separator+fileName, "read,write"));
+						FileOutputStream fop = new FileOutputStream(ini,false);  					
+						byte[] contentInBytes = iniXML.getBytes();  
+						fop.write(contentInBytes);  
+						fop.flush();  
+						fop.close(); 												
+					}catch(SecurityException e){
+						System.err.println("Error: Doesn't have write permission on "+workingDirectory+File.separator+fileName+" File");
+					}
+				}else{
+					System.err.println("Error: Could not locate "+workingDirectory+File.separator+fileName+" File");
+				}
 			} catch (FileNotFoundException e) {  
-
 				System.err.println("Error: Could not found file "+workingDirectory+File.separator+fileName);
 			} catch (IOException e) {  
-				
 				System.err.println("Error: saving ini config to file"+e.getMessage());
 			}  
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			System.err.println("Error: saving ini config to file"+e.getMessage());
 		}
-		
+
 	}
 }
