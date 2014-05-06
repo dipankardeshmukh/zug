@@ -304,9 +304,9 @@ public class ZugGUI {
 		frame.setEnabled(false);
 	}
 	public static void updateFrame(){
-		frame.validate();
+		//frame.validate();
 		//frame.getContentPane().repaint();
-		frame.repaint();
+		//frame.repaint();
 		//frame.doLayout();
 	}
 	public static void setTitle(String title){

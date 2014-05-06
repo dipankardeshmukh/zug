@@ -67,6 +67,8 @@ public class ConsoleDisplay {
 			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 			
 		}
+		outputPanel.revalidate();
+		outputPanel.repaint();
 	}
 
    public void setFormatOutput(boolean value){
@@ -103,8 +105,6 @@ public class ConsoleDisplay {
         SimpleAttributeSet keyWord = new SimpleAttributeSet();
         StyleConstants.setForeground(keyWord, color);
         StyleConstants.setBold(keyWord,true);
-
-
         try {
 
             textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), "\n", null);

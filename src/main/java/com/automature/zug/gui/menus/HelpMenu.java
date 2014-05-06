@@ -59,12 +59,14 @@ public class HelpMenu {
 				if (Desktop.isDesktopSupported()) {
 				    try {
 				    	//SysEnv env=new SysEnv();
+				    	
 				    	String filePath=System.getProperty("user.dir")+SysEnv.SLASH+"Input Files"+SysEnv.SLASH+"ZUG User Manual.pdf";
 				        File myFile = new File(filePath);
 				        Desktop.getDesktop().open(myFile);
 				   
 				    } catch (Exception ex) {
 				        // no application registered for PDFs
+				    	
 				    }
 				}
 			}

@@ -224,7 +224,7 @@ public class PreferenceDialog extends JDialog {
 						saveAndClose();						
 					}
 				});
-				okButton.setForeground(Color.GRAY);
+				okButton.setForeground(Color.LIGHT_GRAY);
 				okButton.setBackground(Color.DARK_GRAY);
 				okButton.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 				okButton.setActionCommand("OK");

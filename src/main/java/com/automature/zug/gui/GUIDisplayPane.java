@@ -1,7 +1,5 @@
 package com.automature.zug.gui;
 
-
-
 import com.automature.zug.gui.sheets.SpreadSheet;
 
 import java.awt.*;
@@ -19,220 +17,217 @@ import javax.swing.text.DefaultCaret;
 
 public class GUIDisplayPane {
 
-    JPanel mainPanel = new JPanel();
-    private JTabbedPane tabbedPane;
+	JPanel mainPanel = new JPanel();
+	private JTabbedPane tabbedPane;
 
-    private static ConsoleDisplay consoleDisplay = new ConsoleDisplay();
-    private static SheetDisplayPane sheetDisplay;
-    private static TaskPane taskPane;
+	private static ConsoleDisplay consoleDisplay = new ConsoleDisplay();
+	private static SheetDisplayPane sheetDisplay;
+	private static TaskPane taskPane;
 
-    private enum DisplayMode {
-        CONSOLE, SHEET, SPLIT
-    }
+	private enum DisplayMode {
+		CONSOLE, SHEET, SPLIT
+	}
 
-    private static DisplayMode displayMode = null;
+	private static DisplayMode displayMode = null;
 
-    public GUIDisplayPane() {
+	public GUIDisplayPane() {
 
-        tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
-        tabbedPane.setBackground(Color.LIGHT_GRAY);
+		tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+		tabbedPane.setBackground(Color.LIGHT_GRAY);
 
-        consoleDisplay=new ConsoleDisplay();
-        this.addTab("Console", null, consoleDisplay.getConsole(), null);
+		consoleDisplay = new ConsoleDisplay();
+		this.addTab("Console", null, consoleDisplay.getConsole(), null);
 
-        mainPanel.add(tabbedPane);
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
-       
+		mainPanel.add(tabbedPane);
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
 
+	}
 
-    }
+	public void addTab(String title, Icon icon, Component component, String tip) {
 
-    public void addTab(String title,Icon icon,Component component,String tip){
+		if (tabbedPane.getTabCount() > 0) {
+			for (Component c : tabbedPane.getComponents()) {
+				tabbedPane.remove(c);
+			}
+		}
 
-        if(tabbedPane.getTabCount()>0){
-            for(Component c :tabbedPane.getComponents()){
-                tabbedPane.remove(c);
-            }
-        }
+		tabbedPane.addTab(title, icon, component, tip);
+	}
 
-        tabbedPane.addTab(title, icon, component, tip);
-    }
-    
-    public void refreshTaskPane(){
-    	taskPane.reInitialize();
-    }
+	public void refreshTaskPane() {
+		taskPane.reInitialize();
+	}
 
-    public void addSheetDisplayPane(SpreadSheet sp) throws Exception {
+	public void addSheetDisplayPane(SpreadSheet sp) throws Exception {
 
-        sheetDisplay =new SheetDisplayPane(sp);
-        this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
+		sheetDisplay = new SheetDisplayPane(sp);
+		this.addTab(new File(sp.getAbsolutePath()).getName(), null,
+				sheetDisplay, "");
 
-        ArrayList<JCheckBox> TestCaseSelectState = new ArrayList<JCheckBox>();
-        if(taskPane!=null){
-            TestCaseSelectState = taskPane.getSelectedTestCaseIds();
-            mainPanel.remove(taskPane);
-            taskPane=null;
-        }
+		ArrayList<JCheckBox> TestCaseSelectState = new ArrayList<JCheckBox>();
+		if (taskPane != null) {
+			TestCaseSelectState = taskPane.getSelectedTestCaseIds();
+			mainPanel.remove(taskPane);
+			taskPane = null;
+		}
 
-        if(taskPane==null){
-            taskPane = new TaskPane();
-            taskPane.setSelectedTestCaseIds(TestCaseSelectState);
-            Toolkit tk = Toolkit.getDefaultToolkit();
-            int xSize = ((int) tk.getScreenSize().getWidth());
-            int gameWidth = (int) (Math.round(xSize * .23));
-            taskPane.setPreferredSize(new Dimension(gameWidth,(int)tk.getScreenSize().getHeight()));
-            taskPane.setMaximumSize(new Dimension(350,(int)tk.getScreenSize().getHeight()));
-            //taskPane.setAlignmentY(SwingConstants.TOP);
-            mainPanel.add(taskPane);
-        }
+		if (taskPane == null) {
+			taskPane = new TaskPane();
+			taskPane.setSelectedTestCaseIds(TestCaseSelectState);
+			Toolkit tk = Toolkit.getDefaultToolkit();
+			int xSize = ((int) tk.getScreenSize().getWidth());
+			int gameWidth = (int) (Math.round(xSize * .23));
+			taskPane.setPreferredSize(new Dimension(gameWidth, (int) tk
+					.getScreenSize().getHeight()));
+			taskPane.setMaximumSize(new Dimension(350, (int) tk.getScreenSize()
+					.getHeight()));
+			// taskPane.setAlignmentY(SwingConstants.TOP);
+			mainPanel.add(taskPane);
+		}
 
-        if(displayMode==null){
-            splitTab();
-        }
-        else{
-            setPreviousDisplayMode();
-        }
+		if (displayMode == null) {
+			splitTab();
+		} else {
+			setPreviousDisplayMode();
+		}
+		refresh();
+	}
 
-    }
+	private void setPreviousDisplayMode() {
+		if (displayMode.compareTo(DisplayMode.SPLIT) == 0) {
+			splitTab();
+		} else if (displayMode.compareTo(DisplayMode.SHEET) == 0) {
+			showTestSuite();
+		} else {
+			showConsole();
+		}
+	}
 
-    private void setPreviousDisplayMode() {
-        if(displayMode.compareTo(DisplayMode.SPLIT)==0){
-            splitTab();
-        }else if(displayMode.compareTo(DisplayMode.SHEET)==0){
-            showTestSuite();
-        }else{
-            showConsole();
-        }
-    }
+	public SpreadSheet getSpreadSheet() {
+		return sheetDisplay.getSpreadSheet();
+	}
 
+	public void bringSheetDisplayPane(SpreadSheet sp) throws Exception {
 
+		sheetDisplay = new SheetDisplayPane(sp);
+		// this.addTab(new File(sp.getAbsolutePath()).getName(), null,
+		// sheetDisplay, "");
+		if ((displayMode == null)
+				|| (displayMode.compareTo(DisplayMode.CONSOLE) == 0)) {
+			splitTab();
+		} else {
+			setPreviousDisplayMode();
+		}
 
+	}
 
-    public SpreadSheet getSpreadSheet(){
-        return sheetDisplay.getSpreadSheet();
-    }
+	public void splitTab() {
 
+		if (IconsPanel.getFileName() != null) {
 
-    public void bringSheetDisplayPane(SpreadSheet sp) throws Exception {
+			JSplitPane splitview;
+			splitview = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+					consoleDisplay.getConsole(), sheetDisplay);
+			splitview.setResizeWeight(.5d);
+			this.addTab("Split view", null, splitview, null);
+			displayMode = DisplayMode.SPLIT;
+		} else {
+			JOptionPane.showMessageDialog(null, "Select test suite first!");
+		}
+	}
 
-        sheetDisplay =new SheetDisplayPane(sp);
-        //this.addTab(new File(sp.getAbsolutePath()).getName(), null, sheetDisplay, "");
-        if((displayMode==null) || (displayMode.compareTo(DisplayMode.CONSOLE)==0)){
-            splitTab();
-        }
-        else{
-            setPreviousDisplayMode();
-        }
+	public void showConsole() {
+		this.addTab("Console", null, consoleDisplay.getConsole(), null);
+		displayMode = DisplayMode.CONSOLE;
+	}
 
-    }
+	public void showTestSuite() {
+		if (IconsPanel.getFileName() != null) {
+			this.addTab("Excel", null, sheetDisplay, null);
+			displayMode = DisplayMode.SHEET;
+		} else {
+			JOptionPane.showMessageDialog(null, "Select test suite first!");
+		}
+	}
 
-    public void splitTab(){
+	public JPanel getDisplayPane() {
+		return mainPanel;
+	}
 
-        if(IconsPanel.getFileName()!=null){
+	public void removeTaskPane() {
 
-            JSplitPane splitview;
-            splitview = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
-                    consoleDisplay.getConsole(), sheetDisplay);
-            splitview.setResizeWeight(.5d);
-            this.addTab("Split view", null, splitview, null);
-            displayMode = DisplayMode.SPLIT;
-        }
-        else {
-            JOptionPane.showMessageDialog(null, "Select test suite first!");
-        }
-    }
+		mainPanel.remove(taskPane);
+		//ZugGUI.updateFrame();
+		refresh();
+	}
 
-    public void showConsole(){
-        this.addTab("Console", null, consoleDisplay.getConsole(), null);
-        displayMode = DisplayMode.CONSOLE;
-    }
+	public void addTaskPane() {
 
-    public void showTestSuite(){
-        if(IconsPanel.getFileName()!=null){
-            this.addTab("Excel", null, sheetDisplay, null);
-            displayMode = DisplayMode.SHEET;
-        }
-        else {
-            JOptionPane.showMessageDialog(null, "Select test suite first!");
-        }
-    }
+		if (IconsPanel.getFileName() != null) {
 
+			mainPanel.add(taskPane);
+			// ZugGUI.updateFrame();
+			refresh();
 
+		} else {
+			JOptionPane.showMessageDialog(null, "Select test suite first!");
+		}
+	}
 
+	public TaskPane getTaskPane() {
+		return taskPane;
+	}
 
-    public JPanel getDisplayPane(){
-        return mainPanel;
-    }
+	public JTextPane getConsole() {
+		return consoleDisplay.getConsoleDisplay();
+	}
 
-    public void removeTaskPane(){
+	public void setFormatOuput(boolean val) {
+		consoleDisplay.setFormatOutput(val);
+	}
 
-        mainPanel.remove(taskPane);
-        ZugGUI.updateFrame();
-    }
+	public void sendConsoleMessage(String msg) {
+		consoleDisplay.updateTextArea(msg);
+	}
 
-    public void addTaskPane(){
+	public void clearConsole() {
+		consoleDisplay.clearDisplay();
 
-        if(IconsPanel.getFileName()!=null){
+	}
 
-            mainPanel.add(taskPane);
-            ZugGUI.updateFrame();
+	public void initialize() {
+		tabbedPane.removeAll();
+		clearConsole();
+		tabbedPane.addTab("Console", null, consoleDisplay.getConsole(), null);
+	}
 
-        }else {
-            JOptionPane.showMessageDialog(null, "Select test suite first!");
-        }
-    }
+	SheetDisplayPane getSheetDisplayPane() {
+		return sheetDisplay;
+	}
 
-    public TaskPane getTaskPane(){
-        return taskPane;
-    }
+	public void redirectSystemStreams() {
+		consoleDisplay.redirectSystemStreams();
+	}
 
-    public JTextPane getConsole(){
-        return consoleDisplay.getConsoleDisplay();
-    }
+	public void highlightTestCase(String id, boolean selected) {
+		taskPane.highlightTestCase(id, selected);
+	}
 
-    public void setFormatOuput(boolean val){
-        consoleDisplay.setFormatOutput(val);
-    }
+	public void updateTestCaseStatus(String id, boolean status) {
+		taskPane.updateTestCaseStatus(id, status);
+	}
 
-    public void sendConsoleMessage(String msg) {
-        consoleDisplay.updateTextArea(msg);
-    }
-
-    public void clearConsole() {
-        consoleDisplay.clearDisplay();
-       
-    }
-
-    public void initialize(){
-        tabbedPane.removeAll();
-        clearConsole();
-        tabbedPane.addTab("Console", null, consoleDisplay.getConsole(), null);
-    }
-
-
-
-    SheetDisplayPane getSheetDisplayPane(){
-        return sheetDisplay;
-    }
-
-    public void redirectSystemStreams(){
-        consoleDisplay.redirectSystemStreams();
-    }
-
-    public void highlightTestCase(String id, boolean selected){
-        taskPane.highlightTestCase(id, selected);
-    }
-
-    public void updateTestCaseStatus(String id, boolean status){
-        taskPane.updateTestCaseStatus(id,status);
-    }
-
-    public String getSelectedTestCases(){
-        return taskPane.getSelectedTestCases();
-    }
+	public String getSelectedTestCases() {
+		return taskPane.getSelectedTestCases();
+	}
 
 	public void resetConsole() {
 		// TODO Auto-generated method stub
 		consoleDisplay.resetConsole();
+	}
+
+	public void refresh() {
+		mainPanel.revalidate();
+		mainPanel.repaint();
 	}
 }
