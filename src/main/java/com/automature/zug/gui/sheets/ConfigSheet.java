@@ -1,6 +1,8 @@
 package com.automature.zug.gui.sheets;
 
 import com.automature.zug.gui.ZugGUI;
+import com.automature.zug.gui.actionlistener.SheetTableModelListener;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -9,18 +11,23 @@ import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+
 import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
 
-public class ConfigSheet {
+public class ConfigSheet extends GenericSheet{
 
     private Vector data;
+   
 
+    public ConfigSheet(Sheet sheet,String fileName) {
+		// TODO Auto-generated constructor stub
+    	super(sheet,new SheetSaver(sheet, 0, -1,fileName));	
+	}
 
-
-    public String getTestSuiteName() {
+	public String getTestSuiteName() {
 
         String testsuiteName = null;
         Iterator it = data.iterator();
@@ -70,6 +77,7 @@ public class ConfigSheet {
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
         table.getColumnModel().getColumn(1).setPreferredWidth(200);
         table.getColumnModel().getColumn(2).setPreferredWidth(400);
+        table.getModel().addTableModelListener(new SheetTableModelListener(sheetSaver));
 
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane);
@@ -77,7 +85,7 @@ public class ConfigSheet {
     }
 
 
-    public void readData(Sheet sheet) throws Exception {
+    public void readData() throws Exception {
 
         data = new Vector();
         Iterator it = sheet.rowIterator();

@@ -4,6 +4,8 @@ import com.automature.zug.engine.Controller;
 import com.automature.zug.gui.CustomTableCellRenderer;
 import com.automature.zug.gui.CustomTableRowRenderer;
 import com.automature.zug.gui.ZugGUI;
+import com.automature.zug.gui.actionlistener.SheetTableModelListener;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,6 +17,7 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,7 +28,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 
-public class MoleculesSheet {
+public class MoleculesSheet extends GenericSheet{
 
     private Vector header;
     private Vector data;
@@ -36,7 +39,12 @@ public class MoleculesSheet {
 
     JTable table = null;
 
-    public void readHeader(Sheet sheet){
+    public MoleculesSheet(Sheet sheet, String filePath) {
+		// TODO Auto-generated constructor stub
+    	super(sheet,new SheetSaver(sheet, 1, -2,filePath));
+	}
+
+	public void readHeader(){
 
         header=new Vector();
         Iterator it = sheet.rowIterator();
@@ -63,10 +71,10 @@ public class MoleculesSheet {
         }
     }
 
-    public void readData(Sheet mySheet){
+    public void readData(){
 
         data = new Vector();
-        Iterator it = mySheet.rowIterator();
+        Iterator it = sheet.rowIterator();
         it.next();
         int line=2;
         //AtomHandler ah=new AtomHandler(scriptLocation);
@@ -222,7 +230,7 @@ public class MoleculesSheet {
 
             }
         });
-
+        table.getModel().addTableModelListener(new SheetTableModelListener(sheetSaver));
 
         return panel;
     }

@@ -19,6 +19,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class SpreadSheet {
 
 	private HashMap<String, SpreadSheet> includeFiles = new HashMap<String, SpreadSheet>();
 	private List<String> scriptLocations = new ArrayList<String>();
+
+	private FileInputStream inputFile;
 
 
 	public String getAbsolutePath() {
@@ -238,25 +241,26 @@ public class SpreadSheet {
 			absolutePath = filePath;
 
 			File file = new File(filePath);
-			FileInputStream inputFile = new FileInputStream(file);
+			inputFile = new FileInputStream(file);
 			Workbook wb = WorkbookFactory.create(inputFile);
+			
 
-			configSheet = new ConfigSheet();
-			configSheet.readData(wb.getSheet("Config"));
+			configSheet = new ConfigSheet(wb.getSheet("Config"),filePath);
+			configSheet.readData();
 
 			readConfigIncludeFiles();
 
-			macroSheet = new MacroSheet();
-			macroSheet.readHeader(wb.getSheet("Macros"));
-			macroSheet.readData(wb.getSheet("Macros"));
+			macroSheet = new MacroSheet(wb.getSheet("Macros"),filePath);
+			macroSheet.readHeader();
+			macroSheet.readData();
 
-			testCasesSheet = new TestCasesSheet();
-			testCasesSheet.readHeader(wb.getSheet("TestCases"));
-			testCasesSheet.readData(wb.getSheet("TestCases"));
+			testCasesSheet = new TestCasesSheet(wb.getSheet("TestCases"),filePath);
+			testCasesSheet.readHeader();
+			testCasesSheet.readData();
 
-			moleculesSheet = new MoleculesSheet();
-			moleculesSheet.readHeader(wb.getSheet("Molecules"));
-			moleculesSheet.readData(wb.getSheet("Molecules"));
+			moleculesSheet = new MoleculesSheet(wb.getSheet("Molecules"),filePath);
+			moleculesSheet.readHeader();
+			moleculesSheet.readData();
 
 		}catch (FileNotFoundException f){
 			ZugGUI.message("\nWARNING: The file could not be found - "+filePath);
@@ -381,6 +385,21 @@ public class SpreadSheet {
 			includeFiles.get(s).getMoleculesSheet().removeAllBreakPoints();
 		}
 
+	}
+	
+	public void releaseResources(){
+		if(this.inputFile!=null){
+			try {
+				inputFile.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block		
+			}
+		}
+		Iterator it=includeFiles.keySet().iterator();
+		while(it.hasNext()){
+			SpreadSheet sh=(SpreadSheet)it.next();
+			sh.releaseResources();
+		}
 	}
 
 }

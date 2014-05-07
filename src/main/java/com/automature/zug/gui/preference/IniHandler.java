@@ -498,21 +498,16 @@ public class IniHandler {
 			File ini=new File(workingDirectory+File.separator+fileName);
 			try {  
 				if(ini.exists()){
-					try{
-						AccessController.checkPermission(new FilePermission(workingDirectory+File.separator+fileName, "read,write"));
-						FileOutputStream fop = new FileOutputStream(ini,false);  					
-						byte[] contentInBytes = iniXML.getBytes();  
-						fop.write(contentInBytes);  
-						fop.flush();  
-						fop.close(); 												
-					}catch(SecurityException e){
-						System.err.println("Error: Doesn't have write permission on "+workingDirectory+File.separator+fileName+" File");
-					}
+					
+					FileOutputStream fop = new FileOutputStream(ini,false);  					
+					byte[] contentInBytes = iniXML.getBytes();  
+					fop.write(contentInBytes);  
+					fop.flush();  
+					fop.close(); 												
+
 				}else{
 					System.err.println("Error: Could not locate "+workingDirectory+File.separator+fileName+" File");
 				}
-			} catch (FileNotFoundException e) {  
-				System.err.println("Error: Could not found file "+workingDirectory+File.separator+fileName);
 			} catch (IOException e) {  
 				System.err.println("Error: saving ini config to file"+e.getMessage());
 			}  
