@@ -5,14 +5,23 @@ import com.automature.zug.gui.BreakPointCellRenderer;
 import com.automature.zug.gui.CustomTableCellRenderer;
 import com.automature.zug.gui.CustomTableRowRenderer;
 import com.automature.zug.gui.ZugGUI;
+import com.automature.zug.gui.actionlistener.SheetTableModelListener;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import javax.swing.text.TableView;
+
 import java.awt.*;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
@@ -24,10 +33,9 @@ import java.util.Iterator;
 import java.util.Vector;
 
 
-public class TestCasesSheet {
+public class TestCasesSheet extends GenericSheet{
 
-
-    private Vector header;
+	private Vector header;
     private Vector data;
     private ArrayList<String> testCaseIDs = new ArrayList<String>();
     private	int actionColumn;
@@ -36,11 +44,16 @@ public class TestCasesSheet {
 
     JTable table = null;
 
+    public TestCasesSheet(Sheet sheet, String fileName) {
+    	super(sheet,new SheetSaver(sheet, 1, -2,fileName));	
+		// TODO Auto-generated constructor stub
+	}
+    
     public HashMap getMissingActionMap(){
         return missingActionMap;
     }
 
-    public void readHeader(Sheet sheet){
+    public void readHeader(){
 
         header=new Vector();
         Iterator it = sheet.rowIterator();
@@ -67,10 +80,10 @@ public class TestCasesSheet {
         }
     }
 
-    public void readData(Sheet mySheet){
+    public void readData(){
 
         data = new Vector();
-        Iterator it = mySheet.rowIterator();
+        Iterator it = sheet.rowIterator();
         it.next();
         int line=2;  // 1 is taken by the column header and to match the line numbers with actual spreadsheet
 
@@ -218,7 +231,34 @@ public class TestCasesSheet {
 
             }
         });
+        table.getModel().addTableModelListener(new SheetTableModelListener(sheetSaver));
+      /*  table.getModel().addTableModelListener(new TableModelListener() {
 
+            @Override
+            public void tableChanged(TableModelEvent tme) {
+            	System.out.println("table model sorurce "+tme.getSource().toString());
+            	TableModel tm=(TableModel)tme.getSource();
+                if (tme.getType() == TableModelEvent.UPDATE) {
+                    System.out.println("");
+                    System.out.println("Cell " + tme.getFirstRow() + ", "
+                            + tme.getColumn() + " changed. The new value: "
+                            +  tm.getValueAt(tme.getFirstRow(),
+                            tme.getColumn()));
+                }
+            }
+        });*/
+        
+     /*  final TableCellEditor tce=table.getDefaultEditor(String.class);
+        tce.addCellEditorListener(new CellEditorListener() {
+            public void editingCanceled(ChangeEvent e) {
+                System.out.println("The user canceled editing."+tce.getCellEditorValue());
+            }
+
+            public void editingStopped(ChangeEvent e) {
+                System.out.println("The user stopped editing successfully. "+tce.getCellEditorValue());
+            }
+        });*/
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         return panel;
     }
 

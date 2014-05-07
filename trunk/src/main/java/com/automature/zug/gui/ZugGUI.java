@@ -209,6 +209,9 @@ public class ZugGUI {
 
 	private static void loadSpreadSheet(String fileName) throws Exception {
 
+		if(spreadSheet!=null){
+			spreadSheet.releaseResources();
+		}
 		spreadSheet = new SpreadSheet();
 		spreadSheet.readSpreadSheet(fileName);
 	}
