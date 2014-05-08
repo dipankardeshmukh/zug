@@ -22,7 +22,7 @@ public class OptionsPanel extends JPanel{
 		setMinimumSize(new Dimension(767, 80));
 		//optionsPanel.setPreferredSize(new Dimension(767, 130));
         setBorder(border1);
-		setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width, 110));
+		setMaximumSize(new Dimension(3000, 110));
 		setBackground(Color.lightGray);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		debuggerControls=new DebuggerControls();
