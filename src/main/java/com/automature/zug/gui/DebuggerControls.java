@@ -87,8 +87,8 @@ public class DebuggerControls {
 
 		panel.add(debuugerToolBar);
 		panel.setMinimumSize(new Dimension(300,40));
-		panel.setPreferredSize(new Dimension(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,40)));
-		panel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,40));
+		panel.setPreferredSize(new Dimension(3000,40));
+		panel.setMaximumSize(new Dimension(3000,40));
 	//	panel.setPreferredSize(new Dimension(767,60));
 		panel.setVisible(true);
 		panel.setBackground(Color.WHITE);

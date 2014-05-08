@@ -20,8 +20,8 @@ public class CommandPanel extends JPanel{
 		setBackground(Color.WHITE);
 		setLayout(new BorderLayout(0,0));
 		setMinimumSize(new Dimension(300,30));
-		setPreferredSize(new Dimension(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,30)));
-		setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,30));
+		setPreferredSize(new Dimension(3000,30));
+		setMaximumSize(new Dimension(3000,30));
 		JScrollPane scrollPane_1 = new JScrollPane();
 		textArea_1 = new JTextArea();
 		add(scrollPane_1,BorderLayout.CENTER);

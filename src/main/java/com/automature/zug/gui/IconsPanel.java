@@ -245,8 +245,8 @@ public class IconsPanel {
 		iconPanel.setBackground(Color.lightGray);
 		iconPanel.setLayout(null);
 		iconPanel.setMinimumSize(size);
-		iconPanel.setPreferredSize(new Dimension(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,40)));
-		iconPanel.setMaximumSize(new Dimension(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,40));
+		iconPanel.setPreferredSize(new Dimension(3000,40));//java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,40)));
+		iconPanel.setMaximumSize(new Dimension(3000,40));
 		//iconPanel.setFloatable(true);
 
 		GuiConfig.loadIcons();
