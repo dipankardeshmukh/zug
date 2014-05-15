@@ -33,12 +33,12 @@ public class InProcessAtom  implements Atom{
 							&& action.arguments.get(i).endsWith("%")) {
 						String action_args = StringUtils.removeStart(
 								action.arguments.get(i), "$$");
-						action.arguments.set(i, Argument.NormalizeVariable(
+						action.arguments.set(i, Argument.DoSomeFineTuning(
 								action_args, threadID));
 					} else {
 						action.arguments.set(
 								i,
-								Argument.NormalizeVariable(
+								Argument.DoSomeFineTuning(
 										action.arguments.get(i), threadID));
 					}
 				}

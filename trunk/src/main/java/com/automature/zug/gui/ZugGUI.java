@@ -192,8 +192,12 @@ public class ZugGUI {
 		if (fileName != null) {
 			ZugGUI.setTitle(fileName.substring(fileName
 					.lastIndexOf("\\") + 1));
-			if(!reload)
+			
+			if(!reload){
 				ZugGUI.clearOptions();
+				IconsPanel.od.createPanels();
+			}
+				
 			
 			ZugGUI.loadSpreadSheet(fileName);
 			ZugGUI.addTestSuiteTabToDisplay(spreadSheet);
@@ -326,7 +330,7 @@ public class ZugGUI {
 
 	public static void addTestSuiteTabToDisplay(SpreadSheet sh) throws Exception {
 		guiDisplayPane.addSheetDisplayPane(sh);
-		IconsPanel.od.createPanels();
+		//
 	}
 
 	public static void bringTestSuiteTabToDisplay(SpreadSheet sh) throws Exception {

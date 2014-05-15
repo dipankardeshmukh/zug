@@ -17,7 +17,7 @@ public class Session implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Map<String,ArrayList<String>> recentlyUsedFiles;
+	private LinkedHashMap<String,ArrayList<String>> recentlyUsedFiles;
 	private LinkedHashSet<String> recentlyUsedDirectories;
 	
 	public Session() {
@@ -27,11 +27,17 @@ public class Session implements java.io.Serializable {
 	
 	public void addFile(String filename) {
 		addDirectory(filename);
+		if(recentlyUsedFiles.containsKey(filename)){
+			recentlyUsedFiles.remove(filename);
+		}
 		recentlyUsedFiles.put(filename, null);
 	}
 	
 	public void addFileWithSetting(String fileName,ArrayList<String> al) {
 		addDirectory(fileName);
+		if(recentlyUsedFiles.containsKey(fileName)){
+			recentlyUsedFiles.remove(fileName);
+		}
 		recentlyUsedFiles.put(fileName, al);
 	}
 	

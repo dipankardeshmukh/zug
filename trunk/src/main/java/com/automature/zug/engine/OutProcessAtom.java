@@ -473,9 +473,9 @@ public class OutProcessAtom implements Atom{
 						.format("OutProcessAtom/run : Working on Arguments[%d] = %s",
 								i, action.arguments.get(i).toString()));
 				arguments.append("\""
-						+ Argument.NormalizeVariable(action.arguments.get(i)
+						+ Argument.DoSomeFineTuning(action.arguments.get(i)
 								.toString(), threadID) + "\"");
-				arg.add(Argument.NormalizeVariable(action.arguments.get(i)
+				arg.add(Argument.DoSomeFineTuning(action.arguments.get(i)
 						.toString(), threadID));
 				arguments.append(" ");
 			}
