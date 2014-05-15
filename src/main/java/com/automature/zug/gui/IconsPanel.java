@@ -762,7 +762,6 @@ public class IconsPanel {
 			file.add(fileName);
 			ZugGUI.updateSession(file);
 		}
-
 	}
 
 	public static void setFileName(String file){
