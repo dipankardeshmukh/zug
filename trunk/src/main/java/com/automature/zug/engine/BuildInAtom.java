@@ -11,9 +11,9 @@ public class BuildInAtom implements Atom {
 	/**
 	 * @param args
 	 */
-	public static ArrayList<String> buildIns=new ArrayList<String>();
-	
-	static{
+	public static ArrayList<String> buildIns = new ArrayList<String>();
+
+	static {
 		buildIns.add("setcontextvar");
 		buildIns.add("unsetcontextvar");
 		buildIns.add("appendtocontextvar");
@@ -26,7 +26,56 @@ public class BuildInAtom implements Atom {
 		buildIns.add("#define_arg");
 		buildIns.add("#define");
 	}
-	
+
+	public void printExecutionStartedMessage(GTuple action, String arg)
+			throws Exception {
+		String typeName = null;
+		if (action instanceof Action) {
+			typeName = "Action";
+		} else {
+			typeName = "Verification";
+		}
+		Controller
+				.message(String.format("\n[%s] " + typeName
+						+ " %s Execution STARTED With Arguments %s",
+						action.stackTrace.toUpperCase(),
+						action.name.toUpperCase(), arg));
+	}
+
+	public void printExecutionStartedMessage(GTuple action, String threadID,
+			String typeName) throws Exception {
+
+		StringBuilder executionlist = new StringBuilder();
+
+		executionlist.append("[");
+		int cnt = 0;
+		for (String argument : action.arguments) {
+			cnt++;
+			String ctx_arg = Argument.NormalizeVariable((String) argument,
+					threadID);
+			executionlist.append(ctx_arg);
+			if (cnt == action.arguments.size()) {
+				break;
+			} else {
+				executionlist.append(",");
+			}
+
+		}
+		executionlist.append("]");
+
+		Controller.message(String.format("\n[%s] " + typeName
+				+ " %s Execution STARTED With Arguments %s",
+				action.stackTrace.toUpperCase(), action.name.toUpperCase(),
+				executionlist.toString()));
+
+	}
+
+	public void printSuccessFullExecutionMessage(GTuple action, String typeName) {
+		Controller.message(String.format("\n[%s] " + typeName
+				+ " %s SUCCESSFULLY Executed",
+				action.stackTrace.toUpperCase(),
+				action.name.toUpperCase()));
+	}
 
 	public void run(GTuple action, String threadID) throws Exception {
 
@@ -43,16 +92,10 @@ public class BuildInAtom implements Atom {
 					String arg = Argument.NormalizeVariable(
 							(String) action.arguments.get(0), threadID);
 
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s Execution STARTED With Arguments [%s]",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase(), arg));
+					printExecutionStartedMessage(action, arg);
 					Controller.CreateContextVariable(arg);
 
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s SUCCESSFULLY Executed",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase()));
+					printSuccessFullExecutionMessage(action, typeName);
 
 				} catch (Exception ex) {
 					Controller.message("Error:" + ex.getMessage());
@@ -61,31 +104,7 @@ public class BuildInAtom implements Atom {
 			} else if (action.arguments.size() > 1) {
 
 				try {
-					StringBuilder executionlist = new StringBuilder();
-
-					executionlist.append("[");
-					int cnt = 0;
-					for (String argument : action.arguments) {
-						cnt++;
-						String ctx_arg = Argument.NormalizeVariable(
-								(String) argument, threadID);
-						executionlist.append(ctx_arg);
-						if (cnt == action.arguments.size()) {
-							break;
-						} else {
-							executionlist.append(",");
-						}
-
-					}
-					executionlist.append("]");
-					Controller
-					.message(String
-							.format("\n[%s] "
-									+ typeName
-									+ " %s Execution STARTED With Arguments %s",
-									action.stackTrace.toUpperCase(),
-									action.name.toUpperCase(),
-									executionlist.toString()));
+					printExecutionStartedMessage(action, threadID, typeName);
 					for (String argument : action.arguments) {
 						String ctx_arg = Argument.NormalizeVariable(
 								(String) argument, threadID);
@@ -93,10 +112,7 @@ public class BuildInAtom implements Atom {
 						Controller.CreateContextVariable(ctx_arg);
 
 					}
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s SUCCESSFULLY Executed",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase()));
+					printSuccessFullExecutionMessage(action, typeName);
 				} catch (Exception ex) {
 					Controller.message("Error:" + ex.getMessage());
 					throw ex;
@@ -113,15 +129,9 @@ public class BuildInAtom implements Atom {
 				try {
 					String arg = Argument.NormalizeVariable(
 							(String) action.arguments.get(0), threadID);
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s Execution STARTED With Arguments %s",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase(), arg));
+					printExecutionStartedMessage(action, arg);
 					Controller.DestroyContextVariable(arg);
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s SUCCESSFULLY Executed",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase()));
+					printSuccessFullExecutionMessage(action, typeName);
 
 				} catch (Exception ex) {
 					Controller.message("Error:" + ex.getMessage());
@@ -130,51 +140,21 @@ public class BuildInAtom implements Atom {
 			} else if (action.arguments.size() > 1) {
 
 				try {
-					StringBuilder executionlist = new StringBuilder();
-
-					executionlist.append("[");
-					int cnt = 0;
-					for (String argument : action.arguments) {
-						cnt++;
-						String ctx_arg = Argument.NormalizeVariable(
-								(String) argument, threadID);
-						executionlist.append(ctx_arg);
-						if (cnt == action.arguments.size()) {
-							break;
-						} else {
-							executionlist.append(",");
-						}
-
-					}
-					executionlist.append("]");
-					Controller
-					.message(String
-							.format("\n[%s] "
-									+ typeName
-									+ " %s Execution STARTED With Arguments %s",
-									action.stackTrace.toUpperCase(),
-									action.name.toUpperCase(),
-									executionlist.toString()));
+					printExecutionStartedMessage(action, threadID, typeName);
 					for (String argument : action.arguments) {
 						String ctx_arg = Argument.NormalizeVariable(
 								(String) argument, threadID);
 
 						Controller.DestroyContextVariable(ctx_arg);
 					}
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s SUCCESSFULLY Executed",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase()));
+					printSuccessFullExecutionMessage(action, typeName);
 				} catch (Exception ex) {
 					Controller.message("Error:" + ex.getMessage());
 					throw ex;
 
 				}
 			} else {
-				Controller.message(String.format("\n[%s] " + typeName
-						+ " %s SUCCESSFULLY Executed",
-						action.stackTrace.toUpperCase(),
-						action.name.toUpperCase()));
+				printSuccessFullExecutionMessage(action, typeName);
 			}
 		} else if (action.name.trim().compareToIgnoreCase("appendtocontextvar") == 0) {
 
@@ -240,11 +220,7 @@ public class BuildInAtom implements Atom {
 					ContextVar.alterContextVar(contextVarName, value
 							+ appendValueBuilder.toString());
 
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s SUCCESSFULLY Executed",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase()));
-
+					printSuccessFullExecutionMessage(action, typeName);
 				} catch (Exception e) {
 					Controller.message("Error:" + e.getMessage());
 					throw e;
@@ -279,16 +255,10 @@ public class BuildInAtom implements Atom {
 					}
 				}
 
-				Controller.message("\n\n"+String.format("[%s] " + typeName
-						+ " %s Execution STARTED With Arguments %s ",
-						action.stackTrace.toUpperCase(), action.name.toUpperCase(),
-						action.arguments));
+				printExecutionStartedMessage(action, action.arguments.toString());
 				// RunVerification(action, threadID);
 			} else {
-				Controller.message("\n\n"+String.format("[%s] " + typeName
-						+ " %s Execution STARTED With Arguments %s ",
-						action.stackTrace.toUpperCase(), action.name.toUpperCase(),
-						action.arguments));
+				printExecutionStartedMessage(action, action.arguments.toString());
 			}
 		} else if (action.name.trim().equalsIgnoreCase("GetValueAtIndex")) {
 			if (action.arguments.size() == 3) {
@@ -299,10 +269,8 @@ public class BuildInAtom implements Atom {
 							(String) action.arguments.get(1), threadID);
 					String arg3 = Argument.NormalizeVariable(
 							(String) action.arguments.get(2), threadID);
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s Execution STARTED With Arguments %s",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase(), action.arguments));
+
+					printExecutionStartedMessage(action, threadID, typeName);
 
 					String args_list[] = arg1.split(",");
 
@@ -312,10 +280,7 @@ public class BuildInAtom implements Atom {
 								+ "="
 								+ args_list[Integer.valueOf(arg2) - 1].replace(
 										"{", "").replace("}", ""));
-						Controller.message(String.format("\n[%s] " + typeName
-								+ " %s SUCCESSFULLY Executed",
-								action.stackTrace.toUpperCase(),
-								action.name.toUpperCase()));
+						printSuccessFullExecutionMessage(action, typeName);
 					} else {
 						throw new Exception(
 								"\n\tIndex is greater than MVM argument length ");
@@ -327,10 +292,10 @@ public class BuildInAtom implements Atom {
 				}
 			} else {
 				Controller
-				.message("Error:"
-						+ String.format(
-								"\n\t %s Number of argument mismatch. Excpected argument length 3",
-								action.name));
+						.message("Error:"
+								+ String.format(
+										"\n\t %s Number of argument mismatch. Excpected argument length 3",
+										action.name));
 				throw new Exception(
 						String.format(
 								"\n\t %s Number of argument mismatch. Excpected argument length 3",
@@ -346,10 +311,7 @@ public class BuildInAtom implements Atom {
 							(String) action.arguments.get(1), threadID);
 					String arg3 = Argument.NormalizeVariable(
 							(String) action.arguments.get(2), threadID);
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s Execution STARTED With Arguments %s",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase(), action.arguments));
+					printExecutionStartedMessage(action, threadID, typeName);
 
 					String args_list[] = arg1.split(",");
 					boolean element_present = false;
@@ -374,10 +336,7 @@ public class BuildInAtom implements Atom {
 					// message(args_list[Integer.valueOf(arg2)].replace("{","").replace("}",""));
 					Controller.CreateContextVariable(arg3 + "="
 							+ new Integer(count_index).toString());
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s SUCCESSFULLY Executed",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase()));
+					printSuccessFullExecutionMessage(action, typeName);
 
 				} catch (Exception ex) {
 					Controller.message("Error:" + ex.getMessage());
@@ -386,10 +345,10 @@ public class BuildInAtom implements Atom {
 				}
 			} else {
 				Controller
-				.message("Error: "
-						+ String.format(
-								"\n\t %s Number of argument mismatch. Excpected argument length 3",
-								action.name));
+						.message("Error: "
+								+ String.format(
+										"\n\t %s Number of argument mismatch. Excpected argument length 3",
+										action.name));
 				throw new Exception(
 						String.format(
 								"\n\t %s Number of argument mismatch. Excpected argument length 3",
@@ -407,11 +366,7 @@ public class BuildInAtom implements Atom {
 							(String) action.arguments.get(2), threadID);
 					String arg4 = Argument.NormalizeVariable(
 							(String) action.arguments.get(3), threadID);
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s Execution STARTED With Arguments %s",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase(), action.arguments));
-
+					printExecutionStartedMessage(action, threadID, typeName);
 					String args1_list[] = arg1.split(",");
 					String args2_list[] = arg2.split(",");
 					if (args1_list.length == args2_list.length) {
@@ -438,10 +393,7 @@ public class BuildInAtom implements Atom {
 								+ "="
 								+ args1_list[count_source_index].replace("{",
 										"").replace("}", ""));
-						Controller.message(String.format("\n[%s] " + typeName
-								+ " %s SUCCESSFULLY Executed",
-								action.stackTrace.toUpperCase(),
-								action.name.toUpperCase()));
+						printSuccessFullExecutionMessage(action, typeName);
 
 					} else {
 						throw new Exception(
@@ -454,10 +406,10 @@ public class BuildInAtom implements Atom {
 				}
 			} else {
 				Controller
-				.message("Error: "
-						+ String.format(
-								"\n\t %s Number of argument mismatch. Excpected argument length 4",
-								action.name));
+						.message("Error: "
+								+ String.format(
+										"\n\t %s Number of argument mismatch. Excpected argument length 4",
+										action.name));
 				throw new Exception(
 						String.format(
 								"\n\t %s Number of argument mismatch. Excpected argument length 4",
@@ -468,20 +420,15 @@ public class BuildInAtom implements Atom {
 			int arg_size = action.arguments.size();
 
 			if (arg_size == 1) {
-				Controller.message(String.format("\n[%s] " + typeName
-						+ " %s Execution STARTED With Arguments " + "%s",
-						action.stackTrace.toUpperCase(),
-						action.name.toUpperCase(), action.arguments));
+				printExecutionStartedMessage(action, Argument.NormalizeVariable(action.arguments.get(0), threadID));
+
 				try {
 					long timetowait = Long.valueOf(Argument.NormalizeVariable(
 							action.arguments.get(0), threadID)) * 1000;
 					Thread.sleep(timetowait);
 					// message("Sleeping done");
 					// action.wait(timetowait);
-					Controller.message(String.format("\n[%s] " + typeName
-							+ " %s SUCCESSFULLY Executed",
-							action.stackTrace.toUpperCase(),
-							action.name.toUpperCase()));
+					printSuccessFullExecutionMessage(action, typeName);
 				} catch (Exception e) {
 					Controller.message("Error:" + e.getMessage());
 					throw e;

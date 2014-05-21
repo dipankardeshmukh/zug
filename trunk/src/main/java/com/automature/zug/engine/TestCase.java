@@ -589,8 +589,16 @@ class TestCase
 							if (Controller.opts.debugMode) {
 								((Thread) ThreadPool.get(t)).join();
 							} else {
-								((Thread) ThreadPool.get(t))
-								.join(testStepTimeout);
+								try{
+									int stepTimeout = Integer.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000;
+									((Thread) ThreadPool.get(t))
+									.join(stepTimeout);
+								}catch(NumberFormatException nfe){
+									((Thread) ThreadPool.get(t)).join(testStepTimeout);
+								}catch(Exception npe){
+									((Thread) ThreadPool.get(t)).join(testStepTimeout);
+								}
+								
 								if (((Thread) ThreadPool.get(t)).isAlive()) {
 									((Thread) ThreadPool.get(t)).interrupt();
 									TestSuite._testStepStopper.put(this.parentTestCaseID,
@@ -671,8 +679,15 @@ class TestCase
 					if (Controller.opts.debugMode) {
 						((Thread) ThreadPool.get(t)).join();
 					} else {
-						((Thread) ThreadPool.get(t))
-						.join(testStepTimeout);
+						try{
+							int stepTimeout = Integer.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000;
+							((Thread) ThreadPool.get(t))
+							.join(stepTimeout);
+						}catch(NumberFormatException nfe){
+							((Thread) ThreadPool.get(t)).join(testStepTimeout);
+						}catch(Exception npe){
+							((Thread) ThreadPool.get(t)).join(testStepTimeout);
+						}
 						if (((Thread) ThreadPool.get(t)).isAlive()) {
 							((Thread) ThreadPool.get(t)).interrupt();
 							TestSuite._testStepStopper.put(this.parentTestCaseID, true);
@@ -807,9 +822,15 @@ class TestCase
 										if (Controller.opts.debugMode) {
 											((Thread) ThreadPool.get(t)).join();
 										} else {
-											((Thread) ThreadPool.get(t))
-											.join(testStepTimeout);
-
+											try{
+												int stepTimeout = Integer.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000;
+												((Thread) ThreadPool.get(t))
+												.join(stepTimeout);
+											}catch(NumberFormatException nfe){
+												((Thread) ThreadPool.get(t)).join(testStepTimeout);
+											}catch(Exception npe){
+												((Thread) ThreadPool.get(t)).join(testStepTimeout);
+											}
 											if (((Thread) ThreadPool.get(t))
 													.isAlive()) {
 												((Thread) ThreadPool.get(t)).interrupt();
@@ -930,8 +951,15 @@ class TestCase
 										if (Controller.opts.debugMode) {
 											((Thread) ThreadPool.get(t)).join();
 										} else {
-											((Thread) ThreadPool.get(t))
-											.join(testStepTimeout);
+											try{
+												int stepTimeout = Integer.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000;
+												((Thread) ThreadPool.get(t))
+												.join(stepTimeout);
+											}catch(NumberFormatException nfe){
+												((Thread) ThreadPool.get(t)).join(testStepTimeout);
+											}catch(Exception npe){
+												((Thread) ThreadPool.get(t)).join(testStepTimeout);
+											}
 											if (((Thread) ThreadPool.get(t))
 													.isAlive()) {
 												((Thread) ThreadPool.get(t)).interrupt();
@@ -998,8 +1026,15 @@ class TestCase
 						if (Controller.opts.debugMode) {
 							((Thread) ThreadPool.get(t)).join();
 						} else {
-							((Thread) ThreadPool.get(t))
-							.join(testStepTimeout);
+							try{
+								int stepTimeout = Integer.parseInt(Controller.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000;
+								((Thread) ThreadPool.get(t))
+								.join(stepTimeout);
+							}catch(NumberFormatException nfe){
+								((Thread) ThreadPool.get(t)).join(testStepTimeout);
+							}catch(Exception npe){
+								((Thread) ThreadPool.get(t)).join(testStepTimeout);
+							}
 
 							if (((Thread) ThreadPool.get(t)).isAlive()) {
 								((Thread) ThreadPool.get(t)).interrupt();
@@ -1261,9 +1296,9 @@ class TestCase
 				tempValue = Utility.TrimStartEnd(tempValue, '$', 1);
 				tempValue = tempValue.replaceAll("%", "");
 				tempValue = ContextVar.getContextVar(tempValue);
-				System.out.println("tempvalue "+tempValue);
+				//System.out.println("tempvalue "+tempValue);
 				tempValue= getContinuityValue(tempValue);
-				System.out.println("temp value "+tempValue);
+				//System.out.println("temp value "+tempValue);
 				// message("EQUAL contextvariablemvm value"+tempValue);
 			} else if (tempValue.startsWith("$$") && tempValue.contains("#")) {
 				//	Controller. message("\nGetValue:/This is Indexed = " + tempValue);
@@ -1298,9 +1333,9 @@ class TestCase
 			entireValue = Utility.TrimStartEnd(entireValue, '$', 1);
 			entireValue = entireValue.replaceAll("%", "");
 			tempValue = ContextVar.getContextVar(entireValue);
-			System.out.println("tempvalue "+tempValue);
+			//System.out.println("tempvalue "+tempValue);
 			tempValue=getContinuityValue(tempValue);
-			System.out.println("temp value "+tempValue);
+			//System.out.println("temp value "+tempValue);
 		}else if (entireValue.startsWith("$") && entireValue.contains("#")) {
 			//	System.out.println("In else entire value="+entireValue.toLowerCase());
 			tempValue = Excel._indexedMacroTable.get(entireValue.toLowerCase());
@@ -1330,7 +1365,7 @@ class TestCase
 			return valueToExpand;
 		}
 		if(valueToExpand.contains("..")&&valueToExpand.startsWith("{")&&valueToExpand.endsWith("}")){
-			
+
 			valueToExpand=valueToExpand.substring(1,valueToExpand.length()-1);
 			String[] stringsToCompare = valueToExpand.split("\\..");
 
@@ -1364,29 +1399,29 @@ class TestCase
 				return valueToExpand;
 			}
 			if (firstIntVal > 0 && secondIntVal > 0) {
-				Log.Debug("TestCase/getContinuityValu : firstIntVal && secondIntVal are integers.");
+				Log.Debug("TestCase/getContinuityValue : firstIntVal && secondIntVal are integers.");
 				if (firstIntVal > secondIntVal) {
 					Log.Debug(String
-							.format("TestCase/getContinuityValu : firstIntVal = %s  > secondIntVal =%s ",
+							.format("TestCase/getContinuityValue : firstIntVal = %s  > secondIntVal =%s ",
 									firstIntVal, secondIntVal));
 					stringToReturnTemp = new String[firstIntVal - secondIntVal + 1];
 					for (int i = firstIntVal; i >= secondIntVal; --i) {
 						Log.Debug(String.format(
-								"TestCase/getContinuityValu : Working on Index = %d", i));
+								"TestCase/getContinuityValue : Working on Index = %d", i));
 						stringToReturnTemp[firstIntVal - i] = "" + i;
 						Log.Debug(String
-								.format("TestCase/getContinuityValu : stringToReturn[firstIntVal -i]  = %s",
+								.format("TestCase/getContinuityValue : stringToReturn[firstIntVal -i]  = %s",
 										stringToReturnTemp[firstIntVal - i]));
 					}
 				} else {
-					Log.Debug(String.format("TestCase/getContinuityValu : firstIntVal ="
+					Log.Debug(String.format("TestCase/getContinuityValue : firstIntVal ="
 							+ firstIntVal + "  <= secondIntVal = " + secondIntVal));
 					stringToReturnTemp = new String[secondIntVal - firstIntVal + 1];
 					for (int i = firstIntVal; i <= secondIntVal; ++i) {
-						Log.Debug("\nTestCase/getContinuityValu : Working on Index = " + i
+						Log.Debug("\nTestCase/getContinuityValue : Working on Index = " + i
 								+ "\n");
 						stringToReturnTemp[i - firstIntVal] = "" + i;
-						Log.Debug("TestCase/getContinuityValu : stringToReturn[i - firstIntVal]  = "
+						Log.Debug("TestCase/getContinuityValue : stringToReturn[i - firstIntVal]  = "
 								+ stringToReturnTemp[i - firstIntVal]);
 					}
 				}
