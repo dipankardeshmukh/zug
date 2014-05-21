@@ -397,9 +397,11 @@ public class SpreadSheet {
 		}
 		Iterator it=includeFiles.keySet().iterator();
 		while(it.hasNext()){
-			SpreadSheet sh=(SpreadSheet)it.next();
-			sh.releaseResources();
+			SpreadSheet sh=(SpreadSheet)includeFiles.get(it.next());
+				sh.releaseResources();
 		}
 	}
+
+	
 
 }
