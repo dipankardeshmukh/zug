@@ -161,7 +161,22 @@ public class GTuple {
 											+ tempList.size());
 						}
 					}
-					tempActntestcase.run();
+					boolean silentExecOn=false;
+					try{
+						if(this.property!=null &&this.property.contains("silent")){
+							silentExecOn=true;
+							Controller.message("Running Molecule : "
+									+ tempActntestcase.stackTrace+" with silent mode on");
+							Controller.silentMolExecution=true;
+							
+						}
+						tempActntestcase.run();	
+					}finally{
+						if(silentExecOn){
+							Controller.silentMolExecution=false;
+						}
+					}
+					
 					exceptionOccured = false;
 					if (this.isNegative) {
 						throw new Exception(

@@ -50,7 +50,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.3.7";
+	private static String Version = "ZUG Premium 7.3.8";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -73,7 +73,7 @@ public class Controller extends Thread {
 	public static String ZUG_LOGFILENAME = "";
 	// Initiating AtomInvoker
 	// public static AtomInvoker invokeAtoms=null;
-    public static final String inprocess_packages_file_path = "//root//inprocesspackages//file-path//inprocesspackage";
+	public static final String inprocess_packages_file_path = "//root//inprocesspackages//file-path//inprocesspackage";
 	public static final String inprocess_jar_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
 	public static final String inprocess_jar_xml_tag_attribute_name = "name";
 	public static final String native_inprocess_xml_tag_path = "//root//inprocesspackages//inprocesspackage";
@@ -93,6 +93,7 @@ public class Controller extends Thread {
 	static boolean stop=false;
 	static HashMap <String,ArrayList<Integer>> breakpoints=new HashMap <String,ArrayList<Integer>> ();
 	static boolean errorOccured=false;
+	static boolean silentMolExecution=false;
 
 	// Hashtable to store the file name as key and its desired macro column as value;
 	public static HashMap<String,String> macroColumnValue=new HashMap<String, String>();
@@ -102,7 +103,7 @@ public class Controller extends Thread {
 	public static HashMap<String ,List> atomPerformance=new HashMap<String,List>();
 	boolean listen=true;
 	ServerSocket sock = null;
-  private static int testCaseFailCount = 0;
+	private static int testCaseFailCount = 0;
 	/*
 	 * Constructor that initializes the program options.
 	 */
@@ -112,7 +113,7 @@ public class Controller extends Thread {
 		stepInto=false;
 	}
 
-  public static void incrementTestCaseFailCount(){
+	public static void incrementTestCaseFailCount(){
 		testCaseFailCount++;
 	}
 
@@ -378,10 +379,10 @@ public class Controller extends Thread {
 	}
 
 
-    public static void removeAllBreakPoints(){
-        if(breakpoints!=null)
-            breakpoints.clear();
-    }
+	public static void removeAllBreakPoints(){
+		if(breakpoints!=null)
+			breakpoints.clear();
+	}
 
 
 	public static void setStepOver(){
@@ -479,14 +480,16 @@ public class Controller extends Thread {
 	public static void message(String msg) {
 		Log.Result(msg);
 		if (opts.verbose) {
-			if(guiFlag){
-				if(msg.length()>MAX_SCREEN_CHAR){
-					msg=msg.substring(0,MAX_SCREEN_CHAR)+"......message truncated";//System.out.println(msg.substring(0, 1000)+"......message truncated");
-				}//else{
+			if(!silentMolExecution){
+				if(guiFlag){
+					if(msg.length()>MAX_SCREEN_CHAR){
+						msg=msg.substring(0,MAX_SCREEN_CHAR)+"......message truncated";//System.out.println(msg.substring(0, 1000)+"......message truncated");
+					}//else{
 					System.out.println(msg);
-				//}
-			}else{
-				System.out.println(msg);				
+					//}
+				}else{
+					System.out.println(msg);				
+				}
 			}
 		}
 	}
@@ -539,14 +542,14 @@ public class Controller extends Thread {
 			testCaseResult
 			.set_testExecution_Time(executedTestCase[i].timeToExecute);
 
-            if(executedTestCase[i].testCaseStatus.equalsIgnoreCase("running")){
-                testCaseResult.set_status("abort");
-            }
-            else{
-                testCaseResult.set_status(executedTestCase[i].testCaseStatus);
-            }
+			if(executedTestCase[i].testCaseStatus.equalsIgnoreCase("running")){
+				testCaseResult.set_status("abort");
+			}
+			else{
+				testCaseResult.set_status(executedTestCase[i].testCaseStatus);
+			}
 
-            testCaseResult
+			testCaseResult
 			.set_comments(executedTestCase[i].testCaseExecutionComments);
 
 			message("\n" + testCaseResult.get_testCaseId() + "\t"
@@ -722,20 +725,20 @@ public class Controller extends Thread {
 				if(splits==null){
 					continue;
 				}
-                File f = new File(splits);
+				File f = new File(splits);
 
-                if(f.isAbsolute()){
-                    if(!locations.contains(splits)){
-                        locations.add(splits);
-                    }
-                }else{
-                    if (testSuiteLoc != null) {
-                        newLocation = testSuiteLoc + File.separator + splits;
-                    } else {
-                        newLocation = opts.filelocation + splits;
-                    }
-                    locations.add(newLocation);
-                }
+				if(f.isAbsolute()){
+					if(!locations.contains(splits)){
+						locations.add(splits);
+					}
+				}else{
+					if (testSuiteLoc != null) {
+						newLocation = testSuiteLoc + File.separator + splits;
+					} else {
+						newLocation = opts.filelocation + splits;
+					}
+					locations.add(newLocation);
+				}
 			}
 			String str="";
 			for(String loc:locations){
@@ -1275,7 +1278,7 @@ public class Controller extends Thread {
 		breakpoints.clear();
 		macroColumnValue.clear();
 		macrocommandlineinputs.clear();
-	//	invokeAtoms.clear();
+		//	invokeAtoms.clear();
 		reporter=null;
 		opts =null;
 		testsuite=null;
@@ -1356,10 +1359,10 @@ public class Controller extends Thread {
 		}
 	}
 
-	
-	
+
+
 	public Hashtable getConnectionParams(){
-		
+
 		Hashtable<String,String> ht=new Hashtable<String,String>();
 		ht.put("dbUserName".toLowerCase(), dbUserName);
 		ht.put("dBHostName".toLowerCase(),dBHostName );
@@ -1482,7 +1485,7 @@ public class Controller extends Thread {
 	}
 
 
-/*	private static void updateTextArea(final String text) {
+	/*	private static void updateTextArea(final String text) {
 		//  SwingUtilities.invokeLater(new Runnable() {
 		//   public void run() {
 		ZugGUI.message(text);
@@ -1629,24 +1632,24 @@ public class Controller extends Thread {
 			}
 		}
 
-        Controller.harnessPIDValue = Integer
+		Controller.harnessPIDValue = Integer
 				.parseInt((java.lang.management.ManagementFactory
 						.getRuntimeMXBean().getName().split("@"))[0]);
 
 		logger=new Log();
-        System.setProperty("ZUG_LOGFILENAME",ZUG_LOGFILENAME);
+		System.setProperty("ZUG_LOGFILENAME",ZUG_LOGFILENAME);
 		opts =new ProgramOptions();
 		testsuite=new TestSuite();
 		Controller.readExcel = new Excel();
 
 		final Controller controller = new Controller();
 		String frameWork="";
-	//	controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
-		
+		//	controller.CreateContextVariable("ZUG_LOGFILENAME="+ZUG_LOGFILENAME);
+
 		ContextVar.setContextVar("ZUG_LOGFILENAME",Controller.ZUG_LOGFILENAME);
-		
+
 		ContextVar.setContextVar("ZEnv_Values", SysEnv.getEnvProps());
-		
+
 		StringBuilder cmdinputsargs = new StringBuilder();
 		for (String cmdinputs : args) {
 			cmdinputsargs.append(cmdinputs);
@@ -1656,8 +1659,8 @@ public class Controller extends Thread {
 		if(!guiFlag){
 			Controller.loadInProcesses();
 		}
-		
-		
+
+
 		try {
 			Log.Debug("Controller/Main : Calling ProgramOptions.parse() to Parse program argument");
 			opts.parse(args);
@@ -1962,14 +1965,14 @@ public class Controller extends Thread {
 			String testSuiteTimeout=null;
 			try{
 				testSuiteTimeout=Controller.ReadContextVariable("ZUG_TESTSUITE_TIMEOUT");
-				
+
 			}catch(Exception e){
-				
+
 			}
 			if(testSuiteTimeout==null){
 				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
 			}
-            long initExecTime = controller.testsuite.waitForInitToComplete(Integer.parseInt(testSuiteTimeout));
+			long initExecTime = controller.testsuite.waitForInitToComplete(Integer.parseInt(testSuiteTimeout));
 
 			if(opts.dbReporting){
 				Thread dbStimulator = new Thread(new Runnable() {
@@ -1987,24 +1990,24 @@ public class Controller extends Thread {
 				});
 				dbStimulator.start();
 			}
-          //  System.out.println(Integer.parseInt(controller.ReadContextVariable(
-            //        "ZUG_TESTSUITE_TIMEOUT"))+ " "+ initExecTime);
+			//  System.out.println(Integer.parseInt(controller.ReadContextVariable(
+			//        "ZUG_TESTSUITE_TIMEOUT"))+ " "+ initExecTime);
 			try{
 				testSuiteTimeout=null;
 				testSuiteTimeout=Controller.ReadContextVariable("ZUG_TESTSUITE_TIMEOUT");
-				
+
 			}catch(Exception e){
-				
+
 			}
 			if(testSuiteTimeout==null){
 				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
 			}
 			if(((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime ) < 0)
-            {
-                thread.interrupt();
-            }else{
-                thread.join((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime);
-            }
+			{
+				thread.interrupt();
+			}else{
+				thread.join((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime);
+			}
 
 
 			tm.Stop();
@@ -2019,7 +2022,7 @@ public class Controller extends Thread {
 			if(stop||Controller.errorOccured){
 				controller.DoHarnessCleanup();
 				System.gc();
-		
+
 				return;
 			}
 			// controller.executionTime = (int)(tm.Duration() / ((double)1000));
@@ -2066,7 +2069,7 @@ public class Controller extends Thread {
 			Log.Error("\nController/Main : Exception Raised while executing the Test Cases in Controller. Exception is "
 					+ ex.getMessage() + " and Stack Trace is : \n");
 			ex.printStackTrace();
-			
+
 
 		}
 
