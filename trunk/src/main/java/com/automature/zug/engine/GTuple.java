@@ -163,7 +163,7 @@ public class GTuple {
 					}
 					boolean silentExecOn=false;
 					try{
-						if(this.property!=null &&this.property.contains("silent")){
+						if(this.property!=null &&this.property.toLowerCase().contains("silent")){
 							silentExecOn=true;
 							Controller.message("Running Molecule : "
 									+ tempActntestcase.stackTrace+" with silent mode on");
@@ -171,6 +171,12 @@ public class GTuple {
 							
 						}
 						tempActntestcase.run();	
+						if(silentExecOn){
+							silentExecOn=false;
+							Controller.silentMolExecution=false;
+							Controller.message("Successfully Executed Molecule : "
+									+ tempActntestcase.stackTrace+" with silent mode on");
+						}
 					}finally{
 						if(silentExecOn){
 							Controller.silentMolExecution=false;
