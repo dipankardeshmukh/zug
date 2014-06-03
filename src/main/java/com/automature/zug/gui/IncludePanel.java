@@ -151,6 +151,7 @@ public class IncludePanel extends JPanel {
 	}
 	
 	private void chooseFile() throws Exception {
+		
 		JFileChooser chooser = GuiUtils.chooseFile();
 		String fileName=null;
 		if (chooser != null) {
@@ -159,6 +160,7 @@ public class IncludePanel extends JPanel {
 		if(fileName!=null){
 			if(!listModel.contains(fileName)){
 				listModel.addElement(fileName);
+				ZugGUI.addIncludeSheet(fileName);
 			}
 		}
 	}
@@ -172,6 +174,7 @@ public class IncludePanel extends JPanel {
 
             try {
                 chooseFile();
+                
             } catch (Exception e1) {
                 Log.Error("IncludePanel/SwingAction: Error while choosing file. "+e1.getMessage());
             }
@@ -191,6 +194,7 @@ public class IncludePanel extends JPanel {
 			}else{
 				int pos=list.getSelectedIndex();
 				if(pos!=-1){
+					ZugGUI.removeIncludeSheet((String)listModel.get(pos));
 					listModel.remove(pos);
 				}
 			}			

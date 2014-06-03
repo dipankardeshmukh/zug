@@ -228,6 +228,7 @@ public class ZugGUI {
 	}
 
 	public static void runZug(){
+		
 		if(IconsPanel.getFileName()==null){
 			JOptionPane.showMessageDialog(frame, "Please choose a test suite first");
 			return;
@@ -252,6 +253,7 @@ public class ZugGUI {
 		//updateFrame();
 		try{
 		//	System.out.println(sessionHandler.getSession().getTestSuiteFiles());
+			
 			Controller.oldmain(params.toArray(new String[params.size()]));
 		}catch(Throwable t){
 			Log.Error(t.getMessage());
@@ -404,7 +406,18 @@ public class ZugGUI {
 	}
 
 	public void addSheets(HashMap<String, String> nameSpace, String[] sheets) {
-		ZugGUI.getSheetDisplayPane().addExtraSheets(nameSpace, sheets);
+		//ZugGUI.getSheetDisplayPane().addExtraSheets(nameSpace, sheets);
+		//guiDisplayPane.refreshTaskPane();
+
+	}
+	public static void addIncludeSheet(String sheet) throws Exception {
+
+		ZugGUI.getSheetDisplayPane().addIncludeSheet(sheet);
+		guiDisplayPane.refreshTaskPane();
+
+	}
+	public static void removeIncludeSheet(String sheet) {
+		ZugGUI.getSheetDisplayPane().removeIncludeSheet(sheet);
 		guiDisplayPane.refreshTaskPane();
 
 	}

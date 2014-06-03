@@ -3,6 +3,7 @@ package com.automature.zug.gui;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
+
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -14,11 +15,17 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -33,12 +40,16 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.AbstractAction;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Action;
 
+import com.automature.zug.gui.components.MacroColumns;
+import com.automature.zug.gui.sheets.SpreadSheet;
 import com.automature.zug.util.Log;
+
 import org.apache.commons.lang.StringUtils;
 
 public class OtherOptionPanel extends JPanel {
@@ -53,10 +64,11 @@ public class OtherOptionPanel extends JPanel {
 	private JSpinner spinner_1;
 	private JComboBox comboBox_2;
 	private JComboBox comboBox_1;
-	private JComboBox comboBox;
 	private final Action action_1 = new SwingAction_1();
 	private final Action action_2 = new SwingAction_2();
 	private final Action action_3 = new SwingAction_3();
+	private MacroColumnPanel panel;
+	
 
 	/**
 	 * Create the panel.
@@ -75,10 +87,10 @@ public class OtherOptionPanel extends JPanel {
 		panel_2.setBackground(Color.WHITE);
 		panel_1.add(panel_2, BorderLayout.NORTH);
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
-		gbl_panel_2.columnWidths = new int[]{0, 0, 0};
-		gbl_panel_2.rowHeights = new int[]{0, 0, 0, 0, 0};
-		gbl_panel_2.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel_2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_2.columnWidths = new int[] {0, 0};
+		gbl_panel_2.rowHeights = new int[] {30, 30, 30};
+		gbl_panel_2.columnWeights = new double[]{0.0, 1.0};
+		gbl_panel_2.rowWeights = new double[]{0.0, 0.0, 0.0};
 		panel_2.setLayout(gbl_panel_2);
 		
 		JLabel lblAtomPath = new JLabel("Atom Path");
@@ -110,41 +122,6 @@ public class OtherOptionPanel extends JPanel {
 		gbc_btnBrowse.gridy = 1;
 		panel_2.add(btnBrowse, gbc_btnBrowse);
 		
-		JLabel lblNewLabel_1 = new JLabel("Macro Column");
-		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-		gbc_lblNewLabel_1.fill = GridBagConstraints.BOTH;
-		gbc_lblNewLabel_1.ipady = 5;
-		gbc_lblNewLabel_1.ipadx = 5;
-		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_1.gridx = 0;
-		gbc_lblNewLabel_1.gridy = 2;
-		panel_2.add(lblNewLabel_1, gbc_lblNewLabel_1);
-		
-		comboBox = new JComboBox();
-		comboBox.setEditable(true);
-		comboBox.addItem("");
-		comboBox.setUI(new BasicComboBoxUI() {
-			@Override
-			protected JButton createArrowButton() {
-				return new JButton() {
-					@Override
-					public int getWidth() {
-						return 0;
-					}
-				};
-			}
-		});
-		comboBox.setBorder(new LineBorder(getForeground()));
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.ipady = 5;
-		gbc_comboBox.ipadx = 5;
-		gbc_comboBox.insets = new Insets(0, 0, 5, 0);
-		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox.gridx = 1;
-		gbc_comboBox.gridy = 2;
-		panel_2.add(comboBox, gbc_comboBox);
-		
 		JLabel lblNewLabel_2 = new JLabel("Macro/Other");
 		lblNewLabel_2.setToolTipText("Maco values and other values can be send e.g, -$test=Testing -logfileName=tuesday-16-05-13");
 		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
@@ -155,7 +132,7 @@ public class OtherOptionPanel extends JPanel {
 		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_2.insets = new Insets(0, 0, 0, 5);
 		gbc_lblNewLabel_2.gridx = 0;
-		gbc_lblNewLabel_2.gridy = 3;
+		gbc_lblNewLabel_2.gridy = 2;
 		panel_2.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
 		comboBox_1 = new JComboBox();
@@ -178,55 +155,80 @@ public class OtherOptionPanel extends JPanel {
 		gbc_comboBox_1.ipadx = 5;
 		gbc_comboBox_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox_1.gridx = 1;
-		gbc_comboBox_1.gridy = 3;
+		gbc_comboBox_1.gridy = 2;
 		panel_2.add(comboBox_1, gbc_comboBox_1);
 		
 		JPanel panel_3 = new JPanel();
-		panel_1.add(panel_3, BorderLayout.CENTER);
+		panel_1.add(panel_3, BorderLayout.SOUTH);
 		panel_3.setLayout(null);
-		
+		panel_3.setMinimumSize(new Dimension(200, 100));
+		panel_3.setPreferredSize(new Dimension(200, 100));
 		chckbxRepeat = new JCheckBox("Repeat");
 		chckbxRepeat.setAction(action);
-		chckbxRepeat.setBounds(6, 18, 97, 23);
+		chckbxRepeat.setBounds(6, 7, 97, 23);
 		panel_3.add(chckbxRepeat);
 		
 		rdbtnCount = new JRadioButton("Count");
 		rdbtnCount.setAction(action_1);
 	//	rdbtnCount.setSelected(true);
 		rdbtnCount.setEnabled(false);
-		rdbtnCount.setBounds(27, 44, 60, 23);
+		rdbtnCount.setBounds(26, 33, 60, 23);
 		panel_3.add(rdbtnCount);
 		
 		spinner = new JSpinner();
 		spinner.setEnabled(false);
 		spinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
-		spinner.setBounds(105, 42, 54, 23);
+		spinner.setBounds(105, 33, 54, 23);
 		panel_3.add(spinner);
 		
 		rdbtnDuration = new JRadioButton("Duration");
 		rdbtnDuration.setAction(action_2);
 		rdbtnDuration.setEnabled(false);
-		rdbtnDuration.setBounds(27, 83, 76, 23);
+		rdbtnDuration.setBounds(26, 70, 76, 23);
 		panel_3.add(rdbtnDuration);
 		
 		spinner_1 = new JSpinner();
 		spinner_1.setEnabled(false);
 		spinner_1.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
-		spinner_1.setBounds(105, 81, 54, 23);
+		spinner_1.setBounds(105, 67, 54, 23);
 		panel_3.add(spinner_1);
 		
 		comboBox_2 = new JComboBox(repeatDurationsUnit);
 		comboBox_2.setEnabled(false);
 		comboBox_2.setEditable(true);
-		comboBox_2.setBounds(174, 81, 127, 23);
+		comboBox_2.setBounds(169, 67, 127, 23);
 		panel_3.add(comboBox_2);
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(rdbtnCount);
 		group.add(rdbtnDuration);
+		
+		  panel = new MacroColumnPanel();
+		panel.setBackground(Color.WHITE);
+		panel_1.add(panel, BorderLayout.CENTER);
+		panel.setLayout(null);
+		
 
 	}
 	
+	
+	void refreshMacroinfo(){
+		List<MacroColumns> l=new ArrayList<MacroColumns>();
+		if(ZugGUI.spreadSheet!=null){
+		 Map<String,SpreadSheet> sheetmap=ZugGUI.spreadSheet.getUniqueSheets();
+		 Iterator<String> it=sheetmap.keySet().iterator();
+		 while(it.hasNext()){
+			 
+			 String name=it.next();
+			 List<String> list=sheetmap.get(name).getMacroSheet().getHeader();
+			 l.add(new MacroColumns(name, list)); 
+		 }
+		// System.out.println(l);
+		 List<String> list=ZugGUI.spreadSheet.getMacroSheet().getHeader();
+		panel.refreshData(new MacroColumns(ZugGUI.spreadSheet.getFileName(), list),l);
+		}
+		
+	}
 	private void enableRepeatCountOption(){
 		spinner.setEnabled(true);
 	}
@@ -283,7 +285,7 @@ public class OtherOptionPanel extends JPanel {
 	}
 	
 	public void updateComboBoxOptions(){
-		updateCBValues(comboBox);
+		//updateCBValues(comboBox);
 		updateCBValues(comboBox_1);
 	}
 	
@@ -294,11 +296,16 @@ public class OtherOptionPanel extends JPanel {
 		if(atomPath!=null && StringUtils.isNotBlank(atomPath)){
 			options.add("-atompath="+atomPath);
 		}
-		String macroCol=(String)comboBox.getSelectedItem();
+		String op=panel.getOptions();
+		
+		if(op!=null&&!op.isEmpty()){
+			options.add(op);
+		}
+		/*String macroCol=(String)comboBox.getSelectedItem();
 		if(macroCol!=null && StringUtils.isNotBlank(macroCol)){
 			options.add("-macroColumn="+macroCol);
 			updateCBValues(comboBox);
-		}
+		}*/
 		String others=(String)comboBox_1.getSelectedItem();
 		if(others!=null && StringUtils.isNotBlank(others)){
 			String str[]=others.split(" -");
@@ -403,6 +410,4 @@ public class OtherOptionPanel extends JPanel {
 			chooseDirectory();
 		}
 	}
-	
-	
 }

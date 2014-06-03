@@ -25,13 +25,17 @@ import java.util.List;
 
 public class SpreadSheet {
 
+	private String fileName;
+	
+	
+
 	private String absolutePath;
 
 	private ConfigSheet configSheet;
 	private MacroSheet macroSheet;
 	private TestCasesSheet testCasesSheet;
 	private MoleculesSheet moleculesSheet;
-
+	private static Map<String,SpreadSheet> uniqueSheets=new HashMap<String,SpreadSheet>();
 	private HashMap<String, SpreadSheet> includeFiles = new HashMap<String, SpreadSheet>();
 	private List<String> scriptLocations = new ArrayList<String>();
 
@@ -62,6 +66,9 @@ public class SpreadSheet {
 		return includeFiles;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
 
 
 
@@ -169,8 +176,11 @@ public class SpreadSheet {
 								s = f.getParent()+File.separator+s;
 							}
 
-							if(sh.readSpreadSheet(s))
+							if(sh.readSpreadSheet(s)){
 								includeFiles.put(s, sh);
+								uniqueSheets.put(s, sh);
+							}
+								
 
 						}
 
@@ -220,6 +230,7 @@ public class SpreadSheet {
 			if(sh.readSpreadSheet(fileName)){
 			//	System.out.println("file included "+namespace);
 				includeFiles.put(namespace, sh);
+				uniqueSheets.put(namespace, sh);
 			}
 				
 
@@ -241,6 +252,7 @@ public class SpreadSheet {
 			absolutePath = filePath;
 
 			File file = new File(filePath);
+			fileName=file.getName();
 			inputFile = new FileInputStream(file);
 			Workbook wb = WorkbookFactory.create(inputFile);
 			
@@ -388,6 +400,7 @@ public class SpreadSheet {
 	}
 	
 	public void releaseResources(){
+		uniqueSheets.clear();
 		if(this.inputFile!=null){
 			try {
 				inputFile.close();
@@ -402,6 +415,16 @@ public class SpreadSheet {
 		}
 	}
 
-	
+	public void removeIncludeSheet(String sheet) {
+		// TODO Auto-generated method stub
+		
+		includeFiles.remove(sheet);
+		includeFiles.remove(sheet.substring(0,sheet.lastIndexOf(".")));
+		uniqueSheets.remove(sheet);
+		uniqueSheets.remove(sheet.substring(0,sheet.lastIndexOf(".")));
+	}
 
+	public Map<String,SpreadSheet> getUniqueSheets(){
+		return uniqueSheets;
+	}
 }
