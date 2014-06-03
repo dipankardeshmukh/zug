@@ -13,6 +13,8 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.TableModel;
 
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -21,6 +23,7 @@ public class MacroSheet extends GenericSheet{
 
     private Vector header;
     private Vector data;
+    private List<String> headers;
 
     public MacroSheet(Sheet sheet, String filePath) {
 		// TODO Auto-generated constructor stub
@@ -30,6 +33,7 @@ public class MacroSheet extends GenericSheet{
 	public void readHeader(){
 
         header=new Vector();
+        headers=new ArrayList<String>();
         Iterator it = sheet.rowIterator();
         header.add("");
         if(it.hasNext()){
@@ -40,6 +44,10 @@ public class MacroSheet extends GenericSheet{
 
                 Cell myCell=row.getCell(i);
                 header.addElement(myCell==null?"":myCell);
+                String headerValue=myCell==null?"":myCell.getStringCellValue();
+                if(headerValue!=null && !headerValue.isEmpty() && !headerValue.equalsIgnoreCase("Macro Name")&& !headerValue.equalsIgnoreCase("Comment")){
+                	headers.add(headerValue);
+                }
 
             }
         }
@@ -89,5 +97,9 @@ public class MacroSheet extends GenericSheet{
         panel.add(scrollPane);
 
         return panel;
+    }
+    
+    public List<String> getHeader(){
+    	return headers;
     }
 }

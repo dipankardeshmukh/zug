@@ -4,6 +4,7 @@ import com.automature.zug.util.Log;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.io.File;
 
@@ -17,7 +18,11 @@ public class GuiUtils {
         try {
 
             chooser = new JFileChooser();
-
+         
+    		RecentDirectoryChooserPanel chooserHelper=new RecentDirectoryChooserPanel(ZugGUI.getRecenDirectories(),chooser);
+    		chooser.setAccessory(chooserHelper);
+  
+    		
             //chooser.setCurrentDirectory(new File(fileName).getParentFile());
 
             FileNameExtensionFilter filter = new FileNameExtensionFilter(

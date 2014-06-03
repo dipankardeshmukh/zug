@@ -31,6 +31,7 @@ public class SheetTableModelListener implements TableModelListener {
 			if(tme.getColumn()!=0){
 				sheetSaver.SaveChange((String)tm.getValueAt(tme.getFirstRow(), tme.getColumn()), tme.getFirstRow(), tme.getColumn());
 			}
+
 		}
 	}
 

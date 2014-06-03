@@ -1,6 +1,7 @@
 package com.automature.zug.gui;
 
 import com.automature.zug.gui.sheets.SpreadSheet;
+
 import org.jdesktop.swingx.JXTable;
 
 import java.awt.BorderLayout;
@@ -234,5 +235,17 @@ public class SheetDisplayPane extends JPanel {
 			System.err.println("SheetDisplayPane/getMaxLine Exception "+e.getMessage()+"\nCause "+e.getCause());
 		}
 		return 0;
+	}
+
+	public void addIncludeSheet(String sheet) throws Exception {
+		// TODO Auto-generated method stub
+		sp.readIncludeFile(sheet,sheet);//.substring(0,sheet.lastIndexOf(".")), sheet);
+		
+		
+	}
+
+	public void removeIncludeSheet(String sheet) {
+		// TODO Auto-generated method stub
+		sp.removeIncludeSheet(sheet);
 	}
 }

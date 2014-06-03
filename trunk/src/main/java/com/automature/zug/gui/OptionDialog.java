@@ -146,6 +146,7 @@ public class OptionDialog extends JDialog {
 	}
 	
 	public void viewOtherOptionPanel(){
+		otherOptPanel.refreshMacroinfo();
 		updateChildPanel(otherOptPanel);
 	}
 	
