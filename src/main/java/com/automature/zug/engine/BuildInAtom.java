@@ -25,6 +25,8 @@ public class BuildInAtom implements Atom {
 		buildIns.add("#define_args");
 		buildIns.add("#define_arg");
 		buildIns.add("#define");
+		buildIns.add("setvar");
+		buildIns.add("appendtovar");
 	}
 
 	public void printExecutionStartedMessage(GTuple action, String arg)
@@ -52,7 +54,7 @@ public class BuildInAtom implements Atom {
 		for (String argument : action.arguments) {
 			cnt++;
 			String ctx_arg = Argument.NormalizeVariable((String) argument,
-					threadID);
+					threadID,action);
 			executionlist.append(ctx_arg);
 			if (cnt == action.arguments.size()) {
 				break;
@@ -78,7 +80,7 @@ public class BuildInAtom implements Atom {
 	}
 
 	public void run(GTuple action, String threadID) throws Exception {
-
+	
 		// EngUtil util=new EngUtil();
 		String typeName = null;
 		if (action instanceof Action) {
@@ -90,7 +92,7 @@ public class BuildInAtom implements Atom {
 			if (action.arguments.size() == 1) {
 				try {
 					String arg = Argument.NormalizeVariable(
-							(String) action.arguments.get(0), threadID);
+							(String) action.arguments.get(0), threadID, action);
 
 					printExecutionStartedMessage(action, arg);
 					Controller.CreateContextVariable(arg);
@@ -107,7 +109,7 @@ public class BuildInAtom implements Atom {
 					printExecutionStartedMessage(action, threadID, typeName);
 					for (String argument : action.arguments) {
 						String ctx_arg = Argument.NormalizeVariable(
-								(String) argument, threadID);
+								(String) argument, threadID, action);
 
 						Controller.CreateContextVariable(ctx_arg);
 
@@ -128,7 +130,7 @@ public class BuildInAtom implements Atom {
 			if (action.arguments.size() == 1) {
 				try {
 					String arg = Argument.NormalizeVariable(
-							(String) action.arguments.get(0), threadID);
+							(String) action.arguments.get(0), threadID, action);
 					printExecutionStartedMessage(action, arg);
 					Controller.DestroyContextVariable(arg);
 					printSuccessFullExecutionMessage(action, typeName);
@@ -143,7 +145,7 @@ public class BuildInAtom implements Atom {
 					printExecutionStartedMessage(action, threadID, typeName);
 					for (String argument : action.arguments) {
 						String ctx_arg = Argument.NormalizeVariable(
-								(String) argument, threadID);
+								(String) argument, threadID, action);
 
 						Controller.DestroyContextVariable(ctx_arg);
 					}
@@ -177,7 +179,7 @@ public class BuildInAtom implements Atom {
 							}
 							// message("The value edited "+valueToWorkWith);
 							String opt = Argument.NormalizeVariable(
-									(String) valueToWorkWith, threadID);
+									(String) valueToWorkWith, threadID, action);
 
 							int idx = opt.indexOf('=');
 							// message("the index is "+idx);
@@ -197,10 +199,10 @@ public class BuildInAtom implements Atom {
 						}
 					} else {
 						contextVarName = Argument.NormalizeVariable(
-								action.arguments.get(0), threadID);
+								action.arguments.get(0), threadID, action);
 						for (int i = 1; i < action.arguments.size(); ++i) {
 							String arg_value = Argument.NormalizeVariable(
-									action.arguments.get(i), threadID);
+									action.arguments.get(i), threadID, action);
 
 							appendValueBuilder.append(arg_value);
 						}
@@ -231,7 +233,128 @@ public class BuildInAtom implements Atom {
 						action.stackTrace.toUpperCase(),
 						action.name.toUpperCase()));
 			}
-		} else if (action.name.trim().toLowerCase().contains("print")) {
+		}else if (action.name.trim().compareToIgnoreCase("setvar") == 0) {
+			if (action.arguments.size() == 1) {
+				try {
+					String arg = Argument.NormalizeVariable(
+							(String) action.arguments.get(0), threadID, action);
+
+					printExecutionStartedMessage(action, arg);
+					action.parent.createVariable(arg);
+
+					printSuccessFullExecutionMessage(action, typeName);
+
+				} catch (Exception ex) {
+					Controller.message("Error:" + ex.getMessage());
+					throw ex;
+				}
+			} else if (action.arguments.size() > 1) {
+
+				try {
+					printExecutionStartedMessage(action, threadID, typeName);
+					for (String argument : action.arguments) {
+						String ctx_arg = Argument.NormalizeVariable(
+								(String) argument, threadID, action);
+
+						action.parent.createVariable(ctx_arg);
+
+					}
+					printSuccessFullExecutionMessage(action, typeName);
+				} catch (Exception ex) {
+					Controller.message("Error:" + ex.getMessage());
+					throw ex;
+				}
+			} else {
+				Controller.message(String.format("\n[%s] " + typeName
+						+ " %s Executed With Arguments []",
+						action.stackTrace.toUpperCase(),
+						action.name.toUpperCase()));
+			}
+
+		} else if (action.name.trim().compareToIgnoreCase("appendtovar") == 0) {
+
+			if (action.arguments.size() >= 2) {
+				try {
+					String contextVarName = StringUtils.EMPTY;
+					StringBuilder appendValueBuilder = new StringBuilder();
+					if (action.actualArguments.get(0).toLowerCase()
+							.startsWith("var=")) {
+						for (int i = 0; i < action.arguments.size(); ++i) {
+							String real_value[] = Excel
+									.SplitOnFirstEquals(action.arguments.get(i));
+							String actua_value[] = Excel
+									.SplitOnFirstEquals(action.actualArguments
+											.get(i));
+							String valueToWorkWith = action.arguments.get(i);
+							if (!real_value[0].equalsIgnoreCase(actua_value[0])) {
+								valueToWorkWith = actua_value[0] + "="
+										+ valueToWorkWith;
+							}
+							// message("The value edited "+valueToWorkWith);
+							String opt = Argument.NormalizeVariable(
+									(String) valueToWorkWith, threadID, action);
+
+							int idx = opt.indexOf('=');
+							// message("the index is "+idx);
+							if (idx == -1) {
+								continue;
+							} else {
+								// message("the opt string "+opt.substring(0,idx));
+								if (opt.substring(0, idx).toLowerCase()
+										.compareToIgnoreCase("var") == 0) {
+									contextVarName = opt.substring(idx + 1);
+								} else {
+									appendValueBuilder.append(opt
+											.substring(idx + 1));
+
+								}
+							}
+						}
+					} else {
+						contextVarName = Argument.NormalizeVariable(
+								action.arguments.get(0), threadID, action);
+						for (int i = 1; i < action.arguments.size(); ++i) {
+							String arg_value = Argument.NormalizeVariable(
+									action.arguments.get(i), threadID, action);
+
+							appendValueBuilder.append(arg_value);
+						}
+					}
+					Controller.message(String.format("\n[%s] " + typeName
+							+ " %s Execution STARTED With Arguments "
+							+ "var = %s valueToAppend = %s",
+							action.stackTrace.toUpperCase(),
+							action.name.toUpperCase(), contextVarName,
+							appendValueBuilder.toString()));
+					String actualref=action.parent.getVariableDBReference(contextVarName);
+					if(actualref==null){
+						Log.Error("AppendtoVar:Variable is not defined");
+						throw new Exception("Variable not defined");
+						
+					}
+					contextVarName=actualref;		
+					String value = ContextVar.getContextVar(contextVarName
+							.trim());
+					if (value == null) {
+						Log.Error("AppendtoVar: Variable is not defined");
+						throw new Exception("Variable not defined");
+					}
+					
+					ContextVar.alterContextVar(contextVarName, value
+							+ appendValueBuilder.toString());
+
+					printSuccessFullExecutionMessage(action, typeName);
+				} catch (Exception e) {
+					Controller.message("Error:" + e.getMessage());
+					throw e;
+				}
+			} else {
+				Controller.message(String.format("\n[%s] " + typeName
+						+ " %s Executed With less than two Arguments",
+						action.stackTrace.toUpperCase(),
+						action.name.toUpperCase()));
+			}
+		}else if (action.name.trim().toLowerCase().contains("print")) {
 			if (action.arguments.size() > 0) {
 
 				for (int i = 0; i < action.arguments.size(); i++) {
@@ -244,12 +367,12 @@ public class BuildInAtom implements Atom {
 							String action_args = StringUtils.removeStart(
 									action.arguments.get(i), "$$");
 							action.arguments.set(i, Argument.NormalizeVariable(
-									action_args, threadID));
+									action_args, threadID, action));
 						} else {
 							action.arguments.set(
 									i,
 									Argument.NormalizeVariable(
-											action.arguments.get(i), threadID));
+											action.arguments.get(i), threadID, action));
 						}
 
 					}
@@ -264,11 +387,11 @@ public class BuildInAtom implements Atom {
 			if (action.arguments.size() == 3) {
 				try {
 					String arg1 = Argument.NormalizeVariable(
-							(String) action.arguments.get(0), threadID);
+							(String) action.arguments.get(0), threadID, action);
 					String arg2 = Argument.NormalizeVariable(
-							(String) action.arguments.get(1), threadID);
+							(String) action.arguments.get(1), threadID, action);
 					String arg3 = Argument.NormalizeVariable(
-							(String) action.arguments.get(2), threadID);
+							(String) action.arguments.get(2), threadID, action);
 
 					printExecutionStartedMessage(action, threadID, typeName);
 
@@ -306,11 +429,11 @@ public class BuildInAtom implements Atom {
 			if (action.arguments.size() == 3) {
 				try {
 					String arg1 = Argument.NormalizeVariable(
-							(String) action.arguments.get(0), threadID);
+							(String) action.arguments.get(0), threadID, action);
 					String arg2 = Argument.NormalizeVariable(
-							(String) action.arguments.get(1), threadID);
+							(String) action.arguments.get(1), threadID, action);
 					String arg3 = Argument.NormalizeVariable(
-							(String) action.arguments.get(2), threadID);
+							(String) action.arguments.get(2), threadID, action);
 					printExecutionStartedMessage(action, threadID, typeName);
 
 					String args_list[] = arg1.split(",");
@@ -359,13 +482,13 @@ public class BuildInAtom implements Atom {
 			if (action.arguments.size() == 4) {
 				try {
 					String arg1 = Argument.NormalizeVariable(
-							(String) action.arguments.get(0), threadID);
+							(String) action.arguments.get(0), threadID, action);
 					String arg2 = Argument.NormalizeVariable(
-							(String) action.arguments.get(1), threadID);
+							(String) action.arguments.get(1), threadID, action);
 					String arg3 = Argument.NormalizeVariable(
-							(String) action.arguments.get(2), threadID);
+							(String) action.arguments.get(2), threadID, action);
 					String arg4 = Argument.NormalizeVariable(
-							(String) action.arguments.get(3), threadID);
+							(String) action.arguments.get(3), threadID, action);
 					printExecutionStartedMessage(action, threadID, typeName);
 					String args1_list[] = arg1.split(",");
 					String args2_list[] = arg2.split(",");
@@ -420,11 +543,11 @@ public class BuildInAtom implements Atom {
 			int arg_size = action.arguments.size();
 
 			if (arg_size == 1) {
-				printExecutionStartedMessage(action, Argument.NormalizeVariable(action.arguments.get(0), threadID));
+				printExecutionStartedMessage(action, Argument.NormalizeVariable(action.arguments.get(0), threadID, action));
 
 				try {
 					long timetowait = Long.valueOf(Argument.NormalizeVariable(
-							action.arguments.get(0), threadID)) * 1000;
+							action.arguments.get(0), threadID, action)) * 1000;
 					Thread.sleep(timetowait);
 					// message("Sleeping done");
 					// action.wait(timetowait);

@@ -220,7 +220,7 @@ public class MoleculesSheet extends GenericSheet{
 
                             ImageIcon breakpointIcon = new ImageIcon("Images/breakpoint.png");
                             target.setValueAt(breakpointIcon,row,0);
-                            Controller.setBreakPoint(nameSpace, String.valueOf(row+1));
+                            Controller.setBreakPoint(nameSpace+"molecules", String.valueOf(row+1));
 
                         }
                     }

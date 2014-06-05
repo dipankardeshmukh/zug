@@ -27,7 +27,7 @@ public class Argument {
 
 
 
-	static String NormalizeVariable(String argument, String threadID)
+	static String NormalizeVariable(String argument, String threadID,GTuple action)
 			throws Exception {
 		if (StringUtils.isBlank(argument)) {
 			Log.Debug("Argument/NormalizeVariable : Start of function with variableToFind = EMPTY and its value is -> EMPTY. ");
@@ -69,10 +69,10 @@ public class Argument {
 			}
 
 			tempValue = tempVariableOutside + "="
-					+ DoSomeFineTuning(tempValue, threadID);
+					+ DoSomeFineTuning(tempValue, threadID,action,false);
 		} // First Check in the Context Variable
 		else {
-			tempValue = DoSomeFineTuning(tempValue, threadID);
+			tempValue = DoSomeFineTuning(tempValue, threadID,action,false);
 		}
 
 		Log.Debug("Argument/NormalizeVariable : End of function with variableToFind = "
@@ -81,305 +81,17 @@ public class Argument {
 		return tempValue;
 	}
 
-	/*static String replaceCV(String variable, String threadID)
-			throws Exception {
-		String value="";
-		boolean isContextVar = false;
-		Log.Debug("Argument/DoSomeFineTuning : Start of Function with Variable Name as : "
-				+ variable);
-		if (StringUtils.isBlank(variable)) {
-			Log.Debug("Argument/DoSomeFineTuning : Variable is Empty, so returning an Empty String.");
-			return StringUtils.EMPTY;
-		}
-		int firstOccuranceOfPercentage = -1;
-		int secondOccuranceOfPercentage = -1;
-
-		int indexer = -1;
-		char prev_char; // previous character to check if the % was escaped
-		prev_char = ' ';
-		String escapedVar= "";
-
-		for (char varChar : variable.toCharArray()) {
-			indexer++;
-			// Log.Debug(String.format("Argument/DoSomeFineTuning : Working at Indexes[%d]=%s in Variable %s.",
-			// indexer, varChar, variable));
-
-			// keep the indexes of escaped % signs
-			if(varChar == '%' && prev_char == '\\'){
-				//	escapedIndexes.add(indexer-1);
-				prev_char=varChar;
-				continue;
-			}
-
-			if (varChar == '%' && prev_char != '\\') {
-				// Log.Debug(String.format("Argument/DoSomeFineTuning : Indexes=%d in Variable %s.",
-				// indexer, variable));
-				if (firstOccuranceOfPercentage >= 0) {
-					secondOccuranceOfPercentage = indexer;
-					break;
-					// Log.Debug(String.format("Argument/DoSomeFineTuning : secondOccuranceOfPercentage=%d in Variable %s.",
-					// indexer, variable));
-
-				} else {
-					firstOccuranceOfPercentage = indexer;
-					// Log.Debug(String.format("Argument/DoSomeFineTuning : firstOccuranceOfPercentage=%d in Variable %s.",
-					// indexer, variable));
-				}
-			}
-			prev_char=varChar;
-		}
-
-		// replace \% signs with %
-		// message("THe first Occurrance is "+firstOccuranceOfPercentage+"\n The second Ouccurance "+secondOccuranceOfPercentage);
-
-		Log.Debug(String
-				.format("Argument/DoSomeFineTuning : firstOccuranceOfPercentage=%s && secondOccuranceOfPercentage=%s.",
-						firstOccuranceOfPercentage, secondOccuranceOfPercentage));
-
-		if (firstOccuranceOfPercentage >= 0 && secondOccuranceOfPercentage >= 0) {
-
-			String tempVariable = variable
-					.substring(firstOccuranceOfPercentage,
-							secondOccuranceOfPercentage + 1);
-			// message("The String subs.. "+tempVariable);
-			Log.Debug(String.format(
-					"Argument/DoSomeFineTuning : Context Variable = ",
-					tempVariable));
-
-			// First Check in the Macro Sheet
-			if (tempVariable.startsWith("%") && tempVariable.endsWith("%")) {
-
-				tempVariable = Utility.TrimStartEnd(tempVariable, '%', 0);
-				tempVariable = Utility.TrimStartEnd(tempVariable, '%', 1);
-
-				if (tempVariable.endsWith("##")) {
-					tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
-					tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
-					tempVariable += threadID;
-				}
-
-				// if (StringUtils.isNotBlank(ContextVar
-				// .getContextVar(tempVariable))) {
-				isContextVar = true;
-				// }
-				tempVariable =Controller.ReadContextVariable(tempVariable);
-
-				Log.Debug(String
-						.format("Argument/DoSomeFineTuning : After Context Variable Parsing, variableToFind = %s ",
-								tempVariable));
-			}
-
-			StringBuffer actualValue = new StringBuffer(variable.substring(0,
-					firstOccuranceOfPercentage)
-					+ variable.substring(firstOccuranceOfPercentage,
-							variable.length()));
-			Log.Debug(String.format(
-					"Argument/DoSomeFineTuning : actualValue = %s",
-					actualValue.toString()));
-
-			if (isContextVar) {
-				actualValue.replace(firstOccuranceOfPercentage,
-						secondOccuranceOfPercentage + 1, tempVariable);
-			} else {
-				actualValue = actualValue.insert(firstOccuranceOfPercentage,
-						tempVariable);
-			}
-
-			// message("The actual value after insert "+actualValue);
-			Log.Debug(String
-					.format("Argument/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
-							actualValue, variable));
-
-			value= new String(actualValue);
-
-		} else {
-			String tempVariable = variable;
-			if (tempVariable.endsWith("##")) {
-				tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
-				tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
-				tempVariable += threadID;
-			}
-			Log.Debug(String
-					.format("Argument/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
-							tempVariable, variable));
-
-			value= tempVariable;
-			return value;
-		}
-		String str[]=value.split("(?<!\\\\)%");
-		if(str.length>1){
-			String tmp[]=str[1].split("(?<!\\\\)%");
-			if(tmp.length>1){
-				return replaceCV(value, threadID);
-			}
-		}
-		return value;
-
-	}
-	static String DoSomeFineTuningRecursive(String variable, String threadID)
-			throws Exception {
-		variable=replaceCV(variable, threadID);
-		variable.replaceAll("\\%", "%");
-		return variable;
-	}*/
-
-	/***
-	 * This is just a temporary Utility. Could not think of a good name for this
-	 * Function. This function actually checks a variable and looks for if it
-	 * contains any Context Variable. If it contains a Context Variable then,
-	 * the function just substitutes the Value of the Context Variable.
-	 * 
-	 * @param variable
-	 *            = Name of the Variable for which we need to do FINE
-	 *            Tuning</param> <returns>A Fine tuned Variable.</returns>
-	 */
-	/*static String DoSomeFineTuningOld(String variable, String threadID)
-			throws Exception {
-		boolean isContextVar = false;
-		Log.Debug("Argument/DoSomeFineTuning : Start of Function with Variable Name as : "
-				+ variable);
-		if (StringUtils.isBlank(variable)) {
-			Log.Debug("Argument/DoSomeFineTuning : Variable is Empty, so returning an Empty String.");
-			return StringUtils.EMPTY;
-		}
-		int firstOccuranceOfPercentage = -1;
-		int secondOccuranceOfPercentage = -1;
-
-		int indexer = -1;
-		// Log.Debug("Argument/DoSomeFineTuning : Checking for the Occurance of % and their Indexes in Variable :"
-		// + variable);
-
-		char prev_char; // previous character to check if the % was escaped
-		prev_char = ' ';
-		String escapedVar= "";
-		ArrayList<Integer> escapedIndexes = new ArrayList<Integer>();
 
 
-		for (char varChar : variable.toCharArray()) {
-			indexer++;
-			// Log.Debug(String.format("Argument/DoSomeFineTuning : Working at Indexes[%d]=%s in Variable %s.",
-			// indexer, varChar, variable));
 
-			// keep the indexes of escaped % signs
-			if(varChar == '%' && prev_char == '\\'){
-				//	escapedIndexes.add(indexer-1);
-				prev_char=varChar;
-				continue;
-			}
 
-			if (varChar == '%' && prev_char != '\\') {
-				// Log.Debug(String.format("Argument/DoSomeFineTuning : Indexes=%d in Variable %s.",
-				// indexer, variable));
-				if (firstOccuranceOfPercentage >= 0) {
-					secondOccuranceOfPercentage = indexer;
-					// Log.Debug(String.format("Argument/DoSomeFineTuning : secondOccuranceOfPercentage=%d in Variable %s.",
-					// indexer, variable));
-					break;
-				} else {
-					firstOccuranceOfPercentage = indexer;
-					// Log.Debug(String.format("Argument/DoSomeFineTuning : firstOccuranceOfPercentage=%d in Variable %s.",
-					// indexer, variable));
-				}
-			}
-			prev_char=varChar;
-		}
-
-		// replace \% signs with %
-		char[] charValues = variable.toCharArray();
-		for(int i=0;i<variable.toCharArray().length;i++){
-
-			if(escapedIndexes.contains(i))
-				continue;
-			escapedVar+=String.valueOf(charValues[i]);
-		}
-
-		if(!escapedVar.isEmpty())
-			variable=escapedVar;
-		// message("THe first Occurrance is "+firstOccuranceOfPercentage+"\n The second Ouccurance "+secondOccuranceOfPercentage);
-
-		Log.Debug(String
-				.format("Argument/DoSomeFineTuning : firstOccuranceOfPercentage=%s && secondOccuranceOfPercentage=%s.",
-						firstOccuranceOfPercentage, secondOccuranceOfPercentage));
-
-		if (firstOccuranceOfPercentage >= 0 && secondOccuranceOfPercentage >= 0) {
-
-			String tempVariable = variable
-					.substring(firstOccuranceOfPercentage,
-							secondOccuranceOfPercentage + 1);
-			// message("The String subs.. "+tempVariable);
-			Log.Debug(String.format(
-					"Argument/DoSomeFineTuning : Context Variable = ",
-					tempVariable));
-
-			// First Check in the Macro Sheet
-			if (tempVariable.startsWith("%") && tempVariable.endsWith("%")) {
-
-				tempVariable = Utility.TrimStartEnd(tempVariable, '%', 0);
-				tempVariable = Utility.TrimStartEnd(tempVariable, '%', 1);
-
-				if (tempVariable.endsWith("##")) {
-					tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
-					tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
-					tempVariable += threadID;
-				}
-
-				// if (StringUtils.isNotBlank(ContextVar
-				// .getContextVar(tempVariable))) {
-				isContextVar = true;
-				// }
-				tempVariable =Controller.ReadContextVariable(tempVariable);
-
-				Log.Debug(String
-						.format("Argument/DoSomeFineTuning : After Context Variable Parsing, variableToFind = %s ",
-								tempVariable));
-			}
-
-			StringBuffer actualValue = new StringBuffer(variable.substring(0,
-					firstOccuranceOfPercentage)
-					+ variable.substring(firstOccuranceOfPercentage,
-							variable.length()));
-			Log.Debug(String.format(
-					"Argument/DoSomeFineTuning : actualValue = %s",
-					actualValue.toString()));
-
-			if (isContextVar) {
-				actualValue.replace(firstOccuranceOfPercentage,
-						secondOccuranceOfPercentage + 1, tempVariable);
-			} else {
-				actualValue = actualValue.insert(firstOccuranceOfPercentage,
-						tempVariable);
-			}
-
-			// message("The actual value after insert "+actualValue);
-			Log.Debug(String
-					.format("Argument/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
-							actualValue, variable));
-
-			return new String(actualValue);
-		} else {
-			String tempVariable = variable;
-			if (tempVariable.endsWith("##")) {
-				tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
-				tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
-				tempVariable += threadID;
-			}
-			Log.Debug(String
-					.format("Argument/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
-							tempVariable, variable));
-
-			return tempVariable;
-		}
-	}
-
-*/
-
-	static String getContextVarValues(String variable,String threadID) throws Exception{
+	static String getVarValues(String variable,String threadID,GTuple action) throws Exception{
 
 		String tempVariable = variable;
 		boolean isContextVar=false;
 		// message("The String subs.. "+tempVariable);
 		Log.Debug(String.format(
-				"Argument/DoSomeFineTuning : Context Variable = ",
+				"Argument/getVarValues : Context Variable = ",
 				tempVariable));
 		// First Check in the Macro Sheet
 		if (tempVariable.startsWith("%") && tempVariable.endsWith("%")) {
@@ -397,29 +109,24 @@ public class Argument {
 		// .getContextVar(tempVariable))) {
 		isContextVar = true;
 		// }
-
-		tempVariable =Controller.ReadContextVariable(tempVariable);
-
+		String var=action.parent.getVariableDBReference(tempVariable);
+		tempVariable=(var==null?Controller.ReadContextVariable(tempVariable):Controller.ReadContextVariable(var));
+		
 		Log.Debug(String
-				.format("Argument/DoSomeFineTuning : After Context Variable Parsing, variableToFind = %s ",
+				.format("Argument/getVarValues : After  Variable Parsing, variableToFind = %s ",
 						tempVariable));
-	
+
 		return tempVariable;
 
 		//return new String(actualValue);
 	} 
 
 
-
-	static String DoSomeFineTuning(String variable, String threadID) throws Exception
-			 {
+	public static  List<String> getContextVariableList(String variable){
 		boolean isContextVar = false;
-		Log.Debug("Argument/DoSomeFineTuning : Start of Function with Variable Name as : "
-				+ variable);
-		if (StringUtils.isBlank(variable)) {
-			Log.Debug("Argument/DoSomeFineTuning : Variable is Empty, so returning an Empty String.");
-			return StringUtils.EMPTY;
-		}
+		/*	System.out.println("Argument/DoSomeFineTuning : Start of Function with Variable Name as : "
+				+ variable);*/
+
 		int firstOccuranceOfPercentage = -1;
 		int secondOccuranceOfPercentage = -1;
 		int indexer = -1;
@@ -431,7 +138,7 @@ public class Argument {
 		for (char varChar : variable.toCharArray()) {
 			indexer++;
 			if(varChar == '%' && prev_char == '\\'){
-		//		escapedIndexes.add(indexer-1);
+				//		escapedIndexes.add(indexer-1);
 				prev_char=varChar;
 				continue;
 			}
@@ -443,50 +150,109 @@ public class Argument {
 					//System.out.println("second occurence "+secondOccuranceOfPercentage+" CV "+variable.substring(firstOccuranceOfPercentage,secondOccuranceOfPercentage+1));
 					firstOccuranceOfPercentage=-1;
 					secondOccuranceOfPercentage=-1;
-				
+
 				} else {
 					firstOccuranceOfPercentage = indexer;
 					//Log.Debug(String.format("Argument/DoSomeFineTuning : firstOccuranceOfPercentage=%d in Variable %s.",
-					 //indexer, variable));
+					//indexer, variable));
 				}
 			}
 			prev_char=varChar;
 		}
-		
+		return contextVars;
 
-		String var=variable;
-		StringBuffer sb=new StringBuffer();
-		if (contextVars.size()>0){
-			String []tmp=null;
-			for(int i=0;i<contextVars.size();i++){
-				tmp=var.split(contextVars.get(i), 2);
-				String cv=getContextVarValues(contextVars.get(i),threadID);
-				if(tmp.length>1){
-					var=tmp[1];
-					sb.append(tmp[0].replace("\\%", "%"));					
-				}
-				sb.append(cv);
-			}
-			if(tmp!=null&&tmp.length>1){
-				sb.append(tmp[1].replace("\\%", "%"));
-			}
-			//System.out.println("value returned cv >1 :"+sb+"\tend");
-			
-			return sb.toString();
-		} else {
-			String tempVariable = variable.replace("\\%", "%");
-			if (tempVariable.endsWith("##")) {
-				tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
-				tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
-				tempVariable += threadID;
-			}
-			Log.Debug(String
-					.format("Argument/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
-							tempVariable, variable));
-
-			return tempVariable;
-		}
-	
-	
 	}
+
+	public static String parseContextVariables(List<String> contextVars,String var,String threadID,GTuple action) throws Exception{
+
+		StringBuffer sb=new StringBuffer();
+		String []tmp=null;
+		for(int i=0;i<contextVars.size();i++){
+			tmp=var.split(contextVars.get(i), 2);
+			//	System.out.println("Argument/cv :"+contextVars.get(i));
+			 String cv=getVarValues(contextVars.get(i),threadID,action);
+			//		System.out.println("Argument/cv value "+cv);
+			if(tmp.length>1){
+				var=tmp[1];
+				sb.append(tmp[0].replace("\\%", "%"));					
+			}
+			sb.append(cv);
+		}
+		if(tmp!=null&&tmp.length>1){
+			sb.append(tmp[1].replace("\\%", "%"));
+		}
+		//System.out.println("value returned cv >1 :"+sb+"\tend");
+
+		return sb.toString();
+	}
+
+	public static String parseLocalVarArgumentsName(String variable,String threadID,GTuple action) throws Exception{
+		
+		String tempVariable = variable;
+		if (tempVariable.endsWith("##")) {
+			tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
+			tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
+			tempVariable += threadID;
+		}
+		String variableref=action.parent.getVariableDBReference(tempVariable);
+		if(variableref!=null){
+			return variableref;
+		}else{
+			if(tempVariable.startsWith("'")&&tempVariable.endsWith("'")){
+				tempVariable=tempVariable.substring(1,tempVariable.length()-1);
+			}else{
+				
+				tempVariable = tempVariable.replace("\\'", "'");
+				
+			}
+			tempVariable = tempVariable.replace("\\%", "%");	
+		}
+		Log.Debug(String
+				.format("Argument/parseLocalVarArgumentsName : End of Function. Function returning %s for Variable %s ",
+						tempVariable, variable));
+		/*	System.out.println(String
+			.format("Argument/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
+					tempVariable, variable));*/
+		return tempVariable;
+	}
+
+
+	public static String parseNoLocalVarArguments(String variable,String threadID) throws Exception{
+		String tempVariable = variable;
+		tempVariable = tempVariable.replace("\\%", "%");
+		if (tempVariable.endsWith("##")) {
+			tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
+			tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
+			tempVariable += threadID;
+		}
+		Log.Debug(String
+				.format("Argument/parseNoLocalVarArguments : End of Function. Function returning %s for Variable %s ",
+						tempVariable, variable));
+		/*	System.out.println(String
+		.format("Argument/DoSomeFineTuning : End of Function. Function returning %s for Variable %s ",
+				tempVariable, variable));*/
+		return tempVariable;
+
+	}
+
+	static String DoSomeFineTuning(String variable, String threadID,GTuple action,boolean parseForLVName)throws Exception{
+		Log.Debug("Argument/DoSomeFineTuning : Start of Function with Variable Name as : "
+				+ variable);
+		if (StringUtils.isBlank(variable)) {
+			Log.Debug("Argument/DoSomeFineTuning : Variable is Empty, so returning an Empty String.");
+			return StringUtils.EMPTY;
+		}
+		List<String> contextVars=getContextVariableList(variable);
+
+		if ( contextVars.size()>0){
+			return parseContextVariables(contextVars, variable, threadID,action);
+		} else {
+			if(parseForLVName){
+				return parseLocalVarArgumentsName(variable, threadID,action);
+			}else{
+				return parseNoLocalVarArguments(variable, threadID);	
+			}
+		}
+	}
+
 }

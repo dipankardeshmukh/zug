@@ -26,6 +26,25 @@ public class InProcessAtom  implements Atom{
 		try {
 			boolean PkgstructureFound = false;
 			String package_struct[] = action.name.trim().split("\\.",2);
+			List<String> args=new ArrayList<String>();
+			for (int i = 0; i < action.arguments.size(); i++) {
+				if (!action.arguments.get(i).isEmpty()) {
+
+					if (action.arguments.get(i).startsWith("$$%")
+							&& action.arguments.get(i).endsWith("%")) {
+						String action_args = StringUtils.removeStart(
+								action.arguments.get(i), "$$");
+						args.add( Argument.DoSomeFineTuning(
+								action_args, threadID,action,false));
+					} else {
+						args.add(
+								Argument.DoSomeFineTuning(
+										action.arguments.get(i), threadID,action,false));
+					}
+				}else{
+					args.add("");
+				}
+			}
 			for (int i = 0; i < action.arguments.size(); i++) {
 				if (!action.arguments.get(i).isEmpty()) {
 
@@ -34,12 +53,12 @@ public class InProcessAtom  implements Atom{
 						String action_args = StringUtils.removeStart(
 								action.arguments.get(i), "$$");
 						action.arguments.set(i, Argument.DoSomeFineTuning(
-								action_args, threadID));
+								action_args, threadID,action,true));
 					} else {
 						action.arguments.set(
 								i,
 								Argument.DoSomeFineTuning(
-										action.arguments.get(i), threadID));
+										action.arguments.get(i), threadID,action,true));
 					}
 				}
 			}
@@ -55,7 +74,7 @@ public class InProcessAtom  implements Atom{
 			Controller.message(String.format(
 					"[%s] "+type+" %s Execution STARTED With Arguments %s ",
 					action.stackTrace.toUpperCase(), action.name.toUpperCase(),
-					action.arguments));
+					args));
 			for (String pkg_name : new ExtensionInterpreterSupport()
 			.reteriveXmlTagAttributeValue(
 					Controller.inprocess_jar_xml_tag_path,

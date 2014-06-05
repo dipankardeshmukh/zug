@@ -163,8 +163,11 @@ public class Molecule extends TestCase {
 					String name="";
 					//System.out.println("Name space ="+act.nameSpace);
 					//name=act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)?"Molecules":act.nameSpace;
+				//	System.out.println(" name space "+act.nameSpace);
+				//	System.out.println("break points "+Controller.breakpoints);
+
 				    name="molecules";
-					List<Integer> al=Controller.breakpoints.get(act.nameSpace);
+					List<Integer> al=Controller.breakpoints.get(act.nameSpace+name);
 					if(al!=null){
 						if(al.contains(act.lineNumber)){
 							//	Controller.sendMessageToDebugger((Object)act);
@@ -632,6 +635,7 @@ public class Molecule extends TestCase {
 
 					public void run() {
 						test.runExpandedMolecule();
+						test.clearResources();
 					}
 				});
 
@@ -659,6 +663,8 @@ public class Molecule extends TestCase {
 				}
 
 				test.runExpandedMolecule();
+				
+				test.clearResources();
 			}
 
 			if (StringUtils
@@ -1489,8 +1495,10 @@ public class Molecule extends TestCase {
 								+ e.getMessage());
 					}
 				}
+				tempVerification.parent=tempTestCase;
 				tempAction.verification.add(tempVerification);
 			}
+			tempAction.parent=tempTestCase;
 			tempTestCase.actions.add(tempAction);
 		}
 

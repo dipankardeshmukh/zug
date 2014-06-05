@@ -1122,6 +1122,9 @@ public class Excel {
 	 * @return String value for the Cell
 	 */
 	String GetCellValueAsString(Cell cell) {
+		if(cell==null){
+			return StringUtils.EMPTY;
+		}
 		if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
 			return Boolean.toString(cell.getBooleanCellValue());
 		}
@@ -1639,7 +1642,7 @@ public class Excel {
 			}// while (rowIter.hasNext());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 			Log.Error(String
 					.format("Excel/GetKeyValuePair : Error occured while getting values from the %s Excel. \n Message %s: ",
 							sheetname, e.getMessage()));
@@ -3195,7 +3198,9 @@ public class Excel {
 				if (StringUtils.isNotBlank(valueInVerificationColumn)) {
 					if (verifyObj != null && actionObj != null
 							&& testCase != null) {
+						verifyObj.parent=testCase;
 						actionObj.verification.add(verifyObj);
+						
 					}
 
 					// / Read the Verification Section of the Row
@@ -3213,6 +3218,7 @@ public class Excel {
 								AbstractSheetName, testCase, testCaseIndex,
 								nameSpace);
 					}
+					
 					// System.out.println("The Verify bools "+verifyObj.isNegative);
 				} else {
 					if (verifyObj != null && actionObj != null
@@ -3230,9 +3236,10 @@ public class Excel {
 				}
 				if (StringUtils.isNotBlank(valueInActionColumn)) {
 					if (actionObj != null && testCase != null) {
+						actionObj.parent=testCase;
 						testCase.actions.add(actionObj);
 						//
-
+						
 						// System.out.println("The action arguments  "+actionObj.actionArguments);
 
 					}
@@ -3253,6 +3260,7 @@ public class Excel {
 								AbstractSheetName, testCase, testCaseIndex,
 								nameSpace);
 					}
+					
 
 				}
 
@@ -3302,11 +3310,13 @@ public class Excel {
 
 					if (verifyObj != null && actionObj != null
 							&& testCase != null) {
+						verifyObj.parent=testCase;
 						actionObj.verification.add(verifyObj);
 					}
 
 					if (actionObj != null && testCase != null) {
 						// System.out.println("The action object "+actionObj.isComment+"\nAction definition "+actionObj._actionmoleculeArgDefn);
+						actionObj.parent=testCase;
 						testCase.actions.add(actionObj);
 						// Implement a method to get the exact object.
 
@@ -4794,6 +4804,7 @@ public class Excel {
 				if (StringUtils.isNotBlank(valueInVerificationColumn)) {
 					if (verifyObj != null && actionObj != null
 							&& testCase != null) {
+						verifyObj.parent=testCase;
 						actionObj.verification.add(verifyObj);
 					}
 
@@ -4812,6 +4823,7 @@ public class Excel {
 								TestCaseSheetName, testCase, testCaseIndex,
 								nameSpace);
 					}
+					
 				} else {
 					if (verifyObj != null && actionObj != null
 							&& testCase != null) {
@@ -4830,6 +4842,7 @@ public class Excel {
 
 				if (StringUtils.isNotBlank(valueInActionColumn)) {
 					if (actionObj != null && testCase != null) {
+						actionObj.parent=testCase;
 						testCase.actions.add(actionObj);
 					}
 
@@ -4849,6 +4862,7 @@ public class Excel {
 								TestCaseSheetName, testCase, testCaseIndex,
 								nameSpace);
 					}
+					
 					//System.out.println("Excel/"+actionObj.arguments);
 					ArrayList<Action> tempActions = new ArrayList<Action>();
 
@@ -4878,10 +4892,12 @@ public class Excel {
 
 					if (verifyObj != null && actionObj != null
 							&& testCase != null) {
+						verifyObj.parent=testCase;
 						actionObj.verification.add(verifyObj);
 					}
 
 					if (actionObj != null && testCase != null) {
+						actionObj.parent=testCase;
 						testCase.actions.add(actionObj);
 					}
 
@@ -4902,6 +4918,7 @@ public class Excel {
 			// }
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			Log.Error("Excel/GetTestCaseSheetValues : Exception occured while Getting TestCaseSheet Values, exception message is : "
 					+ e.getMessage());
 			throw new Exception(

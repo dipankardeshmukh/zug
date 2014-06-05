@@ -4,12 +4,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import com.automature.zug.gui.ZugGUI;
 
 import org.apache.commons.lang.StringUtils;
+
+
+
+
+
+
+
 
 
 
@@ -51,7 +60,8 @@ class TestCase
 	boolean returnFlag=false;
 	public boolean breakpoint=false;
 	public List breakpoints=null;
-
+	Map <String,String> variables=new HashMap<String,String>();
+	TestCase parent=null;
 	static boolean errorOccured=false;
 
 	public TestCase(){
@@ -71,13 +81,15 @@ class TestCase
 		this.automated = tc.automated;
 		this.isConcurrentMoleculeCall = tc.isConcurrentMoleculeCall;
 		this.concurrentExecutionOnExpansion = tc.concurrentExecutionOnExpansion;
-		this.threadID =tc. threadID;
+		this.threadID =tc.threadID;
 		this._testcasemoleculeArgDefn = tc._testcasemoleculeArgDefn;
 		this.mvm_macro_variable_map =tc. mvm_macro_variable_map;
 		this.mvm_value_map =tc. mvm_value_map;
 		actions 		= new ArrayList<Action>();
 		this.breakpoint=tc.breakpoint;
 		this.breakpoints=tc.breakpoints;
+		//this.variables=tc.variables;
+		this.parent=tc.parent;
 	}
 
 	public static void cleanUP(){
@@ -126,6 +138,7 @@ class TestCase
 
 		for (Action action : this.actions) {
 			Action tempAction = new Action(action);
+			tempAction.parent=tempTestCase;
 			tempAction.testCaseID = tempTestCase.testCaseID;
 			tempAction.parentTestCaseID = tempTestCase.testCaseID;
 			tempAction.stackTrace = tempTestCase.stackTrace;
@@ -153,6 +166,7 @@ class TestCase
 					+ action.name);
 			for(Verification verification:action.verification){
 				Verification tempVerification = new Verification(verification);
+				tempVerification.parent=tempTestCase;
 				tempVerification.parentTestCaseID = tempTestCase.testCaseID;
 				Log.Debug("TestCase/GenerateNewTestCaseID: tempVerification.parentTestCaseID =  : "
 						+ tempVerification.parentTestCaseID);
@@ -167,8 +181,10 @@ class TestCase
 				tempVerification.actualArguments = new ArrayList<String>(
 						verification.actualArguments);
 
+				tempVerification.parent=tempTestCase;
 				tempAction.verification.add(tempVerification);
 			}
+			tempAction.parent=tempTestCase;
 			tempTestCase.actions.add(tempAction);
 		}
 
@@ -492,6 +508,8 @@ class TestCase
 
 						//	if(checkBreakPoint(i)){
 						//ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
+					//	System.out.println("Excel main name space "+Excel.mainNameSpace);
+					//	System.out.println("break points "+Controller.breakpoints);
 						ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
 
 						if(al!=null){
@@ -598,7 +616,7 @@ class TestCase
 								}catch(Exception npe){
 									((Thread) ThreadPool.get(t)).join(testStepTimeout);
 								}
-								
+
 								if (((Thread) ThreadPool.get(t)).isAlive()) {
 									((Thread) ThreadPool.get(t)).interrupt();
 									TestSuite._testStepStopper.put(this.parentTestCaseID,
@@ -1976,8 +1994,10 @@ class TestCase
 							argv.add(GetActualCombination(argVer,tempTestCaseVar[count++]));
 						}
 						tempVerification.arguments.addAll(argv);
+						tempVerification.parent=tempTestCase;
 						tempAction.verification.add(tempVerification);
 					}
+					tempAction.parent=tempTestCase;
 					tempTestCase.actions.add(tempAction);
 				}
 
@@ -2122,6 +2142,7 @@ class TestCase
 		//				System.out.println(arg);
 		//			}
 		//		}
+		//System.out.println("TestCase/ "+concurrentExecutionOnExpansion);
 		TestCase[] expandedTestCases=null;
 		try{
 			expandedTestCases = this.ExpandTestCase( true);
@@ -2130,6 +2151,7 @@ class TestCase
 			expandedTestCases=new TestCase[1];
 			expandedTestCases[0]=this;
 		}
+
 		//	System.out.println("ETC size "+expandedTestCases.length);
 		Log.Debug("TestCase/RunTestCase: After Expansion for TestCase ID is "
 				+ this.testCaseID + " the number of expanded test case is : "
@@ -2148,6 +2170,7 @@ class TestCase
 				}	
 			}	
 			 */
+			//	System.out.println("TestCase/expanded testcase "+test.concurrentExecutionOnExpansion);
 			if(Controller.stop){
 				return;
 			}
@@ -2160,6 +2183,7 @@ class TestCase
 						try {
 							try {
 								test2.runExpandedTestCase();
+								test2.clearResources();
 							} catch (ReportingException ex) {
 								Log.Error("TestCase/RunTestCase: Exception when calling RunExpandedTestCase with exception message as : "
 										+ ex.getMessage());
@@ -2186,17 +2210,124 @@ class TestCase
 				}
 
 				test.runExpandedTestCase();
+				test.clearResources();
 			}
 		}
 		// Wait for all the Threads i.e. expanded test cases to finish.
 		for (int t = 0; t < ThreadPool.size(); ++t) {
 			((Thread) ThreadPool.get(t)).join();
 		}
-
-
 		Log.Debug("TestCase/RunTestCase: End of function with TestCase ID is "
 				+ this.testCaseID);
 	}
 
+	public String getNameWithThreadId(){
+		String threadId;
+		if (this.concurrentExecutionOnExpansion) {
+			threadId= TestSuite.threadIdForTestCases
+					.get(this.stackTrace);
+
+		} else {
+
+			threadId= this.threadID;
+		}
+		String name;
+		if(testCaseID.contains("\\")){
+			name=testCaseID.substring(0,testCaseID.indexOf("\\"));
+		}
+		else{
+			name=testCaseID;
+		}
+		return nameSpace+name+threadId;
+	}
+
+	public void createVariable(String variableAndValue) throws Exception{
+		Log.Debug("testCase/createVariable : Start of function with variableAndValue = ."
+				+ variableAndValue);
+
+		if (StringUtils.isBlank(variableAndValue)) {
+			Log.Debug("testCase/createVariable : End of function with Empty variableAndValue .");
+			return;
+		}
+
+
+		if (variableAndValue.contains("=")) {
+			Log.Debug("testCase/createVariable : variableAndValue = "
+					+ variableAndValue + " Contains an = sign.");
+			String[] tempVarValue = Excel.SplitOnFirstEquals(variableAndValue);
+			Log.Debug("testCase/createVariable : After split of variableAndValue = "
+					+ variableAndValue
+					+ " the Length is "
+					+ tempVarValue.length);
+			String varName=getNameWithThreadId()+"."+tempVarValue[0].trim();
+			//	System.out.println("TestCase /varname ="+varName);
+			if (tempVarValue.length <= 1) {
+				Log.Debug("testCase/createVariable : Setting {0} Context Variable with Empty Value."
+						+ tempVarValue[0]);
+				variables.put(tempVarValue[0].trim(), varName);
+				ContextVar.setContextVar( varName,
+						StringUtils.EMPTY);
+			} else {
+				Log.Debug("testCase/createVariable : Setting "
+						+ tempVarValue[0] + " Context Variable with Value = "
+						+ tempVarValue[1]);
+				variables.put(tempVarValue[0].trim(), varName);
+				ContextVar.setContextVar(varName,
+						tempVarValue[1]);
+			}
+		} else {
+			// This else will just set the Environment Variable with an Empty
+			// String.
+			String varName=getNameWithThreadId()+"."+variableAndValue.trim();
+			//System.out.println("TestCase /varname ="+varName);
+			variables.put(variableAndValue.trim(), varName);
+			Log.Debug("testCase/createVariable : Setting "
+					+ variableAndValue + " Context Variable with Empty Value.");
+
+			ContextVar
+			.setContextVar(varName, StringUtils.EMPTY);
+		}
+		Log.Debug("testCase/createVariable : End of function with variableAndValue = "
+				+ variableAndValue);
+		//System.out.println("testcase id="+testCaseID+"\tvariables "+this.variables);
+	}
+
+	public String getVariableDBReference(String variable){
+		String varName=variables.get(variable);
+		if(varName!=null){
+			return varName;
+		}else{
+			if(parent!=null){
+				return parent.getVariableDBReference(variable);
+			}else{
+				return null;
+			}
+		}
+	}
+
+	public List<String> getVariableListAsSqlStrings(){
+		List<String> vars=new ArrayList<String>();
+		Iterator<String> it=variables.keySet().iterator();
+		while(it.hasNext()){
+			vars.add("'"+variables.get(it.next())+"'");
+		}
+		return vars;
+	}
+
+	public void clearResources(){
+
+		try {
+			List<String> vars=getVariableListAsSqlStrings();
+			if(vars.size()>0){
+				String variables=vars.toString();
+				variables=variables.substring(1, variables.length()-1);
+				//System.out.println("variables "+variables);
+				ContextVar.deleteVariables(variables);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }	

@@ -51,7 +51,7 @@ public class Verification extends GTuple {
 											this.name,
 											this.sheetName,
 											this.lineNumber,
-											e.getMessage()), threadID));
+											e.getMessage()), threadID,this));
 
 				}else {						
 					throw new Exception(
