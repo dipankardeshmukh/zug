@@ -468,15 +468,18 @@ public class OutProcessAtom implements Atom{
 			Log.Debug("OutProcessAtom/run : Number of Arguments are : "
 					+ action.arguments.size());
 			ArrayList<String> arg=new ArrayList<String>();
+			List<String> args=new ArrayList<String>();
 			for (int i = 0; i < action.arguments.size(); ++i) {
 				Log.Debug(String
 						.format("OutProcessAtom/run : Working on Arguments[%d] = %s",
 								i, action.arguments.get(i).toString()));
 				arguments.append("\""
 						+ Argument.DoSomeFineTuning(action.arguments.get(i)
-								.toString(), threadID) + "\"");
+								.toString(), threadID,action,true) + "\"");
 				arg.add(Argument.DoSomeFineTuning(action.arguments.get(i)
-						.toString(), threadID));
+						.toString(), threadID,action,true));
+				args.add(Argument.DoSomeFineTuning(action.arguments.get(i)
+						.toString(), threadID,action,false));
 				arguments.append(" ");
 			}
 			Log.Debug(String
@@ -499,7 +502,7 @@ public class OutProcessAtom implements Atom{
 								.format("\n[%s] "+type+" %s Execution STARTED With Arguments %s ",
 										action.stackTrace.toUpperCase(),
 										action.name.toUpperCase(),
-										arg));
+										args));
 			}
 
 			String protoTypeName = Excel.AppendNamespace(command,

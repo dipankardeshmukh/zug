@@ -40,5 +40,9 @@ public class ContextVar extends com.automature.zug.api.ContextVar{
     public static void DeleteAll(int processId) throws Exception {
         com.automature.zug.api.ContextVar.DeleteAll(processId);
     }
+    
+    public static void deleteVariables(String vars) throws Exception{
+    	com.automature.zug.api.ContextVar.deleteVariables(vars);
+    }
 
 }

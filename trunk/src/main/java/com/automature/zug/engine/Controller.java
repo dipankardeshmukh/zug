@@ -50,7 +50,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.3.9";
+	private static String Version = "ZUG Premium 7.4.0";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -1889,7 +1889,7 @@ public class Controller extends Thread {
 
 			// Now run the test-case one by one -
 			controller.testsuite.testcases = controller.readExcel.TestCases();
-
+			
 			// Read the Abstract Test Cases from the Sheet
 			controller.testsuite.abstractTestCase = controller.readExcel
 					.AbstractTestCases();
@@ -1969,7 +1969,7 @@ public class Controller extends Thread {
 			}catch(Exception e){
 
 			}
-			if(testSuiteTimeout==null){
+			if(testSuiteTimeout==null&&testSuiteTimeout.isEmpty()){
 				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
 			}
 			long initExecTime = controller.testsuite.waitForInitToComplete(Integer.parseInt(testSuiteTimeout));
@@ -1999,7 +1999,7 @@ public class Controller extends Thread {
 			}catch(Exception e){
 
 			}
-			if(testSuiteTimeout==null){
+			if(testSuiteTimeout==null &&testSuiteTimeout.isEmpty()){
 				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
 			}
 			if(((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime ) < 0)

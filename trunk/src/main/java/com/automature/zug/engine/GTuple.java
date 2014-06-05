@@ -8,6 +8,8 @@ import com.automature.zug.util.Log;
 import com.automature.zug.util.Utility;
 
 public class GTuple {
+	
+	
 	public String parentTestCaseID = null;
 
 	public String nameSpace = null;
@@ -31,6 +33,7 @@ public class GTuple {
 	public Boolean isComment = false;
 	public UserData userObj;
 	String property="";
+	TestCase parent;
 
 	public GTuple() {
 		super();
@@ -55,6 +58,7 @@ public class GTuple {
 		this.isIgnore = gt.isIgnore;
 		this.property=gt.property;
 		arguments = new ArrayList<String>();
+		this.parent=gt.parent;
 	}
 	
 	public void putExceptionMessage(Exception ex){
@@ -109,18 +113,19 @@ public class GTuple {
 								+ actionVal
 								+ " && NormalizeVariable = "
 								+ Argument.NormalizeVariable(actionVal,
-										threadID));
+										threadID,this));
 						tempList.add(Argument.NormalizeVariable(actionVal,
-								threadID));
+								threadID,this));
 					}
 
 					Log.Debug(String
 							.format("GTuple/run: Calling  RunAbstractTestCase for Abstract TestCase ID as : %s and action.parentTestCaseID = %s .",
 									abstractTestCaseName, this.parentTestCaseID));
 
-					Molecule tempActntestcase = TestSuite.abstractTestCase
+					Molecule tempMol = TestSuite.abstractTestCase
 							.get(Excel.AppendNamespace(abstractTestCaseName,
 									this.nameSpace));
+					Molecule tempActntestcase=new Molecule(tempMol);
 //					if(Controller.opts.debugger){
 //						Controller.breakpoints.containsKey(Excel.AppendNamespace(abstractTestCaseName,
 //									this.nameSpace));
@@ -131,6 +136,8 @@ public class GTuple {
 					tempActntestcase.setArguments(tempList);
 					tempActntestcase.setCallingtTestCaseSTACK(this.stackTrace);
 					tempActntestcase.setParentTestCaseID(this.parentTestCaseID);
+					tempActntestcase.parent=this.parent;
+					tempActntestcase.actions=tempMol.actions;
 					if (this instanceof Action) {
 						try {
 							Action act = (Action) this;
@@ -215,6 +222,7 @@ public class GTuple {
 				}
 			}
 		} catch (Exception e) {
+			//e.printStackTrace();
 			if (this.isNegative && exceptionOccured) {
 				ContextVar
 				.setContextVar(
@@ -224,7 +232,7 @@ public class GTuple {
 										"\n\nException  %s (%s:%s).\n\t Message: %s",
 										this.name, this.sheetName,
 										this.lineNumber, e.getMessage()),
-										threadID));
+										threadID,this));
 				if (!StringUtils
 						.isBlank(TestSuite.errorMessageDuringTestCaseExecution
 								.get(this.parentTestCaseID))) {

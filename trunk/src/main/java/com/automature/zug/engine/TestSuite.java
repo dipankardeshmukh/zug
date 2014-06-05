@@ -228,6 +228,7 @@ public class TestSuite {
 
 							} else {
 								// message("The generated Id 0b "+test.testCaseID);
+							
 								test.run();
 								this.implicitTestCaseCall(test);
 								TestSuite.firstTestCaseExecuted=true;
@@ -491,6 +492,7 @@ public class TestSuite {
 							}
 							// message("The generated Id 2a " +
 							// test.testCaseID);
+						
 							test.run();
 							this.implicitTestCaseCall(test);
 							TestSuite.firstTestCaseExecuted=true;
