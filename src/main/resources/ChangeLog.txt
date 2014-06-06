@@ -1,5 +1,71 @@
 ZUG Change Log
+The following has been introduced in Ver 7.4.0
+New Features
+*Support for local variables
+Bug Fixed
+*Bug 1053 Breakpoints not properly name-spaced
+*Bug 1054 GUI gets into an inconsistent state
+
+The following has been introduced in Ver 7.3.9
+Bug Fixed
+*Added new interface in GUI for providing macro column
+
+The following has been introduced in Ver 7.3.8
+New Features
+*FR1052 Suppressing molecule's output selectively
+Bug Fixed
+*Bug 1052 Breakpoints not working properly
+
+The following has been introduced in Ver 7.3.7
+Bug Fixed
+*Bug 1045 Arguments passed to built-in atoms were not shown as substituted values
+*Bug 1046 Teststep timeout was not working for the test case in which it was modified
+
+The following has been introduced in Ver 7.3.6
+New Feature
+*FR1043 Added Iterating capability for MVCV{1..10 }
+
+The following has been introduced in Ver 7.3.5
+New Feature
+*FR1040 Evaluation of more than one context variable in an argument.
+Bug Fixed
+*In-process and out-process arguments will not be treated as named arg
+*session file view fix
+*format view fix for ZUG_ACTION_EXCEPTION
+
+The following has been introduced in Ver 7.3.4
+New Feature
+*added editing feature from GUI sheets and saving it to the xls file(auto save)
+Bug Fixed
+*Maximum size of icons panel changed
  
+
+The following has been introduced in Ver 7.3.3
+New Feature
+*Added editing feature from GUI sheets and saving it to the xls file(auto save)
+Bug Fixed
+*Bug 1036 fix for ZUG ini PreferenceDialog error while saving empty script location
+
+The following has been introduced in Ver 7.3.2
+Bug Fixed
+*Bug 1031 Fix for JIRAReporter
+
+The following has been introduced in Ver 7.3.1
+New Feature
+*Added support for providing macro column name in -macrocolumn feature
+Bug Fixed
+*System.exit value have been changed
+*getContextVar call for test suite timeout has been surrounded with try catch
+*fix for resizing of icons panel,debugger panel and command panel
+*GUI was not including molecule sheets when using -include option
+
+The following has been introduced in Ver 7.3.0
+New Feature
+*Preference window added for editing ZUGINI.xml
+Bug Fixed
+*commented display of testsuite timeout
+*added automature icon in about us dialog
+
 The following has been introduced in Ver 7.2.18
 Bugs Fixed
 * Added support for ADAPTERPANELPATH ZugINI.xml
