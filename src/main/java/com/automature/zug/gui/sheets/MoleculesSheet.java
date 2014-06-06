@@ -215,7 +215,7 @@ public class MoleculesSheet extends GenericSheet{
                             target.setValueAt("",row,0);
                             Object[] rows = new Object[1];
                             rows[0] = String.valueOf(row+1);
-                            Controller.removeBreakPoints(nameSpace, rows);
+                            Controller.removeBreakPoints(nameSpace+"molecules", rows);
                         }else{
 
                             ImageIcon breakpointIcon = new ImageIcon("Images/breakpoint.png");
