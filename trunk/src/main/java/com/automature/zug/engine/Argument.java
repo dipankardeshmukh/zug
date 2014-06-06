@@ -200,11 +200,11 @@ public class Argument {
 		}else{
 			if(tempVariable.startsWith("'")&&tempVariable.endsWith("'")){
 				tempVariable=tempVariable.substring(1,tempVariable.length()-1);
-			}else{
+			}/*else{
 				
 				tempVariable = tempVariable.replace("\\'", "'");
 				
-			}
+			}*/
 			tempVariable = tempVariable.replace("\\%", "%");	
 		}
 		Log.Debug(String
