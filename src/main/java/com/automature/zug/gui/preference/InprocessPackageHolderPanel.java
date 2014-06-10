@@ -37,6 +37,9 @@ public class InprocessPackageHolderPanel extends JPanel {
 	 */
 	public InprocessPackageHolderPanel(Set<InprocessPackage> inprocesses){
 		init();
+		/*if(inprocesses==null){
+			return;
+		}*/
 		for(InprocessPackage ip:inprocesses){
 			InprocessPackagePanel ipp=new InprocessPackagePanel(ip);
 			centralPanel.add(ipp);

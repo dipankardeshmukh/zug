@@ -38,6 +38,9 @@ public class AdapterPanel extends JPanel {
 	
 	public AdapterPanel(ReporterParams params){
 		this();
+		if(params==null){
+			return;
+		}
 		textFieldAdapterUsername.setText(params.getDbusername());
 		textFieldHost.setText(params.getDbhostname());
 		textFieldAdapterPassword.setText(params.getDbuserpassword());

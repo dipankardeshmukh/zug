@@ -32,6 +32,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import jline.internal.Log;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,7 +55,7 @@ public class IniHandler {
 	private static final String fileName="ZugINI.xml";
 
 	public Set<InprocessPackage> readInprocessPackages() {
-		Set<InprocessPackage> inprocessSet=null;
+		Set<InprocessPackage> inprocessSet=new HashSet();
 		NodeList nodeList = null, inprocessList = null;
 
 
@@ -62,19 +64,21 @@ public class IniHandler {
 		Node inprocesses;
 		if (nodeList != null) {
 			inprocesses = nodeList.item(0);
-			inprocessList = inprocesses.getChildNodes();
-			Element e;
-			for(int k=0;k<inprocessList.getLength();k++){
-				Node n=inprocessList.item(k);
-				if(n.getNodeType() == Node.ELEMENT_NODE){
-					if (n.getNodeName()
-							.equalsIgnoreCase("file-path")) {
-						inprocessSet= 	readInprocessPackages(inprocessList);
-					} else {
-						//inprocessSet= 	readInprocessPackages(inprocessList);
-						inprocessSet=	readInprocessPackagesOldFormat(inprocessList);
+			if(inprocesses!=null){
+				inprocessList = inprocesses.getChildNodes();
+				Element e;
+				for(int k=0;k<inprocessList.getLength();k++){
+					Node n=inprocessList.item(k);
+					if(n.getNodeType() == Node.ELEMENT_NODE){
+						if (n.getNodeName()
+								.equalsIgnoreCase("file-path")) {
+							inprocessSet= 	readInprocessPackages(inprocessList);
+						} else {
+							//inprocessSet= 	readInprocessPackages(inprocessList);
+							inprocessSet=	readInprocessPackagesOldFormat(inprocessList);
+						}
+						break;
 					}
-					break;
 				}
 			}
 		}
@@ -361,10 +365,15 @@ public class IniHandler {
 			{
 				ReporterParams rp=new ReporterParams();
 				Element eElement = (Element) node;
-				rp.setDbhostname(eElement.getElementsByTagName("dbhostname").item(0).getTextContent());
-				rp.setDbusername(eElement.getElementsByTagName("dbusername").item(0).getTextContent());
-				rp.setDbuserpassword(eElement.getElementsByTagName("dbuserpassword").item(0).getTextContent());
-				rp.setDbname(eElement.getElementsByTagName("dbname").item(0).getTextContent());
+				try{
+					rp.setDbhostname(eElement.getElementsByTagName("dbhostname").item(0).getTextContent());
+					rp.setDbusername(eElement.getElementsByTagName("dbusername").item(0).getTextContent());
+					rp.setDbuserpassword(eElement.getElementsByTagName("dbuserpassword").item(0).getTextContent());
+					rp.setDbname(eElement.getElementsByTagName("dbname").item(0).getTextContent());
+					
+				}catch(Exception e){
+					System.out.println("Error[Warn]:Adapter tags are missing or not in proper format");
+				}
 				config.setReporterParams(rp);
 				NodeList mvmConfigNodes=eElement.getElementsByTagName("mvm-configuration");
 				//System.out.println(mvmConfigNodes);
@@ -498,7 +507,7 @@ public class IniHandler {
 			File ini=new File(workingDirectory+File.separator+fileName);
 			try {  
 				if(ini.exists()){
-					
+
 					FileOutputStream fop = new FileOutputStream(ini,false);  					
 					byte[] contentInBytes = iniXML.getBytes();  
 					fop.write(contentInBytes);  
