@@ -1,4 +1,11 @@
 ZUG Change Log
+
+The following has been introduced in Ver 7.4.1
+New Features
+local var support in appendtocontextvar atom
+Bug Fixed
+*Bug 1041 null pointer exception while opening preference dialog
+
 The following has been introduced in Ver 7.4.0
 New Features
 *Support for local variables
