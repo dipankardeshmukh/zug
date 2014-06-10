@@ -213,6 +213,13 @@ public class BuildInAtom implements Atom {
 							action.stackTrace.toUpperCase(),
 							action.name.toUpperCase(), contextVarName,
 							appendValueBuilder.toString()));
+					//new code
+					String actualref=action.parent.getVariableDBReference(contextVarName);
+					if(actualref!=null){
+						contextVarName=actualref;			
+					}
+					//new code ends here
+					
 					String value = ContextVar.getContextVar(contextVarName
 							.trim());
 					if (value == null) {
