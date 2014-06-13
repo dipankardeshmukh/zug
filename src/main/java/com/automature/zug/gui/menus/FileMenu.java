@@ -56,7 +56,7 @@ public class FileMenu {
 	
 
 		mnFile.addSeparator();
-		mntmRecentlyUsed = new JMenu("recenlty used");
+		mntmRecentlyUsed = new JMenu("recently used");
 	/*	mntmRecentlyUsed.setAutoscrolls(true);
 		mntmRecentlyUsed.setRolloverEnabled(true);
 		mntmRecentlyUsed.setMaximumSize(new Dimension(300, 9));*/
