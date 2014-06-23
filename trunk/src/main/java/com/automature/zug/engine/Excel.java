@@ -1281,7 +1281,7 @@ public class Excel {
 					String[] includeValues = extrValue.split(",");
 
 					for (String Path : includeValues) {
-
+						
 						if (Path.contains(":") || Path.startsWith("/")) {
 							// System.out.println("Excel/readNestedInclude:: The include files "
 							// + Path);
@@ -1291,17 +1291,48 @@ public class Excel {
 							if (Path.isEmpty()) {
 								continue;
 							} else {
-								// System.out.println("The file name "+this.getXlsFilePath());
+								String parentDir=inputFile.getParent();
+								String baseDir= new File(this.getXlsFilePath()).getParent();
 								String actualPath = "";
 								// Implement the Inlcule file path issue.
-								File inputxlsfile = new File(
-										this.getXlsFilePath());
-
+								if(Path.contains("..")){
+									int lastIndex=Path.lastIndexOf("..")+1;
+									String temp[]=Path.split("\\..");
+									int upperH=temp.length;
+									String p=parentDir;
+									for(int i=1;i<upperH-1;i++){
+										p=p.substring(0, p.lastIndexOf(SysEnv.SLASH));		//		System.out.println("p="+p);
+									}
+									String fileName=p+Path.substring(lastIndex+1,Path.length());
+									
+									if(new File(fileName).exists()){
+										actualPath +=fileName+",";	
+									}else{
+									
+										p=baseDir;
+										for(int i=1;i<upperH-1;i++){
+											p=p.substring(0, p.lastIndexOf(SysEnv.SLASH));		//		System.out.println("p="+p);
+										}
+										fileName=p+Path.substring(lastIndex+1,Path.length());
+									
+										actualPath +=fileName+",";
+									}
+									
+								}
+								else{
+									File f=new File(parentDir+File.separator+Path);
+									if(f.exists()){
+										actualPath += parentDir+File.separator+Path + ",";
+										
+									}else{
+										actualPath += baseDir
+												+ File.separator + Path + ",";									
+									}
+									
+								}
 								// actualPath +=
 								// ProgramOptions.workingDirectory+
 								// Controller.SLASH + Path + ",";
-								actualPath += inputxlsfile.getParent()
-										+ SysEnv.SLASH + Path + ",";
 								// System.out.println("This is the file location of include "+actualPath);
 								includePathList += actualPath;
 							}
@@ -1325,6 +1356,7 @@ public class Excel {
 		} finally {
 
 			// System.out.println("nested include file "+includePathList+" external include file list "+_externalSheets);
+			//System.out.println("Execl include path "+includePathList);
 			return includePathList;
 		}
 	}
