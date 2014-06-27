@@ -161,7 +161,15 @@ public class JiraReporter  implements Reporter {
 		Log.Debug("JiraReporter/SaveTestCaseResultEveryTime() : Saving test case result for "+etc.testCaseID);
 		String issueId = null, executionId = null, statusCode = null; 
 		IssueDetails obj;
+        String mod_summary = this.issueSummaryType;//this.testsuiteName+":"+etc.testCaseID;
+        if(mod_summary!=null){
+            mod_summary=mod_summary.replace("$ts", this.testsuiteName).replace("$TS", this.testsuiteName);
+            mod_summary=mod_summary.replace("$tc", etc.testCaseID).replace("$TC", etc.testCaseID);
+            mod_summary = mod_summary.replaceAll("\\\\",REPLACE_CAHARACTER).replaceAll("/",REPLACE_CAHARACTER);
+        }
+        etc.testCaseID=mod_summary;
 		if (issues_reported.containsKey(etc.testCaseID)){
+            Log.Debug("JiraReporter/SaveTestCaseResultEveryTime() : Test Case found in Hashmap. "+etc.testCaseID);
 			obj = issues_reported.get(etc.testCaseID);
 			issueId = obj.issue_id;
 			executionId = obj.execution_id;
@@ -199,35 +207,28 @@ public class JiraReporter  implements Reporter {
 			issues_reported.remove(etc.testCaseID);
 		}else{
 			issues_reported.put(etc.testCaseID, new IssueDetails(issueId, executionId));
+            Log.Debug("JiraReporter/SaveTestCaseResultEveryTime() : Issue Id and execution Id added in hashmap. Issue Id = "+issueId+". Execution Id ="+executionId+". for testcase = "+etc.testCaseID);
 		}
 	}
 
 
 	private String getIssueId(ExecutedTestCase etc)throws Exception{
 		Log.Debug("JiraReporter/getIssueId() : Create new Issue or return the existing issue for Issue Summary "+etc.testCaseID);
-		String mod_summary = this.issueSummaryType;//this.testsuiteName+":"+etc.testCaseID;
-		if(mod_summary!=null){
-			mod_summary=mod_summary.replace("$ts", this.testsuiteName).replace("$TS", this.testsuiteName);
-			mod_summary=mod_summary.replace("$tc", etc.testCaseID).replace("$TC", etc.testCaseID);
-			mod_summary = mod_summary.replaceAll("\\\\",REPLACE_CAHARACTER).replaceAll("/",REPLACE_CAHARACTER);
-		}
-
-		etc.testCaseID=mod_summary;
 		String issueId = null;
 		try{
-			Log.Debug("JiraReporter/getIssueId() : Searching for existing issue with summary "+mod_summary);
-			issueId = api.getIssueId(projectId, mod_summary);
+			Log.Debug("JiraReporter/getIssueId() : Searching for existing issue with summary "+etc.testCaseID);
+			issueId = api.getIssueId(projectId, etc.testCaseID);
 		}catch(JiraExecutionException e){
-			Log.Debug("JiraReporter/getIssueId() : "+mod_summary+" issue does not exists!");
-			Log.Debug("JiraReporter/getIssueId() : Creating new issue with summary "+mod_summary);
+			Log.Debug("JiraReporter/getIssueId() : "+etc.testCaseID+" issue does not exists!");
+			Log.Debug("JiraReporter/getIssueId() : Creating new issue with summary "+etc.testCaseID);
 			try{
-				issueId = api.createIssue(projectId, versionId, mod_summary, etc.testcasedescription);
+				issueId = api.createIssue(projectId, versionId, etc.testCaseID, etc.testcasedescription);
 			}catch(JiraExecutionException f){
-				Log.Error("JiraReporter/getIssueId() : Error while creating new Issue : "+mod_summary+"\nException : "+f.getMessage());
-				throw new ReportingException("Error while creating new Issue : "+mod_summary+"\nException : "+f.getMessage());
+				Log.Error("JiraReporter/getIssueId() : Error while creating new Issue : "+etc.testCaseID+"\nException : "+f.getMessage());
+				throw new ReportingException("Error while creating new Issue : "+etc.testCaseID+"\nException : "+f.getMessage());
 			}
 		}
-		Log.Debug("JiraReporter/getIssueId() : Issus Summary : "+mod_summary+", Issue Id :"+issueId);    	
+		Log.Debug("JiraReporter/getIssueId() : Issus Summary : "+etc.testCaseID+", Issue Id :"+issueId);
 		return issueId;
 	}
 
