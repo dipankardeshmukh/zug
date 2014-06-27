@@ -1,10 +1,13 @@
 ZUG Change Log
 
+The following has been introduced in Ver 7.4.3
+Bug Fixed
+*Bug 1073 Jira Reporter creates single execution detail for a single test case
+
 The following has been introduced in Ver 7.4.2
 Bug Fixed
 *Bug 1070 relative path support for include files
 *Bug 1063 File Menu in GUI had a typo for "Recently Used"
-
 
 The following has been introduced in Ver 7.4.1
 New Features
