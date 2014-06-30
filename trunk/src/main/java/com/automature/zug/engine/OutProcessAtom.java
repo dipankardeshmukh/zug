@@ -343,6 +343,7 @@ public class OutProcessAtom implements Atom{
 					}
 					// Check process has exited
 					try {
+						process.waitFor();
 						exitValue = process.exitValue();
 						break;
 					} catch (IllegalThreadStateException ex) {
