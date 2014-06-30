@@ -1,4 +1,7 @@
 ZUG Change Log
+The following has been introduced in Ver 7.4.4
+Bug Fixed
+*Fix for Illegal Thread State exception while running outprocess atom
 
 The following has been introduced in Ver 7.4.3
 Bug Fixed
