@@ -1,4 +1,9 @@
 ZUG Change Log
+
+The following has been introduced in Ver 7.4.5
+Bug Fixed
+*Bug 1075 Spurious error when executing testsuite ContextVar/getContextVar
+
 The following has been introduced in Ver 7.4.4
 Bug Fixed
 *Fix for Illegal Thread State exception while running outprocess atom

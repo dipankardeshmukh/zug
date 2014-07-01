@@ -50,7 +50,7 @@ public class Controller extends Thread {
 	public static String logfilename="";
 	static ZugGUI gui;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.4.4";
+	private static String Version = "ZUG Premium 7.4.5";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -786,6 +786,8 @@ public class Controller extends Thread {
 		} else if (opts.repeatCount >= 1) {
 			CreateContextVariable("ZUG_TESTSUITE_TIMEOUT=" + opts.repeatCount
 					* readExcel.TESTPLAN_TIMEOUT());
+		}else{
+			CreateContextVariable("ZUG_TESTSUITE_TIMEOUT=" + readExcel.TESTPLAN_TIMEOUT());
 		}
 
 		// No Affect to the Test Step Timeout.
@@ -1261,7 +1263,7 @@ public class Controller extends Thread {
 		String keyValue = StringUtils.EMPTY;
 		keyValue = ContextVar.getContextVar(variableName);
 
-		if (StringUtils.isBlank(keyValue)) {
+		if (keyValue==null||StringUtils.isBlank(keyValue)) {
 			keyValue = StringUtils.EMPTY;
 		}
 
@@ -1599,6 +1601,21 @@ public class Controller extends Thread {
 			System.out.println("\nInprocess package Loaded.");
 		}
 
+	}
+	
+	public int getTestSuiteTimeout(){
+		String testSuiteTimeout=null;
+		try{
+	
+			testSuiteTimeout=Controller.ReadContextVariable("ZUG_TESTSUITE_TIMEOUT");
+
+		}catch(Exception e){
+
+		}
+		if(testSuiteTimeout==null||testSuiteTimeout.isEmpty()){
+			testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
+		}
+		return Integer.parseInt(testSuiteTimeout);
 	}
 
 	public static void oldmain(String[] args) throws InterruptedException,
@@ -1962,17 +1979,8 @@ public class Controller extends Thread {
 			});
 
 			thread.start();
-			String testSuiteTimeout=null;
-			try{
-				testSuiteTimeout=Controller.ReadContextVariable("ZUG_TESTSUITE_TIMEOUT");
-
-			}catch(Exception e){
-
-			}
-			if(testSuiteTimeout==null&&testSuiteTimeout.isEmpty()){
-				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
-			}
-			long initExecTime = controller.testsuite.waitForInitToComplete(Integer.parseInt(testSuiteTimeout));
+			
+			long initExecTime = controller.testsuite.waitForInitToComplete(controller.getTestSuiteTimeout());
 
 			if(opts.dbReporting){
 				Thread dbStimulator = new Thread(new Runnable() {
@@ -1992,21 +2000,12 @@ public class Controller extends Thread {
 			}
 			//  System.out.println(Integer.parseInt(controller.ReadContextVariable(
 			//        "ZUG_TESTSUITE_TIMEOUT"))+ " "+ initExecTime);
-			try{
-				testSuiteTimeout=null;
-				testSuiteTimeout=Controller.ReadContextVariable("ZUG_TESTSUITE_TIMEOUT");
-
-			}catch(Exception e){
-
-			}
-			if(testSuiteTimeout==null &&testSuiteTimeout.isEmpty()){
-				testSuiteTimeout=readExcel.TESTPLAN_TIMEOUT()+"";
-			}
-			if(((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime ) < 0)
+			
+			if(((controller.getTestSuiteTimeout()*1000) - initExecTime ) < 0)
 			{
 				thread.interrupt();
 			}else{
-				thread.join((Integer.parseInt(testSuiteTimeout)*1000) - initExecTime);
+				thread.join((controller.getTestSuiteTimeout()*1000) - initExecTime);
 			}
 
 
