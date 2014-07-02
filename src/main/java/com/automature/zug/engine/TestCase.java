@@ -425,7 +425,7 @@ class TestCase
 								System.exit(1);
 							}
 						}catch(Exception e){
-							System.out.println("Exception caught");
+							
 							e.printStackTrace();
 						}
 					} else {
@@ -1273,6 +1273,7 @@ class TestCase
 		boolean moldefexists=false;
 		//if(molcallarg.toLowerCase().contains("##")&&(!molcallarg.endsWith("##")||!molcallarg.endsWith("##%")||!molcallarg.endsWith("#")))
 		if(molcallarg.startsWith("##")){
+		
 			for(String moldefarg:moldeflist)
 			{
 				//if(moldefarg.toLowerCase().contains(molcallarg))
@@ -1283,8 +1284,10 @@ class TestCase
 					break;
 				}
 			}
+		
 		}
 		Log.Debug(String.format("TestCase/ExpandTestCase/checkIfMoleculeNeedToBeExpanded:: final return : %s",moldefexists));
+		
 		return moldefexists;
 	}
 
@@ -1367,7 +1370,7 @@ class TestCase
 		Log.Debug("TestCase/GetTheActualValue : End of function with variableToFind = "
 				+ entireValue + " and its value is -> " + tempValue);
 
-		//		Controller.message("The tempvalue "+tempValue);
+				
 		if(tempValue==null){
 			//	System.out.println("entire value");
 			tempValue=entireValue;
@@ -1375,16 +1378,10 @@ class TestCase
 		return tempValue;
 	}
 
-	public String getContinuityValue(String valueToExpand){
-		// / Splitting the Value on the basis of ".." i.e. MacroValExpander
+	public String getIteratedValues(String valueToExpand){
+		
+		if(valueToExpand.contains("..")){
 
-
-		if(valueToExpand==null){
-			return valueToExpand;
-		}
-		if(valueToExpand.contains("..")&&valueToExpand.startsWith("{")&&valueToExpand.endsWith("}")){
-
-			valueToExpand=valueToExpand.substring(1,valueToExpand.length()-1);
 			String[] stringsToCompare = valueToExpand.split("\\..");
 
 			Log.Debug(String.format(
@@ -1416,7 +1413,7 @@ class TestCase
 				Log.Debug("Error:Number format "+nfe.getMessage());
 				return valueToExpand;
 			}
-			if (firstIntVal > 0 && secondIntVal > 0) {
+			if (firstIntVal >= 0 && secondIntVal > 0) {
 				Log.Debug("TestCase/getContinuityValue : firstIntVal && secondIntVal are integers.");
 				if (firstIntVal > secondIntVal) {
 					Log.Debug(String
@@ -1445,12 +1442,40 @@ class TestCase
 				}
 				String returnVal=(Utility.join(",", stringToReturnTemp, 0,
 						stringToReturnTemp.length - 1)).toString();
-				return "{"+returnVal+"}";
+				return returnVal;
 			}
 		}
 
 		return valueToExpand;
 	}
+	
+	public String[] splitIteratorList(String valueToSplit){
+		if(valueToSplit.contains("..")){
+			valueToSplit=getIteratedValues(valueToSplit);
+		}
+		return valueToSplit.split(",");
+	}
+	
+	public String getContinuityValue(String valueToExpand){
+		// / Splitting the Value on the basis of ".." i.e. MacroValExpander
+
+
+		if(valueToExpand==null){
+			return valueToExpand;
+		}
+		if(valueToExpand.contains("..")&&valueToExpand.startsWith("{")&&valueToExpand.endsWith("}")){
+
+			valueToExpand=valueToExpand.substring(1,valueToExpand.length()-1);
+			valueToExpand=getIteratedValues(valueToExpand);
+			return "{"+valueToExpand+"}";
+
+		}
+
+		return valueToExpand;
+	}
+	
+	
+	
 	private String GetActualCombination(String entireValue,
 			String valueToSubstitute) {
 
@@ -1543,6 +1568,7 @@ class TestCase
 						//if (action.actionActualArguments.get(i).startsWith("$$")|| action.actionActualArguments.get(i).startsWith("##")) {
 						if (action.actualArguments.get(i).startsWith("$$")|| checkIfMoleculeNeedToBeExpanded(action.actualArguments.get(i),this._testcasemoleculeArgDefn)) {
 							tempVal = tempVal + "$~$";
+							
 						} else if (action.actualArguments.get(i)
 								.contains("=")) {
 							String[] split_actual_arg = Excel
@@ -1550,6 +1576,7 @@ class TestCase
 											.get(i));
 							if (split_actual_arg.length > 1	&& (split_actual_arg[1].startsWith("$$") || checkIfMoleculeNeedToBeExpanded(split_actual_arg[1],this._testcasemoleculeArgDefn) )) {
 								tempVal = tempVal + "$~$";
+								
 							}
 						}
 
@@ -1595,7 +1622,7 @@ class TestCase
 								+ " of Action: "
 								+ action.name);
 						allActionVerificationArgs.add(new ArrayList<String>(
-								Arrays.asList(val.split(","))));
+								Arrays.asList(splitIteratorList(val))));
 
 						// Test Case Variable table not getting updated for one
 						// valued MVM - Bug Fix
@@ -1603,7 +1630,7 @@ class TestCase
 						multiValuedVariablePosition.put(count1,
 								StringUtils.EMPTY);
 					} else {
-
+						
 						allActionVerificationArgs.add(new ArrayList<String>(
 								Arrays.asList(new String[] { tempVal })));
 					}
@@ -1690,7 +1717,7 @@ class TestCase
 									+ verification.name);
 							allActionVerificationArgs
 							.add(new ArrayList<String>(Arrays
-									.asList(val.split(","))));
+									.asList(splitIteratorList(val))));
 							multiValuedVariablePosition.put(count1, "");
 						} else {
 							allActionVerificationArgs
@@ -1732,14 +1759,14 @@ class TestCase
 							Log.Debug("TestCase/ExpandTestCase: Working on Argument with value = "
 									+ val + " of Action: ");
 							allActionVerificationArgs.add(new ArrayList<String>(
-									Arrays.asList(val.split(","))));
+									Arrays.asList(splitIteratorList(val))));
 						}else{
 							String tmp=tempVal.substring(0, ind);
 							if(tmp.contains("=")){
 								String str[]=tempVal.split("=", 2);
 								String val = StringUtils.replace(str[1], "{", "");
 								val = StringUtils.replace(val, "}", "");
-								String vals[]=val.split(",");
+								String vals[]=splitIteratorList(val);
 								for(int i=0;i<vals.length;i++){
 									vals[i]=str[0]+"="+vals[i];
 									//	System.out.println("values-"+vals[i]);
@@ -1756,7 +1783,7 @@ class TestCase
 								Log.Debug("TestCase/ExpandTestCase: Working on Argument with value = "
 										+ val + " of Action: ");
 								allActionVerificationArgs.add(new ArrayList<String>(
-										Arrays.asList(val.split(","))));
+										Arrays.asList(splitIteratorList(val))));
 
 							}
 						}

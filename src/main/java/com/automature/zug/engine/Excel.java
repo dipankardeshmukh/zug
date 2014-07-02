@@ -1947,7 +1947,7 @@ public class Excel {
 		firstIntVal = Integer.parseInt(firstVal);
 		secondIntVal = Integer.parseInt(secondVal);
 
-		if (firstIntVal > 0 && secondIntVal > 0) {
+		if (firstIntVal >=0 && secondIntVal > 0) {
 			Log.Debug("Excel/ExpandValue : firstIntVal && secondIntVal are integers.");
 			if (firstIntVal > secondIntVal) {
 				Log.Debug(String
