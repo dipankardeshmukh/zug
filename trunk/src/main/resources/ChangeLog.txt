@@ -1,5 +1,9 @@
 ZUG Change Log
 
+The following has been introduced in Ver 7.4.6
+Bug Fixed
+*BUG 1043 Fix for iterator{0..4} when MVCV is passed as value to a molecule
+
 The following has been introduced in Ver 7.4.5
 Bug Fixed
 *Bug 1075 Spurious error when executing testsuite ContextVar/getContextVar
