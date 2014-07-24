@@ -21,7 +21,8 @@ public class CustomTableRowRenderer extends DefaultTableCellRenderer {
         Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
 
         c.setBackground(table.getModel().getValueAt(rowIndex,2).toString().equalsIgnoreCase("comment")? new Color(0x00, 0xB0, 0x00) : Color.WHITE);
-
+        setText(value !=null ? value.toString() : "");
+        setForeground(Color.BLACK);
         return this;
     }
 }

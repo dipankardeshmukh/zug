@@ -17,7 +17,7 @@
     -->
     <info>
         <appname>Automature-ZUG</appname>
-        <appversion>7.4.9</appversion>
+        <appversion>7.4.10</appversion>
         <authors>
             <author name="Automature LLC" email="info@automature.com"/>
         </authors>
@@ -135,7 +135,7 @@
         <pack name="ZUG" required="yes">
         <description>Choose this option if this machine is where you will execute your test on</description>         
         
-           <file unpack="true" src="automature-zug-bin-7.4.9.zip" targetdir="$INSTALL_PATH" />
+           <file unpack="true" src="automature-zug-bin-7.4.10.zip" targetdir="$INSTALL_PATH" />
            
            <executable targetfile="${INSTALL_PATH}${FILE_SEPARATOR}ZUG${FILE_SEPARATOR}SetZugPath.bat" stage="postinstall" keep="true" condition="izpack.windowsinstall">
            </executable>
