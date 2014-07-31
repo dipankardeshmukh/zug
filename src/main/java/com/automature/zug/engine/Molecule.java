@@ -594,6 +594,7 @@ public class Molecule extends TestCase {
 
 		Log.Debug("Molecule/RunTestCaseForMolecule: Calling ExpandTestCase With TestCase ID is "
 				+ this.testCaseID);
+	
 		TestCase[] expandedTestCases = this.ExpandTestCase(false);
 		Log.Debug("Molecule/RunTestCaseForMolecule: After Expansion for TestCase ID is "
 				+ this.testCaseID
@@ -980,7 +981,7 @@ public class Molecule extends TestCase {
 			tempAction.stackTrace = tempTestCase.stackTrace;
 			tempAction.testCaseID = tempTestCase.testCaseID;
 			tempAction.parentTestCaseID = parentTestCaseID;
-
+			
 			Log.Debug("Molecule/RunAbstractTestCase: Working on Action "
 					+ action.name + " with Step Number as  " + action.step);
 			Log.Debug("Molecule/RunAbstractTestCase: Number of Action Arguments are : "
@@ -1179,10 +1180,12 @@ public class Molecule extends TestCase {
 												|| token.startsWith("$$%#")) {
 											token = token.replace("#", "");
 										}
-										actionVal = replaceStringOnly(token,
-												temp_value_split[0],
+										actionVal=token.replaceAll("#"+temp_value_split[0], temp_value_split[1]).replace(
+												"#", "");
+									/*	actionVal = replaceStringOnly(token,
+												"#"+temp_value_split[0],
 												temp_value_split[1]).replace(
-														"#", "");
+														"#", "");*/
 										if (isThisContextVarTypeAtom
 												&& (StringUtils.isNotBlank(key) || StringUtils
 														.isNotEmpty(key))) {
