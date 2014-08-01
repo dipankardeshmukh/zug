@@ -7,7 +7,7 @@
     <groupId>com.automature</groupId>
     <artifactId>automature-zug</artifactId>
     <packaging>jar</packaging>
-    <version>7.4.12</version>
+    <version>7.4.13</version>
     <name>Zug Automation Engine</name>
     <url>http://www.automature.com/products/zug</url>
 
@@ -228,7 +228,7 @@
         <dependency>
             <groupId>com.automature.jira.api</groupId>
             <artifactId>automature-jiraapi</artifactId>
-            <version>1.7</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>com.automature.zug.api</groupId>
