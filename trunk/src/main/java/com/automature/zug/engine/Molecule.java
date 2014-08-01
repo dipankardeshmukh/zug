@@ -1176,20 +1176,13 @@ public class Molecule extends TestCase {
 										break;
 
 									} else {
-										if (token.startsWith("#")
-												|| token.startsWith("$$%#")) {
-											token = token.replace("#", "");
-										}
+										
 										actionVal=token.replaceAll("#"+temp_value_split[0], temp_value_split[1]).replace(
-												"#", "");
-									/*	actionVal = replaceStringOnly(token,
-												"#"+temp_value_split[0],
-												temp_value_split[1]).replace(
-														"#", "");*/
+												"#", "");										
 										if (isThisContextVarTypeAtom
 												&& (StringUtils.isNotBlank(key) || StringUtils
 														.isNotEmpty(key))) {
-											// message("The key is "+key+" and value "+actionVal);
+
 											actionVal = key + "=" + actionVal;
 										}
 									}
