@@ -1,5 +1,13 @@
 ZUG Change Log
 
+The following has been introduced in Ver 7.4.10
+Bug Fixed
+*Bug 1108 Erroneous replacement of strings in molecule's test steps arguments
+
+The following has been introduced in Ver 7.4.10
+Bug Fixed
+*Bug 1094 Fix for Cells getting blanked in Sheet pane on Mac
+
 The following has been introduced in Ver 7.4.6
 Bug Fixed
 *BUG 1043 Fix for iterator{0..4} when MVCV is passed as value to a molecule
