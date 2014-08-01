@@ -340,7 +340,7 @@ class TestCase
 		HiPerfTimer tm = new HiPerfTimer();
 
 
-
+		boolean reportingError=false;
 		try {
 			Log.Debug("TestCase/RunExpandedTestCase : Running TestCase ID "
 					+ this.testCaseID);
@@ -360,6 +360,7 @@ class TestCase
 			// );
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
+
 			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || TestSuite.baseTestCaseID
 					.compareToIgnoreCase("init") == 0)) {
 				ExecutedTestCase tData = new ExecutedTestCase();
@@ -403,11 +404,12 @@ class TestCase
 											tData.testcasedescription,
 											Controller.opts.testCycleId, tData.testCaseStatus,
 											Controller.opts.topologySetId, de.getMessage()));
-							if(Controller.guiFlag){
+							reportingError=true;
+							/*if(Controller.guiFlag){
 								throw new Throwable();
 							}else{
 								System.exit(1);
-							}
+							}*/
 						}
 						try {
 							Controller.reporter.saveTestCaseVariables(
@@ -419,13 +421,13 @@ class TestCase
 											Controller.reporter.getClass().getSimpleName(),
 											TestSuite.testSuitName, this.testCaseID,
 											de.getMessage()));
-							if(Controller.guiFlag){
+							/*	if(Controller.guiFlag){
 								throw new Throwable();
 							}else{
 								System.exit(1);
-							}
+							}*/
 						}catch(Exception e){
-							
+
 							e.printStackTrace();
 						}
 					} else {
@@ -508,8 +510,8 @@ class TestCase
 
 						//	if(checkBreakPoint(i)){
 						//ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
-					//	System.out.println("Excel main name space "+Excel.mainNameSpace);
-					//	System.out.println("break points "+Controller.breakpoints);
+						//	System.out.println("Excel main name space "+Excel.mainNameSpace);
+						//	System.out.println("break points "+Controller.breakpoints);
 						ArrayList al=Controller.breakpoints.get(Excel.mainNameSpace);
 
 						if(al!=null){
@@ -1100,24 +1102,28 @@ class TestCase
 			// TestCase Result to the Framework Database.
 			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
 					.compareToIgnoreCase("init") == 0)) {
-				ExecutedTestCase tData = new ExecutedTestCase();
-				tData.testCaseCompletetionTime = Utility.dateNow();
-				tData.testCaseID = this.testCaseID;
-				tData.timeToExecute = (int) tm.Duration();
-				tData.testCaseExecutionComments = StringUtils.EMPTY;
-				tData.testCaseStatus = "pass";
-				tData.testcasedescription=this.testCaseDescription;
-				// if(!verbose)
-				// {
-				// showTestCaseResultEveryTime(tData);
-				// }
-				// And then Add the same at the last.
-				TestSuite.executedTestCaseData.put(tData.testCaseID, tData);
+				if(!reportingError){
+					ExecutedTestCase tData = new ExecutedTestCase();
+					tData.testCaseCompletetionTime = Utility.dateNow();
+					tData.testCaseID = this.testCaseID;
+					tData.timeToExecute = (int) tm.Duration();
+					tData.testCaseExecutionComments = StringUtils.EMPTY;
+					tData.testCaseStatus = "pass";
+					tData.testcasedescription=this.testCaseDescription;
+					// if(!verbose)
+					// {
+					// showTestCaseResultEveryTime(tData);
+					// }
+					// And then Add the same at the last.
+					TestSuite.executedTestCaseData.put(tData.testCaseID, tData);
 
-				if (Controller.opts.dbReporting) {
-					// message("Data is going to be saved through davos");
-					Controller.reporter.SaveTestCaseResultEveryTime(tData);
-					// message("Data is saved through davos");
+					if (Controller.opts.dbReporting) {
+						// message("Data is going to be saved through davos");
+						Controller.reporter.SaveTestCaseResultEveryTime(tData);
+						// message("Data is saved through davos");
+					}
+				}else{
+					System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
 				}
 			}else if(TestSuite.baseTestCaseID.equalsIgnoreCase("init")){
 
@@ -1158,26 +1164,30 @@ class TestCase
 			// TestCase Result to the Framework Database.
 			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite.baseTestCaseID
 					.compareToIgnoreCase("init") == 0)) {
-				ExecutedTestCase tData = new ExecutedTestCase();
-				tData.testCaseCompletetionTime = Utility.dateNow();
-				tData.testCaseID = this.testCaseID;
-				tData.timeToExecute = (int) tm.Duration();
-				// tData.testCaseExecutionComments =
-				// (String)errorMessageDuringTestCaseExecution.get(test.parentTestCaseID)
-				// + ex.getMessage();
-				tData.testcasedescription=this.testCaseDescription;
-				tData.testCaseExecutionComments = ex.getMessage();
-				tData.testCaseStatus = "fail";
-				// if(!verbose)
-				// {
-				// showTestCaseResultEveryTime(tData);
-				// }
-				// And then Add the same at the last.
+				if(!reportingError){
+					ExecutedTestCase tData = new ExecutedTestCase();
+					tData.testCaseCompletetionTime = Utility.dateNow();
+					tData.testCaseID = this.testCaseID;
+					tData.timeToExecute = (int) tm.Duration();
+					// tData.testCaseExecutionComments =
+					// (String)errorMessageDuringTestCaseExecution.get(test.parentTestCaseID)
+					// + ex.getMessage();
+					tData.testcasedescription=this.testCaseDescription;
+					tData.testCaseExecutionComments = ex.getMessage();
+					tData.testCaseStatus = "fail";
+					// if(!verbose)
+					// {
+					// showTestCaseResultEveryTime(tData);
+					// }
+					// And then Add the same at the last.
 
-				TestSuite.	executedTestCaseData.put(tData.testCaseID, tData);
+					TestSuite.	executedTestCaseData.put(tData.testCaseID, tData);
 
-				if (Controller.opts.dbReporting) {
-					Controller.reporter.SaveTestCaseResultEveryTime(tData);
+					if (Controller.opts.dbReporting) {
+						Controller.reporter.SaveTestCaseResultEveryTime(tData);
+					}
+				}else{
+					System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
 				}
 			} else {
 
@@ -1273,7 +1283,7 @@ class TestCase
 		boolean moldefexists=false;
 		//if(molcallarg.toLowerCase().contains("##")&&(!molcallarg.endsWith("##")||!molcallarg.endsWith("##%")||!molcallarg.endsWith("#")))
 		if(molcallarg.startsWith("##")){
-		
+
 			for(String moldefarg:moldeflist)
 			{
 				//if(moldefarg.toLowerCase().contains(molcallarg))
@@ -1284,10 +1294,10 @@ class TestCase
 					break;
 				}
 			}
-		
+
 		}
 		Log.Debug(String.format("TestCase/ExpandTestCase/checkIfMoleculeNeedToBeExpanded:: final return : %s",moldefexists));
-		
+
 		return moldefexists;
 	}
 
@@ -1370,7 +1380,7 @@ class TestCase
 		Log.Debug("TestCase/GetTheActualValue : End of function with variableToFind = "
 				+ entireValue + " and its value is -> " + tempValue);
 
-				
+
 		if(tempValue==null){
 			//	System.out.println("entire value");
 			tempValue=entireValue;
@@ -1379,7 +1389,7 @@ class TestCase
 	}
 
 	public String getIteratedValues(String valueToExpand){
-		
+
 		if(valueToExpand.contains("..")){
 
 			String[] stringsToCompare = valueToExpand.split("\\..");
@@ -1448,14 +1458,14 @@ class TestCase
 
 		return valueToExpand;
 	}
-	
+
 	public String[] splitIteratorList(String valueToSplit){
 		if(valueToSplit.contains("..")){
 			valueToSplit=getIteratedValues(valueToSplit);
 		}
 		return valueToSplit.split(",");
 	}
-	
+
 	public String getContinuityValue(String valueToExpand){
 		// / Splitting the Value on the basis of ".." i.e. MacroValExpander
 
@@ -1473,9 +1483,9 @@ class TestCase
 
 		return valueToExpand;
 	}
-	
-	
-	
+
+
+
 	private String GetActualCombination(String entireValue,
 			String valueToSubstitute) {
 
@@ -1568,7 +1578,7 @@ class TestCase
 						//if (action.actionActualArguments.get(i).startsWith("$$")|| action.actionActualArguments.get(i).startsWith("##")) {
 						if (action.actualArguments.get(i).startsWith("$$")|| checkIfMoleculeNeedToBeExpanded(action.actualArguments.get(i),this._testcasemoleculeArgDefn)) {
 							tempVal = tempVal + "$~$";
-							
+
 						} else if (action.actualArguments.get(i)
 								.contains("=")) {
 							String[] split_actual_arg = Excel
@@ -1576,7 +1586,7 @@ class TestCase
 											.get(i));
 							if (split_actual_arg.length > 1	&& (split_actual_arg[1].startsWith("$$") || checkIfMoleculeNeedToBeExpanded(split_actual_arg[1],this._testcasemoleculeArgDefn) )) {
 								tempVal = tempVal + "$~$";
-								
+
 							}
 						}
 
@@ -1630,7 +1640,7 @@ class TestCase
 						multiValuedVariablePosition.put(count1,
 								StringUtils.EMPTY);
 					} else {
-						
+
 						allActionVerificationArgs.add(new ArrayList<String>(
 								Arrays.asList(new String[] { tempVal })));
 					}
@@ -2235,9 +2245,13 @@ class TestCase
 					TestSuite.threadIdForTestCases
 					.put(test.stackTrace, StringUtils.EMPTY);
 				}
-
-				test.runExpandedTestCase();
-				test.clearResources();
+				try {
+					test.runExpandedTestCase();
+					test.clearResources();
+				}catch (ReportingException ex) {
+					Log.Error("TestCase/RunTestCase: Exception when calling RunExpandedTestCase with exception message as : "
+							+ ex.getMessage());
+				}
 			}
 		}
 		// Wait for all the Threads i.e. expanded test cases to finish.
