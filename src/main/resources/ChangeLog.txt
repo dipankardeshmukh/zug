@@ -1,6 +1,6 @@
 ZUG Change Log
 
-The following has been introduced in Ver 7.4.10
+The following has been introduced in Ver 7.4.12
 Bug Fixed
 *Bug 1108 Erroneous replacement of strings in molecule's test steps arguments
 
