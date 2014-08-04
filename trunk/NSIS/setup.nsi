@@ -129,7 +129,7 @@ Function .onInit
     quit
   Continue:
   
-       IfFileExists "$R0\ZUG\zug.bat"  0 jumpdeletebatch
+       IfFileExists "$R0\ZUG\runzug.bat"  0 jumpdeletebatch
      ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Please do not use /S option for first time installation.$\r$\n`
                   MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
                   Abort
