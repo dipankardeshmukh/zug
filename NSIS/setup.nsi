@@ -129,7 +129,7 @@ Function .onInit
     quit
   Continue:
   
-       IfFileExists "$R0\ZUG\runzug.bat"  0 jumpdeletebatch
+       IfFileExists "$R0\ZUG\zug.bat"  0 jumpdeletebatch
      ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Please do not use /S option for first time installation.$\r$\n`
                   MessageBox MB_OK "An existing version of ZUG is detected! Please uninstall this version and reinstall the latest version….."
                   Abort
@@ -310,7 +310,8 @@ Section "MainSection" SEC01
       ${EndIf}
       Delete "$INSTDIR\ZUG\ZugINI.xml.bak"
       Rename "$INSTDIR\ZUG\ZugINI.xml" "$INSTDIR\ZUG\ZugINI.xml.temp"
-    donot_backup:  
+    donot_backup:
+        
       ${If} $IsSilent == "TRUE"
         ${WriteToFile} `$APPDATA\ZUG Logs\install_log.txt` `Extracting *.zip file in $INSTDIR .$\r$\n`
       ${EndIf}
@@ -358,13 +359,14 @@ Section "MainSection" SEC01
       
       nsExec::ExecToStack '"$INSTDIR\ZUG\zug.bat"'
       
+      Rename "$INSTDIR\ZUG\ZugINI.xml.Windows" "$INSTDIR\ZUG\ZugINI.xml"
   
   ${EndIf}
   
      Delete "$TEMP\automature-zug-bin-*.zip"
  ; ================================ Add new XML tags ================================================
         
-      
+  Rename "$INSTDIR\ZUG\ZugINI.xml.temp" "$INSTDIR\ZUG\ZugINI.xml"    
   nsisXML::create
 	nsisXML::load "$INSTDIR\ZUG\ZugINI.xml"
   nsisXML::select '/root/configurations/scriptlocation'
