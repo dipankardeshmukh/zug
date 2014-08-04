@@ -92,7 +92,7 @@ public class MacroSheet extends GenericSheet{
         table.getColumnModel().getColumn(2).setPreferredWidth(400);
         table.getColumnModel().getColumn(3).setPreferredWidth(400);
         table.getModel().addTableModelListener(new SheetTableModelListener(sheetSaver));
-
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane);
 
