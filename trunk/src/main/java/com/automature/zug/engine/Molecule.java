@@ -837,6 +837,7 @@ public class Molecule extends TestCase {
 		}
 		return bufferString.toString();
 	}
+	
 
 	private boolean checkArgumentDefinition(String moleculearg)
 
@@ -1177,8 +1178,10 @@ public class Molecule extends TestCase {
 
 									} else {
 										
-										actionVal=token.replaceAll("#"+temp_value_split[0], temp_value_split[1]).replace(
-												"#", "");										
+										actionVal=replaceStringOnly(token, "#"+temp_value_split[0], temp_value_split[1]).replace(
+												"#", "");
+										//token.replaceAll("#"+temp_value_split[0], temp_value_split[1]).replace(
+												//"#", "");										
 										if (isThisContextVarTypeAtom
 												&& (StringUtils.isNotBlank(key) || StringUtils
 														.isNotEmpty(key))) {
