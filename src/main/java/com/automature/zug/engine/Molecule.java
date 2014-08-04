@@ -838,6 +838,42 @@ public class Molecule extends TestCase {
 		return bufferString.toString();
 	}
 	
+	private String replaceString(String source, String searchS,
+			String replaceS) throws Exception {
+		StringBuffer bufferString = new StringBuffer();
+
+		try {
+			Pattern pattrn = Pattern.compile("(\\W" + searchS.toLowerCase()
+					+ ")(?)");
+
+			Matcher matchr = pattrn.matcher(source.toLowerCase());
+
+			while (matchr.find()) {
+
+				replaceS = Matcher.quoteReplacement(replaceS);
+
+				matchr.appendReplacement(bufferString, replaceS);
+			}
+			matchr.appendTail(bufferString);
+			// message("After Source: "+source+" Search: "+searchS+" Replace: "+replaceS+" replaced: "+bufferString.toString());
+		} catch (Exception e) {
+			Log.Error("Molecule/RunAbstractTestCase/replaceStringOnly:: Error message: "
+					+ e.getMessage()
+					+ "\nSource: "
+					+ source
+					+ "\tSearchString: "
+					+ searchS
+					+ "\tReplaceString: "
+					+ replaceS);
+			throw new Exception(
+					"Molecule/RunAbstractTestCase/replaceStringOnly:: Error message: "
+							+ e.getMessage() + "\nSource: " + source
+							+ "\tSearchString: " + searchS
+							+ "\tReplaceString: " + replaceS);
+		}
+		return bufferString.toString();
+	}
+	
 
 	private boolean checkArgumentDefinition(String moleculearg)
 
@@ -1178,7 +1214,7 @@ public class Molecule extends TestCase {
 
 									} else {
 										
-										actionVal=replaceStringOnly(token, "#"+temp_value_split[0], temp_value_split[1]).replace(
+										actionVal=replaceString(token, "#"+temp_value_split[0], temp_value_split[1]).replace(
 												"#", "");
 										//token.replaceAll("#"+temp_value_split[0], temp_value_split[1]).replace(
 												//"#", "");										
