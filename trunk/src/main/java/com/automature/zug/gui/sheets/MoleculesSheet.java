@@ -231,7 +231,7 @@ public class MoleculesSheet extends GenericSheet{
             }
         });
         table.getModel().addTableModelListener(new SheetTableModelListener(sheetSaver));
-
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         return panel;
     }
 
