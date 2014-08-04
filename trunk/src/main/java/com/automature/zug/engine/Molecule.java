@@ -843,9 +843,9 @@ public class Molecule extends TestCase {
 		StringBuffer bufferString = new StringBuffer();
 
 		try {
-			Pattern pattrn = Pattern.compile("(\\W" + searchS.toLowerCase()
+			
+			Pattern pattrn = Pattern.compile("(" + searchS.toLowerCase()
 					+ ")(?)");
-
 			Matcher matchr = pattrn.matcher(source.toLowerCase());
 
 			while (matchr.find()) {
@@ -1214,10 +1214,13 @@ public class Molecule extends TestCase {
 
 									} else {
 										
+										/**/
+										//System.out.println("token "+token+"\t#"+temp_value_split[0]+"\t"+ temp_value_split[1]);
+										/*token.replace("#"+temp_value_split[0], temp_value_split[1]).replace(
+												"#", "");*/	
 										actionVal=replaceString(token, "#"+temp_value_split[0], temp_value_split[1]).replace(
 												"#", "");
-										//token.replaceAll("#"+temp_value_split[0], temp_value_split[1]).replace(
-												//"#", "");										
+										//System.out.println("actionVal "+actionVal);
 										if (isThisContextVarTypeAtom
 												&& (StringUtils.isNotBlank(key) || StringUtils
 														.isNotEmpty(key))) {
