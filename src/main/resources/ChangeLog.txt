@@ -4,6 +4,11 @@ The following has been introduced in Ver 7.4.16
 Bug Fixed
 *JiraAPI modified to handle summary field containing spaces
 
+The following has been introduced in Ver 7.4.15
+Bug Fixed
+*Bug 1111: Fix for Cells get incorrect data when being clicked on
+*fix for  Message: named capturing group is missing trailing '}'
+
 The following has been introduced in Ver 7.4.13
 Bug Fixed
 *Bug 1110 Problem with reporting testcase in JIRA (illegal character exception)
