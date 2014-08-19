@@ -1,5 +1,10 @@
 ZUG Change Log
 
+The following has been introduced in Ver 7.4.17
+Bug Fixed
+*automature-zugapi Version modified to 3.0.1 : JVM crash Issue
+
+
 The following has been introduced in Ver 7.4.16
 Bug Fixed
 *jiraAPI Version modified to 1.10 : jiraclient modified to handle summary field containing spaces
