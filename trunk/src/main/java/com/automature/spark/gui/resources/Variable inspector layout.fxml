@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="variableVBox" alignment="CENTER" minHeight="200.0" minWidth="200.0" prefHeight="347.0" prefWidth="332.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.VariableController1">
+         <children>
+    <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="77.0" prefWidth="329.0" style="-fx-background-color: derive(-fx-base,20%);" VBox.vgrow="NEVER">
+  <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="70.0" minWidth="10.0" prefWidth="64.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.0" minWidth="0.0" prefWidth="11.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="142.0" minWidth="0.0" prefWidth="72.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="193.0" minWidth="10.0" prefWidth="65.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="204.0" minWidth="0.0" prefWidth="58.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="204.0" minWidth="10.0" prefWidth="62.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="129.0" minHeight="2.0" prefHeight="57.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="265.0" minHeight="10.0" prefHeight="55.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Label text="Search" GridPane.halignment="RIGHT" />
+                  <Button fx:id="addVariableButton" mnemonicParsing="false" onAction="#addVariable" prefHeight="25.0" prefWidth="46.0" GridPane.columnIndex="5" GridPane.rowIndex="1">
+                     <graphic>
+                        <ImageView fx:id="refreshCVListButton">
+                           <image>
+                              <Image url="@icons/black/glyph_square_solid_plus.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Add to watch list" />
+                     </tooltip>
+                  </Button>
+            <MenuButton contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
+               <items>
+                  <RadioMenuItem fx:id="showCVMI" mnemonicParsing="false" onAction="#loadVariables" text="Context Variables">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="variables" />
+                     </toggleGroup>
+                  </RadioMenuItem>
+                  <RadioMenuItem fx:id="showLVMI" mnemonicParsing="false" onAction="#loadVariables" text="Local Variables" toggleGroup="$variables" />
+                  <RadioMenuItem fx:id="allMI" mnemonicParsing="false" onAction="#loadVariables" selected="true" text="All Variables" toggleGroup="$variables" />
+               </items>
+               <graphic>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/black/glyph_settings.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Select variable type" />
+               </tooltip>
+            </MenuButton>
+            <ComboBox fx:id="searchBox" editable="true" prefHeight="25.0" prefWidth="242.0" GridPane.columnIndex="2" GridPane.columnSpan="4" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER" />
+   </children>
+         <padding>
+            <Insets top="3.0" />
+         </padding>
+</GridPane>
+            <ToolBar fx:id="toolBar" minWidth="220.0" prefHeight="40.0" prefWidth="220.0" VBox.vgrow="NEVER">
+               <items>
+                  <Button fx:id="reloadVariablesButton" mnemonicParsing="false" onAction="#loadVariables">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@icons/black/glyph_reload.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Reload Variables" />
+                     </tooltip>
+                  </Button>
+                  <Separator orientation="VERTICAL" prefHeight="20.0" />
+                  <Button fx:id="copyButton" disable="true" mnemonicParsing="false" visible="false">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@icons/black/glyph_copy.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Copy" />
+                     </tooltip>
+                  </Button>
+               </items>
+            </ToolBar>
+            <TableView fx:id="tableView" editable="true" prefHeight="229.0" prefWidth="332.0" VBox.vgrow="NEVER">
+              <columns>
+                <TableColumn editable="false" prefWidth="100.0" text="ID" />
+                <TableColumn prefWidth="119.0" text="Value" />
+              </columns>
+            </TableView>
+         </children>
+      </VBox>

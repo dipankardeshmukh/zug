@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
     <groupId>com.automature</groupId>
-    <artifactId>automature-zug</artifactId>
+    <artifactId>automature-spark</artifactId>
     <packaging>jar</packaging>
-    <version>7.4.17</version>
-    <name>Zug Automation Engine</name>
+    <version>1.0</version>
+    <name>Spark Automation Engine</name>
     <url>http://www.automature.com/products/zug</url>
 
     <properties>
@@ -38,111 +39,120 @@
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
-            <configuration>
-                <source>1.6</source>
-                <target>1.6</target>
-            </configuration>
-        </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.2</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
                 <configuration>
-                    <outputDirectory>${project.build.directory}/ZUG</outputDirectory>
-                    <archive>
-                        <manifest>
-                            <main-class>com.automature.zug.engine.Controller</main-class>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                        </manifest>
-                     </archive>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
-            <executions>
-                <execution>
-                    <id>attach-sources</id>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>jar-no-fork</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.5.1</version>
-            <executions>
-                <execution>
-                    <id>copy-dependencies</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>copy-dependencies</goal>
-                    </goals>
-                    <configuration>
-                        <outputDirectory>${project.build.directory}/ZUG/lib</outputDirectory>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.4</version>
-            <configuration>
-                <descriptors>
-                    <descriptor>src/main/assembly/package.xml</descriptor>
-                </descriptors>
-            </configuration>
-            <executions>
-                <execution>
-                    <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                    <phase>package</phase> <!-- append to the packaging phase. -->
-                    <goals>
-                        <goal>single</goal> <!-- goals == mojos -->
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-    </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <finalName>${artifactId}-${version}</finalName>
+                    <outputDirectory>${project.build.directory}/SPARK</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/package.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>single</goal> <!-- goals == mojos -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <target name="bundle-Spark">
+                                <taskdef name="bundleapp"
+                                         classname="com.oracle.appbundler.AppBundlerTask"
+                                         classpath="src/main/resources/appbundler-1.0.jar" />
+                                <bundleapp outputdirectory="target"
+                                           name="Spark"
+                                           displayname="Automature Spark"
+                                           icon="src/main/resources/Images/Spark.ico"
+                                           identifier="com.automature.spark.engine.Spark"
+                                           mainclassname="com.automature.spark.engine.Spark">
+                                    <classpath file="target/SPARK/*.jar" />
+                                    <classpath file="target/SPARK/*.txt" />
+                                    <classpath file="target/SPARK/*.Mac" />
+                                    <option value="-Dapp.data=/Users/${USER}/Library/Application Support/SPARK Logs" />
+                                    <option value="-Duser.dir=/Applications/Spark.app/Contents/Java" />
+                                    <argument value="-gui"/>
+                                </bundleapp>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <!--includes>
                     <include>zug.bat</include>
                 </includes-->
-                <targetPath>${project.build.directory}/ZUG</targetPath>
+                <targetPath>${project.build.directory}/SPARK</targetPath>
             </resource>
             <resource>
                 <directory>src/main/resources/examples</directory>
-                <targetPath>${project.build.directory}/ZUG/examples</targetPath>
+                <targetPath>${project.build.directory}/SPARK/examples</targetPath>
             </resource>
             <resource>
                 <directory>src/main/resources/LogConfig</directory>
-                <targetPath>${project.build.directory}/ZUG/LogConfig</targetPath>
+                <targetPath>${project.build.directory}/SPARK/LogConfig</targetPath>
             </resource>
             <resource>
                 <directory>src/main/resources/config</directory>
-                <targetPath>${project.build.directory}/ZUG/</targetPath>
+                <targetPath>${project.build.directory}/SPARK/</targetPath>
             </resource>
             <resource>
                 <directory>src/main/resources/atoms</directory>
-                <targetPath>${project.build.directory}/ZUG/</targetPath>
+                <targetPath>${project.build.directory}/SPARK/</targetPath>
             </resource>
             <resource>
-                    <directory>src/main/resources/DLLs</directory>
-                    <targetPath>${project.build.directory}/ZUG/</targetPath>
-                </resource>
+                <directory>src/main/resources/DLLs</directory>
+                <targetPath>${project.build.directory}/SPARK/</targetPath>
+            </resource>
             <resource>
                 <directory>src/main/resources/images</directory>
-                <targetPath>${project.build.directory}/ZUG/images/</targetPath>
+                <targetPath>${project.build.directory}/SPARK/images/</targetPath>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/java</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
             </resource>
         </resources>
 
@@ -228,12 +238,12 @@
         <dependency>
             <groupId>com.automature.jira.api</groupId>
             <artifactId>automature-jiraapi</artifactId>
-            <version>1.10</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>com.automature.zug.api</groupId>
             <artifactId>automature-zugapi</artifactId>
-            <version>3.0.1</version>
+            <version>3.0</version>
         </dependency>
     </dependencies>
 

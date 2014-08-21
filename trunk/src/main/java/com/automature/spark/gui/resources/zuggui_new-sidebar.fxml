@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.automature.spark.gui.components.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ZugguiController">
+  <children>
+    <VBox prefHeight="600.0" prefWidth="960.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
+          <menus>
+            <Menu mnemonicParsing="false" text="File">
+              <items>
+                <MenuItem fx:id="newMI" mnemonicParsing="false" text="New">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem fx:id="openMI" mnemonicParsing="false" onAction="#showTestSuiteChooser" text="Open...">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <Menu fx:id="recetlyUsedMenu" mnemonicParsing="false" text="Open Recent" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="saveMI" mnemonicParsing="false" text="Save as New Version">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem fx:id="saveAsMI" mnemonicParsing="false" text="Save As…">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem fx:id="revertMI" mnemonicParsing="false" text="Reload Last Saved State">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="F12" control="UP" meta="UP" shift="UP" shortcut="ANY" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Manage Versions" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="closeMI" mnemonicParsing="false" text="Close Test suite">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="exitMI" mnemonicParsing="false" onAction="#exit" text="Exit">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+              </items>
+            </Menu>
+            <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Undo">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Redo">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="Y" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" text="Cut">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Copy">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Paste">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Delete">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="DELETE" control="UP" meta="UP" shift="UP" shortcut="ANY" />
+                  </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" text="Select All">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Deselect">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" text="Find...">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                  </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <Menu mnemonicParsing="false" text="Preferences">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="General" />
+                    <MenuItem mnemonicParsing="false" text="In-Process Atoms" />
+                    <MenuItem mnemonicParsing="false" text="Out-Process Atoms" />
+                    <MenuItem mnemonicParsing="false" text="Adapter" />
+                  </items>
+                </Menu>
+              </items>
+            </Menu>
+            <Menu fx:id="runMI" mnemonicParsing="false" text="Run/Debug">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Run Test" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="nextStepMI" mnemonicParsing="false" text="Next Step" />
+                <MenuItem fx:id="resumeMI" mnemonicParsing="false" text="Run Till Next Breakpoint" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="stopMI" mnemonicParsing="false" text="Abort Test" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Test suite Sheet" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" text="Test Control &amp; Debugger" />
+                <MenuItem mnemonicParsing="false" text="Properties" />
+                <MenuItem mnemonicParsing="false" text="Linked Files" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <CheckMenuItem fx:id="viewConsoleCMI" mnemonicParsing="false" onAction="#showConsole" text="Terminal Console" />
+              </items>
+            </Menu>
+            <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Help on SparkWiki">
+                  <accelerator>
+                    <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="ANY" />
+                  </accelerator>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Spark Community Forum" />
+                <MenuItem mnemonicParsing="false" text="Automature.com" />
+                <MenuItem mnemonicParsing="false" text="About Spark" />
+              </items>
+            </Menu>
+          </menus>
+        </MenuBar>
+        <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0">
+          <items>
+            <Button fx:id="openTSButton" mnemonicParsing="false" onAction="#showTestSuiteChooser">
+              <graphic>
+                <ImageView>
+                  <image>
+                    <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_open.png" />
+                  </image>
+                </ImageView>
+              </graphic>
+            </Button>
+            <Button fx:id="reloadTSButton" mnemonicParsing="false">
+              <graphic>
+                <ImageView>
+                  <image>
+                    <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_reload.png" />
+                  </image>
+                </ImageView>
+              </graphic>
+            </Button>
+            <Separator orientation="VERTICAL" prefHeight="20.0" />
+            <Button fx:id="copyButton" mnemonicParsing="false">
+              <graphic>
+                <ImageView>
+                  <image>
+                    <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_copy.png" />
+                  </image>
+                </ImageView>
+              </graphic>
+            </Button>
+            <Button fx:id="pasteButton" mnemonicParsing="false">
+              <graphic>
+                <ImageView>
+                  <image>
+                    <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_paste.png" />
+                  </image>
+                </ImageView>
+              </graphic>
+            </Button>
+            <Separator orientation="VERTICAL" prefHeight="20.0" />
+            <Button fx:id="settingButton" mnemonicParsing="false">
+              <graphic>
+                <ImageView>
+                  <image>
+                    <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_settings.png" />
+                  </image>
+                </ImageView>
+              </graphic>
+            </Button>
+            <Separator orientation="VERTICAL" prefHeight="20.0" />
+            <Button fx:id="collapsebutton" mnemonicParsing="false" onAction="#collapseRightPane">
+              <graphic>
+                <ImageView fx:id="collpaseButtonImgView">
+                  <image>
+                    <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_sidebar-collapse.png" />
+                  </image>
+                </ImageView>
+              </graphic>
+            </Button>
+          </items>
+        </ToolBar>
+        <SplitPane fx:id="splitPane" dividerPositions="0.767223382045929" maxHeight="2000.0" prefHeight="600.0" prefWidth="900.0" VBox.vgrow="ALWAYS">
+          <items>
+            <FlowPane fx:id="leftPaneVBox" alignment="CENTER" columnHalignment="CENTER" prefHeight="200.0" prefWidth="200.0" style=" -fx-background-color: &quot;#6e7272&quot;" />
+                  <AnchorPane minWidth="220.0" prefHeight="518.0" prefWidth="220.0" SplitPane.resizableWithParent="false">
+                     <children>
+                        <VBox layoutX="71.0" layoutY="27.0" prefHeight="518.0" prefWidth="220.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <TitledPane animated="false" text="Debugger">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="238.0" prefWidth="218.0">
+                                       <children>
+                                          <VBox layoutX="19.6" layoutY="19.6" prefHeight="240.0" prefWidth="199.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <GridPane prefHeight="54.0" prefWidth="199.0">
+                                                   <children>
+                                                      <Button mnemonicParsing="false">
+                                                         <graphic>
+                                                            <ImageView>
+                                                               <image>
+                                                                  <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_run.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Separator orientation="VERTICAL" prefHeight="20.0" />
+                                                      <Button mnemonicParsing="false" GridPane.columnIndex="2">
+                                                         <graphic>
+                                                            <ImageView>
+                                                               <image>
+                                                                  <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_next-step.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Button mnemonicParsing="false" GridPane.columnIndex="4">
+                                                         <graphic>
+                                                            <ImageView>
+                                                               <image>
+                                                                  <Image url="@../Zug%2020140702/src/com/automature/zug/gui/resources/icons/black/glyph_runtillbreak.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Button mnemonicParsing="false" GridPane.columnIndex="6">
+                                                         <graphic>
+                                                            <ImageView>
+                                                               <image>
+                                                                  <Image url="@../../Graphics/Icons/glyph_stop_16x16.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                   </children>
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="NEVER" maxWidth="62.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="2015.0" minWidth="15.0" prefWidth="15.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="15.0" minWidth="15.0" prefWidth="15.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="105.0" minWidth="10.0" prefWidth="105.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints maxHeight="20.0" minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                </GridPane>
+                                                <GridPane>
+                                                   <children>
+                                                      <CheckBox fx:id="verboseCB" mnemonicParsing="false" text="Verbose" />
+                                                      <CheckBox fx:id="noAutoRecoveryCB" mnemonicParsing="false" text="Autorecover" GridPane.columnIndex="1" />
+                                                      <CheckBox fx:id="noVerifyCB" mnemonicParsing="false" text="Verify" GridPane.rowIndex="1" />
+                                                      <CheckBox fx:id="repeatCheckBox" mnemonicParsing="false" text="Repeat" GridPane.rowIndex="3" />
+                                                      <CheckBox fx:id="defaultMacroColumnCB" mnemonicParsing="false" selected="true" text="Default Macro Column" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                         <tooltip>
+                                                            <Tooltip text="Use Main Test Suite Column for all included Test Suite" />
+                                                         </tooltip>
+                                                      </CheckBox>
+                                                      <CheckBox fx:id="ignoreCB" mnemonicParsing="false" text="Ignore" GridPane.rowIndex="2" />
+                                                      <CheckBox fx:id="atomExecTimeCB" mnemonicParsing="false" text="Atom Exec Time" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                   </children>
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                </GridPane>
+                                                <Pane fx:id="repeatOptionPane" disable="true" prefHeight="95.0" prefWidth="265.0">
+                                                   <children>
+                                                      <ChoiceBox fx:id="repeatChoiceBox" disable="true" layoutX="161.0" layoutY="42.0" prefHeight="25.0" prefWidth="79.0" value="day" />
+                                                      <TextField fx:id="repeatDurationTextBox" disable="true" layoutX="110.0" layoutY="42.0" prefHeight="25.0" prefWidth="37.0" />
+                                                      <RadioButton fx:id="repeatDurationRadioButton" layoutX="27.0" layoutY="46.0" mnemonicParsing="false" text="Duration">
+                                                         <toggleGroup>
+                                                            <ToggleGroup fx:id="repeatGroup" />
+                                                         </toggleGroup>
+                                                      </RadioButton>
+                                                      <RadioButton fx:id="repeatCountRadioButton" layoutX="26.0" layoutY="16.0" mnemonicParsing="false" text="Count" toggleGroup="$repeatGroup" />
+                                                      <TextField fx:id="repeatCountTextBox" disable="true" layoutX="110.0" layoutY="12.0" minWidth="-Infinity" prefHeight="24.0" prefWidth="37.0" />
+                                                   </children>
+                                                </Pane>
+                                             </children>
+                                          </VBox>
+                                       </children></AnchorPane>
+                                </content>
+                              </TitledPane>
+                              <TitledPane animated="false" expanded="false" text="Properties">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <ToolBar layoutY="-6.0" prefHeight="45.0" prefWidth="220.0">
+                                            <items>
+                                                <Button mnemonicParsing="false">
+                                                   <graphic>
+                                                      <ImageView>
+                                                         <image>
+                                                            <Image url="@icons/black/glyph_run.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                </Button>
+                                                <Separator orientation="VERTICAL" prefHeight="20.0" />
+                                                <Button mnemonicParsing="false">
+                                                   <graphic>
+                                                      <ImageView>
+                                                         <image>
+                                                            <Image url="@icons/black/glyph_next-step.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                </Button>
+                                                <Button mnemonicParsing="false">
+                                                   <graphic>
+                                                      <ImageView>
+                                                         <image>
+                                                            <Image url="@icons/black/glyph_runtillbreak.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                </Button>
+                                            </items>
+                                          </ToolBar>
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </TitledPane>
+                              <TitledPane animated="false" text="Linked">
+                                 <content>
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                       <children>
+                                          <TreeView prefHeight="220.0" prefWidth="220.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </TitledPane>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+          </items>
+        </SplitPane>
+        <AnchorPane maxHeight="20.0" maxWidth="-1.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="640.0" VBox.vgrow="ALWAYS">
+          <children>
+            <Label alignment="CENTER" layoutY="-2.0" prefHeight="25.0" prefWidth="42.0" style="&#10;" text="Status bar" textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
+              <font>
+                <Font name="Arial" size="9.0" />
+              </font>
+            </Label>
+          </children>
+        </AnchorPane>
+      </children>
+    </VBox>
+  </children>
+ 
+</AnchorPane>
