@@ -1,0 +1,25 @@
+#!/bin/bash
+#Automation - It contains command to run automature-zug.jar - The Automation Framework.
+
+# ©Copyright 2009 Automature Inc.. All Rights Reserved.
+
+#setting the fileformat for this script
+:set fileformat=unix
+#Clears the Terminal Window
+clear
+
+pwd=$PWD
+
+#Starting to call the main automature-zug.jar
+echo Automation Started
+echo --------------------------------------------------------------------------------
+
+#echo  "The Zug install directory "$ZUG_HOME
+cd /Applications/Automature/SPARK
+java -Xms512m -Xmx2048m -Xdock:icon=Images/Spark.ico -jar /Applications/Automature/SPARK/automature-spark.jar $*  -pwd=$pwd
+
+echo --------------------------------------------------------------------------------
+echo Automation Finished.
+
+
+

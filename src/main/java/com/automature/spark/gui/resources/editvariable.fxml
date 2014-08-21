@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<StackPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.EditVariableController">
+   <children>
+      <VBox fx:id="editVBox" prefHeight="292.0" prefWidth="316.0" style="-fx-background-color: white; -fx-border-color: #00CCCC;" visible="false">
+         <children>
+            <HBox alignment="CENTER" prefHeight="57.0" prefWidth="234.0" spacing="13.0" style="-fx-background-color: white;">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="55.0" text="Variable" />
+                  <TextField fx:id="keyField" editable="false" prefHeight="25.0" prefWidth="214.0" />
+               </children>
+               <opaqueInsets>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="TOP_CENTER" prefHeight="177.0" prefWidth="319.0" spacing="13.0" style="-fx-background-color: white;">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="53.0" text="Value " />
+                  <TextArea fx:id="valueTextArea" prefHeight="160.0" prefWidth="219.0" wrapText="true" />
+               </children>
+               <opaqueInsets>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="BOTTOM_RIGHT" prefHeight="32.0" prefWidth="381.0" spacing="10.0" style="-fx-background-color: white;">
+               <children>
+                  <Button fx:id="saveButton" mnemonicParsing="false" onAction="#save" text="Save" />
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#hide" text="Cancel" />
+               </children>
+               <padding>
+                  <Insets right="18.0" />
+               </padding>
+            </HBox>
+         </children>
+      </VBox>
+      <Pane fx:id="alertPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
+         <children>
+            <Label fx:id="errorLabel" alignment="TOP_LEFT" layoutX="45.0" layoutY="27.0" prefHeight="130.0" prefWidth="246.0" textFill="#d32e2e" wrapText="true">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Button layoutX="237.0" layoutY="220.0" mnemonicParsing="false" onAction="#hide" prefHeight="25.0" prefWidth="55.0" text="OK" />
+            <ImageView fitHeight="22.0" fitWidth="21.0" layoutX="23.0" layoutY="27.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@icons/black/glyph_encircled_alert.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+   </children>
+</StackPane>

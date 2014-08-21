@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+  <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="70.0" minWidth="10.0" prefWidth="53.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.0" minWidth="0.0" prefWidth="15.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="142.0" minWidth="0.0" prefWidth="80.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="193.0" minWidth="10.0" prefWidth="46.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="204.0" minWidth="0.0" prefWidth="144.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="204.0" minWidth="10.0" prefWidth="68.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="129.0" minHeight="2.0" prefHeight="2.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="265.0" minHeight="10.0" prefHeight="265.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Label text="Search" GridPane.halignment="RIGHT" />
+      <TextField minWidth="300.0" prefHeight="25.0" prefWidth="316.0" GridPane.columnIndex="2" />
+      <Label text="Variable type" textAlignment="RIGHT" wrapText="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+      <Label text="Variable ID" textAlignment="RIGHT" wrapText="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+      <Button defaultButton="true" mnemonicParsing="false" text="Add Variable" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets right="10.0" />
+         </GridPane.margin>
+      </Button>
+      <VBox prefHeight="265.0" prefWidth="111.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <children>
+            <RadioButton mnemonicParsing="false" text="All" />
+            <RadioButton mnemonicParsing="false" text="Context" />
+            <RadioButton mnemonicParsing="false" text="Local" />
+            <RadioButton mnemonicParsing="false" text="Molecule" />
+            <RadioButton mnemonicParsing="false" text="Macro" />
+         </children>
+      </VBox>
+      <Button cancelButton="true" mnemonicParsing="false" text="Cancel" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+   </children>
+</GridPane>
