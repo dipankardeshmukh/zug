@@ -71,6 +71,10 @@ public class SessionHandler {
 			//System.out.println("Employee class not found");
 			System.err.println("[WARN] :Error retriving the session "+c.getMessage());
 		
+		}finally{
+			if(session==null){
+				session=new Session();
+			}
 		}
 
 	}
