@@ -6,7 +6,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.automature</groupId>
-    <artifactId>automature-spark</artifactId>
+    <artifactId>spark</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
     <name>Spark Automation Engine</name>
@@ -60,8 +60,15 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>${artifactId}-${version}</finalName>
+                    <finalName>automature-spark</finalName>
                     <outputDirectory>${project.build.directory}/SPARK</outputDirectory>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <Main-Class>com.automature.spark.engine.Spark</Main-Class>
+                            </manifestEntries>
+                        </transformer>
+                    </transformers>
                 </configuration>
             </plugin>
             <plugin>
@@ -71,6 +78,8 @@
                     <descriptors>
                         <descriptor>src/main/assembly/package.xml</descriptor>
                     </descriptors>
+                        <finalName>automature-${project.artifactId}-bin-${project.version}</finalName>
+                        <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
