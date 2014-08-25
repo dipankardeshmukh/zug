@@ -2,7 +2,7 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 	<!-- <appender name="Debug" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="log/Debug.txt"/>
+		<param name="File" value="${app.data}/Debug.txt"/>
 		<param name="Append" value="true"/>
 		<param name="maxBackupIndex" value="10"/>
 		<param name="maxFileSize" value="100000KB" />
@@ -12,7 +12,7 @@
 	</appender>
 -->
 	<appender name="Error" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="log/Error.txt" />
+		<param name="File" value="${app.data}/Error.txt" />
 		<param name="maxBackupIndex" value="10" />
 		<param name="Append" value="true"/>
 		<param name="maxFileSize" value="100000KB" />
@@ -29,7 +29,7 @@
 
 
 	<appender name="Result" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="log/Result.txt" />
+		<param name="File" value="${app.data}/Result.txt" />
 		<param name="maxBackupIndex" value="10" />
 		<param name="Append" value="true"/>
 		<param name="maxFileSize" value="100000KB" />
@@ -44,7 +44,7 @@
 
 
 	<appender name="Primitives" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="log/Primitives.txt"/>
+		<param name="File" value="${app.data}/Primitives.txt"/>
 		<param name="maxBackupIndex" value="10"/>
 		<param name="Append" value="true"/>
 		<param name="maxFileSize" value="100000KB" />
@@ -55,7 +55,7 @@
 	</appender>
 <!--
 	<appender name="PrimitiveResults" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="log/PrimitiveResults.txt"/>
+		<param name="File" value="${app.data}/PrimitiveResults.txt"/>
 		<param name="maxBackupIndex" value="10"/>
 		<param name="Append" value="true"/>
 		<param name="maxFileSize" value="100000KB" />
