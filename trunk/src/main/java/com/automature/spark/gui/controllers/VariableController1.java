@@ -35,7 +35,7 @@ import javafx.stage.WindowEvent;
 
 public class VariableController1 implements Initializable {
 
-	
+
 	@FXML
 	// private TableView<Map.Entry<String,String>> tableView;
 	private TableView tableView;
@@ -56,76 +56,80 @@ public class VariableController1 implements Initializable {
 
 	@FXML
 	private RadioMenuItem allMI;
-	
+
 	@FXML
 	private ComboBox<String> searchBox;
-	
+
 	private List<String> watchList =new ArrayList<>();
-	
+
 	private EditVariableController editVariableController;
-	
+
 	public static int MAX_VALUE_SIZE = 100;
 	public static int MAX_LIST_SIZE=5;
-	
-	
+
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		// TODO Auto-generated method stub
-		ObservableList<TableColumn<Entry<String, String>, String>> columns=tableView.getColumns();
-		columns.get(0).setCellValueFactory(
-				(TableColumn.CellDataFeatures<Map.Entry<String,String>, String> p) -> 
-				new SimpleStringProperty(p.getValue().getKey()));
-	
-		columns.get(1).setCellValueFactory(
-				(TableColumn.CellDataFeatures<Map.Entry<String,String>, String> p) -> 
-				new SimpleStringProperty(p.getValue().getValue().length()>MAX_VALUE_SIZE?p.getValue().getValue().substring(0, MAX_VALUE_SIZE):p.getValue().getValue()));
-		tableView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		try{
+			ObservableList<TableColumn<Entry<String, String>, String>> columns=tableView.getColumns();
+			columns.get(0).setCellValueFactory(
+					(TableColumn.CellDataFeatures<Map.Entry<String,String>, String> p) -> 
+					new SimpleStringProperty(p.getValue().getKey()));
 
-			@Override
-			public void handle(MouseEvent event) {
-				// TODO Auto-generated method stub
-				if(event.getClickCount()==2){
-					Map.Entry<String,String> map=(Map.Entry<String,String>)tableView.getSelectionModel().getSelectedItem();
-					if(map!=null){
-						editVariableController.showStage(map.getKey(), map.getValue(),event.getScreenX(),event.getScreenY());
+			columns.get(1).setCellValueFactory(
+					(TableColumn.CellDataFeatures<Map.Entry<String,String>, String> p) -> 
+					new SimpleStringProperty(p.getValue().getValue().length()>MAX_VALUE_SIZE?p.getValue().getValue().substring(0, MAX_VALUE_SIZE):p.getValue().getValue()));
+			tableView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					// TODO Auto-generated method stub
+					if(event.getClickCount()==2){
+						Map.Entry<String,String> map=(Map.Entry<String,String>)tableView.getSelectionModel().getSelectedItem();
+						if(map!=null){
+							editVariableController.showStage(map.getKey(), map.getValue(),event.getScreenX(),event.getScreenY());
+						}
 					}
+
 				}
+
+			});	
+
+			FXMLLoader fxmlLoader = new FXMLLoader();
+			try {
+				URL url = getClass().getResource("/com/automature/spark/gui/resources/editvariable.fxml");
+				fxmlLoader.setLocation(url);
+				Pane p = (Pane) fxmlLoader.load(url.openStream());
+				editVariableController = (EditVariableController) fxmlLoader.getController();
+				Scene scene = new Scene(p);
+				Stage editVariableStage = new Stage();
+				editVariableStage.setScene(scene);
+				editVariableController.setStage(editVariableStage);
+				editVariableStage.hide();
+				editVariableStage.initStyle(StageStyle.UNDECORATED);
+				editVariableStage.initModality(Modality.APPLICATION_MODAL);
+				editVariableStage.setOnHiding(new EventHandler<WindowEvent>() {
+
+					@Override
+					public void handle(WindowEvent arg0) {
+						// TODO Auto-generated method stub
+						loadVariables();
+
+					}
+				});
+			} catch (IOException ex) {
+				System.err.println(ConsoleController.class.getName()+"\t:Error loading Editing pane :"+ ex);
 
 			}
 
-		});	
-		
-		FXMLLoader fxmlLoader = new FXMLLoader();
-		try {
-			URL url = getClass().getResource("/com/automature/spark/gui/resources/editvariable.fxml");
-			fxmlLoader.setLocation(url);
-			Pane p = (Pane) fxmlLoader.load(url.openStream());
-			editVariableController = (EditVariableController) fxmlLoader.getController();
-			Scene scene = new Scene(p);
-			Stage editVariableStage = new Stage();
-			editVariableStage.setScene(scene);
-			editVariableController.setStage(editVariableStage);
-			editVariableStage.hide();
-			editVariableStage.initStyle(StageStyle.UNDECORATED);
-			editVariableStage.initModality(Modality.APPLICATION_MODAL);
-			editVariableStage.setOnHiding(new EventHandler<WindowEvent>() {
-
-				@Override
-				public void handle(WindowEvent arg0) {
-					// TODO Auto-generated method stub
-					loadVariables();
-					
-				}
-			});
-		} catch (IOException ex) {
-			System.err.println(ConsoleController.class.getName()+"\t:Error loading Editing pane :"+ ex);
-
+			new AutoCompleteComboBoxListener<String>(searchBox,showCVMI,showLVMI,allMI);
+		}catch(Exception e){
+			System.err.println("Error : Initializing Variable GUI.\nError message  "+e.getMessage()+"\t\nError Trace :"+e.getStackTrace());
 		}
-		
-		new AutoCompleteComboBoxListener<String>(searchBox,showCVMI,showLVMI,allMI);
 
 	}
-	
+
 	public void loadVariables() {
 		try {
 			String vars=watchList.toString();
@@ -138,9 +142,9 @@ public class VariableController1 implements Initializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public void addVariable(){
 		String variable=searchBox.getSelectionModel().getSelectedItem();
 		if(watchList.size()>MAX_LIST_SIZE){
