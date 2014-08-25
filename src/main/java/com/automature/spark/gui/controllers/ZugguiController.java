@@ -11,6 +11,7 @@ import com.automature.spark.engine.Spark;
 import com.automature.spark.gui.Constants;
 import com.automature.spark.gui.RuntimeOptionBuilder;
 import com.automature.spark.gui.SessionHandler;
+import com.automature.spark.gui.ZugGui;
 import com.automature.spark.gui.components.LinkedFilesBorderPane;
 import com.automature.spark.gui.components.MoleculeTreeTableSheetTab;
 import com.automature.spark.gui.components.SheetTabPane;
@@ -421,6 +422,8 @@ public class ZugguiController implements Initializable ,GuiController{
 			});
 			consoleStage.show();
 			console.redirectSystemStreams();
+			consoleStage.getIcons().add(new Image(ZugGui.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/Spark.png")));
+			
 		} catch (IOException ex) {
 			Logger.getLogger(ConsoleController.class.getName()).log(Level.SEVERE, null, ex);
 

@@ -14,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -69,6 +70,7 @@ public class ZugGui  extends Application {
 				System.exit(0);
 			}
 		});
+		stage.getIcons().add(new Image(ZugGui.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/Spark.png")));
 		ApplicationLauncher.setHostServices(getHostServices());
 		controller.setParams(getParameters().getRaw());
 	}
