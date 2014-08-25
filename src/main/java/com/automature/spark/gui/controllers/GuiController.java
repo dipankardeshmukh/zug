@@ -13,13 +13,13 @@ import java.util.List;
  * @author skhan
  */
 public interface GuiController {
-	
-     public void showRunningTestCase(String testCaseID, boolean b) ;
-     public void showRunningMolecule(String MoleculeID,String nameSpace, boolean b) ;
-    public void showRunningTestStep(int lineNumber);
 
-    public void updateTestCaseStatus(String testCaseID, boolean b) ;
+	public void showRunningTestCase(String testCaseID, boolean b) ;
+	public void showRunningMolecule(String MoleculeID,String nameSpace, boolean b) ;
+	public void showRunningTestStep(int lineNumber);
 
-    public void showRunningMoleculeStep(String molecules, int lineNumber, int start) ;
-    public void setParams(List<String> args);
+	public void updateTestCaseStatus(String testCaseID, boolean b) ;
+
+	public void showRunningMoleculeStep(String molecules, int lineNumber, int start) ;
+	public void setParams(List<String> args);
 }

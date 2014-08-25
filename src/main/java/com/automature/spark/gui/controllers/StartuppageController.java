@@ -60,6 +60,8 @@ public class StartuppageController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+    	try{
+    	
         mouserOverColor = Color.web(Constants.startPageLabelTextMouseOverColor);
         defaultColor = Color.web(Constants.startPageLabelTextdefaultColor);
 
@@ -124,6 +126,9 @@ public class StartuppageController implements Initializable {
 
             }
         });
+    	}catch(Exception e){
+    		System.err.println("Error : Initializing Start Up Page.\nError message  "+e.getMessage()+"\nError Trace :"+e.getStackTrace());
+    	}
 
     }
 

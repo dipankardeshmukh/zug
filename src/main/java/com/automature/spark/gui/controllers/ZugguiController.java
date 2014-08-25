@@ -277,47 +277,53 @@ public class ZugguiController implements Initializable ,GuiController{
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
-		sessionHandler = new SessionHandler();
-		sessionHandler.retriveSession();
-		tsChooser = new TestSuiteChooser();
-		sheetTabPane = new SheetTabPane();
-		SheetTabPane.setController(this);
-		optionBuilder=new RuntimeOptionBuilder();
-		repeatCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			public void changed(ObservableValue<? extends Boolean> ov,
-					Boolean old_val, Boolean new_val) {
-				if(new_val){
-					repeatOptionPane.setDisable(false);
-				}else{
-					repeatOptionPane.setDisable(true);
-				}
-			}
-		});
-		fileClickEvent=new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				try {
-					MenuItem mi=(MenuItem)e.getSource();
-					File f = new File(mi.getText());
-					if (f.exists()) {
-						loadTestSuite(mi.getText());
-						reInitializeLeftPane();
-					} else {
-						//need to provide a dialoge
-						System.err.println(f.getAbsoluteFile() + " does not exists");
+		try{
+			sessionHandler = new SessionHandler();
+			sessionHandler.retriveSession();
+			tsChooser = new TestSuiteChooser();
+			sheetTabPane = new SheetTabPane();
+			SheetTabPane.setController(this);
+			optionBuilder=new RuntimeOptionBuilder();
+			repeatCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				public void changed(ObservableValue<? extends Boolean> ov,
+						Boolean old_val, Boolean new_val) {
+					if(new_val){
+						repeatOptionPane.setDisable(false);
+					}else{
+						repeatOptionPane.setDisable(true);
 					}
-				} catch (Exception ex) {
-					System.err.println("Error "+ex.getMessage());
-					Logger.getLogger(ZugguiController.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			}
-		};
+			});
+			fileClickEvent=new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent e) {
+					try {
+						MenuItem mi=(MenuItem)e.getSource();
+						File f = new File(mi.getText());
+						if (f.exists()) {
+							loadTestSuite(mi.getText());
+							reInitializeLeftPane();
+						} else {
+							//need to provide a dialoge
+							System.err.println(f.getAbsoluteFile() + " does not exists");
+						}
+					} catch (Exception ex) {
+						System.err.println("Error "+ex.getMessage());
+						Logger.getLogger(ZugguiController.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				}
+			};
 
-		initializeStartupBehavior();
-		registerRunTimeEntities();
-		currentStack=new Stack<>();
-		variableVBox.prefHeightProperty().bind(variableAPane.heightProperty());
-		variableVBox.prefWidthProperty().bind(variableAPane.widthProperty());
+			initializeStartupBehavior();
+			registerRunTimeEntities();
+			currentStack=new Stack<>();
+			variableVBox.prefHeightProperty().bind(variableAPane.heightProperty());
+			variableVBox.prefWidthProperty().bind(variableAPane.widthProperty());
+    	}catch(Exception e){
+    		System.err.println("Error : Initializing GUI.\nError message  "+e.getMessage()+"\nError Trace :"+e.getStackTrace());
+    		throw e;
+    	}
+
 
 	}
 

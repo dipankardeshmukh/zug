@@ -62,14 +62,14 @@ public class ConsoleController implements Initializable {
 	@FXML
 	private ScrollPane scrollPane;
 	private boolean format=true;
-	
+
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
-		clearButton.setTooltip(new Tooltip("Clear Console"));
-		redirectSystemStreams();
-
-		    console.heightProperty().addListener(new ChangeListener<Number>() {
+		try{
+			clearButton.setTooltip(new Tooltip("Clear Console"));
+			redirectSystemStreams();
+			console.heightProperty().addListener(new ChangeListener<Number>() {
 
 				@Override
 				public void changed(ObservableValue<? extends Number> arg0,
@@ -77,13 +77,14 @@ public class ConsoleController implements Initializable {
 					// TODO Auto-generated method stub
 					scrollPane.setVvalue(scrollPane.getVmax());
 				}
-		    	
-			});
-		    
 
+			});
+		}catch(Exception e){
+			System.err.println("Error : Initializing Console.\nError message  "+e.getMessage()+"\t\nError Trace :"+e.getStackTrace());
+		}
 		// console = (ConsoleController) fxmlLoader.getController();
 	}
-	
+
 	private void formatText(String txt, String subStringToMatch, Color color,
 			String splitPatter, String actionType) {
 
@@ -195,7 +196,7 @@ public class ConsoleController implements Initializable {
 			String[] atomName = name[1]
 					.split("Execution STARTED With Arguments");
 
-		/*	SimpleAttributeSet AtomColor = new SimpleAttributeSet();
+			/*	SimpleAttributeSet AtomColor = new SimpleAttributeSet();
 			StyleConstants
 			.setForeground(AtomColor, Color.rgb(0xBD, 0x05, 0xE2));
 			StyleConstants.setBold(AtomColor, true);
@@ -203,7 +204,7 @@ public class ConsoleController implements Initializable {
 			SimpleAttributeSet ArgColor = new SimpleAttributeSet();
 			StyleConstants.setForeground(ArgColor, Color.rgb(0xCB, 0xCB, 0x03));
 			StyleConstants.setBold(ArgColor, true);*/
-			
+
 			Font font=Font.font("Arial", FontWeight.BOLD, 12);
 			Text argtext=new Text( atomName[1]);
 			argtext.setFont(font);
@@ -211,16 +212,16 @@ public class ConsoleController implements Initializable {
 			Text atomText=new Text(atomName[0]);
 			atomText.setFont(font);
 			atomText.setFill(Color.rgb(0xBD, 0x05, 0xE2));
-			
-			
-				for (int i = 0; i < StringUtils.countMatches(name[0], "&"); i++){
-					console.getChildren().add(new Text( "\t"));
-				}
-				console.getChildren().add(new Text(actionType + " "));
-				console.getChildren().add(atomText);
-				console.getChildren().add(new Text( "Execution STARTED With Arguments"));
-				console.getChildren().add(argtext);
-			
+
+
+			for (int i = 0; i < StringUtils.countMatches(name[0], "&"); i++){
+				console.getChildren().add(new Text( "\t"));
+			}
+			console.getChildren().add(new Text(actionType + " "));
+			console.getChildren().add(atomText);
+			console.getChildren().add(new Text( "Execution STARTED With Arguments"));
+			console.getChildren().add(argtext);
+
 
 		} else if (text.replace("\n", "").contains("SUCCESSFULLY Executed")) {
 
@@ -237,25 +238,25 @@ public class ConsoleController implements Initializable {
 
 			String atomName = name[1].replace("SUCCESSFULLY Executed", "");
 
-		/*	SimpleAttributeSet AtomColor = new SimpleAttributeSet();
+			/*	SimpleAttributeSet AtomColor = new SimpleAttributeSet();
 			StyleConstants
 			.setForeground(AtomColor, );
 			StyleConstants.setBold(AtomColor, true);
-			*/
+			 */
 			Font font=Font.font("Arial", FontWeight.BOLD, 12);
 			Text atomText=new Text( atomName);
 			atomText.setFont(font);
 			atomText.setFill(Color.rgb(0xBD, 0x05, 0xE2));
-			
-			
-				for (int i = 0; i < StringUtils.countMatches(name[0], "&"); i++){
-					console.getChildren().add(new Text( "\t"));
-				}
-				console.getChildren().add(new Text(actionType));
-				console.getChildren().add(atomText);
-				console.getChildren().add(new Text( "SUCCESSFULLY Executed "));
 
-			
+
+			for (int i = 0; i < StringUtils.countMatches(name[0], "&"); i++){
+				console.getChildren().add(new Text( "\t"));
+			}
+			console.getChildren().add(new Text(actionType));
+			console.getChildren().add(atomText);
+			console.getChildren().add(new Text( "SUCCESSFULLY Executed "));
+
+
 
 		} else if (text.startsWith("Molecule Execution Finished :")) {
 
@@ -275,11 +276,11 @@ public class ConsoleController implements Initializable {
 					0xCA, 0xCA), "On", "Testcase");
 
 		} else {
-		
-				if (text.replace("\n", "").startsWith("*"))
-					text = text.replace("*", "");
-				console.getChildren().add(new Text( text));
-		
+
+			if (text.replace("\n", "").startsWith("*"))
+				text = text.replace("*", "");
+			console.getChildren().add(new Text( text));
+
 		}
 	}
 
@@ -357,5 +358,5 @@ public class ConsoleController implements Initializable {
 		console.getChildren().clear();
 	}
 
-	
+
 }
