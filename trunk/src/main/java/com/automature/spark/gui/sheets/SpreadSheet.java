@@ -110,8 +110,6 @@ public class SpreadSheet {
 
 			if (cell.hasNext()) {
 
-				cell.next();  // Exclude the line number
-
 				if (cell.next().toString().equalsIgnoreCase("include") && cell.hasNext()) {
 
 					String[] listOfFiles = cell.next().toString().split(";|,");
@@ -121,11 +119,6 @@ public class SpreadSheet {
 						if (s == null || s.isEmpty()) {
 							continue;
 						}
-
-						//  SpreadSheet sp = ZugguiController.spreadSheet.getIncludeFile(s, new HashSet<String>());
-						//       if (sp != null) {
-						//            System.out.println("\nWARNING: Recursive include file detected! Ignoring file: " + s + " included by " + this.absolutePath);
-						//       } else {
 						if (!uniqueSheets.containsKey(s)) {
 
 							File fileToRead = new File(s);
@@ -157,7 +150,7 @@ public class SpreadSheet {
 							System.out.println("\nWARNING: Recursive include file detected! Ignoring file: " + s + " included by " + this.absolutePath);
 						}
 
-						//    }
+						
 					}
 				}
 
