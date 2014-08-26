@@ -16,7 +16,7 @@ echo ---------------------------------------------------------------------------
 
 #echo  "The Zug install directory "$ZUG_HOME
 cd /Applications/Automature/SPARK
-java -Xms512m -Xmx2048m -Xdock:icon=Images/Spark.ico -Dapp.data=$HOME/SPARK\ Logs -jar /Applications/Automature/SPARK/automature-spark.jar $*  -pwd=$pwd
+java -Xms512m -Xmx2048m -Xdock:icon=Images/Spark.ico -Dapp.data=$HOME/SPARK\ Logs/ -jar /Applications/Automature/SPARK/automature-spark.jar $*  -pwd=$pwd
 
 echo --------------------------------------------------------------------------------
 echo Automation Finished.
