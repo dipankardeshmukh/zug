@@ -8,6 +8,7 @@ import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.gui.utils.Excel;
 import com.automature.spark.util.ExtensionInterpreterSupport;
 
+
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -100,20 +101,21 @@ public class SpreadSheet {
 
 	public void readConfigIncludeFiles() throws Exception {
 
-		Iterator it = configSheet.getData().iterator();
+		Iterator<List<String>> it = configSheet.getData().iterator();
 
 		while (it.hasNext()) {
 
-			List row = null;
-			row = (List) it.next();
-			Iterator cell = row.iterator();
+			List<String> row = null;
+			row = it.next();
+			//System.out.println(row);
+			Iterator<String> cell = row.iterator();
 
 			if (cell.hasNext()) {
 
 				if (cell.next().toString().equalsIgnoreCase("include") && cell.hasNext()) {
 
 					String[] listOfFiles = cell.next().toString().split(";|,");
-
+					
 					for (String s : listOfFiles) {
 
 						if (s == null || s.isEmpty()) {
@@ -122,16 +124,14 @@ public class SpreadSheet {
 						if (!uniqueSheets.containsKey(s)) {
 
 							File fileToRead = new File(s);
-
+							
 							if (!fileToRead.isAbsolute()) {
-
 								File f = new File(this.absolutePath);
 								s = f.getParent() + File.separator + s;
-
 							}
 							File f=new File(s);
 							if(!f.exists()){
-								System.err.println(s +"does not exists");
+								System.err.println(s +"does not exist.");
 								continue;
 							}
 							if (!uniqueSheets.containsKey(s)) {

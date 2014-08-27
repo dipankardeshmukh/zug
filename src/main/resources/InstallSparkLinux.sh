@@ -1,4 +1,5 @@
 sudo mv /usr/lib/automature/SPARK/spark.linux /usr/lib/automature/SPARK/spark
+sudo mv /usr/lib/automature/SPARK/zug.linux mv /usr/lib/automature/SPARK/zug
 if [ ! -e /usr/lib/automature/SPARK/Spark.ini ]
  then
 sudo mv /usr/lib/automature/SPARK/Spark.ini.Linux /usr/lib/automature/SPARK/Spark.ini.xml

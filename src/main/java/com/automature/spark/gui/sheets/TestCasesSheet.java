@@ -55,11 +55,11 @@ public class TestCasesSheet extends GenericSheet{
             for(int i=0;i<=n;i++){
 
                 Cell myCell=row.getCell(i);
-                header.add(myCell==null?"":myCell.getStringCellValue());
+                header.add(myCell==null?"":GetCellValueAsString(myCell));
                 if(myCell!=null){
-                    if(myCell.getStringCellValue().equalsIgnoreCase("Action")){
+                    if(GetCellValueAsString(myCell).equalsIgnoreCase("Action")){
                         actionColumn=myCell.getColumnIndex()+2;                         // +2 because the first element int he row is the breakpoint column and second is line number
-                    }else if(myCell.getStringCellValue().equalsIgnoreCase("Verify")){
+                    }else if(GetCellValueAsString(myCell).equalsIgnoreCase("Verify")){
                         verifyColumn=myCell.getColumnIndex()+2;
                     }
                 }
@@ -91,7 +91,7 @@ public class TestCasesSheet extends GenericSheet{
             Cell cell=myRow.getCell(0); // first column of the actual spreadsheet
 
             if(cell!=null){
-                String testcaseID=cell.getStringCellValue();
+                String testcaseID=GetCellValueAsString(cell);
                 if(testcaseID!=null && !testcaseID.isEmpty() && !testcaseID.isEmpty() && !testcaseID.equalsIgnoreCase("comment")){
                     testCaseIDs.add(testcaseID);
                 }

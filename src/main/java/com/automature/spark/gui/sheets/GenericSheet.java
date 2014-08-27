@@ -24,7 +24,7 @@ public abstract class GenericSheet {
 
 	public abstract void readData()throws Exception;
         
-        String GetCellValueAsString(Cell cell) {
+        public String GetCellValueAsString(Cell cell) {
 		if(cell==null){
 			return "";
 		}

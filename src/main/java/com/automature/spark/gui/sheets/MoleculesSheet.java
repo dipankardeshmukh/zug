@@ -55,7 +55,7 @@ public class MoleculesSheet extends GenericSheet {
             for (int i = 0; i <= n; i++) {
 
                 Cell myCell = row.getCell(i);
-                header.add(myCell == null ? "" : myCell.getStringCellValue());
+                header.add(myCell == null ? "" : GetCellValueAsString(myCell));
                 if (myCell != null) {
                     if (myCell.getStringCellValue().equalsIgnoreCase("Action")) {
                         actionColumn = myCell.getColumnIndex() + 2;
@@ -93,7 +93,7 @@ public class MoleculesSheet extends GenericSheet {
             String moleculeId =null;
             int molLineNo=0;
             if (cell != null) {
-                 moleculeId = cell.getStringCellValue();
+                 moleculeId = GetCellValueAsString(cell);
                 if (moleculeId != null && !moleculeId.isEmpty() && !moleculeId.isEmpty() && !moleculeId.equalsIgnoreCase("comment")) {
                     //moleculeIDs.put(moleculeId.toLowerCase(),line+"");
                 	molLineNo=line;

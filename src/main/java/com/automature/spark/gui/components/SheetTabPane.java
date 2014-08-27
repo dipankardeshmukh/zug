@@ -44,7 +44,8 @@ public class SheetTabPane extends TabPane {
         getTabs().add(testCaseTab);
         getTabs().add(moleculeTab);*/
         setPrefSize(700, 700);
-        setMinSize(500, 500);
+        setMinSize(600, 500);
+        
     }
 
   

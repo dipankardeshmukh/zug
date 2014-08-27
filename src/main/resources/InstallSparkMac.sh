@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 sudo mv /Applications/Automature/SPARK/spark.mac /Applications/Automature/SPARK/spark
+sudo mv /Applications/Automature/SPARK/zug.mac /Application/Automature/SPARK/zug
 if [ ! -e /Applications/Automature/SPARK/Spark.ini ]
  then
 sudo mv /Applications/Automature/SPARK/Spark.ini.Mac /Applications/Automature/SPARK/Spark.ini
