@@ -646,7 +646,7 @@ public class ZugguiController implements Initializable ,GuiController{
 			public void run() {
 				sheetLoaded=true;
 				splitPane.getItems().set(0, sheetTabPane);
-				//splitPane.setDividerPositions(.3);
+				//splitPane.setDividerPositions(.35);
 			}
 		});
 

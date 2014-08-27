@@ -78,7 +78,7 @@ public class MacroSheet extends GenericSheet{
             
             for(int i=0;singleRow.size()<headerSize;i++){
                 Cell cell=row.getCell(i);
-                singleRow.add(cell==null?" ":cell.getStringCellValue());
+                singleRow.add(cell==null?" ":GetCellValueAsString(cell));
             }
             if(StringUtils.isNotBlank(singleRow.get(0))){
             	macros.put(singleRow.get(0).toLowerCase(), singleRow.get(1).length()>50?singleRow.get(1).substring(0,50)+"..":singleRow.get(1));

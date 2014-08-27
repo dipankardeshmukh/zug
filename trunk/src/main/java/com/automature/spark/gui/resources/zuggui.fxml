@@ -243,7 +243,7 @@
         <SplitPane fx:id="splitPane" dividerPositions="0.7004175365344467" maxHeight="2000.0" prefHeight="600.0" prefWidth="900.0" VBox.vgrow="ALWAYS">
           <items>
             <FlowPane fx:id="leftPaneVBox" alignment="CENTER" columnHalignment="CENTER" minHeight="400.0" minWidth="400.0" prefHeight="700.0" prefWidth="700.0" style=" -fx-background-color: &quot;#6e7272&quot;" />
-            <ScrollPane fx:id="rightPane" fitToHeight="true" fitToWidth="true" maxHeight="2500.0" maxWidth="350.0" minWidth="220.0" pannable="false" prefHeight="-1.0" prefWidth="250.0" vbarPolicy="ALWAYS">
+            <ScrollPane fx:id="rightPane" fitToHeight="true" fitToWidth="true" maxHeight="2500.0" maxWidth="500.0" minWidth="220.0" pannable="false" prefHeight="-1.0" prefWidth="250.0" vbarPolicy="ALWAYS">
               <content>
                 <VBox maxHeight="2500.0" maxWidth="-1.0" minHeight="-Infinity" minWidth="220.0" prefHeight="-1.0" prefWidth="-1.0">
                   <children>

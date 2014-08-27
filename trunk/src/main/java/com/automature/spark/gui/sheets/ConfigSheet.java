@@ -107,7 +107,7 @@ public class ConfigSheet extends GenericSheet {
             List<String> row =  it.next();
 
             if (row.get(0).toString().equalsIgnoreCase("ScriptLocation") && row.get(1) != null && !row.get(1).toString().isEmpty()) {
-                scriptLocations = row.get(2).toString();
+                scriptLocations = row.get(1).toString();
             }
 
         }
