@@ -22,6 +22,7 @@
             <author name="Automature LLC" email="info@automature.com"/>
         </authors>
         <url>http://www.automature.com/</url>
+        <javaversion>1.8</javaversion>
     </info>
 
     <!-- 
