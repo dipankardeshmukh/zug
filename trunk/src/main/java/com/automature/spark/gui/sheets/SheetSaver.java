@@ -35,8 +35,6 @@ public class SheetSaver {
 		try {
 			row += rowOffset;
 			col += colOffSet;
-			System.out.println("file "+fileName);
-			System.out.println("row =" + row + "\tcol =" + col +" value "+value);
 			Row roww = sheet.getRow(row);
 			if (roww == null) {
 				roww = sheet.createRow(row);
@@ -62,7 +60,6 @@ public class SheetSaver {
 		try {
 			Row row=sheet.getRow(n);
 			if(row==null){
-				System.out.println("row does not exists");
 				row=sheet.createRow(n);
 				Iterator<Cell> it=sheet.getRow(n-1).cellIterator();
 				int i=0;
@@ -74,13 +71,10 @@ public class SheetSaver {
 					//cell.setCellStyle(style);
 				}
 
-			}else{
-				System.out.println("Row exists");
 			}
 			Cell cell = row.getCell(0);
 			if (cell != null) {
 				cell.setCellValue("comment");
-				System.out.println("setting cell value ");
 			}
 			
 			outFile = new FileOutputStream(new File(fileName));
