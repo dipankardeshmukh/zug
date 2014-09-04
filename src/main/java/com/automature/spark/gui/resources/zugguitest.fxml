@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="960.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.automature.spark.gui.controllers.ZugguiController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ZugguiController">
   <children>
     <VBox prefHeight="600.0" prefWidth="960.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -19,49 +19,49 @@
           <menus>
             <Menu mnemonicParsing="false" text="File">
               <items>
-                <MenuItem mnemonicParsing="false" text="New" fx:id="newMI">
+                <MenuItem fx:id="newMI" mnemonicParsing="false" text="New">
                   <accelerator>
                     <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                   </accelerator>
                 </MenuItem>
-                <MenuItem mnemonicParsing="false" onAction="#showTestSuiteChooser" text="Open..." fx:id="openMI">
+                <MenuItem fx:id="openMI" mnemonicParsing="false" onAction="#showTestSuiteChooser" text="Open...">
                   <accelerator>
                     <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                   </accelerator>
                 </MenuItem>
-                <Menu mnemonicParsing="false" text="Open Recent" fx:id="recetlyUsedMenu" />
+                <Menu fx:id="recetlyUsedMenu" mnemonicParsing="false" text="Open Recent" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" text="Save as New Version" fx:id="saveMI">
+                <MenuItem fx:id="saveMI" mnemonicParsing="false" text="Save as New Version">
                   <accelerator>
                     <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                   </accelerator>
                 </MenuItem>
-                <MenuItem mnemonicParsing="false" text="Save As…" fx:id="saveAsMI">
+                <MenuItem fx:id="saveAsMI" mnemonicParsing="false" text="Save As…">
                   <accelerator>
                     <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                   </accelerator>
                 </MenuItem>
-                <MenuItem mnemonicParsing="false" text="Reload Last Saved State" fx:id="revertMI">
+                <MenuItem fx:id="revertMI" mnemonicParsing="false" text="Reload Last Saved State">
                   <accelerator>
                     <KeyCodeCombination alt="UP" code="F12" control="UP" meta="UP" shift="UP" shortcut="ANY" />
                   </accelerator>
                 </MenuItem>
                 <MenuItem mnemonicParsing="false" text="Manage Versions" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" text="Close Test suite" fx:id="closeMI">
+                <MenuItem fx:id="closeMI" mnemonicParsing="false" text="Close Test suite">
                   <accelerator>
                     <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                   </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" onAction="#exit" text="Exit" fx:id="exitMI">
+                <MenuItem fx:id="exitMI" mnemonicParsing="false" onAction="#exit" text="Exit">
                   <accelerator>
                     <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                   </accelerator>
                 </MenuItem>
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Edit" fx:id="editMenu">
+            <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
               <items>
                 <MenuItem mnemonicParsing="false" text="Undo">
                   <accelerator>
@@ -122,14 +122,14 @@
                 </Menu>
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Run/Debug" fx:id="runMI">
+            <Menu fx:id="runMI" mnemonicParsing="false" text="Run/Debug">
               <items>
                 <MenuItem mnemonicParsing="false" text="Run Test" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" text="Next Step" fx:id="nextStepMI" />
-                <MenuItem mnemonicParsing="false" text="Run Till Next Breakpoint" fx:id="resumeMI" />
+                <MenuItem fx:id="nextStepMI" mnemonicParsing="false" text="Next Step" />
+                <MenuItem fx:id="resumeMI" mnemonicParsing="false" text="Run Till Next Breakpoint" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" text="Abort Test" fx:id="stopMI" />
+                <MenuItem fx:id="stopMI" mnemonicParsing="false" text="Abort Test" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="View">
@@ -140,10 +140,10 @@
                 <MenuItem mnemonicParsing="false" text="Properties" />
                 <MenuItem mnemonicParsing="false" text="Linked Files" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <CheckMenuItem mnemonicParsing="false" onAction="#showConsole" text="Terminal Console" fx:id="viewConsoleCMI" />
+                <CheckMenuItem fx:id="viewConsoleCMI" mnemonicParsing="false" onAction="#showConsole" text="Terminal Console" />
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Help" fx:id="helpMenu">
+            <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
               <items>
                 <MenuItem mnemonicParsing="false" text="Help on SparkWiki">
                   <accelerator>
@@ -223,7 +223,7 @@
             <FlowPane fx:id="leftPaneVBox" alignment="CENTER" columnHalignment="CENTER" prefHeight="200.0" prefWidth="200.0" style=" -fx-background-color: &quot;#6e7272&quot;" />
             <Accordion id="rightpane" fx:id="rightPane" maxHeight="2000.0" minHeight="-1.0" minWidth="-Infinity" prefWidth="220.0">
               <panes>
-                <TitledPane animated="false" expanded="false" maxHeight="150.0" minHeight="150.0" text="Test control">
+                <TitledPane fx:id="testControlTPane" animated="false" expanded="false" maxHeight="150.0" minHeight="150.0" text="Test control">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="150.0" prefWidth="220.0">
                       <children>

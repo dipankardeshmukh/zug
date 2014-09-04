@@ -9,7 +9,7 @@
 
 <VBox fx:id="variableVBox" alignment="CENTER" minHeight="200.0" minWidth="200.0" prefHeight="347.0" prefWidth="332.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.VariableController1">
          <children>
-    <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="77.0" prefWidth="329.0" style="-fx-background-color: derive(-fx-base,20%);" VBox.vgrow="NEVER">
+    <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="77.0" prefWidth="329.0" VBox.vgrow="NEVER">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="70.0" minWidth="10.0" prefWidth="64.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.0" minWidth="0.0" prefWidth="11.0" />

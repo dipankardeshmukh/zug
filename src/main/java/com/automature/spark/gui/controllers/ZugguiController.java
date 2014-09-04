@@ -12,6 +12,7 @@ import com.automature.spark.gui.Constants;
 import com.automature.spark.gui.RuntimeOptionBuilder;
 import com.automature.spark.gui.SessionHandler;
 import com.automature.spark.gui.ZugGui;
+import com.automature.spark.gui.components.FloatingStage;
 import com.automature.spark.gui.components.LinkedFilesBorderPane;
 import com.automature.spark.gui.components.MoleculeTreeTableSheetTab;
 import com.automature.spark.gui.components.SheetTabPane;
@@ -37,6 +38,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -206,6 +208,8 @@ public class ZugguiController implements Initializable ,GuiController{
 	//Side bar components
 	//TestControl components
 	@FXML
+	private VBox titlesVBox;
+	@FXML
 	private VBox testControlVBox;
 	@FXML
 	private CheckBox verboseCB;
@@ -260,7 +264,8 @@ public class ZugguiController implements Initializable ,GuiController{
 	private VBox variableVBox;
 	@FXML
 	private AnchorPane variableAPane;
-
+	@FXML
+	private TitledPane testControlTPane;
 	private SessionHandler sessionHandler;
 	private TestSuiteChooser tsChooser;
 	public static SpreadSheet spreadSheet;
@@ -314,6 +319,7 @@ public class ZugguiController implements Initializable ,GuiController{
 					}
 				}
 			};
+		
 
 			initializeStartupBehavior();
 			registerRunTimeEntities();
@@ -537,6 +543,9 @@ public class ZugguiController implements Initializable ,GuiController{
 	private void intitializeStartUpComponents() {
 		loadRecentlyUsedFilesInMenu();
 		setDisableNoTestSuiteLoadComonents(true);
+		ObservableList titlePanes=titlesVBox.getChildren();
+		titlePanes.forEach( p -> new FloatingStage((Parent)p) );
+		
 
 	}
 

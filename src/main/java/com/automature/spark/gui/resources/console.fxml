@@ -11,26 +11,66 @@
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ConsoleController">
   <children>
-    <VBox prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <VBox fx:id="consoleVbox" prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
         <ToolBar maxHeight="31.0" maxWidth="1.7976931348623157E308">
           <items>
-            <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clear" text="">
+                  <MenuButton maxHeight="18.0" mnemonicParsing="false" onAction="#switchText" prefHeight="18.0" prefWidth="52.0">
+                    <items>
+                        <RadioMenuItem mnemonicParsing="false" onAction="#switchToFormattedConsole" selected="true" text="Formatted console">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="consoleToggle" />
+                           </toggleGroup></RadioMenuItem>
+                        <RadioMenuItem mnemonicParsing="false" onAction="#switchToSimpleConsole" text="Plain console" toggleGroup="$consoleToggle" />
+                    </items>
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/black/glyph_test-case_clone.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuButton>
+            <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clear" prefHeight="28.0" prefWidth="38.0" text="">
               <graphic>
-                <ImageView mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="20.0" fitWidth="15.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icons/black/glyph_broom.png" />
                            </image>
                 </ImageView>
               </graphic>
+                     <tooltip>
+                        <Tooltip text="Clear Screen" />
+                     </tooltip>
             </Button>
-            <Button mnemonicParsing="false" text="" visible="false" />
-            <Button mnemonicParsing="false" text="" visible="false" />
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
+                  <Button fx:id="copyAllButton" disable="true" mnemonicParsing="false" onAction="#copy" visible="false">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/black/glyph_copy.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Copy all" />
+                     </tooltip>
+                  </Button>
+                  <TextField fx:id="searchTextBox" visible="false" />
+                  <Button fx:id="searchButton" disable="true" mnemonicParsing="false" onAction="#searchText" visible="false">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/black/glyph_search.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
           </items>
         </ToolBar>
             <ScrollPane fx:id="scrollPane" prefHeight="365.0" prefWidth="600.0" style="-fx-background-color: white; -fx-fit-to-width: true; -fx-fit-to-height: true;" VBox.vgrow="SOMETIMES">
               <content>
-                <AnchorPane style="-fx-background-color: white; -fx-fit-to-width: true; -fx-fit-to-height: true;">
+                <AnchorPane fx:id="consoleHolder" style="-fx-background-color: white; -fx-fit-to-width: true; -fx-fit-to-height: true;">
                      <children>
                         <TextFlow fx:id="console" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="360.0" minWidth="580.0" style="-fx-background-color: white; -fx-fit-to-width: true; -fx-fit-to-height: true;" />
                      </children>
