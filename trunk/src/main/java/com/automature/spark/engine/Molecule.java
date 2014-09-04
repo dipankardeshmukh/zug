@@ -1,6 +1,6 @@
 package com.automature.spark.engine;
 
-import com.automature.spark.gui.controllers.ZugguiController;
+
 import com.automature.spark.util.Log;
 import com.automature.spark.util.Utility;
 
@@ -1014,7 +1014,38 @@ public class Molecule extends TestCase {
 		}
 		return namedArgFlag;
 	}
+	public String checkAndReplaceKeyArgDef(String actionVal) throws Exception{
 
+		if (actionVal!=null&&actionVal.contains("=")) {
+			String key = Excel.SplitOnFirstEquals(actionVal)[0];
+			String value = Excel.SplitOnFirstEquals(actionVal)[1];
+			if(key!=null&&key.startsWith("#")){
+				for (String molecule_arg : arguments) {
+
+					String temp_value_split[] = Excel
+							.SplitOnFirstEquals(molecule_arg);
+
+					if(actionVal.contains("=")&&StringUtils.countMatches(
+							key.replace("#", "").toLowerCase(),
+							temp_value_split[0].toLowerCase()) >= 1){
+
+						key=key.replace("#", "");
+						if (temp_value_split[0]
+								.equalsIgnoreCase(key)) {
+							if (temp_value_split.length < 2) {
+								throw new Exception(
+										"Molecule/RunAbstractTestCase: Formal argument value is Empty:: "
+												+ temp_value_split[0]);
+							}
+							String val2=Excel.SplitOnFirstEquals(actionVal)[1];
+							actionVal=temp_value_split[1]+"="+val2;
+						}
+					}
+				}
+			}
+		}
+		return actionVal;
+	}
 	void run() throws Exception {
 		Log.Debug("Molecule/RunAbstractTestCase: Start of function with a new TestCase. TestCase ID is "
 				+ this.testCaseID
@@ -1279,6 +1310,7 @@ public class Molecule extends TestCase {
 									.format("Molecule/RunAbstractTestCase:: %s Not a Moleculue definition. ",
 											value));
 						}
+						actionVal=checkAndReplaceKeyArgDef(actionVal);
 
 					} else {
 						throw new Exception(
@@ -1525,7 +1557,7 @@ public class Molecule extends TestCase {
 										.format("Molecule/RunAbstractTestCase:: %s is not a Named Argument Defined in Molecule Definition.",
 												value));
 							}
-
+							verificationVal=checkAndReplaceKeyArgDef(verificationVal);
 						} else {
 							throw new Exception(
 									"Argument Passing Not Consistent:Either use named argument passing or positional argument passing");

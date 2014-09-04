@@ -245,9 +245,9 @@
             <FlowPane fx:id="leftPaneVBox" alignment="CENTER" columnHalignment="CENTER" minHeight="400.0" minWidth="400.0" prefHeight="700.0" prefWidth="700.0" style=" -fx-background-color: &quot;#6e7272&quot;" />
             <ScrollPane fx:id="rightPane" fitToHeight="true" fitToWidth="true" maxHeight="2500.0" maxWidth="500.0" minWidth="220.0" pannable="false" prefHeight="-1.0" prefWidth="250.0" vbarPolicy="ALWAYS">
               <content>
-                <VBox maxHeight="2500.0" maxWidth="-1.0" minHeight="-Infinity" minWidth="220.0" prefHeight="-1.0" prefWidth="-1.0">
+                <VBox fx:id="titlesVBox" maxHeight="2500.0" maxWidth="-1.0" minHeight="-Infinity" minWidth="220.0" prefHeight="-1.0" prefWidth="-1.0">
                   <children>
-                    <TitledPane collapsible="true" text="Test control" VBox.vgrow="NEVER">
+                    <TitledPane fx:id="testControlTPane" collapsible="true" text="Test control" VBox.vgrow="NEVER">
                       <content>
                         <AnchorPane minHeight="220.0" minWidth="0.0" prefHeight="280.0">
                           <children>
@@ -404,27 +404,9 @@
                     </TitledPane>
                               <TitledPane alignment="TOP_LEFT" collapsible="true" contentDisplay="CENTER" expanded="false" layoutX="10.0" layoutY="10.0" text="Variable">
                                  <content>
-                                    <AnchorPane fx:id="variableAPane" minHeight="220.0" minWidth="200.0" prefHeight="270.0" prefWidth="250.0" style="-fx-border-color: yellow;">
+                                    <AnchorPane fx:id="variableAPane" minHeight="220.0" minWidth="200.0" prefHeight="280.0" prefWidth="250.0" style="-fx-border-color: yellow;">
                                        <children>
                                           <fx:include fx:id="variableVBox" source="Variable%20inspector%20layout.fxml" />
-                                       </children>
-                                    </AnchorPane>
-                                 </content>
-                              </TitledPane>
-                    <TitledPane disable="true" expanded="false" text="Execution summary" visible="false" VBox.vgrow="NEVER">
-                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" visible="false">
-                          <children>
-                            <VBox prefHeight="200.0" prefWidth="272.0" />
-                          </children>
-                        </AnchorPane>
-                      </content>
-                    </TitledPane>
-                              <TitledPane collapsible="true" disable="true" expanded="false" text="Execution Stack" visible="false">
-                                 <content>
-                                    <AnchorPane minHeight="220.0" minWidth="0.0" prefHeight="280.0" prefWidth="254.0">
-                                       <children>
-                                          <VBox layoutX="1.0" layoutY="1.0" prefHeight="270.0" prefWidth="267.0" />
                                        </children>
                                     </AnchorPane>
                                  </content>
