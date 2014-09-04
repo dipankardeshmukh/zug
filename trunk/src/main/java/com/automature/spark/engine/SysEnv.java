@@ -86,26 +86,26 @@ public class SysEnv {
 
 	public static boolean isWindows() {
 
-		return (OS_NAME.indexOf("win") >= 0);
+		return (OS_NAME.toLowerCase().contains("win") );
 
 	}
 
 	public static boolean isMac() {
 
-		return (OS_NAME.indexOf("mac") >= 0);
+		return (OS_NAME.toLowerCase().contains("mac"));
 
 	}
 
 	public static boolean isUnix() {
 
-		return (OS_NAME.indexOf("nix") >= 0 || OS_NAME.indexOf("nux") >= 0 || OS_NAME
-				.indexOf("aix") > 0);
+		return (OS_NAME.toLowerCase().contains("nix")  || OS_NAME.toLowerCase().contains("nux")  || OS_NAME
+				.toLowerCase().contains("aix"));
 
 	}
 
 	public static boolean isSolaris() {
 
-		return (OS_NAME.indexOf("sunos") >= 0);
+		return (OS_NAME.toLowerCase().contains("sunos"));
 
 	}
 }
