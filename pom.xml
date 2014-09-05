@@ -252,8 +252,9 @@
         <dependency>
             <groupId>com.automature.zug.api</groupId>
             <artifactId>automature-zugapi</artifactId>
-            <version>3.0</version>
+            <version>3.0.2</version>
         </dependency>
+      
     </dependencies>
 
 </project>
