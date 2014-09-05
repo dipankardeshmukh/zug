@@ -106,6 +106,10 @@ public class SheetTabPane extends TabPane {
 		getSelectionModel().select(3);
 		getSelectionModel().getSelectedItem();
 	}
+	public void showTestCaseTab(){
+		getSelectionModel().select(2);
+		getSelectionModel().getSelectedItem();
+	}
 	public void showMoleculeTab(String id){
 		getSelectionModel().select(3);
 		MoleculeTreeTableSheetTab tab=(MoleculeTreeTableSheetTab)getSelectionModel().getSelectedItem();

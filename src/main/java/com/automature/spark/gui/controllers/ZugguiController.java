@@ -515,10 +515,12 @@ public class ZugguiController implements Initializable ,GuiController{
 			@Override public void run() {
 				if (spreadSheet.getAbsolutePath().equalsIgnoreCase(fileName)) {
 					sheetTabPane.loadPanes(spreadSheet);
+					sheetTabPane.showTestCaseTab();
 				} else {
 					SpreadSheet sp=spreadSheet.getIncludeFile(fileName);
 					if(sp!=null){
-						sheetTabPane.loadPanes(spreadSheet.getIncludeFile(fileName));						
+						sheetTabPane.loadPanes(spreadSheet.getIncludeFile(fileName));
+						sheetTabPane.showMoleculeTab();
 					}
 				}
 			}

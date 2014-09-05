@@ -19,7 +19,7 @@
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@icons/black/glyph_formatted_console.png" />
+                              <Image url="@icons/black/glyph_view-details.png" />
                            </image>
                         </ImageView>
                      </graphic>

@@ -294,7 +294,7 @@ public class ConsoleController implements Initializable {
 			Font font = Font.font("Arial", FontWeight.BOLD, 12);
 			Text argtext = new Text(atomName[1]);
 			argtext.setFont(font);
-			argtext.setFill(Color.rgb(0xCB, 0xCB, 0x03));
+			argtext.setFill(Color.web("#b8860b"));//"#8b4513"));//"#cd853f"));
 			Text atomText = new Text(atomName[0]);
 			atomText.setFont(font);
 			atomText.setFill(Color.rgb(0xBD, 0x05, 0xE2));
