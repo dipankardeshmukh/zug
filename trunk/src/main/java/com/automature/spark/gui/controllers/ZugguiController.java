@@ -427,6 +427,7 @@ public class ZugguiController implements Initializable ,GuiController{
 				}
 			});
 			consoleStage.show();
+			consoleStage.setTitle("SPARK Console - ");
 			console.redirectSystemStreams();
 			consoleStage.getIcons().add(new Image(ZugGui.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/Spark.png")));
 			
@@ -479,6 +480,7 @@ public class ZugguiController implements Initializable ,GuiController{
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				
 				loadRecentlyUsedFilesInMenu();				
 			}
 		});
@@ -746,6 +748,7 @@ public class ZugguiController implements Initializable ,GuiController{
 	public void launchZug(){
 
 		console.clear();
+		consoleStage.setTitle("SPARK Console - "+spreadSheet.getFileName());
 		final List<String> params=new ArrayList<String>();
 		for (String param:args){
 			if(param.startsWith("-pwd")){
