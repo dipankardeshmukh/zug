@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class Log {
 			// gets log4j.properties file's path
 			String logConfigPath;
 			if(SysEnv.isMac()){
-				logConfigPath = userDir + "/log4j.xml";
+				logConfigPath =new File(userDir + "/log4j.xml").exists()? userDir + "/log4j.xml":userDir + "/LogConfig/log4j.xml";
 			}else{
 				 logConfigPath = userDir + "/LogConfig/log4j.xml";	
 			}
