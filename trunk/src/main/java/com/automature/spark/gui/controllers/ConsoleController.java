@@ -38,7 +38,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -75,7 +78,7 @@ public class ConsoleController implements Initializable {
 	@FXML
 	private Button searchButton;
 	@FXML
-	private Button formatButton;
+	private ToggleButton formatButton;
 	@FXML
 	private AnchorPane consoleHolder;
 	@FXML
@@ -437,7 +440,7 @@ public class ConsoleController implements Initializable {
 		textArea.clear();
 	}
 
-	@Deprecated
+	
 	public void switchText() {
 
 		Platform.runLater(new Runnable() {
@@ -447,20 +450,10 @@ public class ConsoleController implements Initializable {
 				format = format == true ? false : true;
 				// TODO Auto-generated method stub
 				if (!format) {
-					disableControls(format);
-					textArea.clear();
-					ObservableList titlePanes = console
-							.getChildrenUnmodifiable();
-					titlePanes.forEach(p -> textArea.appendText(((Text) p)
-							.getText()));
-					// textArea.setText(console.getChildrenUnmodifiable().toString());
-					consoleVbox.getChildren().remove(scrollPane);
-					consoleVbox.getChildren().add(textArea);
+				
+					switchToSimpleConsole();
 				} else {
-					disableControls(format);
-					consoleVbox.getChildren().remove(textArea);
-					consoleVbox.getChildren().add(scrollPane);
-					textArea.clear();
+					switchToFormattedConsole();
 				}
 
 			}
@@ -514,8 +507,8 @@ public class ConsoleController implements Initializable {
 			public void run() {
 				searchTextBox.setDisable(b);
 				searchTextBox.setVisible(!b);
-				copyAllButton.setDisable(b);
-				copyAllButton.setVisible(!b);
+				//copyAllButton.setDisable(b);
+				//copyAllButton.setVisible(!b);
 				searchButton.setDisable(b);
 				searchButton.setVisible(!b);
 			}
@@ -524,7 +517,19 @@ public class ConsoleController implements Initializable {
 	}
 
 	public void copy(){
-		textArea.selectAll();
-		textArea.copy();
+		if(format){
+			StringBuffer output=new StringBuffer();
+			ObservableList titlePanes = console
+					.getChildrenUnmodifiable();
+			titlePanes.forEach(p -> output.append(((Text) p)
+					.getText()));
+			 final Clipboard clipboard = Clipboard.getSystemClipboard();
+			ClipboardContent clipboardContent = new ClipboardContent();
+			clipboardContent.putString(output.toString());
+			clipboard.setContent(clipboardContent);
+		}else{
+			textArea.selectAll();
+			textArea.copy();
+		}
 	}
 }

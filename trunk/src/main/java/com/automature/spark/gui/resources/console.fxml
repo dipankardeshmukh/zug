@@ -15,25 +15,21 @@
       <children>
         <ToolBar maxHeight="31.0" maxWidth="1.7976931348623157E308">
           <items>
-                  <MenuButton maxHeight="18.0" mnemonicParsing="false" onAction="#switchText" prefHeight="18.0" prefWidth="52.0">
-                    <items>
-                        <RadioMenuItem mnemonicParsing="false" onAction="#switchToFormattedConsole" selected="true" text="Formatted console">
-                           <toggleGroup>
-                              <ToggleGroup fx:id="consoleToggle" />
-                           </toggleGroup></RadioMenuItem>
-                        <RadioMenuItem mnemonicParsing="false" onAction="#switchToSimpleConsole" text="Plain console" toggleGroup="$consoleToggle" />
-                    </items>
+                  <ToggleButton fx:id="formatButton" mnemonicParsing="false" onAction="#switchText">
                      <graphic>
-                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@icons/black/glyph_test-case_clone.png" />
+                              <Image url="@icons/black/glyph_formatted_console.png" />
                            </image>
                         </ImageView>
                      </graphic>
-                  </MenuButton>
-            <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clear" prefHeight="28.0" prefWidth="38.0" text="">
+                     <tooltip>
+                        <Tooltip text="Turn On/Off Search Mode" />
+                     </tooltip>
+                  </ToggleButton>
+            <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clear" text="">
               <graphic>
-                <ImageView fitHeight="20.0" fitWidth="15.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                <ImageView mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icons/black/glyph_broom.png" />
                            </image>
@@ -43,10 +39,9 @@
                         <Tooltip text="Clear Screen" />
                      </tooltip>
             </Button>
-                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
-                  <Button fx:id="copyAllButton" disable="true" mnemonicParsing="false" onAction="#copy" visible="false">
+                  <Button fx:id="copyAllButton" mnemonicParsing="false" onAction="#copy">
                      <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icons/black/glyph_copy.png" />
                            </image>
@@ -56,6 +51,7 @@
                         <Tooltip text="Copy all" />
                      </tooltip>
                   </Button>
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
                   <TextField fx:id="searchTextBox" visible="false" />
                   <Button fx:id="searchButton" disable="true" mnemonicParsing="false" onAction="#searchText" visible="false">
                      <graphic>

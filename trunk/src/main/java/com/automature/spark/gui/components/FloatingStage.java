@@ -144,8 +144,8 @@ public class FloatingStage {
 				/* drag was detected, start a drag-and-drop gesture*/
 				/* allow any transfer mode */
 				Dragboard db = floaterPane.startDragAndDrop(TransferMode.MOVE);
-				ClipboardContent clipboardContent = new ClipboardContent();
-				clipboardContent.putString(TAB_DRAG_KEY);
+			//	ClipboardContent clipboardContent = new ClipboardContent();
+			//	clipboardContent.putString(TAB_DRAG_KEY);
 				event.consume();
 			}
 		});
