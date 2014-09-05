@@ -55,7 +55,7 @@ public class FloatingStage {
 		stage.setMinHeight(340);
 		stage.setMinWidth(300);
 		if(floaterPane instanceof TitledPane){
-			stage.setTitle(((TitledPane) floaterPane).getText());
+			stage.setTitle("SPARK - "+((TitledPane) floaterPane).getText());
 		}
 		stage.setMaxHeight(350);
 		stage.setMaximized(false);
