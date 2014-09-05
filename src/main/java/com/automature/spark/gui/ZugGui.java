@@ -70,6 +70,7 @@ public class ZugGui  extends Application {
 				System.exit(0);
 			}
 		});
+		stage.setTitle("SPARK");
 		stage.getIcons().add(new Image(ZugGui.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/Spark.png")));
 		ApplicationLauncher.setHostServices(getHostServices());
 		controller.setParams(getParameters().getRaw());
