@@ -404,7 +404,7 @@
                     </TitledPane>
                               <TitledPane alignment="TOP_LEFT" collapsible="true" contentDisplay="CENTER" expanded="false" layoutX="10.0" layoutY="10.0" text="Variable">
                                  <content>
-                                    <AnchorPane fx:id="variableAPane" minHeight="220.0" minWidth="200.0" prefHeight="280.0" prefWidth="250.0" style="-fx-border-color: yellow;">
+                                    <AnchorPane fx:id="variableAPane" minHeight="220.0" minWidth="200.0" prefHeight="280.0" prefWidth="250.0">
                                        <children>
                                           <fx:include fx:id="variableVBox" source="Variable%20inspector%20layout.fxml" />
                                        </children>
