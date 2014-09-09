@@ -467,7 +467,7 @@ public class SpreadSheet {
 			FileUtils.copyFile(tempFile, new File(absolutePath));						
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error saving file "+absolutePath+"\t"+e.getMessage());
 		}
 
 	}
@@ -478,7 +478,7 @@ public class SpreadSheet {
 		//	this.fileName=new File(fileName).getName();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error saving file "+absolutePath+"\t"+e.getMessage());
 		}
 	}
 
