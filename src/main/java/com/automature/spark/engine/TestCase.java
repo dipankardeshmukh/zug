@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 
 
 
+
 import javafx.fxml.Initializable;
 
 
@@ -525,6 +526,8 @@ class TestCase
 						}else if(Spark.stepOver){
 							Spark.setPauseSignal();
 							//Controller.sendMessageToDebugger((Object)action);
+							Spark.checkDebuggerSignal();
+						}else {
 							Spark.checkDebuggerSignal();
 						}
 					}

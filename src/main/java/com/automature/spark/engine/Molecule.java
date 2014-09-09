@@ -197,6 +197,8 @@ public class Molecule extends TestCase {
 						//	Controller.sendMessageToDebugger((Object)act);
 						Spark.setPauseSignal();
 						Spark.checkDebuggerSignal();
+					}else {
+						Spark.checkDebuggerSignal();
 					}
 				}	
 				if (StringUtils.isBlank(act.name)) {
