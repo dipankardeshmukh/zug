@@ -66,7 +66,7 @@ public class Spark extends ZugGui {
 
 	static GuiController guiController;
 	static boolean guiFlag;
-	private static String Version = "ZUG Premium 7.4.5";
+	private static String Version = "SPARK Premium 1.0.0";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -138,11 +138,11 @@ public class Spark extends ZugGui {
 		StringBuilder helpMessagebuf = new StringBuilder();
 		versionMessage = Version;
 
-		helpMessagebuf.append("\n\nZUG - Version - . " + versionMessage
+		helpMessagebuf.append("\n\nSPARK - Version - . " + versionMessage
 				+ ". \n");
 
 		helpMessagebuf
-		.append(" Usage :: runZUG.bat [<option>] <inputfilepath.xls>");
+		.append(" Usage :: Spark.bat [<option>] <inputfilepath.xls>");
 
 		helpMessagebuf
 		.append("\n\n\t <inputfilepath.xls> : It is the compulsory ");
@@ -306,7 +306,7 @@ public class Spark extends ZugGui {
 		String message="";
 		try {
 			com.automature.spark.license.LicenseValidator licenseValid = new com.automature.spark.license.LicenseValidator();
-			message="Zug is Valid "
+			message="Spark is Valid "
 					+ licenseValid.userInfo.companyName;
 			Calendar cal=licenseValid.userInfo.getExpiryDate();
 			String date="Expiry Date : "+cal.get(Calendar.DAY_OF_MONTH);
