@@ -357,7 +357,7 @@ Section "MainSection" SEC01
       
       ExecWait "$INSTDIR\SPARK\SetSparkPath.bat"
       
-      nsExec::ExecToStack '"$INSTDIR\SPARK\spark.bat"'
+     ; nsExec::ExecToStack '"$INSTDIR\SPARK\spark.bat"'
       
       Rename "$INSTDIR\SPARK\Spark.ini.Windows" "$INSTDIR\SPARK\Spark.ini"
   
