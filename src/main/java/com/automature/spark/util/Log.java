@@ -58,10 +58,10 @@ public class Log {
 			Spark.ZUG_LOGFILENAME = fullFilePath;
 			// gets log4j.properties file's path
 			String logConfigPath;
-			if(SysEnv.isMac()){
-				logConfigPath =new File(userDir + "/log4j.xml").exists()? userDir + "/log4j.xml":userDir + "/LogConfig/log4j.xml";
+			if(SysEnv.isMac()&&new File(userDir + File.separator +"log4j.xml").exists()){
+				logConfigPath =userDir +File.separator +"log4j.xml";
 			}else{
-				 logConfigPath = userDir + "/LogConfig/log4j.xml";	
+				 logConfigPath = userDir +File.separator +"LogConfig"+File.separator +"log4j.xml";	
 			}
 			
 			
