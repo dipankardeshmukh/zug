@@ -275,16 +275,16 @@ public class ZugguiController implements Initializable ,GuiController{
 	private ConsoleController console;
 	private StartuppageController spcController;
 	private Pane startUpPane;
-	
+
 	private LicenseController licenseController;
-	
+
 	private List<String> args;
 	private RuntimeOptionBuilder optionBuilder;
 	private EventHandler<ActionEvent> fileClickEvent;
 	private Task task;
 	private Stack<String> currentStack; 
-	
-	
+
+
 
 
 
@@ -364,6 +364,7 @@ public class ZugguiController implements Initializable ,GuiController{
 	public void intializeStartUpPage() {
 
 		try {
+			
 			FXMLLoader fxmlLoader1 = new FXMLLoader();
 			URL url1 = getClass().getResource("/com/automature/spark/gui/resources/startuppage.fxml");
 			fxmlLoader1.setLocation(url1);
@@ -421,39 +422,65 @@ public class ZugguiController implements Initializable ,GuiController{
 	public void openLicenseValidator(){
 		Platform.runLater(new Runnable() {
 			public void run() {
-				System.out.println("activating license validator ");
 				licenseController.showLicenseValidator();	
 			}
 		});
 	}
-	
+
 	public void initializeLisenceValidator(){
 
-		
-			Platform.runLater(new Runnable() {
 
-				@Override
-				public void run() {
-					try {				// TODO Auto-generated method stub
-						ScreenLoader loader=new ScreenLoader("/com/automature/spark/gui/resources/LicenseDialogue.fxml");
-						licenseController=(LicenseController)loader.getController();
-						loader.getStage().initOwner(splitPane.getScene().getWindow());
-						licenseController.setStage(loader.getStage());
-						licenseController.validate();						
-					}catch (Exception e) {
-						// TODO Auto-generated catch block
-						System.err.println("Error launching License validator dialogue. "+e.getMessage());
-					}
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				try {				// TODO Auto-generated method stub
+					ScreenLoader loader=new ScreenLoader("/com/automature/spark/gui/resources/LicenseDialogue.fxml");
+					licenseController=(LicenseController)loader.getController();
+					loader.getStage().initOwner(splitPane.getScene().getWindow());
+					licenseController.setStage(loader.getStage());
+					licenseController.validate();						
+				}catch (Exception e) {
+					// TODO Auto-generated catch block
+					System.err.println("Error launching License validator dialogue. "+e.getMessage());
 				}
-			});
+			}
+		});
 
-		
+
 	} 
 
 
 
-public void initializeConsole() {
-	FXMLLoader fxmlLoader = new FXMLLoader();
+	public void initializeConsole() {
+
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				try {				// TODO Auto-generated method stub
+					ScreenLoader loader=new ScreenLoader("/com/automature/spark/gui/resources/console.fxml");
+					console=(ConsoleController)loader.getController();
+					consoleStage=loader.getStage();
+					consoleStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+						@Override
+						public void handle(WindowEvent event) {
+							consoleStage.hide();
+							viewConsoleCMI.setSelected(false);
+						}
+					});
+					consoleStage.show();
+					consoleStage.setTitle("SPARK Console - ");
+					console.redirectSystemStreams();
+					consoleStage.getIcons().add(new Image(ZugGui.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/Spark.png")));						
+				}catch (Exception e) {
+					// TODO Auto-generated catch block
+					System.err.println("Error launching Console. "+e.getMessage());
+				}
+			}
+		});
+		
+		/*FXMLLoader fxmlLoader = new FXMLLoader();
 	try {
 		URL url = getClass().getResource("/com/automature/spark/gui/resources/console.fxml");
 		fxmlLoader.setLocation(url);
@@ -462,185 +489,175 @@ public void initializeConsole() {
 		Scene scene = new Scene(p);
 		consoleStage = new Stage();
 		consoleStage.setScene(scene);
-		consoleStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(WindowEvent event) {
-				consoleStage.hide();
-				viewConsoleCMI.setSelected(false);
-			}
-		});
-		consoleStage.show();
-		consoleStage.setTitle("SPARK Console - ");
-		console.redirectSystemStreams();
-		consoleStage.getIcons().add(new Image(ZugGui.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/Spark.png")));
+
 
 	} catch (IOException ex) {
 		Logger.getLogger(ConsoleController.class.getName()).log(Level.SEVERE, null, ex);
 
-	}
-}
-
-public void collapseRightPane() {
-
-	if (rightPane.isVisible()) {
-		collpaseButtonImgView.setImage(new Image(ZugguiController.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/black/glyph_sidebar-expand.png")));
-		if (collapsebutton.getTooltip() != null) {
-			collapsebutton.getTooltip().setText("View side bar");
-		} else {
-			collapsebutton.setTooltip(new Tooltip("View side bar"));
-		}
-
-		splitPane.getItems().remove(rightPane);
-		rightPane.setVisible(false);
-	} else {
-		collpaseButtonImgView.setImage(new Image(ZugguiController.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/black/glyph_sidebar-collapse.png")));
-		if (collapsebutton.getTooltip() != null) {
-			collapsebutton.getTooltip().setText("Hide side bar");
-		} else {
-			collapsebutton.setTooltip(new Tooltip("Hide side bar"));
-		}
-		splitPane.getItems().add(1, rightPane);
-		splitPane.setDividerPosition(0, 0.7181628392484343);
-		rightPane.setVisible(true);
-	}
-}
-
-public void loadTestSuite(String fileName) throws Exception {
-	if (spreadSheet != null) {
-		spreadSheet.releaseResources();
-	}
-	spreadSheet = new SpreadSheet();
-	spreadSheet.readSpreadSheet(fileName);
-	SpreadSheet.putUniqueSheet(fileName, spreadSheet);
-	sheetTabPane.loadPanes(spreadSheet);
-	linkedFiles.loadLinkedFiles(spreadSheet, this);
-	optionBuilder.registerSpreadSheet(spreadSheet);
-	removeAllBreakPointsFromZug();
-	sessionHandler.addTestsuite(fileName);
-	sessionHandler.saveSession();
-	Platform.runLater(new Runnable() {
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-
-			loadRecentlyUsedFilesInMenu();				
-		}
-	});
-
-	//	MenuItem mi=new MenuItem(fileName);
-	//	mi.setOnAction(fileClickEvent);
-	//	recentlyUsedMenu.getItems().add(0, mi);
-	setDisableNoTestSuiteLoadComonents(false);
-}
-
-public boolean showTestSuiteChooser() {
-
-	File file = tsChooser.chooseTestSuite(null);//.getFileName();
-
-	if (file != null) {
-		try {
-			loadTestSuite(file.getAbsolutePath());
-			reInitializeLeftPane();
-		} catch (Exception e) {
-			System.err.println("Error reading testSuite " + e.getMessage());
-		}
-		return true;
-
-	} else {
-		return false;
+	}*/
 	}
 
-}
+	public void collapseRightPane() {
 
-public void showSpreadSheet(final String fileName) {
-	Platform.runLater(new Runnable() {
-		@Override public void run() {
-			if (spreadSheet.getAbsolutePath().equalsIgnoreCase(fileName)) {
-				sheetTabPane.loadPanes(spreadSheet);
-				sheetTabPane.showTestCaseTab();
+		if (rightPane.isVisible()) {
+			collpaseButtonImgView.setImage(new Image(ZugguiController.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/black/glyph_sidebar-expand.png")));
+			if (collapsebutton.getTooltip() != null) {
+				collapsebutton.getTooltip().setText("View side bar");
 			} else {
-				SpreadSheet sp=spreadSheet.getIncludeFile(fileName);
-				if(sp!=null){
-					sheetTabPane.loadPanes(spreadSheet.getIncludeFile(fileName));
-					sheetTabPane.showMoleculeTab();
+				collapsebutton.setTooltip(new Tooltip("View side bar"));
+			}
+
+			splitPane.getItems().remove(rightPane);
+			rightPane.setVisible(false);
+		} else {
+			collpaseButtonImgView.setImage(new Image(ZugguiController.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/black/glyph_sidebar-collapse.png")));
+			if (collapsebutton.getTooltip() != null) {
+				collapsebutton.getTooltip().setText("Hide side bar");
+			} else {
+				collapsebutton.setTooltip(new Tooltip("Hide side bar"));
+			}
+			splitPane.getItems().add(1, rightPane);
+			splitPane.setDividerPosition(0, 0.7181628392484343);
+			rightPane.setVisible(true);
+		}
+	}
+
+	public void loadTestSuite(String fileName) throws Exception {
+		if (spreadSheet != null) {
+			spreadSheet.releaseResources();
+		}
+		spreadSheet = new SpreadSheet();
+		spreadSheet.readSpreadSheet(fileName);
+		SpreadSheet.putUniqueSheet(fileName, spreadSheet);
+		sheetTabPane.loadPanes(spreadSheet);
+		linkedFiles.loadLinkedFiles(spreadSheet, this);
+		optionBuilder.registerSpreadSheet(spreadSheet);
+		removeAllBreakPointsFromZug();
+		sessionHandler.addTestsuite(fileName);
+		sessionHandler.saveSession();
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+
+				loadRecentlyUsedFilesInMenu();				
+			}
+		});
+
+		//	MenuItem mi=new MenuItem(fileName);
+		//	mi.setOnAction(fileClickEvent);
+		//	recentlyUsedMenu.getItems().add(0, mi);
+		setDisableNoTestSuiteLoadComonents(false);
+	}
+
+	public boolean showTestSuiteChooser() {
+
+		File file = tsChooser.chooseTestSuite(null);//.getFileName();
+
+		if (file != null) {
+			try {
+				loadTestSuite(file.getAbsolutePath());
+				reInitializeLeftPane();
+			} catch (Exception e) {
+				System.err.println("Error reading testSuite " + e.getMessage());
+			}
+			return true;
+
+		} else {
+			return false;
+		}
+
+	}
+
+	public void showSpreadSheet(final String fileName) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				if (spreadSheet.getAbsolutePath().equalsIgnoreCase(fileName)) {
+					sheetTabPane.loadPanes(spreadSheet);
+					sheetTabPane.showTestCaseTab();
+				} else {
+					SpreadSheet sp=spreadSheet.getIncludeFile(fileName);
+					if(sp!=null){
+						sheetTabPane.loadPanes(spreadSheet.getIncludeFile(fileName));
+						sheetTabPane.showMoleculeTab();
+					}
 				}
 			}
-		}
-	});      
-}
+		});      
+	}
 
-public void reloadTestSuite() {
-	try {
-		/*File f = tsChooser.getTestSuite();
+	public void reloadTestSuite() {
+		try {
+			/*File f = tsChooser.getTestSuite();
 			if (f != null) {
 				loadTestSuite(f.getAbsolutePath());
 
 			}
-		 */
-		if(spreadSheet!=null){
-			loadTestSuite(spreadSheet.getAbsolutePath());
-		}
+			 */
+			if(spreadSheet!=null){
+				loadTestSuite(spreadSheet.getAbsolutePath());
+			}
 
-	} catch (Exception e) {
-		System.err.println("Error reading testSuite " + e.getMessage());
+		} catch (Exception e) {
+			System.err.println("Error reading testSuite " + e.getMessage());
+		}
 	}
-}
 
-private void intitializeStartUpComponents() {
-	loadRecentlyUsedFilesInMenu();
-	setDisableNoTestSuiteLoadComonents(true);
-	ObservableList titlePanes=titlesVBox.getChildren();
-	titlePanes.forEach( p -> new FloatingStage((Parent)p) );
+	private void intitializeStartUpComponents() {
+		loadRecentlyUsedFilesInMenu();
+		setDisableNoTestSuiteLoadComonents(true);
+		ObservableList titlePanes=titlesVBox.getChildren();
+		titlePanes.forEach( p -> new FloatingStage((Parent)p) );
 
 
-}
+	}
 
-private void setDisableNoTestSuiteLoadComonents(final boolean b){
-	Platform.runLater(new Runnable() {
+	private void setDisableNoTestSuiteLoadComonents(final boolean b){
+		Platform.runLater(new Runnable() {
 
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			reloadTSButton.setDisable(b);
-			copyButton.setDisable(b);
-			pasteButton.setDisable(b);
-			saveMI.setDisable(b);
-			saveAsMI.setDisable(b);
-			revertMI.setDisable(b);
-			closeMI.setDisable(b);
-			editMenu.setDisable(b);
-			undoMI.setDisable(b);
-			redoMI.setDisable(b);
-			cutMI.setDisable(b);
-			copyMI.setDisable(b);
-			pasteMI.setDisable(b);
-			deleteMI.setDisable(b);
-			selectAllMI.setDisable(b);
-			deSelectMI.setDisable(b);
-			findMI.setDisable(b);
-			runButton.setDisable(b);
-			runTestMI.setDisable(b);
-			testControlVBox.setDisable(b);
-			environmentPane.setDisable(b);
-		}
-	});
-}
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				reloadTSButton.setDisable(b);
+				copyButton.setDisable(b);
+				pasteButton.setDisable(b);
+				saveMI.setDisable(b);
+				saveAsMI.setDisable(b);
+				revertMI.setDisable(b);
+				closeMI.setDisable(b);
+				editMenu.setDisable(b);
+				undoMI.setDisable(b);
+				redoMI.setDisable(b);
+				cutMI.setDisable(b);
+				copyMI.setDisable(b);
+				pasteMI.setDisable(b);
+				deleteMI.setDisable(b);
+				selectAllMI.setDisable(b);
+				deSelectMI.setDisable(b);
+				findMI.setDisable(b);
+				runButton.setDisable(b);
+				runTestMI.setDisable(b);
+				testControlVBox.setDisable(b);
+				environmentPane.setDisable(b);
+			}
+		});
+	}
 
-private void loadRecentlyUsedFilesInMenu() {
-	recentlyUsedMenu.getItems().clear();
-	Set<String> files = sessionHandler.getSession().getTestSuiteFiles();
-	Object []fileList=files.toArray();
-	//for (String file : files) {
-	for(int i=fileList.length-1,j=0;i>=0&&j<10;i--,j++){
-		String file=(String)fileList[i];
-		final MenuItem menuItem = new MenuItem(file);
-		if(recentlyUsedMenu.getItems().contains(menuItem)){
-			continue;
-		}
-		recentlyUsedMenu.getItems().add(menuItem);
-		menuItem.setOnAction(fileClickEvent);
-		/*menuItem.setOnAction(new EventHandler<ActionEvent>() {
+	private void loadRecentlyUsedFilesInMenu() {
+		recentlyUsedMenu.getItems().clear();
+		Set<String> files = sessionHandler.getSession().getTestSuiteFiles();
+		Object []fileList=files.toArray();
+		//for (String file : files) {
+		for(int i=fileList.length-1,j=0;i>=0&&j<10;i--,j++){
+			String file=(String)fileList[i];
+			final MenuItem menuItem = new MenuItem(file);
+			if(recentlyUsedMenu.getItems().contains(menuItem)){
+				continue;
+			}
+			recentlyUsedMenu.getItems().add(menuItem);
+			menuItem.setOnAction(fileClickEvent);
+			/*menuItem.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent e) {
 					try {
@@ -658,171 +675,171 @@ private void loadRecentlyUsedFilesInMenu() {
 					}
 				}
 			});*/
-	}
-
-}
-
-
-
-
-
-public void showConsole() {
-	if (viewConsoleCMI.isSelected()) {
-		consoleStage.show();
-	} else {
-		consoleStage.hide();
-	}
-}
-
-
-public void commandsFromStartUpPage(String command, List<String> argument) {
-	if (command.equals(Constants.launchTestSuiteCommand)) {
-		try {
-			reInitializeLeftPane();
-			loadTestSuite(argument.get(0));
-			tsChooser.setLastTestSuite(argument.get(0));
-		} catch (Exception ex) {
-			Logger.getLogger(ZugguiController.class.getName()).log(Level.SEVERE, null, ex);
 		}
-	} else if (command.equals(Constants.openTestSuiteChooserCommand)) {
-		boolean chosen = showTestSuiteChooser();
-		if (chosen) {
-			reInitializeLeftPane();
+
+	}
+
+
+
+
+
+	public void showConsole() {
+		if (viewConsoleCMI.isSelected()) {
+			consoleStage.show();
+		} else {
+			consoleStage.hide();
 		}
 	}
 
-}
 
-public void reInitializeLeftPane() {
-	//        System.out.println(leftPaneVBox.getChildren().remove(startUpPane));
-	// leftPaneVBox.
-
-	Platform.runLater(new Runnable() {
-		@Override
-		public void run() {
-			sheetLoaded=true;
-			splitPane.getItems().set(0, sheetTabPane);
-			//splitPane.setDividerPositions(.35);
+	public void commandsFromStartUpPage(String command, List<String> argument) {
+		if (command.equals(Constants.launchTestSuiteCommand)) {
+			try {
+				reInitializeLeftPane();
+				loadTestSuite(argument.get(0));
+				tsChooser.setLastTestSuite(argument.get(0));
+			} catch (Exception ex) {
+				Logger.getLogger(ZugguiController.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} else if (command.equals(Constants.openTestSuiteChooserCommand)) {
+			boolean chosen = showTestSuiteChooser();
+			if (chosen) {
+				reInitializeLeftPane();
+			}
 		}
-	});
 
-	//      leftPaneVBox.getChildren().add(sheetTabPane);
-	// sheetTabPane.
-}
-public void exit(){
-	System.exit(0);
-}
-
-public void showRunningTestCase(String testCaseID, boolean b) {
-	// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	if(b){
-		currentStack.push(testCaseID);
-		//System.out.println(currentStack);
-	}else{
-		currentStack.clear();
 	}
-	((TreeTableSheetTab)spreadSheet.getTestCasesSheet().getSheetTab()).setAndExpandCurrentTestCase(testCaseID);
-}
 
-public void showRunningTestStep(int lineNumber) {
-	((TestCaseTreeTableSheetTab)spreadSheet.getTestCasesSheet().getSheetTab()).highLightRow(lineNumber);
-	// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-}
+	public void reInitializeLeftPane() {
+		//        System.out.println(leftPaneVBox.getChildren().remove(startUpPane));
+		// leftPaneVBox.
 
-public void updateTestCaseStatus(String testCaseID, boolean b) {
-	// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-}
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				sheetLoaded=true;
+				splitPane.getItems().set(0, sheetTabPane);
+				//splitPane.setDividerPositions(.35);
+			}
+		});
 
-public void showRunningMoleculeStep(String molecules, int lineNumber, int start) {
-	try{
-		((MoleculeTreeTableSheetTab)spreadSheet.getMoleculesSheet().getSheetTab()).highLightRow(lineNumber);
-
-	}catch(Exception e){
-		//System.err.println(e.getMessage());
+		//      leftPaneVBox.getChildren().add(sheetTabPane);
+		// sheetTabPane.
 	}
-}
-@Override
-public void showRunningMolecule(String MoleculeID, String nameSpace,
-		boolean b) {
-	// TODO Auto-generated method stub
+	public void exit(){
+		System.exit(0);
+	}
 
-	//System.out.println(currentStack);
-	if(nameSpace.equals("main")){
-		((TreeTableSheetTab)spreadSheet.getMoleculesSheet().getSheetTab()).setAndExpandCurrentTestCase(MoleculeID);
-	}else{
+	public void showRunningTestCase(String testCaseID, boolean b) {
+		// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if(b){
+			currentStack.push(testCaseID);
+			//System.out.println(currentStack);
+		}else{
+			currentStack.clear();
+		}
+		((TreeTableSheetTab)spreadSheet.getTestCasesSheet().getSheetTab()).setAndExpandCurrentTestCase(testCaseID);
+	}
+
+	public void showRunningTestStep(int lineNumber) {
+		((TestCaseTreeTableSheetTab)spreadSheet.getTestCasesSheet().getSheetTab()).highLightRow(lineNumber);
+		// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public void updateTestCaseStatus(String testCaseID, boolean b) {
+		// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public void showRunningMoleculeStep(String molecules, int lineNumber, int start) {
 		try{
-			SpreadSheet sp=spreadSheet.getIncludeFile(nameSpace);
-			((TreeTableSheetTab)sp.getMoleculesSheet().getSheetTab()).setAndExpandCurrentTestCase(MoleculeID);
+			((MoleculeTreeTableSheetTab)spreadSheet.getMoleculesSheet().getSheetTab()).highLightRow(lineNumber);
 
 		}catch(Exception e){
 			//System.err.println(e.getMessage());
 		}
 	}
-	String appendString="";
-	if(!nameSpace.equals("main")){
-		appendString=nameSpace+".";
-	}
-	if(b){
-		currentStack.push(appendString+MoleculeID);
-	}else{
-		currentStack.removeElement(appendString+MoleculeID);
-	}
-}
+	@Override
+	public void showRunningMolecule(String MoleculeID, String nameSpace,
+			boolean b) {
+		// TODO Auto-generated method stub
 
+		//System.out.println(currentStack);
+		if(nameSpace.equals("main")){
+			((TreeTableSheetTab)spreadSheet.getMoleculesSheet().getSheetTab()).setAndExpandCurrentTestCase(MoleculeID);
+		}else{
+			try{
+				SpreadSheet sp=spreadSheet.getIncludeFile(nameSpace);
+				((TreeTableSheetTab)sp.getMoleculesSheet().getSheetTab()).setAndExpandCurrentTestCase(MoleculeID);
 
-public void clearSelection(){
-	Platform.runLater(new Runnable() {
-		@Override
-		public void run() {
-			Iterator it = SpreadSheet.getUniqueSheets().keySet().iterator();
-			while (it.hasNext()) {
-				String file = (String) it.next();
-				SpreadSheet	sp = SpreadSheet.getUniqueSheets().get(file);
-				if(sp.getTestCasesSheet().isSheetTabCreated()){
-					sp.getTestCasesSheet().getSheetTab().clearSelection();
-				}
-				if(sp.getMoleculesSheet().isSheetTabCreated()){
-					sp.getMoleculesSheet().getSheetTab().clearSelection();
-				}
+			}catch(Exception e){
+				//System.err.println(e.getMessage());
 			}
 		}
-	});
-
-}
-
-public void launchZug(){
-
-	console.clear();
-	consoleStage.setTitle("SPARK Console - "+spreadSheet.getFileName());
-	final List<String> params=new ArrayList<String>();
-	for (String param:args){
-		if(param.startsWith("-pwd")){
-			params.add(param);
+		String appendString="";
+		if(!nameSpace.equals("main")){
+			appendString=nameSpace+".";
+		}
+		if(b){
+			currentStack.push(appendString+MoleculeID);
+		}else{
+			currentStack.removeElement(appendString+MoleculeID);
 		}
 	}
 
-	params.add(spreadSheet.getAbsolutePath());
-	params.addAll(optionBuilder.getRuntimeParams());
-	params.add("-debugger");
-	clearSelection();
-	//sheetTabPane.clearSelections();
-	setDisableRunTimeOptions(false);
-	//System.out.println(params);
-	Task task = new Task<Void>() {
-		@Override public Void call() {
-			try {
-				Spark.runTests(params.toArray(new String[params.size()]));
-				System.out.println("Execution Finished.");
 
-			} catch(Throwable t){
-				Log.Error(t.getMessage());
-			}finally{
-				setDisableRunTimeOptions(true);
+	public void clearSelection(){
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Iterator it = SpreadSheet.getUniqueSheets().keySet().iterator();
+				while (it.hasNext()) {
+					String file = (String) it.next();
+					SpreadSheet	sp = SpreadSheet.getUniqueSheets().get(file);
+					if(sp.getTestCasesSheet().isSheetTabCreated()){
+						sp.getTestCasesSheet().getSheetTab().clearSelection();
+					}
+					if(sp.getMoleculesSheet().isSheetTabCreated()){
+						sp.getMoleculesSheet().getSheetTab().clearSelection();
+					}
+				}
 			}
-			return null;
+		});
+
+	}
+
+	public void launchZug(){
+
+		console.clear();
+		consoleStage.setTitle("SPARK Console - "+spreadSheet.getFileName());
+		final List<String> params=new ArrayList<String>();
+		for (String param:args){
+			if(param.startsWith("-pwd")){
+				params.add(param);
+			}
 		}
-	};
-	/*  ProgressBar bar = new ProgressBar();
+
+		params.add(spreadSheet.getAbsolutePath());
+		params.addAll(optionBuilder.getRuntimeParams());
+		params.add("-debugger");
+		clearSelection();
+		//sheetTabPane.clearSelections();
+		setDisableRunTimeOptions(false);
+		//System.out.println(params);
+		Task task = new Task<Void>() {
+			@Override public Void call() {
+				try {
+					Spark.runTests(params.toArray(new String[params.size()]));
+					System.out.println("Execution Finished.");
+
+				} catch(Throwable t){
+					Log.Error(t.getMessage());
+				}finally{
+					setDisableRunTimeOptions(true);
+				}
+				return null;
+			}
+		};
+		/*  ProgressBar bar = new ProgressBar();
 
 		   bar.progressProperty().bind(task.progressProperty());
 		   ProgressIndicator pin = new ProgressIndicator();
@@ -831,146 +848,146 @@ public void launchZug(){
 		   statusHBox.getChildren().add(statusBarLabel);
 		   statusHBox.getChildren().add(1,bar);
 		   statusHBox.getChildren().add(2,pin);*/
-	this.task=task;
-	new Thread(task).start();
-}
+		this.task=task;
+		new Thread(task).start();
+	}
 
 
-private void setDisableRunTimeOptions(final boolean b) {
-	// TODO Auto-generated method stub
-	Platform.runLater(new Runnable() {
+	private void setDisableRunTimeOptions(final boolean b) {
+		// TODO Auto-generated method stub
+		Platform.runLater(new Runnable() {
 
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			resumeButton.setDisable(b);
-			nextStepButton.setDisable(b);
-			pauseButton.setDisable(b);
-			abortTestButton.setDisable(b);
-			nextStepMI.setDisable(b);
-			resumeMI.setDisable(b);
-			stopMI.setDisable(b);
-			//	variableVBox.setDisable(b);
-			runButton.setDisable(!b);
-			runTestMI.setDisable(!b);
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				resumeButton.setDisable(b);
+				nextStepButton.setDisable(b);
+				pauseButton.setDisable(b);
+				abortTestButton.setDisable(b);
+				nextStepMI.setDisable(b);
+				resumeMI.setDisable(b);
+				stopMI.setDisable(b);
+				//	variableVBox.setDisable(b);
+				runButton.setDisable(!b);
+				runTestMI.setDisable(!b);
 
 
+			}
+		});
+	}
+
+	public void resumeTestSuiteExecution(){
+		//System.out.println("resume signal sent");
+		Spark.setResumeSignal();    	
+	}
+
+	public void runNextTestStep(){
+		//System.out.println("step over signal sent");
+		Spark.setStepOver();    	
+	}
+
+	public void stopTestSuiteExecution(){
+		if(task.isRunning()){
+			Spark.stopExecution();
 		}
-	});
-}
-
-public void resumeTestSuiteExecution(){
-	//System.out.println("resume signal sent");
-	Spark.setResumeSignal();    	
-}
-
-public void runNextTestStep(){
-	//System.out.println("step over signal sent");
-	Spark.setStepOver();    	
-}
-
-public void stopTestSuiteExecution(){
-	if(task.isRunning()){
-		Spark.stopExecution();
 	}
-}
 
-@Override
-public void setParams(List<String> args) {
-	this.args=args;
-}
-
-
-public void removeAllBreakPoints(){
-	if(spreadSheet!=null){
-		spreadSheet.removeAllBreakPoints();
+	@Override
+	public void setParams(List<String> args) {
+		this.args=args;
 	}
-	removeAllBreakPointsFromZug();
-}
 
-public void removeAllBreakPointsFromZug(){
-	Spark.removeAllBreakPoints();
-}
 
-public void saveCurrentTestSuite(){
-	sheetTabPane.getCurrentSpreadSheet().save();
-}
-
-public void saveAs(){
-	String fileName=tsChooser.showSaveDialog();
-	if(fileName!=null){
-		sheetTabPane.getCurrentSpreadSheet().saveAs(fileName);			
+	public void removeAllBreakPoints(){
+		if(spreadSheet!=null){
+			spreadSheet.removeAllBreakPoints();
+		}
+		removeAllBreakPointsFromZug();
 	}
-}
 
-public void revertToLastSaveState(){
-	reloadTestSuite();
-}
+	public void removeAllBreakPointsFromZug(){
+		Spark.removeAllBreakPoints();
+	}
 
-public void showMoleculeInSheetView(String moleculeName){
-	SpreadSheet sp=null;
-	//System.out.println(moleculeName);
-	boolean includeMolecule=true;
-	if(!moleculeName.contains(".")){
-		sp=sheetTabPane.getCurrentSpreadSheet();
-		includeMolecule=false;
-	}else{
-		String fileName=moleculeName.substring(0, moleculeName.indexOf("."));
-		//	System.out.println("fileName "+fileName);
-		moleculeName=moleculeName.substring(moleculeName.indexOf(".")+1 );
-		//	System.out.println("moleculeName " +moleculeName);
-		//	System.out.println(SpreadSheet.getUniqueSheets());
-		Iterator it = SpreadSheet.getUniqueSheets().keySet().iterator();
+	public void saveCurrentTestSuite(){
+		sheetTabPane.getCurrentSpreadSheet().save();
+	}
 
-		while (it.hasNext()) {
-			String fileUQ=(String)it.next();
-			String file=new File(fileUQ).getName();
-			//	System.out.println("file "+file);
-			if(file!=null){
-				if(file.substring(0, file.lastIndexOf(".")).equalsIgnoreCase(fileName)){
-					sp=SpreadSheet.getUniqueSheets().get(fileUQ);
-					break;
+	public void saveAs(){
+		String fileName=tsChooser.showSaveDialog();
+		if(fileName!=null){
+			sheetTabPane.getCurrentSpreadSheet().saveAs(fileName);			
+		}
+	}
+
+	public void revertToLastSaveState(){
+		reloadTestSuite();
+	}
+
+	public void showMoleculeInSheetView(String moleculeName){
+		SpreadSheet sp=null;
+		//System.out.println(moleculeName);
+		boolean includeMolecule=true;
+		if(!moleculeName.contains(".")){
+			sp=sheetTabPane.getCurrentSpreadSheet();
+			includeMolecule=false;
+		}else{
+			String fileName=moleculeName.substring(0, moleculeName.indexOf("."));
+			//	System.out.println("fileName "+fileName);
+			moleculeName=moleculeName.substring(moleculeName.indexOf(".")+1 );
+			//	System.out.println("moleculeName " +moleculeName);
+			//	System.out.println(SpreadSheet.getUniqueSheets());
+			Iterator it = SpreadSheet.getUniqueSheets().keySet().iterator();
+
+			while (it.hasNext()) {
+				String fileUQ=(String)it.next();
+				String file=new File(fileUQ).getName();
+				//	System.out.println("file "+file);
+				if(file!=null){
+					if(file.substring(0, file.lastIndexOf(".")).equalsIgnoreCase(fileName)){
+						sp=SpreadSheet.getUniqueSheets().get(fileUQ);
+						break;
+					}
 				}
 			}
 		}
-	}
-	if(sp!=null){
-		ActionInfoBean aib=sp.getMoleculesSheet().moleculeExist(moleculeName);
-		if(aib==null){
-			System.err.println(moleculeName+" does not exists");
-		}else{
-			int n=aib.getLineNo();
+		if(sp!=null){
+			ActionInfoBean aib=sp.getMoleculesSheet().moleculeExist(moleculeName);
+			if(aib==null){
+				System.err.println(moleculeName+" does not exists");
+			}else{
+				int n=aib.getLineNo();
 
-			if(includeMolecule){
-				sheetTabPane.loadPanes(sp);
+				if(includeMolecule){
+					sheetTabPane.loadPanes(sp);
+				}
+				sheetTabPane.showMoleculeTab(moleculeName);
 			}
-			sheetTabPane.showMoleculeTab(moleculeName);
+		}else{
+			//System.out.println("sp is null");
 		}
-	}else{
-		//System.out.println("sp is null");
 	}
-}
 
-private void ensureVisible(ScrollPane pane, Node node) {
+	private void ensureVisible(ScrollPane pane, Node node) {
 
-	double width = pane.getContent().getBoundsInLocal().getWidth();
-	double height = pane.getContent().getBoundsInLocal().getHeight();
+		double width = pane.getContent().getBoundsInLocal().getWidth();
+		double height = pane.getContent().getBoundsInLocal().getHeight();
 
-	double x = node.getBoundsInParent().getMaxX();
-	double y = node.getBoundsInParent().getMaxY();
+		double x = node.getBoundsInParent().getMaxX();
+		double y = node.getBoundsInParent().getMaxY();
 
-	// scrolling values range from 0 to 1
-	pane.setVvalue(y/height);
-	pane.setHvalue(x/width);
+		// scrolling values range from 0 to 1
+		pane.setVvalue(y/height);
+		pane.setHvalue(x/width);
 
-	// just for usability
-	node.requestFocus();
-}
+		// just for usability
+		node.requestFocus();
+	}
 
-public void showLogs(){
-	ApplicationLauncher.showLogs();
-}
-public void pauseExecution(){
-	Spark.setPauseSignal();
-}
+	public void showLogs(){
+		ApplicationLauncher.showLogs();
+	}
+	public void pauseExecution(){
+		Spark.setPauseSignal();
+	}
 }
