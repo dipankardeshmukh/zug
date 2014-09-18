@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import com.automature.spark.engine.ContextVar;
 import com.automature.spark.gui.components.AutoCompleteComboBoxListener;
+import com.automature.spark.gui.utils.ScreenLoader;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -96,16 +97,21 @@ public class VariableController1 implements Initializable {
 
 			});	
 
-			FXMLLoader fxmlLoader = new FXMLLoader();
+		//	FXMLLoader fxmlLoader = new FXMLLoader();
 			try {
-				URL url = getClass().getResource("/com/automature/spark/gui/resources/editvariable.fxml");
-				fxmlLoader.setLocation(url);
-				Pane p = (Pane) fxmlLoader.load(url.openStream());
-				editVariableController = (EditVariableController) fxmlLoader.getController();
-				Scene scene = new Scene(p);
-				Stage editVariableStage = new Stage();
-				editVariableStage.setScene(scene);
+				ScreenLoader loader=new ScreenLoader("/com/automature/spark/gui/resources/editvariable.fxml");
+				editVariableController=(EditVariableController)loader.getController();
+				Stage editVariableStage=loader.getStage();
 				editVariableController.setStage(editVariableStage);
+			
+				//	URL url = getClass().getResource("/com/automature/spark/gui/resources/editvariable.fxml");
+			//	fxmlLoader.setLocation(url);
+			//	Pane p = (Pane) fxmlLoader.load(url.openStream());
+			//	editVariableController = (EditVariableController) fxmlLoader.getController();
+			//	Scene scene = new Scene(p);
+			//	Stage editVariableStage = new Stage();
+			//	editVariableStage.setScene(scene);
+			//	editVariableController.setStage(editVariableStage);
 				editVariableStage.hide();
 				editVariableStage.initStyle(StageStyle.UNDECORATED);
 				editVariableStage.initModality(Modality.APPLICATION_MODAL);
