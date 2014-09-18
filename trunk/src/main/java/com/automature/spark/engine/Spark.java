@@ -1641,6 +1641,39 @@ public class Spark extends ZugGui {
 		}
 
 	}
+	
+	public static void validateLisence() throws Throwable{
+		try {
+			com.automature.spark.license.LicenseValidator licenseValid = new com.automature.spark.license.LicenseValidator();
+			if (licenseValid.matchMac() == false) {
+				Log.Error("Please get a valid license for your machine");
+				if(Spark.guiFlag){
+					throw new Throwable();
+				}else{
+					System.exit(-1);
+				}
+			}
+			if (licenseValid.isDateValid() == false) {
+				Log.Error("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
+				if(Spark.guiFlag){
+					throw new Throwable();
+				}else{
+					System.exit(-1);
+				}
+			}
+			Spark.message("Zug is Valid "
+					+ licenseValid.userInfo.companyName);
+
+		} catch (Exception e) {
+			Log.Error("Failed to validate your License copy");
+			Log.Error("Message : " + e.getMessage() + "\n");
+			if(Spark.guiFlag){
+				throw new Throwable();
+			}else{
+				System.exit(-1);
+			}
+		}
+	}
 
 	public int getTestSuiteTimeout(){
 		String testSuiteTimeout=null;
@@ -1738,36 +1771,7 @@ public class Spark extends ZugGui {
 			//	System.out.println(opts.toString());
 			if (Spark.opts.isVersionRequest()) {
 				// if(OS_FLAG) {
-				try {
-					com.automature.spark.license.LicenseValidator licenseValid = new com.automature.spark.license.LicenseValidator();
-					if (licenseValid.matchMac() == false) {
-						Log.Error("Please get a valid license for your machine");
-						if(Spark.guiFlag){
-							throw new Throwable();
-						}else{
-							System.exit(-1);
-						}
-					}
-					if (licenseValid.isDateValid() == false) {
-						Log.Error("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
-						if(Spark.guiFlag){
-							throw new Throwable();
-						}else{
-							System.exit(-1);
-						}
-					}
-					Spark.message("Zug is Valid "
-							+ licenseValid.userInfo.companyName);
-
-				} catch (Exception e) {
-					Log.Error("Failed to validate your License copy");
-					Log.Error("Message : " + e.getMessage() + "\n");
-					if(Spark.guiFlag){
-						throw new Throwable();
-					}else{
-						System.exit(-1);
-					}
-				}
+				Spark.validateLisence();
 
 				controller.PrintVersionInformation();
 				return;
@@ -1791,41 +1795,7 @@ public class Spark extends ZugGui {
 
 		// if(OS_FLAG) {
 
-		try {
-			com.automature.spark.license.LicenseValidator licenseValid = new com.automature.spark.license.LicenseValidator();
-
-			if (licenseValid.matchMac() == false) {
-				Log.Error("Please get a valid license for your machine");
-				if(Spark.guiFlag){
-					throw new Throwable();
-				}else{
-					System.exit(-1);
-				}
-			}	
-			if (licenseValid.isDateValid() == false) {
-				Log.Error("The License of ZUG has expired. Please renew. \n\tVisit www.automature.com");
-				if(Spark.guiFlag){
-					throw new Throwable();
-				}else{
-					System.exit(-1);
-				}
-			}
-			//Controller.message("Zug is Valid "
-			//		+ licenseValid.userInfo.companyName);
-			//if (!opts.verbose) {
-			//	System.out.println("Zug is Valid "
-			//			+ licenseValid.userInfo.companyName);
-			//}
-
-		} catch (Exception e) {
-			Log.Error("Failed to validate your License copy");
-			Log.Error("Message : " + e.getMessage() + "\n");
-			if(Spark.guiFlag){
-				throw new Throwable();
-			}else{
-				System.exit(-1);
-			}
-		}
+		validateLisence();
 
 		fileExtensionSupport = ExtensionInterpreterSupport
 				.ReadFileExtensionXML();

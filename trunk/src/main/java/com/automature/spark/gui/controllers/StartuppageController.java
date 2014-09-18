@@ -135,7 +135,7 @@ public class StartuppageController implements Initializable {
     public void addRecentlyUsedFile(Set<String> files) {
         Object[] rufiles = files.toArray();
         Font font = new Font("Arial Bold", 11);
-        for (int i =  rufiles.length-1, j=0; j < 4 && i > 0; i--) {
+        for (int i =  rufiles.length-1, j=0; j < 4 && i >= 0; i--) {
             File f = new File((String) rufiles[i]);
             if (f.exists()) {
                 j++;
