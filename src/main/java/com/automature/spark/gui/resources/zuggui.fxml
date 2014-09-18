@@ -156,6 +156,8 @@
                 </MenuItem>
                 <MenuItem mnemonicParsing="false" text="Spark Community Forum" />
                 <MenuItem mnemonicParsing="false" text="Automature.com" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#openLicenseValidator" text="Activate Spark" />
                 <MenuItem mnemonicParsing="false" text="About Spark" />
               </items>
             </Menu>

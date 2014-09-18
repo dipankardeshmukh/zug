@@ -53,7 +53,7 @@ public class LicenseValidator
     	userInfo.validate(licensebf);
 		if(!userInfo.validate(licensebf))
 		{
-			System.out.println("License not valid ...");
+			System.err.println("License not valid ...");
     		System.exit(1);
 		}
 	}
@@ -93,7 +93,7 @@ public class LicenseValidator
     	{
     		boolean dateValid = false;
     		Calendar today = Calendar.getInstance();
-            if (Spark.opts.isVersionRequest())
+            if (Spark.opts!=null&&Spark.opts.isVersionRequest())
     		System.out.println("Current date is : " +
     			today.get(Calendar.YEAR)
     			+ "-" + (today.get(Calendar.MONTH) + 1)
@@ -101,7 +101,7 @@ public class LicenseValidator
     			);
     		
     		Calendar expiryDate = userInfo.getExpiryDate();
-            if (Spark.opts.isVersionRequest())
+            if (Spark.opts!=null&&Spark.opts.isVersionRequest())
     		System.out.println("Expiry date is  : " +
 				expiryDate.get(Calendar.YEAR)
 	    		+ "-" + (expiryDate.get(Calendar.MONTH) + 1)
