@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.automature.spark.gui.Constants;
-import com.automature.spark.gui.components.TreeTableSheetTab.MyStringConverter;
+import com.automature.spark.gui.components.MyStringConverter;
 import com.automature.spark.gui.utils.GuiUtils;
 
 import javafx.application.Platform;

@@ -8,6 +8,8 @@ package com.automature.spark.gui.controllers;
 
 import java.util.List;
 
+import com.automature.spark.engine.TestCase;
+
 /**
  *
  * @author skhan
@@ -22,4 +24,7 @@ public interface GuiController {
 
 	public void showRunningMoleculeStep(String molecules, int lineNumber, int start) ;
 	public void setParams(List<String> args);
+	public void setCurrentTestCase(TestCase testCase);
+	public void removeTestCase(TestCase testCase);
+	public boolean isExpressionEvaluatorMode();
 }

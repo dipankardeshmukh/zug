@@ -11,6 +11,8 @@ import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.NavigableSet;
+import java.util.TreeSet;
 
 import com.automature.spark.util.ExtensionInterpreterSupport;
 import com.automature.spark.util.Log;
@@ -51,6 +53,10 @@ public class AtomInvoker {
 	private ArrayList<URL> file_urls = new ArrayList<URL>();
 	private HashMap<String, Class<?>> external_class_map = new HashMap<String, Class<?>>();
 	private Method[] external_methods = null;
+	public Method[] getExternal_methods() {
+		return external_methods;
+	}
+
 	//private static HashMap<String, Object> external_class_object_map = new HashMap<String, Object>();
 	private Object external_class_object = null;
 	private ClassLoader loader = null;
@@ -256,8 +262,8 @@ public class AtomInvoker {
 			return false;
 	}
 	
-	public ArrayList<String> getMethods(){
-		ArrayList<String> al=new ArrayList<String>();
+	public NavigableSet<String> getMethods(){
+		NavigableSet<String> al=new TreeSet<String>();
 		for(Method method:external_methods){
 			String methodName=method.getName();
 			if(isDefaultMethod(methodName)){
@@ -310,6 +316,35 @@ public class AtomInvoker {
 				
 				al.add(mName);
 
+			}
+		}
+		return al;
+	}
+	
+	public NavigableSet<String> getMethods(String methodName,boolean prefixMatch){
+		
+		NavigableSet<String> al=new TreeSet<String>();
+		if(!prefixMatch){
+			al.addAll( getMethods(methodName));
+			return al;
+		}
+		for(Method method:external_methods){
+			String mName=method.getName();
+			if(mName.startsWith(methodName)){
+				if(isDefaultMethod(mName)){
+					continue;
+				}
+				Parameter []params=method.getParameters();
+				String args="(";
+				for(Parameter param:params){
+					args+=param.getName()+",";
+				}
+				if(!args.equals("(")){
+					args=args.substring(0, args.length()-1);
+					args+=")";
+					mName+= args;
+				}
+				al.add(mName);
 			}
 		}
 		return al;

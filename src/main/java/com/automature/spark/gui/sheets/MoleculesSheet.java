@@ -101,7 +101,8 @@ public class MoleculesSheet extends GenericSheet {
                 }
             }
             String arguments="";
-            for (int i = 0; cellStoreVector.size()<headerSize; i++) {
+            List<String> args=new ArrayList<String>();
+             for (int i = 0; cellStoreVector.size()<headerSize; i++) {
                 Cell myCell = myRow.getCell(i);
                 String value=GetCellValueAsString(myCell);
                 cellStoreVector.add(value);
@@ -113,6 +114,7 @@ public class MoleculesSheet extends GenericSheet {
                  }*/
                 if(myCell!=null ){
                     if(molecule && i>0 && StringUtils.isNotBlank(value)){
+                    	args.add(value);
                     	arguments+=value+",";
                     }
               
@@ -123,7 +125,7 @@ public class MoleculesSheet extends GenericSheet {
             	if(arguments.length()>2){
                 	arguments="("+arguments.substring(0,arguments.length()-1)+")";            		
             	}
-            	ActionInfoBean aib=new ActionInfoBean(moleculeId,arguments,molLineNo);
+            	ActionInfoBean aib=new ActionInfoBean(moleculeId,arguments,molLineNo,args);
       
             	moleculeIDs.put(moleculeId.toLowerCase(), aib);
             }
@@ -156,10 +158,11 @@ public class MoleculesSheet extends GenericSheet {
 	public SheetTab getSheetTab(){
     	if(sheetTab==null){
     		sheetTab=new  MoleculeTreeTableSheetTab("Molecules");
-    		sheetTab.loadTabData(getHeader(),getData());
     		sheetTab.setSheetSaver( new SheetSaver(sheet, 0, -2, getFilePath()));
 //    		sheetTab.setFileName(getTempFilePath());
     		sheetTab.setFileName(getOriginalFile());
+    		sheetTab.loadTabData(getHeader(),getData());
+    		
     	}
     	return sheetTab;
     }

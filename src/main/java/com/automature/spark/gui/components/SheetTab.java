@@ -35,7 +35,7 @@ public class SheetTab extends Tab{
 	protected TableView<ObservableList<String>> tableView;
 	private Callback<TableColumn<ObservableList<String>,String>, TableCell<ObservableList<String>,String>> cellFactory;
 	private EventHandler<CellEditEvent<ObservableList<String>, String>> cellEditEventHandler;
-	private SheetSaver sheetSaver;
+	protected SheetSaver sheetSaver;
   
     public SheetTab(String string) {
         super(string);

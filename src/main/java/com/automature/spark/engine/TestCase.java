@@ -39,7 +39,7 @@ import javafx.fxml.Initializable;
  * Class to represent a test case. A test case contain a number of Actions and these actions can itself contain
  * a number of verifications
  */
-class TestCase
+public class TestCase
 {
 
 	public String parentTestCaseID 	= null;
@@ -354,7 +354,7 @@ class TestCase
 					+ " On : " + Utility.getCurrentDateAsString());
 
 			if(Spark.guiFlag){
-
+				Spark.guiController.setCurrentTestCase(this);
 				Spark.guiController.showRunningTestCase(this.testCaseID, true);
 			}
 			// Harness Specific ContextVariable to store AH_TCSTARTTIME
@@ -1164,30 +1164,30 @@ class TestCase
 			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite.baseTestCaseID
 					.compareToIgnoreCase("init") == 0)) {
 				if(!reportingError){
-				ExecutedTestCase tData = new ExecutedTestCase();
-				tData.testCaseCompletetionTime = Utility.dateNow();
-				tData.testCaseID = this.testCaseID;
-				tData.timeToExecute = (int) tm.Duration();
-				// tData.testCaseExecutionComments =
-				// (String)errorMessageDuringTestCaseExecution.get(test.parentTestCaseID)
-				// + ex.getMessage();
-				tData.testcasedescription=this.testCaseDescription;
-				tData.testCaseExecutionComments = ex.getMessage();
-				tData.testCaseStatus = "fail";
-				// if(!verbose)
-				// {
-				// showTestCaseResultEveryTime(tData);
-				// }
-				// And then Add the same at the last.
+					ExecutedTestCase tData = new ExecutedTestCase();
+					tData.testCaseCompletetionTime = Utility.dateNow();
+					tData.testCaseID = this.testCaseID;
+					tData.timeToExecute = (int) tm.Duration();
+					// tData.testCaseExecutionComments =
+					// (String)errorMessageDuringTestCaseExecution.get(test.parentTestCaseID)
+					// + ex.getMessage();
+					tData.testcasedescription=this.testCaseDescription;
+					tData.testCaseExecutionComments = ex.getMessage();
+					tData.testCaseStatus = "fail";
+					// if(!verbose)
+					// {
+					// showTestCaseResultEveryTime(tData);
+					// }
+					// And then Add the same at the last.
 
-				TestSuite.	executedTestCaseData.put(tData.testCaseID, tData);
+					TestSuite.	executedTestCaseData.put(tData.testCaseID, tData);
 
-				if (Spark.opts.dbReporting) {
-					Spark.reporter.SaveTestCaseResultEveryTime(tData);
+					if (Spark.opts.dbReporting) {
+						Spark.reporter.SaveTestCaseResultEveryTime(tData);
+					}
+				}else{
+					System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
 				}
-			}else{
-				System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
-			}
 			} else {
 
 				if(TestSuite.baseTestCaseID.equalsIgnoreCase("init"))
@@ -1199,6 +1199,7 @@ class TestCase
 
 
 		} finally {
+			Spark.guiController.removeTestCase(this);
 			Spark.message("********************************************************************************");
 
 		}
