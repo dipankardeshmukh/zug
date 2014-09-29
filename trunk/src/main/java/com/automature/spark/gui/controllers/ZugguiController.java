@@ -8,7 +8,10 @@ package com.automature.spark.gui.controllers;
 import com.automature.spark.beans.ActionInfoBean;
 import com.automature.spark.beans.MacroColumn;
 import com.automature.spark.engine.Spark;
+import com.automature.spark.engine.TestCase;
 import com.automature.spark.gui.Constants;
+import com.automature.spark.gui.Expression;
+import com.automature.spark.gui.ExpressionEvaluator;
 import com.automature.spark.gui.RuntimeOptionBuilder;
 import com.automature.spark.gui.SessionHandler;
 import com.automature.spark.gui.ZugGui;
@@ -38,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -173,6 +177,10 @@ public class ZugguiController implements Initializable ,GuiController{
 	private MenuItem resumeMI;
 	@FXML
 	private MenuItem stopMI;
+	@FXML
+	private CheckMenuItem exprEvaluatorMI;
+	@FXML
+	private MenuItem removeBPMI;
 
 	//Edit menu
 	@FXML
@@ -282,14 +290,15 @@ public class ZugguiController implements Initializable ,GuiController{
 	private RuntimeOptionBuilder optionBuilder;
 	private EventHandler<ActionEvent> fileClickEvent;
 	private Task task;
-	private Stack<String> currentStack; 
-
-
-
-
-
+	private Stack<TestCase> currentStack; 
+	private SimpleBooleanProperty expressionEvaluatorMode=new SimpleBooleanProperty(false);
+	private ExpressionEvaluator expressionEvaluator;
+	private ExpressionEvaluatorController expressionEvaluatorController;
 
 	private boolean sheetLoaded=false;
+	private Stage expressionStage;
+	private boolean expressionRefresh;
+	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
@@ -337,12 +346,69 @@ public class ZugguiController implements Initializable ,GuiController{
 			variableVBox.prefHeightProperty().bind(variableAPane.heightProperty());
 			variableVBox.prefWidthProperty().bind(variableAPane.widthProperty());
 			initializeLisenceValidator();
+			
 		}catch(Exception e){
 			System.err.println("Error : Initializing GUI.\nError message  "+e.getMessage()+"\nError Trace :"+e.getStackTrace());
-			throw e;
+			//throw e;
+			e.printStackTrace();
+		}
+	}
+	
+	public void refreshExpressionEvaluator(){
+		if(expressionEvaluatorController!=null){
+			if(expressionStage.isShowing()){
+				expressionEvaluatorController.intializeTable();
+			}
 		}
 	}
 
+	private void intializeExpressionEvaluator(){
+		try{
+			if(expressionEvaluatorController==null){
+				ScreenLoader loader=new ScreenLoader("/com/automature/spark/gui/resources/ExpressionEvaluator.fxml");
+				expressionStage = loader.getStage();
+				//expressionStage.setOnCloseRequest(arg0);
+				expressionEvaluatorController=(ExpressionEvaluatorController)loader.getController();
+				expressionEvaluatorController.setRootController(ZugguiController.this);
+				expressionEvaluatorController.setStage(expressionStage);
+				ExpressionEvaluator evaluator=new ExpressionEvaluator();
+				expressionEvaluatorMode.bindBidirectional(evaluator.getExpressionEvaluatorMode());
+				expressionEvaluatorController.setExpressionEvaluator(evaluator);
+				expressionStage.initStyle(StageStyle.UTILITY);
+				expressionStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+					
+					@Override
+					public void handle(WindowEvent arg0) {
+						// TODO Auto-generated method stub
+						exprEvaluatorMI.setSelected(false);
+						expressionStage.hide();
+						
+					}
+				});
+				expressionRefresh=false;
+			}/*else if(expressionRefresh){
+				expressionRefresh=false;
+				expressionEvaluatorController.intializeTable();
+			}*/else{
+				expressionEvaluatorController.intializeTable();
+			}
+			
+		}catch(Exception e){
+			System.err.println("Error : Loading expression evaluator "+e.getMessage());
+		}
+
+	}
+	
+	public void showExpressionEvaluator(){
+		if(expressionStage!=null&&expressionStage.isShowing()){
+			//intializeExpressionEvaluator();
+			expressionStage.hide();
+		}else{
+			intializeExpressionEvaluator();
+			expressionStage.show();
+		}
+	}
+	
 	private void registerRunTimeEntities() {
 		// TODO Auto-generated method stub
 		optionBuilder.registerCheckBox(verboseCB, "-verbose");
@@ -541,10 +607,11 @@ public class ZugguiController implements Initializable ,GuiController{
 			public void run() {
 				// TODO Auto-generated method stub
 
-				loadRecentlyUsedFilesInMenu();				
+				loadRecentlyUsedFilesInMenu();
+				
 			}
 		});
-
+		refreshExpressionEvaluator();
 		//	MenuItem mi=new MenuItem(fileName);
 		//	mi.setOnAction(fileClickEvent);
 		//	recentlyUsedMenu.getItems().add(0, mi);
@@ -576,11 +643,13 @@ public class ZugguiController implements Initializable ,GuiController{
 				if (spreadSheet.getAbsolutePath().equalsIgnoreCase(fileName)) {
 					sheetTabPane.loadPanes(spreadSheet);
 					sheetTabPane.showTestCaseTab();
+					refreshExpressionEvaluator();
 				} else {
 					SpreadSheet sp=spreadSheet.getIncludeFile(fileName);
 					if(sp!=null){
 						sheetTabPane.loadPanes(spreadSheet.getIncludeFile(fileName));
 						sheetTabPane.showMoleculeTab();
+						refreshExpressionEvaluator();
 					}
 				}
 			}
@@ -640,6 +709,8 @@ public class ZugguiController implements Initializable ,GuiController{
 				runTestMI.setDisable(b);
 				testControlVBox.setDisable(b);
 				environmentPane.setDisable(b);
+				
+				removeBPMI.setDisable(b);
 			}
 		});
 	}
@@ -732,12 +803,8 @@ public class ZugguiController implements Initializable ,GuiController{
 
 	public void showRunningTestCase(String testCaseID, boolean b) {
 		// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		if(b){
-			currentStack.push(testCaseID);
-			//System.out.println(currentStack);
-		}else{
-			currentStack.clear();
-		}
+
+
 		((TreeTableSheetTab)spreadSheet.getTestCasesSheet().getSheetTab()).setAndExpandCurrentTestCase(testCaseID);
 	}
 
@@ -779,11 +846,7 @@ public class ZugguiController implements Initializable ,GuiController{
 		if(!nameSpace.equals("main")){
 			appendString=nameSpace+".";
 		}
-		if(b){
-			currentStack.push(appendString+MoleculeID);
-		}else{
-			currentStack.removeElement(appendString+MoleculeID);
-		}
+		
 	}
 
 
@@ -868,6 +931,7 @@ public class ZugguiController implements Initializable ,GuiController{
 				resumeMI.setDisable(b);
 				stopMI.setDisable(b);
 				//	variableVBox.setDisable(b);
+				exprEvaluatorMI.setDisable(b);
 				runButton.setDisable(!b);
 				runTestMI.setDisable(!b);
 
@@ -989,5 +1053,30 @@ public class ZugguiController implements Initializable ,GuiController{
 	}
 	public void pauseExecution(){
 		Spark.setPauseSignal();
+		
+	}
+
+	@Override
+	public synchronized void setCurrentTestCase(TestCase testCase) {
+		// TODO Auto-generated method stub
+		currentStack.push(testCase);
+	}
+	
+	
+
+	@Override
+	public synchronized void removeTestCase(TestCase testCase) {
+		// TODO Auto-generated method stub
+		currentStack.pop();
+	}
+
+	@Override
+	public boolean isExpressionEvaluatorMode() {
+		// TODO Auto-generated method stub
+		return expressionEvaluatorMode.get();
+	}
+	
+	public SpreadSheet getCurrentSpreadSheet(){
+		return sheetTabPane.getCurrentSpreadSheet();
 	}
 }

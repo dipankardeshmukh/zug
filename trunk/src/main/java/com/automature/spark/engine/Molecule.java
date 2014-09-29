@@ -138,6 +138,7 @@ public class Molecule extends TestCase {
 			}else{
 				nameSpace=this.nameSpace;
 			}
+			Spark.guiController.setCurrentTestCase(this);
 			Spark.guiController.showRunningMolecule(this.testCaseID,nameSpace, true);
 		}
 		try {
@@ -147,18 +148,6 @@ public class Molecule extends TestCase {
 					return;
 				}
 				
-				/*try{
-					if(Controller.opts.debugger){
-						sheetTableMapper stm=new sheetTableMapper();
-						stm.setTestCaseTable(this);
-						
-							Controller.gui.getDebugger().setMoleculeData(stm.data, stm.colheader);
-							Controller.gui.getDebugger().currentMoleculeStep(i);
-						
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-				}*/
 				final Action act = this.actions.get(i);
 				count++;
 
@@ -170,7 +159,7 @@ public class Molecule extends TestCase {
 						Spark.guiController.showRunningMoleculeStep(act.nameSpace, act.lineNumber,start);
 					}
 				}
-				if(Spark.opts.debugger){	
+				if(Spark.opts.debugger&&!Spark.guiController.isExpressionEvaluatorMode()){	
 					String name="";
 					//System.out.println("Name space ="+act.nameSpace);
 					//name=act.nameSpace.equalsIgnoreCase(Excel.mainNameSpace)?"Molecules":act.nameSpace;
@@ -569,6 +558,7 @@ public class Molecule extends TestCase {
 					}else{
 						nameSpace=this.nameSpace;
 					}
+					Spark.guiController.removeTestCase(this);
 					Spark.guiController.showRunningMolecule(this.testCaseID,nameSpace, false);
 				}
 

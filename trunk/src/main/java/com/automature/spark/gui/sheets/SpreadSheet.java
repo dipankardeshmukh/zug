@@ -9,6 +9,7 @@ import com.automature.spark.gui.utils.Excel;
 import com.automature.spark.util.ExtensionInterpreterSupport;
 
 
+
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -488,6 +489,23 @@ public class SpreadSheet {
 	
 	public MacroColumn getMacroColumn(){
 		return new MacroColumn(getFileName(), getMacroSheet().getMacroCols());
+	}
+	
+	public static SpreadSheet findSpreadSheet(String name){
+		SpreadSheet sp=null;
+		Iterator it = getUniqueSheets().keySet().iterator();
+		while (it.hasNext()) {
+			String fileUQ = (String) it.next();
+			String file = new File(fileUQ).getName();
+			if (file != null) {
+				if (file.substring(0, file.lastIndexOf("."))
+						.equalsIgnoreCase(name)) {
+					sp = SpreadSheet.getUniqueSheets().get(fileUQ);
+					return sp;
+				}
+			}
+		}
+		return sp;
 	}
 	
 }

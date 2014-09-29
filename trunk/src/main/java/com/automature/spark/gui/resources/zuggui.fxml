@@ -130,8 +130,9 @@
                 <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem fx:id="nextStepMI" disable="true" mnemonicParsing="false" onAction="#runNextTestStep" text="Next Step" />
                 <MenuItem fx:id="resumeMI" disable="true" mnemonicParsing="false" onAction="#resumeTestSuiteExecution" text="Run Till Next Breakpoint" />
-                <MenuItem mnemonicParsing="false" onAction="#removeAllBreakPoints" text="Remove All Break Points" />
+                <MenuItem fx:id="removeBPMI" mnemonicParsing="false" onAction="#removeAllBreakPoints" text="Remove All Break Points" />
                 <SeparatorMenuItem mnemonicParsing="false" />
+                        <CheckMenuItem fx:id="exprEvaluatorMI" disable="true" mnemonicParsing="false" onAction="#showExpressionEvaluator" text="Expression Evaluator" />
                 <MenuItem fx:id="stopMI" disable="true" mnemonicParsing="false" onAction="#stopTestSuiteExecution" text="Abort Test" />
               </items>
             </Menu>

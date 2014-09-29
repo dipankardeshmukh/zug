@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox minHeight="190.0" minWidth="600.0" prefHeight="190.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ExpressionEvaluatorController">
+   <children>
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="590.0">
+         <content>
+            <TreeTableView fx:id="table" editable="true" tableMenuButtonVisible="true">
+              <columns>
+                <TreeTableColumn prefWidth="125.0" text="Action" />
+                <TreeTableColumn prefWidth="113.0" text="Action_arg1" />
+                  <TreeTableColumn prefWidth="110.0" text="Action_arg2" />
+                  <TreeTableColumn prefWidth="125.0" text="Action_arg3" />
+                  <TreeTableColumn prefWidth="117.0" text="Action_arg4" />
+                  <TreeTableColumn prefWidth="117.0" text="Action_arg5" />
+                  <TreeTableColumn prefWidth="125.0" text="Action_arg6" visible="false" />
+                  <TreeTableColumn prefWidth="110.0" text="Action_arg7" visible="false" />
+                  <TreeTableColumn prefWidth="113.0" text="Action_arg8" visible="false" />
+                  <TreeTableColumn prefWidth="113.0" text="Action_arg9" visible="false" />
+                  <TreeTableColumn prefWidth="110.0" text="Action_arg10" visible="false" />
+                  <TreeTableColumn prefWidth="125.0" text="Action_arg11" visible="false" />
+                  <TreeTableColumn prefWidth="117.0" text="Action_arg12" visible="false" />
+                  <TreeTableColumn prefWidth="117.0" text="Action_arg13" visible="false" />
+                  <TreeTableColumn prefWidth="125.0" text="Action_arg14" visible="false" />
+                  <TreeTableColumn prefWidth="110.0" text="Action_arg15" visible="false" />
+                  <TreeTableColumn prefWidth="113.0" text="Action_arg16" visible="false" />
+                  <TreeTableColumn prefWidth="113.0" text="Action_arg17" visible="false" />
+                  <TreeTableColumn prefWidth="110.0" text="Action_arg18" visible="false" />
+                  <TreeTableColumn prefWidth="125.0" text="Action_arg19" visible="false" />
+                  <TreeTableColumn prefWidth="117.0" text="Action_arg20" visible="false" />
+              </columns>
+               <columnResizePolicy>
+                  <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TreeTableView>
+         </content>
+      </ScrollPane>
+      <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="35.0" prefWidth="556.0" spacing="5.0">
+         <children>
+            <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel" visible="false" />
+            <Button fx:id="clearButton" mnemonicParsing="false" onAction="#setTableData" text="Clear" />
+            <Button fx:id="evaluateButton" mnemonicParsing="false" onAction="#evaluateExpression" text="Evaluate" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+</VBox>

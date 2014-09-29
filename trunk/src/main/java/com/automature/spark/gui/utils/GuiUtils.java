@@ -1,5 +1,9 @@
 package com.automature.spark.gui.utils;
 
+import java.io.File;
+
+import org.apache.commons.lang.StringUtils;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
@@ -23,5 +27,16 @@ public class GuiUtils {
 			}
 
 		});
+	}
+	
+	public static String getNameSpace(String file){
+		
+		if(StringUtils.isBlank(file)){
+			return "";
+		}else{
+			File f=new File(file);
+			String fileName=f.getName();
+			return fileName.substring(0, fileName.indexOf('.'));
+		}
 	}
 }

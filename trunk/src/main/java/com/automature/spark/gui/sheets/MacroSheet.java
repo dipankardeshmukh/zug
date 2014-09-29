@@ -116,6 +116,11 @@ public class MacroSheet extends GenericSheet{
 	public List<String> getMacroCols() {
 		return macroCols;
 	}
+	
+	public Map getMacros() {
+		return macros;
+	}
+	
     
     
 }

@@ -125,9 +125,10 @@ public class TestCasesSheet extends GenericSheet{
     public SheetTab getSheetTab(){
     	if(sheetTab==null){
     		sheetTab=new TestCaseTreeTableSheetTab("Test Cases");
-    		sheetTab.loadTabData(getHeader(),getData());
     		sheetTab.setSheetSaver(new SheetSaver(sheet, 0, -2,getFilePath()));
     		sheetTab.setFileName(getOriginalFile());
+    		sheetTab.loadTabData(getHeader(),getData());
+    		
     	 }
     	return sheetTab;
     }

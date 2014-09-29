@@ -98,8 +98,8 @@ public class Spark extends ZugGui {
 	public static final String reportingXmlTagAttribute="name";
 	public static final String ADAPTERPARAMSPATH="//root//configurations//adapter-param";
 	private static final int MAX_SCREEN_CHAR = 2000;
-	public static HashMap<String, AtomInvoker> invokeAtoms = new HashMap<String, AtomInvoker>();
-	public static HashMap<String, AtomInvoker> invoke_native_atoms = new HashMap<String, AtomInvoker>(); 
+	public static NavigableMap<String, AtomInvoker> invokeAtoms = new TreeMap<String, AtomInvoker>();
+	public static NavigableMap<String, AtomInvoker> invoke_native_atoms = new TreeMap<String, AtomInvoker>(); 
 	private static volatile String builtin_atom_package_name = "";
 
 	static Reporter reporter=null;
@@ -1294,11 +1294,6 @@ public class Spark extends ZugGui {
 
 	private static void clearStaticMembers(){
 
-		atomPerformance.clear();
-		//breakpoints.clear();
-		macroColumnValue.clear();
-		macrocommandlineinputs.clear();
-		//	invokeAtoms.clear();
 		reporter=null;
 		opts =null;
 		testsuite=null;
@@ -1309,7 +1304,11 @@ public class Spark extends ZugGui {
 		errorOccured=false;
 		stop=false;
 		stepOver=false;
-
+		atomPerformance.clear();
+		//breakpoints.clear();
+		macroColumnValue.clear();
+		macrocommandlineinputs.clear();
+		//	invokeAtoms.clear();
 		Excel.cleanUP();
 		TestSuite.cleanUP();
 		TestCase.cleanUP();
@@ -2024,19 +2023,8 @@ public class Spark extends ZugGui {
 
 			tm.Stop();
 
-			try{
-				controller.sock.close();
-			}catch(Exception e){
-				//	e.printStackTrace();
-			}
-			threadToOpenServerPipe.interrupt();
-			controller.listen=false;
-			if(stop||Spark.errorOccured){
-				controller.DoHarnessCleanup();
-				System.gc();
-
-				return;
-			}
+			
+			
 			// controller.executionTime = (int)(tm.Duration() / ((double)1000));
 			controller.executionTime = (int) (tm.Duration());
 			// controller.message("the output\t" + controller.executionTime);
@@ -2077,6 +2065,21 @@ public class Spark extends ZugGui {
 				controller.ShowTestCaseResultONConsole();
 
 			}
+			controller.listen=false;
+			try{
+				controller.sock.close();
+			}catch(Exception e){
+				//	e.printStackTrace();
+			}
+			threadToOpenServerPipe.interrupt();
+		
+			if(stop||Spark.errorOccured){
+				controller.DoHarnessCleanup();
+				System.gc();
+
+				return;
+			}
+			
 		} catch (Exception ex) {
 			Log.Error("\nController/Main : Exception Raised while executing the Test Cases in Controller. Exception is "
 					+ ex.getMessage() + " and Stack Trace is : \n");

@@ -16,17 +16,24 @@ import org.apache.commons.lang.WordUtils;
 
 
 
+
+
+
+
+
 import com.automature.spark.beans.ActionInfoBean;
 import com.automature.spark.beans.ExistenceMessageBean;
 import com.automature.spark.engine.AtomHandler;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.gui.Constants;
+import com.automature.spark.gui.MacroEvaluator;
 import com.automature.spark.gui.sheets.SpreadSheet;
 import com.automature.spark.gui.utils.GuiUtils;
 import com.sun.corba.se.impl.orbutil.closure.Constant;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -52,6 +59,8 @@ import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.effect.Blend;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -77,7 +86,12 @@ public class TreeTableSheetTab extends SheetTab {
 	MenuItem addMI;
 	MenuItem copyMI;
 	MenuItem pasteMI;
-
+	private MacroEvaluator macroEvaluator;
+	private ActionHelper actionHelper;
+	private AutoCompleteFilter autoCompleteFilter;
+	private ArgumentHelper argHelper;
+	
+	
 	private EventHandler<CellEditEvent<ObservableList<String>, String>> cellEditEventHandler;
 
 	public TreeTableSheetTab(String string) {
@@ -85,6 +99,7 @@ public class TreeTableSheetTab extends SheetTab {
 		super(string);
 		// TODO Auto-generated constructor stub
 		initialize();
+		
 	}
 
 	public void expandAllTreeItem(final boolean expand) {
@@ -171,7 +186,7 @@ public class TreeTableSheetTab extends SheetTab {
 				}
 			}
 		};
-		atomHandler = new AtomHandler(SpreadSheet.getScriptLocations());
+		
 		copyMI = new MenuItem("copy");
 		pasteMI=new MenuItem("paste");
 		menu = new ContextMenu();
@@ -310,7 +325,8 @@ public class TreeTableSheetTab extends SheetTab {
 			@Override
 			public TextFieldTreeTableCell<ObservableList<String>, String> call(
 					final TreeTableColumn<ObservableList<String>, String> p) {
-				return new TextFieldTreeTableCell<ObservableList<String>, String>(
+				return new ArgumentTextFieldTreeTableCell(new MyStringConverter(), argHelper);
+				/*return new TextFieldTreeTableCell<ObservableList<String>, String>(
 						new MyStringConverter()) {
 					@Override
 					public void updateItem(String item, boolean empty) {
@@ -334,7 +350,7 @@ public class TreeTableSheetTab extends SheetTab {
 
 					}
 
-				};
+				};*/
 			}
 		});
 		col.setEditable(true);
@@ -342,21 +358,27 @@ public class TreeTableSheetTab extends SheetTab {
 
 	}
 
+	@Deprecated
 	public String getToolTipForArgs(String item) {
+		if(StringUtils.isBlank(item)){
+			return "";
+		}
 		if (item.startsWith("$")) {// &&!item.startsWith("$$")){
-			return getMacroValue(item);
+			String tooltip=macroEvaluator.getMacroValue(((SheetTabPane)getTabPane()).getCurrentSpreadSheet(), item);
+			return tooltip.equals(item)?null:tooltip;//getMacroValue(item);
 		} else if (item.contains("=") && item.contains("$")) {
 			String[] temp = item.split("=", 2);
 			String arg1=null;
 			String arg2=null;
 
 			if(temp[1].startsWith("$")){
-				arg1=getMacroValue(temp[0]);
-
+				//arg1=getMacroValue(temp[0]);
+				arg1=macroEvaluator.getMacroValue(((SheetTabPane)getTabPane()).getCurrentSpreadSheet(),temp[0]);
 			}
 			if (temp.length == 2) {
 				if (temp[1].startsWith("$")) {
-					arg2= getMacroValue(temp[1]);
+				//	arg2= getMacroValue(temp[1]);
+					arg2= macroEvaluator.getMacroValue(((SheetTabPane)getTabPane()).getCurrentSpreadSheet(),temp[1]);
 
 				}
 			}
@@ -367,7 +389,8 @@ public class TreeTableSheetTab extends SheetTab {
 
 		return null;
 	}
-
+	
+@Deprecated
 	public String getMacroValue(String macro) {
 		SpreadSheet sp = null;
 		String macroSign = macro.startsWith("$$") ? "$$" : "$";
@@ -412,14 +435,71 @@ public class TreeTableSheetTab extends SheetTab {
 
 	protected void setColumnFormattingForActions(
 			TreeTableColumn<ObservableList<String>, String> col) {
-		// TODO Auto-generated method stub
-	
+		// TODO Auto-generated method stub	
+		
 		col.setCellFactory(new Callback<TreeTableColumn<ObservableList<String>, String>, TreeTableCell<ObservableList<String>, String>>() {
 			@Override
 			public TextFieldTreeTableCell<ObservableList<String>, String> call(
 					final TreeTableColumn<ObservableList<String>, String> p) {
-				TextFieldTreeTableCell<ObservableList<String>, String> tx = new TextFieldTreeTableCell<ObservableList<String>, String>(
+				TextFieldTreeTableCell<ObservableList<String>, String> tx =new AutoCompleteTextFieldTreeTableCell(new MyStringConverter(), autoCompleteFilter, actionHelper);/* new TextFieldTreeTableCell<ObservableList<String>, String>(//new AutoCompleteTextFieldTreeTableCell(new MyStringConverter(), actionHelper);
 						new MyStringConverter()) {
+					private TextField textField;
+					@Override
+					public void cancelEdit() {
+						// TODO Auto-generated method stub
+						super.cancelEdit();
+						setText((String) getItem());
+						setGraphic(null);
+					}
+
+					@Override
+					public void startEdit() {
+						// TODO Auto-generated method stub
+						super.startEdit();
+
+						if( textField == null ) {
+							createTextField();
+						}
+						setText(null);
+						setGraphic(textField);
+						textField.selectAll();
+					}
+					private void createTextField() {
+						textField = new AutoCompleteTextField(getString());
+						((AutoCompleteTextField)textField).setFilter(autoCompleteFilter);
+						textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+						textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+							@Override
+							public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) {
+								if (!arg2) { commitEdit(textField.getText()); }
+							}
+						});
+						textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+							@Override
+							public void handle(KeyEvent t) {
+								System.out.println("key event generated "+t.getCode());
+								if (t.getCode() == KeyCode.ENTER) {
+									String value = textField.getText();
+									if (value != null) { commitEdit(value); } else { commitEdit(null); }
+									((AutoCompleteTextField)textField).hidePopup();
+								} else if (t.getCode() == KeyCode.ESCAPE) {
+									cancelEdit();
+									((AutoCompleteTextField)textField).hidePopup();
+								}else if(t.getCode() == KeyCode.DOWN||t.getCode() == KeyCode.UP){
+									//this event handled within the  AutoCompleteTextField
+								}else{								
+									((AutoCompleteTextField)textField).showAutoCompleteText();
+									//autocomplete code goes here
+								}
+							}
+
+
+						});
+					}
+					
+					private String getString() {
+						return getItem() == null ? "" : getItem().toString();
+					}
 
 					
 					@Override
@@ -478,7 +558,7 @@ public class TreeTableSheetTab extends SheetTab {
 							}
 							setFont(new Font("Arial", 12));
 							setText(item);
-							ExistenceMessageBean emb = getActionMessageBean(item);
+							ExistenceMessageBean emb =actionHelper.getActionMessageBean(item);//getActionMessageBean(item);
 							// if(getTooltip()==null){
 							if (emb != null) {
 								Tooltip tooltip=getTooltip()!=null?getTooltip():new Tooltip();
@@ -498,7 +578,7 @@ public class TreeTableSheetTab extends SheetTab {
 						}
 					}
 
-				};
+				};*/
 				
 				return tx;
 
@@ -510,6 +590,7 @@ public class TreeTableSheetTab extends SheetTab {
 
 	}
 
+	@Deprecated
 	public ExistenceMessageBean getActionMessageBean(String item) {
 		if (StringUtils.isBlank(item)) {
 			return null;
@@ -527,7 +608,8 @@ public class TreeTableSheetTab extends SheetTab {
 						moleculeName.indexOf("."));
 				moleculeName = moleculeName
 						.substring(moleculeName.indexOf(".") + 1);
-				Iterator it = SpreadSheet.getUniqueSheets().keySet().iterator();
+				sp=SpreadSheet.findSpreadSheet(fileName);
+				/*Iterator it = SpreadSheet.getUniqueSheets().keySet().iterator();
 				while (it.hasNext()) {
 					String fileUQ = (String) it.next();
 					String file = new File(fileUQ).getName();
@@ -538,7 +620,7 @@ public class TreeTableSheetTab extends SheetTab {
 							break;
 						}
 					}
-				}
+				}*/
 			}
 			if (sp != null) {
 				ActionInfoBean aib = sp.getMoleculesSheet().moleculeExist(
@@ -562,7 +644,7 @@ public class TreeTableSheetTab extends SheetTab {
 			return null;
 		} else {
 
-			return atomHandler.verifyExistence(item);
+			return atomHandler.verifyExistence(item.trim());
 		}
 
 	}
@@ -724,7 +806,12 @@ public class TreeTableSheetTab extends SheetTab {
 	}
 
 	public void loadTabData(List<String> headers, List<List<String>> data) {
-
+		
+		atomHandler = new AtomHandler(SpreadSheet.getScriptLocations());
+		actionHelper=new ActionHelper(atomHandler,getFileName());
+		autoCompleteFilter=new AutoCompleteActionFilter(actionHelper);
+		macroEvaluator=new MacroEvaluator(getFileName());
+		argHelper=new ArgumentHelper(getFileName());
 		addHeaders(headers);
 		ObservableList<ObservableList<String>> list = convertDataToObservableList(data);
 		addData(list);
@@ -827,22 +914,7 @@ public class TreeTableSheetTab extends SheetTab {
 		});
 	}
 
-	protected class MyStringConverter extends StringConverter<String> {
-
-		@Override
-		public String fromString(String arg0) {
-			// TODO Auto-generated method stub
-			return arg0;
-		}
-
-		@Override
-		public String toString(String arg0) {
-			// TODO Auto-generated method stub
-			return arg0;
-		}
-
-	}
-
+	
 	protected class BreakPointTreeTableCell extends
 	TreeTableCell<ObservableList<String>, String> {
 

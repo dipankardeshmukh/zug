@@ -108,8 +108,8 @@ public class Argument {
 		// if (StringUtils.isNotBlank(ContextVar
 		// .getContextVar(tempVariable))) {
 		isContextVar = true;
-		// }
-		String var=action.parent.getVariableDBReference(tempVariable);
+		Log.Debug("Argument/getVarValues tempVariable "+tempVariable);
+		String var =action.parent!=null?action.parent.getVariableDBReference(tempVariable):null;
 		tempVariable=(var==null?Spark.ReadContextVariable(tempVariable):Spark.ReadContextVariable(var));
 		
 		Log.Debug(String
@@ -169,9 +169,9 @@ public class Argument {
 		String []tmp=null;
 		for(int i=0;i<contextVars.size();i++){
 			tmp=var.split(contextVars.get(i), 2);
-			//	System.out.println("Argument/cv :"+contextVars.get(i));
+				//System.out.println("Argument/cv :"+contextVars.get(i));
 			 String cv=getVarValues(contextVars.get(i),threadID,action);
-			//		System.out.println("Argument/cv value "+cv);
+				//	System.out.println("Argument/cv value "+cv);
 			if(tmp.length>1){
 				var=tmp[1];
 				sb.append(tmp[0].replace("\\%", "%"));					
@@ -188,13 +188,14 @@ public class Argument {
 
 	public static String parseLocalVarArgumentsName(String variable,String threadID,GTuple action) throws Exception{
 		
+		Log.Debug("Argument/parseLocalVarArgumentsName : variable "+variable);
 		String tempVariable = variable;
 		if (tempVariable.endsWith("##")) {
 			tempVariable = Utility.TrimStartEnd(tempVariable, '#', 0);
 			tempVariable = Utility.TrimStartEnd(tempVariable, '#', 1);
 			tempVariable += threadID;
 		}
-		String variableref=action.parent.getVariableDBReference(tempVariable);
+		String variableref=action.parent!=null?action.parent.getVariableDBReference(tempVariable):null;
 		if(variableref!=null){
 			return variableref;
 		}else{
@@ -242,8 +243,11 @@ public class Argument {
 			Log.Debug("Argument/DoSomeFineTuning : Variable is Empty, so returning an Empty String.");
 			return StringUtils.EMPTY;
 		}
+			
+		Log.Debug("Argument/DoSomeFineTuning : Variable value ."+variable);
+		
 		List<String> contextVars=getContextVariableList(variable);
-
+		Log.Debug("Argument/DoSomeFineTuning :Variable list "+contextVars);
 		if ( contextVars.size()>0){
 			return parseContextVariables(contextVars, variable, threadID,action);
 		} else {

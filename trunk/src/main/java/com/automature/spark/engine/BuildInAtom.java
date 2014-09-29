@@ -214,7 +214,7 @@ public class BuildInAtom implements Atom {
 							action.name.toUpperCase(), contextVarName,
 							appendValueBuilder.toString()));
 					//new code
-					String actualref=action.parent.getVariableDBReference(contextVarName);
+					String actualref=action.parent!=null?action.parent.getVariableDBReference(contextVarName):null;
 					if(actualref!=null){
 						contextVarName=actualref;			
 					}
@@ -333,7 +333,7 @@ public class BuildInAtom implements Atom {
 							action.stackTrace.toUpperCase(),
 							action.name.toUpperCase(), contextVarName,
 							appendValueBuilder.toString()));
-					String actualref=action.parent.getVariableDBReference(contextVarName);
+					String actualref=action.parent!=null?action.parent.getVariableDBReference(contextVarName):null;
 					if(actualref==null){
 						Log.Error("AppendtoVar:Variable is not defined");
 						throw new Exception("Variable not defined");

@@ -110,7 +110,7 @@ public class Action extends GTuple {
 	}
 	
 	public String toString(){
-		String act=this.testCaseID+"\t\t"+this.name+"\t"+this.arguments.toString();
+		String act=this.testCaseID+"\t"+this.nameSpace+"\t"+this.name+"\t"+this.arguments.toString();
 		for(Verification v:this.verification){
 			act=act+"\t"+v.name+"\t"+v.arguments.toString();
 		}
