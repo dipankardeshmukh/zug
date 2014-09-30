@@ -385,6 +385,7 @@ public class ZugguiController implements Initializable ,GuiController{
 						
 					}
 				});
+				
 				expressionRefresh=false;
 			}/*else if(expressionRefresh){
 				expressionRefresh=false;
@@ -408,6 +409,15 @@ public class ZugguiController implements Initializable ,GuiController{
 			expressionStage.show();
 		}
 	}
+	
+	public void hideExpressionEvaluator(){
+		if(expressionStage!=null){
+			exprEvaluatorMI.setSelected(false);
+			expressionStage.hide();
+		}
+	}
+	
+	
 	
 	private void registerRunTimeEntities() {
 		// TODO Auto-generated method stub
@@ -934,6 +944,9 @@ public class ZugguiController implements Initializable ,GuiController{
 				exprEvaluatorMI.setDisable(b);
 				runButton.setDisable(!b);
 				runTestMI.setDisable(!b);
+				if(b==true){
+					hideExpressionEvaluator();
+				}
 
 
 			}

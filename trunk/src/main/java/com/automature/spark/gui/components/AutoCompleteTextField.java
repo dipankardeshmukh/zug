@@ -128,7 +128,7 @@ public class AutoCompleteTextField extends TextField {
 							refersh();
 							listview.getItems().clear();
 							hidePopup();
-						//	evt.consume();
+							evt.consume();
 						}
 
 					} else if (t.getCode() == KeyCode.UP) {
@@ -168,7 +168,7 @@ public class AutoCompleteTextField extends TextField {
 			public void run() {
 				// TODO Auto-generated method stub
 				ListView<String> listview=getAutoCompleteComponent();
-				Set<String> filteredResult=filter.getFilteredResult(getText()!=null?getText():"");
+				Set<String> filteredResult=filter.getFilteredResult(getText()!=null?getText().toLowerCase():"");
 				if(filteredResult!=null){
 					listview.getItems().addAll(filteredResult);
 
