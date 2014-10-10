@@ -286,6 +286,10 @@ public class RuntimeOptionBuilder {
 				MacroColumn selectedCBItem=testSuiteCB.getSelectionModel().getSelectedItem();
 				if(newValue!=null){
 					macroCols.put(selectedCBItem.getName(), newValue);
+					String selectedFile=testSuiteCB.getSelectionModel().getSelectedItem().getName();
+					if(selectedFile!=null&&!spreadSheet.getFileName().equalsIgnoreCase(selectedFile)){
+						useDefaultCB.setSelected(false);
+					}
 				}
 				
 			}

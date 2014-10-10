@@ -1259,7 +1259,10 @@ public class Molecule extends TestCase {
 										//System.out.println("token "+token+"\t#"+temp_value_split[0]+"\t"+ temp_value_split[1]);
 										/*token.replace("#"+temp_value_split[0], temp_value_split[1]).replace(
 												"#", "");*/	
-										actionVal=replaceString(token, "#"+temp_value_split[0], temp_value_split[1]).replace(
+									//	actionVal=replaceString(token, "#"+temp_value_split[0], temp_value_split[1]).replace(
+										//		"#", "");
+										token=replaceString(token, "#"+temp_value_split[0], temp_value_split[1]);
+										actionVal=token.replace(
 												"#", "");
 										//System.out.println("actionVal "+actionVal);
 										if (isThisContextVarTypeAtom
@@ -1579,6 +1582,7 @@ public class Molecule extends TestCase {
 				tempAction.verification.add(tempVerification);
 			}
 			tempAction.parent=tempTestCase;
+			System.out.println("temp action "+tempAction);
 			tempTestCase.actions.add(tempAction);
 		}
 

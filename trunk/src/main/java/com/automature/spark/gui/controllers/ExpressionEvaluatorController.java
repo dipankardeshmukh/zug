@@ -16,7 +16,9 @@ import com.automature.spark.gui.components.ActionHelper;
 import com.automature.spark.gui.components.ArgumentHelper;
 import com.automature.spark.gui.components.ArgumentTextFieldTreeTableCell;
 import com.automature.spark.gui.components.AutoCompleteActionFilter;
-import com.automature.spark.gui.components.AutoCompleteTextFieldTreeTableCell;
+import com.automature.spark.gui.components.AutoCompleteActionTextFieldTreeTableCell;
+import com.automature.spark.gui.components.AutoCompleteArgFilter;
+import com.automature.spark.gui.components.AutoCompleteFilter;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -186,14 +188,15 @@ public class ExpressionEvaluatorController implements Initializable{
 		
 		ActionHelper actionHelper=new ActionHelper(new AtomHandler(SpreadSheet.getScriptLocations()),spreadSheet.getAbsolutePath());
 		argHelper = new ArgumentHelper(spreadSheet.getAbsolutePath());
-		AutoCompleteActionFilter filter=new AutoCompleteActionFilter(actionHelper);
+		AutoCompleteFilter argfilter=new AutoCompleteArgFilter(argHelper);
+		AutoCompleteFilter filter=new AutoCompleteActionFilter(actionHelper);
 		TreeTableColumn<ObservableList<String>,String> actCol=(TreeTableColumn<ObservableList<String>, String>) table.getColumns().get(0);
 		actCol.setCellFactory(new Callback<TreeTableColumn<ObservableList<String>, String>, TreeTableCell<ObservableList<String>, String>>() {
 			@Override
 			public TextFieldTreeTableCell<ObservableList<String>, String> call(
 					final TreeTableColumn<ObservableList<String>, String> p) {
 				TextFieldTreeTableCell<ObservableList<String>, String> tx =new 
-						AutoCompleteTextFieldTreeTableCell(new MyStringConverter(), filter, actionHelper);// new TextFieldTreeTableCell<ObservableList<String>, String>(//new AutoCompleteTextFieldTreeTableCell(new MyStringConverter(), actionHelper);
+						AutoCompleteActionTextFieldTreeTableCell(new MyStringConverter(), filter, actionHelper);// new TextFieldTreeTableCell<ObservableList<String>, String>(//new AutoCompleteActionTextFieldTreeTableCell(new MyStringConverter(), actionHelper);
 				return tx;
 			}
 		});
@@ -221,7 +224,7 @@ public class ExpressionEvaluatorController implements Initializable{
 				@Override
 				public TextFieldTreeTableCell<ObservableList<String>, String> call(
 						final TreeTableColumn<ObservableList<String>, String> p) {
-					return new ArgumentTextFieldTreeTableCell(new MyStringConverter(),argHelper);
+					return new ArgumentTextFieldTreeTableCell(new MyStringConverter(),argfilter,argHelper);
 				}
 			});
 

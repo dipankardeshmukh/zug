@@ -88,7 +88,8 @@ public class TreeTableSheetTab extends SheetTab {
 	MenuItem pasteMI;
 	private MacroEvaluator macroEvaluator;
 	private ActionHelper actionHelper;
-	private AutoCompleteFilter autoCompleteFilter;
+	private AutoCompleteFilter autoCompleteActionFilter;
+	private AutoCompleteFilter autoCompleteArgFilter;
 	private ArgumentHelper argHelper;
 	
 	
@@ -325,32 +326,8 @@ public class TreeTableSheetTab extends SheetTab {
 			@Override
 			public TextFieldTreeTableCell<ObservableList<String>, String> call(
 					final TreeTableColumn<ObservableList<String>, String> p) {
-				return new ArgumentTextFieldTreeTableCell(new MyStringConverter(), argHelper);
-				/*return new TextFieldTreeTableCell<ObservableList<String>, String>(
-						new MyStringConverter()) {
-					@Override
-					public void updateItem(String item, boolean empty) {
-						super.updateItem(item, empty);
-						if (!isEmpty()) {
-							if (item.startsWith("$")||item.contains("$")) {
-								setTextFill(Color.web(Constants.macroColor));
-							} else {
-								setTextFill(Color.web(Constants.argumentColor));
-							}
-							setFont(new Font("Arial", 12));
-							setText(item);
-							String tooltipText=getToolTipForArgs(item);
-							Tooltip tooltip=getTooltip()!=null?getTooltip():new Tooltip();
-							tooltip.setText(tooltipText);
-							//tooltip.setFont(Font.font(toolTipFontSize));
-							//Tooltip tooltip=new Tooltip(getToolTipForArgs(item));
-							//tooltip.setFont(new Font("Arial", 12));
-							setTooltip(tooltip);
-						}
-
-					}
-
-				};*/
+				return new ArgumentTextFieldTreeTableCell(new MyStringConverter(),autoCompleteArgFilter, argHelper);
+				
 			}
 		});
 		col.setEditable(true);
@@ -441,144 +418,8 @@ public class TreeTableSheetTab extends SheetTab {
 			@Override
 			public TextFieldTreeTableCell<ObservableList<String>, String> call(
 					final TreeTableColumn<ObservableList<String>, String> p) {
-				TextFieldTreeTableCell<ObservableList<String>, String> tx =new AutoCompleteTextFieldTreeTableCell(new MyStringConverter(), autoCompleteFilter, actionHelper);/* new TextFieldTreeTableCell<ObservableList<String>, String>(//new AutoCompleteTextFieldTreeTableCell(new MyStringConverter(), actionHelper);
-						new MyStringConverter()) {
-					private TextField textField;
-					@Override
-					public void cancelEdit() {
-						// TODO Auto-generated method stub
-						super.cancelEdit();
-						setText((String) getItem());
-						setGraphic(null);
-					}
-
-					@Override
-					public void startEdit() {
-						// TODO Auto-generated method stub
-						super.startEdit();
-
-						if( textField == null ) {
-							createTextField();
-						}
-						setText(null);
-						setGraphic(textField);
-						textField.selectAll();
-					}
-					private void createTextField() {
-						textField = new AutoCompleteTextField(getString());
-						((AutoCompleteTextField)textField).setFilter(autoCompleteFilter);
-						textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-						textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-							@Override
-							public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) {
-								if (!arg2) { commitEdit(textField.getText()); }
-							}
-						});
-						textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-							@Override
-							public void handle(KeyEvent t) {
-								System.out.println("key event generated "+t.getCode());
-								if (t.getCode() == KeyCode.ENTER) {
-									String value = textField.getText();
-									if (value != null) { commitEdit(value); } else { commitEdit(null); }
-									((AutoCompleteTextField)textField).hidePopup();
-								} else if (t.getCode() == KeyCode.ESCAPE) {
-									cancelEdit();
-									((AutoCompleteTextField)textField).hidePopup();
-								}else if(t.getCode() == KeyCode.DOWN||t.getCode() == KeyCode.UP){
-									//this event handled within the  AutoCompleteTextField
-								}else{								
-									((AutoCompleteTextField)textField).showAutoCompleteText();
-									//autocomplete code goes here
-								}
-							}
-
-
-						});
-					}
-					
-					private String getString() {
-						return getItem() == null ? "" : getItem().toString();
-					}
-
-					
-					@Override
-					public void updateItem(String item, boolean empty) {
-						super.updateItem(item, empty);
-						if (!isEmpty()) {
-							if (item.startsWith("&")) {
-								setTextFill(Color
-										.web(Constants.moleculeCallColor));
-								EventHandler<MouseEvent> mouseHoverEvent = new EventHandler<MouseEvent>() {
-
-									@Override
-									public void handle(MouseEvent event) {
-										// TODO Auto-generated method stub
-										if (event.isControlDown()&&!isUnderline()) {
-											setTextFill(Color
-													.web(Constants.startPageLabelTextMouseOverColor));
-											setScaleX(1.05);
-											setScaleX(1.05);
-											//	setUnderline(true);
-										}
-									}
-								};
-								setOnMouseEntered(mouseHoverEvent);
-								setOnMouseMoved(mouseHoverEvent);
-								setOnMouseExited(new EventHandler<MouseEvent>() {
-
-									@Override
-									public void handle(MouseEvent event) {
-										// TODO Auto-generated method stub
-
-										//	setTextFill(Color
-										//		.web(Constants.moleculeCallColor));
-										setScaleX(1);
-										setScaleX(1);
-										//	setUnderline(false);
-										updateItem(getItem(),isEmpty());
-									}
-								});
-								setOnMouseClicked(new EventHandler<MouseEvent>() {
-									@Override
-									public void handle(MouseEvent event) {
-										// TODO Auto-generated method stub
-										if (event.isControlDown()&&!isUnderline()) {
-											// System.out.println(.getClass().getName());
-											showMolecule(getItem());
-										}
-									}
-								});
-
-								// setStyle("-fx-text-fill : #679900;");
-							} else {
-								setTextFill(Color.web(Constants.atomColor));
-
-								// setStyle("-fx-text-fill : #00B258;");
-							}
-							setFont(new Font("Arial", 12));
-							setText(item);
-							ExistenceMessageBean emb =actionHelper.getActionMessageBean(item);//getActionMessageBean(item);
-							// if(getTooltip()==null){
-							if (emb != null) {
-								Tooltip tooltip=getTooltip()!=null?getTooltip():new Tooltip();
-								tooltip.setText(emb.getMessage());
-								//tooltip.setFont(Font.font(toolTipFontSize));
-								//Tooltip tooltip=new Tooltip(emb.getMessage());
-								//tooltip.setFont(new Font("Arial", 12));
-								setTooltip(tooltip);
-								if (emb.isExists()) {
-									setUnderline(false);
-								} else {
-									setTextFill(Color.web(Constants.missingDefColor));
-									setUnderline(true);
-								}
-							}
-							// }
-						}
-					}
-
-				};*/
+				TextFieldTreeTableCell<ObservableList<String>, String> tx =new AutoCompleteActionTextFieldTreeTableCell(new MyStringConverter(), autoCompleteActionFilter, actionHelper);
+			
 				
 				return tx;
 
@@ -809,9 +650,10 @@ public class TreeTableSheetTab extends SheetTab {
 		
 		atomHandler = new AtomHandler(SpreadSheet.getScriptLocations());
 		actionHelper=new ActionHelper(atomHandler,getFileName());
-		autoCompleteFilter=new AutoCompleteActionFilter(actionHelper);
+		autoCompleteActionFilter=new AutoCompleteActionFilter(actionHelper);
 		macroEvaluator=new MacroEvaluator(getFileName());
 		argHelper=new ArgumentHelper(getFileName());
+		autoCompleteArgFilter=new AutoCompleteArgFilter(argHelper);
 		addHeaders(headers);
 		ObservableList<ObservableList<String>> list = convertDataToObservableList(data);
 		addData(list);

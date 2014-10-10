@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox minHeight="190.0" minWidth="600.0" prefHeight="190.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ExpressionEvaluatorController">
+<VBox minHeight="190.0" minWidth="600.0" prefHeight="190.0" prefWidth="600.0" stylesheets="@css/shared.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ExpressionEvaluatorController">
    <children>
       <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="590.0">
          <content>
