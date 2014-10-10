@@ -13,7 +13,7 @@
 <?import javafx.scene.text.*?>
 <?scenebuilder-classpath-element E:/automature-zug8.0.jar?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ZugguiController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="960.0" stylesheets="@css/shared.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.ZugguiController">
   <children>
     <VBox prefHeight="600.0" prefWidth="960.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -175,7 +175,10 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Open TestSuite" />
+                <Tooltip text="Open TestSuite">
+                           <font>
+                              <Font size="14.0" />
+                           </font></Tooltip>
               </tooltip>
             </Button>
             <Button fx:id="reloadTSButton" disable="true" mnemonicParsing="false" onAction="#reloadTestSuite">
@@ -187,7 +190,10 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Reload TestSuite" />
+                <Tooltip text="Reload TestSuite">
+                           <font>
+                              <Font size="14.0" />
+                           </font></Tooltip>
               </tooltip>
             </Button>
             <Separator orientation="VERTICAL" prefHeight="20.0" />

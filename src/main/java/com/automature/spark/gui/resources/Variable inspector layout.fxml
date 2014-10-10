@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="variableVBox" alignment="CENTER" minHeight="200.0" minWidth="200.0" prefHeight="347.0" prefWidth="332.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.VariableController1">
+<VBox fx:id="variableVBox" alignment="CENTER" minHeight="200.0" minWidth="200.0" prefHeight="347.0" prefWidth="332.0" stylesheets="@css/shared.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.VariableController1">
          <children>
     <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="77.0" prefWidth="329.0" VBox.vgrow="NEVER">
   <columnConstraints>

@@ -9,12 +9,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 
-public class ArgumentTextFieldTreeTableCell extends TextFieldTreeTableCell<ObservableList<String>, String>{
+public class ArgumentTextFieldTreeTableCell extends AutoCompleteTextFieldTreeTableCell{
 	
 	private ArgumentHelper helper;
 
-	public ArgumentTextFieldTreeTableCell(StringConverter<String> arg0,ArgumentHelper helper) {
-		super(arg0);
+	public ArgumentTextFieldTreeTableCell(StringConverter<String> arg0,AutoCompleteFilter filter,ArgumentHelper helper) {
+		super(arg0,filter);
 		this.helper = helper;
 		// TODO Auto-generated constructor stub
 	}

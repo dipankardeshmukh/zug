@@ -7,8 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<StackPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.EditVariableController">
+<StackPane stylesheets="@css/shared.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.automature.spark.gui.controllers.EditVariableController">
    <children>
       <VBox fx:id="editVBox" prefHeight="292.0" prefWidth="316.0" style="-fx-background-color: white; -fx-border-color: #00CCCC;" visible="false">
          <children>

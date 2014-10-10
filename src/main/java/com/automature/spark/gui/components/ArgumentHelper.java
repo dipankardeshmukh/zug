@@ -1,8 +1,13 @@
 package com.automature.spark.gui.components;
 
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.automature.spark.gui.MacroEvaluator;
+import com.automature.spark.gui.sheets.SpreadSheet;
 
 public class ArgumentHelper {
 	
@@ -21,6 +26,55 @@ public class ArgumentHelper {
 		return macroEvaluator;
 	}
 
+	
+	public NavigableSet<String> getMacroNavigableSet(String prefix){
+		SpreadSheet sp=null;
+		int indexOfPackage=0;
+		String namespace="";
+		String macroPrefix=prefix;
+		NavigableSet<String> set=null;
+		if(prefix.contains(".")){
+			indexOfPackage=prefix.indexOf('.');
+			namespace=prefix.substring(1, indexOfPackage);
+			macroPrefix="$"+prefix.substring(indexOfPackage+1);
+			sp=SpreadSheet.findSpreadSheet(namespace);
+			Set<String> moleculeId=sp.getMacroSheet().getMacros().keySet();
+			set=new TreeSet<String>();
+			namespace="$"+namespace+".";
+			//System.out.println((indexOfPackage+1) +" "+prefix.length());
+			if(indexOfPackage+1==prefix.length()){
+				for(String s:moleculeId){
+					set.add(namespace+s.substring(1));
+				}
+			//	System.out.println("set "+set);
+			}else{
+				for(String s:moleculeId){
+					if(s.startsWith(macroPrefix)){
+						set.add(namespace+s.substring(1));
+					}
+				}
+			}
+		}else{
+		//	System.out.println("spreadSheet "+spreadSheet);
+			sp = SpreadSheet.getUniqueSheets().get(macroEvaluator.getFileName());
+
+			if(sp!=null){
+				Set<String> moleculeId=sp.getMacroSheet().getMacros().keySet();
+		//		System.out.println("moleucle ids "+moleculeId);
+				set=new TreeSet<String>();
+				for(String s:moleculeId){
+					if(s.startsWith(macroPrefix)){
+						set.add(s);
+					}
+				}
+			}else{
+		//		System.out.println("sp "+sp);
+			}
+		}
+	//	System.out.println("returning set "+set);
+		return set;
+		
+	}
 
 
 	public String getToolTipForArgs(String item) {

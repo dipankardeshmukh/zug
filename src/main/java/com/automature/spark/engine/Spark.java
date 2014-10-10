@@ -29,6 +29,7 @@ import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.Principal;
 import java.util.*;
 import java.util.Map.Entry;
@@ -1135,18 +1136,30 @@ public class Spark extends ZugGui {
 			inStream.close();
 			inDataStream.close();
 
+		} catch(SocketException se){
+			if(!listen){
+				//suppress the error
+			}else{
+				Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
+						+ se.getMessage()+"-"+se.getClass().getName());
+			}
+
 		} catch (Exception e) {
 			Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
 					+ e.getMessage()+"-"+e.getClass().getName());
-			if(Spark.guiFlag){
-				throw new Throwable();
-			}else{
-				System.exit(-1);
-			}
+
+
+
+
+
 		}finally{
 			try{
-				sock.close();
-				conn.close();
+				if(conn!=null&&!conn.isClosed()){
+					conn.close();
+				}
+				if(sock!=null&&!sock.isClosed()){
+					sock.close();
+				}
 			}catch(Exception e){
 
 			}
@@ -1243,10 +1256,23 @@ public class Spark extends ZugGui {
 				}
 				ListenToPrimitives(iPORT);
 				// System.exit(1);
+			}catch(SocketException se){
+				if(!listen){
+					//suppress the error
+				}else{
+					Log.Error("Controller/ListenToPrimitive: Exception Occurred in Primitive Atom->"
+							+ se.getMessage()+"-"+se.getClass().getName());
+					
+				}
+
 			} finally {
 				try {
-					conn.close();
-					sock.close();
+					if(conn!=null&&!conn.isClosed()){
+						conn.close();
+					}
+					if(sock!=null&&!sock.isClosed()){
+						sock.close();
+					}
 				} catch (IOException e) {
 					Log.Error("Controller/ListenToPrimitive : Exception while closing the connection"
 							+ e.getMessage());
@@ -1256,8 +1282,12 @@ public class Spark extends ZugGui {
 			}
 		} finally {
 			try {
-				conn.close();
-				sock.close();
+				if(conn!=null&&!conn.isClosed()){
+					conn.close();
+				}
+				if(sock!=null&&!sock.isClosed()){
+					sock.close();
+				}
 			} catch (IOException e) {
 				Log.Error("Controller/ListenToPrimitive : Exception while closing the connection"
 						+ e.getMessage());
@@ -1265,7 +1295,6 @@ public class Spark extends ZugGui {
 			}
 		}
 	}
-
 	/***
 	 * Function to Read a Context Variable Variable...
 	 * 
@@ -2065,19 +2094,22 @@ public class Spark extends ZugGui {
 				controller.ShowTestCaseResultONConsole();
 
 			}
-			controller.listen=false;
-			try{
-				controller.sock.close();
-			}catch(Exception e){
-				//	e.printStackTrace();
-			}
-			threadToOpenServerPipe.interrupt();
-		
-			if(stop||Spark.errorOccured){
-				controller.DoHarnessCleanup();
-				System.gc();
+			if(guiFlag){
+				controller.listen=false;
+				try{
+					controller.sock.close();
+				}catch(Exception e){
+					//	e.printStackTrace();
+				}
+				threadToOpenServerPipe.interrupt();
+				if(stop||Spark.errorOccured){
 
-				return;
+					controller.DoHarnessCleanup();
+					System.gc();
+					return;
+				}
+
+
 			}
 			
 		} catch (Exception ex) {
