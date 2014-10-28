@@ -1,6 +1,8 @@
 package com.automature.spark.engine;
 
 import java.util.Hashtable;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -29,7 +31,7 @@ public class TestSuite {
 	static Boolean _testPlanStopper = false;
 	static Hashtable _testStepStopper = new Hashtable();
 	static String testcasenotran;
-	static Hashtable<String, ExecutedTestCase> executedTestCaseData = new Hashtable<String, ExecutedTestCase>();
+	static NavigableMap<String, ExecutedTestCase> executedTestCaseData = new TreeMap<String, ExecutedTestCase>();
 	static boolean implicitTCMolecule=false;
 	static boolean implicitTSMolecule=false;
 	static String implicitTSMoleculeName="Zstep_Verify".toLowerCase();

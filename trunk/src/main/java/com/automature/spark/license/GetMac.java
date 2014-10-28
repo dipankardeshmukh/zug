@@ -20,7 +20,7 @@ public class GetMac {
             Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
 
             for (NetworkInterface netint : Collections.list(nets)){
-
+            	
                 if(netint.getHardwareAddress()!=null){
 
                     byte[] mac = netint.getHardwareAddress();
@@ -33,6 +33,7 @@ public class GetMac {
                 }
 
             }
+     
         } catch (SocketException e) {
            Log.Error("Could read system info :"+e.getMessage());
         }

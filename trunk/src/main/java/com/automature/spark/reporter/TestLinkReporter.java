@@ -36,7 +36,7 @@ import com.automature.spark.engine.Spark;
 import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.util.Log;
 
-public class TestLinkReporter implements Reporter{
+public class TestLinkReporter extends Reporter{
 
 	boolean isNewTestPlan=false;
 	//	boolean isNewTestSuite=false;
@@ -182,10 +182,7 @@ public class TestLinkReporter implements Reporter{
 		return true;
 	}
 
-	public void saveTestCaseResults(Hashtable ht)throws Exception {
-
-	}
-
+	
 	public void heartBeat(String sessionid)throws ReportingException{
 
 	}

@@ -728,11 +728,14 @@ public class TestCase
 									this.testCaseID,
 									(String) TestSuite.errorMessageDuringTestCaseExecution
 									.get(this.parentTestCaseID)));
-					errorDuringTestCaseExecution = String.format(
+					/*errorDuringTestCaseExecution = String.format(
 							"Exception while running test case %s.%s",
 							this.testCaseID,
 							(String)TestSuite. errorMessageDuringTestCaseExecution
-							.get(this.parentTestCaseID));
+							.get(this.parentTestCaseID));*/
+					errorDuringTestCaseExecution = 
+							(String)TestSuite. errorMessageDuringTestCaseExecution
+							.get(this.parentTestCaseID);
 				}
 
 			} catch (Exception ex) {
