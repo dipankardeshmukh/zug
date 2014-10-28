@@ -23,7 +23,7 @@ import com.automature.jira.engine.JiraClient;
  * Time: 4:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public class JiraReporter  implements Reporter {
+public class JiraReporter  extends Reporter {
 
 	public class IssueDetails{
 		String issue_id;
@@ -232,11 +232,7 @@ public class JiraReporter  implements Reporter {
 		return issueId;
 	}
 
-	@Override
-	public void saveTestCaseResults(Hashtable ht) throws ReportingException, Exception {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
+	
 	@Override
 	public void heartBeat(String sessionid) throws InterruptedException, ReportingException {
 		//To change body of implemented methods use File | Settings | File Templates.

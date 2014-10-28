@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.NavigableMap;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +23,7 @@ import com.automature.spark.util.Utility;
 import com.automature.spark.util.ZipUtility;
 
 
-public class DavosReporter implements Reporter {
+public class DavosReporter extends Reporter {
 
 	static DavosClient davosclient = null;
 	String dBHostName= StringUtils.EMPTY;
@@ -258,8 +259,9 @@ public class DavosReporter implements Reporter {
 		return testcylepresent;
 	}
 
-
-	public void saveTestCaseResults(Hashtable executedTestCaseData) throws Exception {
+@Override
+public void saveTestCaseResults(NavigableMap<String, ExecutedTestCase> executedTestCaseData)
+		throws  Exception {
 		Log.Debug("Controller/SaveTestCaseResult : Start of the Function");
 
 		// BusinessLayer.TestCycle testCycle = new BusinessLayer.TestCycle();

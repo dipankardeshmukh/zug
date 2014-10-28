@@ -1606,7 +1606,9 @@ public class Spark extends ZugGui {
 		//	System.err.println("Debug msg : Controller "+guiController);
 		}else{
 			Spark.runTests(args);
+			System.exit(0);
 		}
+		
 	}
 	public static void setController(GuiController controller){
 		guiController=controller;
@@ -1701,6 +1703,7 @@ public class Spark extends ZugGui {
 				System.exit(-1);
 			}
 		}
+		
 	}
 
 	public int getTestSuiteTimeout(){
