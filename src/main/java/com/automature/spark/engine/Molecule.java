@@ -1582,7 +1582,7 @@ public class Molecule extends TestCase {
 				tempAction.verification.add(tempVerification);
 			}
 			tempAction.parent=tempTestCase;
-			System.out.println("temp action "+tempAction);
+			//System.out.println("temp action "+tempAction);
 			tempTestCase.actions.add(tempAction);
 		}
 
