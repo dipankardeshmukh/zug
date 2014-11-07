@@ -813,6 +813,7 @@ public class TreeTableSheetTab extends SheetTab {
 		MenuItem addMI = new MenuItem("Add " + name);
 		MenuItem addTestStepMI = new MenuItem("Add Test step");
 		MenuItem deleteTestStepMI = new MenuItem("Remove Test step");
+		
 		MenuItem actionArgMI = new MenuItem("Add action arg column ");
 		MenuItem verifyArgMI = new MenuItem("Add verify arg column ");
 		menu.getItems().add(addMI);

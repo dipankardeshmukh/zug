@@ -207,6 +207,9 @@ public class SheetSaver {
 		for(Row row:sheet){
 			int n=row.getLastCellNum();
 			if(n>0){
+				if(n>100){
+					n=100;
+				}
 				Cell cell=row.createCell(n);
 				for(int i=n;i>position;i--){
 					Cell cell1=row.getCell(i);

@@ -47,7 +47,7 @@
                   <RadioMenuItem fx:id="allMI" mnemonicParsing="false" onAction="#loadVariables" selected="true" text="All Variables" toggleGroup="$variables" />
                </items>
                <graphic>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icons/black/glyph_settings.png" />
                      </image>
