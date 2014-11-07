@@ -49,7 +49,7 @@ public class MoleculeTreeTableSheetTab extends TreeTableSheetTab {
 	
 	public void loadTabData(List<String> headers, List<List<String>> data){
 		  super.loadTabData(headers, data);
-		//  addContextMenu("Molecule");
+		  addContextMenu("Molecule");
        
 	}
 	
