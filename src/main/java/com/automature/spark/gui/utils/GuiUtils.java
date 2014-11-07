@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.ExceptionDialog;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,11 +12,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class GuiUtils {
-	
+
 	private static Stage stage;
-	
-	
-	
+
+
+
 	public static void setStage(Stage stage) {
 		GuiUtils.stage = stage;
 	}
@@ -38,9 +39,9 @@ public class GuiUtils {
 
 		});
 	}
-	
+
 	public static String getNameSpace(String file){
-		
+
 		if(StringUtils.isBlank(file)){
 			return "";
 		}else{
@@ -49,32 +50,35 @@ public class GuiUtils {
 			return fileName.substring(0, fileName.indexOf('.'));
 		}
 	}
-	
+
 	public static void showMessage(String message){
-		Dialogs.create()
-        .owner(stage)
-        .title("Information Dialog")
-        .masthead(null)
-        .message(message)
-        .showInformation();
+		try{
+			Dialogs.create()
+			.owner(stage)
+			.title("Information Dialog")
+			.masthead(null)
+			.message(message)
+			.showInformation();
+		}catch(Throwable ex){
+			System.err.println(message+"\t"+ex.getMessage());
+		}
 	}
-	
+
 	public static void showMessage(String message,Exception e){
-		Dialogs.create()
-        .owner(stage)
-        .title("Exception Dialog")
-        .masthead(null)
-        .message("Ooops, there was an exception!")
-        .showException(e);
+		showMessage(null,message,e);
 	}
-	
+
 	public static void showMessage(String messageTitle,String message,Exception e){
-		Dialogs.create()
-        .owner(stage)
-        .title("Exception Dialog")
-        .masthead(messageTitle)
-        .message("Ooops, there was an exception!")
-        .showException(e);
+		try{
+			Dialogs.create()
+			.owner(stage)
+			.title("Exception Dialog")
+			.masthead(messageTitle)
+			.message(message)
+			.showException(e);
+		}catch(Throwable ex){
+			System.err.println(messageTitle+"\t"+ex.getMessage());
+		}
 	}
-	
+
 }

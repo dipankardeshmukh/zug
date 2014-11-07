@@ -276,7 +276,8 @@ public class ExpressionEvaluatorController implements Initializable{
 			expressionEvaluator.evaluateExpression(expressions);
 		}
 		}catch(Exception e){
-			System.err.println("Error: Executing Expression Evaluator."+e.getMessage());
+			GuiUtils.showMessage("Error: Executing Expression Evaluator.", e);
+			//System.err.println("Error: Executing Expression Evaluator."+e.getMessage());
 		}finally{
 			evaluateButton.setDisable(false);			
 		}

@@ -23,6 +23,7 @@ import com.automature.spark.gui.components.TestCaseTreeTableSheetTab;
 import com.automature.spark.gui.components.TreeTableSheetTab;
 import com.automature.spark.gui.sheets.SpreadSheet;
 import com.automature.spark.gui.utils.ApplicationLauncher;
+import com.automature.spark.gui.utils.GuiUtils;
 import com.automature.spark.gui.utils.ScreenLoader;
 import com.automature.spark.gui.utils.TestSuiteChooser;
 import com.automature.spark.util.Log;
@@ -679,7 +680,8 @@ public class ZugguiController implements Initializable ,GuiController{
 			}
 
 		} catch (Exception e) {
-			System.err.println("Error reading testSuite " + e.getMessage());
+			GuiUtils.showMessage("Error reading testSuite ", e);
+			//System.err.println("Error reading testSuite " + e.getMessage());
 		}
 	}
 

@@ -168,6 +168,7 @@ public class TreeTableSheetTab extends SheetTab {
 				try {
 					final ObservableList<String> item = event.getRowValue()
 							.getValue();
+				
 					
 					int col = event.getTreeTablePosition().getColumn();
 					int row = event.getTreeTablePosition().getRow();
@@ -294,6 +295,7 @@ public class TreeTableSheetTab extends SheetTab {
 				setColumnFormattingForOthers(col);
 			}
 			setColDefaultProperties(col,i);
+			
 
 			table.getColumns().add(col);
 		}
@@ -932,7 +934,7 @@ public class TreeTableSheetTab extends SheetTab {
 		table.getSelectionModel().setCellSelectionEnabled(true);
 		table.setEditable(true);
 		table.setShowRoot(false);
-		table.setTableMenuButtonVisible(true);
+		//table.setTableMenuButtonVisible(true);
 
 		// table.setTreeColumn(table.getColumns().get(1));
 		setContent(table);
