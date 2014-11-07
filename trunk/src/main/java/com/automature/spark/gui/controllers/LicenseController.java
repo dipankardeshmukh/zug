@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.automature.spark.engine.Spark;
+import com.automature.spark.gui.utils.GuiUtils;
 import com.automature.spark.util.Log;
 import com.automature.spark.util.Utility;
 
@@ -116,7 +117,8 @@ public class LicenseController implements Initializable{
 			validate();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.err.println("Error importing license file to Spark Directory :Error message "+e.getMessage());
+			GuiUtils.showMessage("Error importing license file to Spark Directory :Error message ", e);
+			//System.err.println("Error importing license file to Spark Directory :Error message "+e.getMessage());
 		}
 	}
 
