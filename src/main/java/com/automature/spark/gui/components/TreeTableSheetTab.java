@@ -9,17 +9,7 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-
-
-
-
-
-
-
-
-
-
-
+import org.controlsfx.dialog.Dialogs;
 
 import com.automature.spark.beans.ActionInfoBean;
 import com.automature.spark.beans.ExistenceMessageBean;
@@ -35,6 +25,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -46,6 +37,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
@@ -81,8 +73,8 @@ public class TreeTableSheetTab extends SheetTab {
 	private AtomHandler atomHandler;
 	private Font tooltipFont;
 	private Label expandAllCheckBox;
-	private double toolTipFontSize=13;
-	ContextMenu menu ;
+	private double toolTipFontSize = 13;
+	ContextMenu menu;
 	MenuItem addMI;
 	MenuItem copyMI;
 	MenuItem pasteMI;
@@ -91,8 +83,12 @@ public class TreeTableSheetTab extends SheetTab {
 	private AutoCompleteFilter autoCompleteActionFilter;
 	private AutoCompleteFilter autoCompleteArgFilter;
 	private ArgumentHelper argHelper;
-	
-	
+	private int actionArguments=0;
+	private int verifyArguments=0;
+
+	//2 for root column and line no. 4 for id,description,property step
+	private static int additonalColumns=2+4;
+
 	private EventHandler<CellEditEvent<ObservableList<String>, String>> cellEditEventHandler;
 
 	public TreeTableSheetTab(String string) {
@@ -100,7 +96,7 @@ public class TreeTableSheetTab extends SheetTab {
 		super(string);
 		// TODO Auto-generated constructor stub
 		initialize();
-		
+
 	}
 
 	public void expandAllTreeItem(final boolean expand) {
@@ -135,8 +131,8 @@ public class TreeTableSheetTab extends SheetTab {
 		// breakPoints=new HashSet<>();
 
 		expandAllCheckBox = new Label();
-		Tooltip tooltip=new Tooltip("Expand all");
-		//tooltip.setFont(Font.font(toolTipFontSize));
+		Tooltip tooltip = new Tooltip("Expand all");
+		// tooltip.setFont(Font.font(toolTipFontSize));
 		expandAllCheckBox.setTooltip(tooltip);
 		expandAllCheckBox.setGraphic(expandAllImageView);
 		expandAllCheckBox.setAlignment(Pos.BOTTOM_LEFT);
@@ -147,17 +143,19 @@ public class TreeTableSheetTab extends SheetTab {
 				if (cbox.getGraphic() == expandAllImageView) {
 					expandAllTreeItem(true);
 					cbox.setGraphic(collapseAllImageView);
-					Tooltip tooltip=getTooltip()!=null?getTooltip():new Tooltip("Hide all");
-				
-					//tooltip.setFont(Font.font(toolTipFontSize));
+					Tooltip tooltip = getTooltip() != null ? getTooltip()
+							: new Tooltip("Hide all");
+
+					// tooltip.setFont(Font.font(toolTipFontSize));
 					expandAllCheckBox.setTooltip(tooltip);
 
 				} else {
 					expandAllTreeItem(false);
 					cbox.setGraphic(expandAllImageView);
-					Tooltip tooltip=getTooltip()!=null?getTooltip():new Tooltip("Expand all");
-					//tooltip.setFont(Font.font(toolTipFontSize));
-				
+					Tooltip tooltip = getTooltip() != null ? getTooltip()
+							: new Tooltip("Expand all");
+					// tooltip.setFont(Font.font(toolTipFontSize));
+
 					expandAllCheckBox.setTooltip(tooltip);
 				}
 			}
@@ -170,32 +168,31 @@ public class TreeTableSheetTab extends SheetTab {
 				try {
 					final ObservableList<String> item = event.getRowValue()
 							.getValue();
+					
 					int col = event.getTreeTablePosition().getColumn();
 					int row = event.getTreeTablePosition().getRow();
-					
+
 					event.getTreeTableView().requestFocus();
 					event.getTreeTableView().getFocusModel()
 					.focus(event.getTreeTablePosition());
 					item.set(col, event.getNewValue());
-					getSheetSaver().SaveChange(event.getNewValue(), Integer.parseInt(item.get(1)), col);
-				
+					getSheetSaver().SaveChange(event.getNewValue(),
+							Integer.parseInt(item.get(1)), col);
+
 					// item.setName( event.getNewValue() );
 
 				} catch (Exception e) {
-					System.err.println("Error updating sheet "
-							+ e.getMessage());
+					System.err
+					.println("Error updating sheet " + e.getMessage());
 				}
 			}
 		};
-		
+
 		copyMI = new MenuItem("copy");
-		pasteMI=new MenuItem("paste");
+		pasteMI = new MenuItem("paste");
 		menu = new ContextMenu();
-		
 
 	}
-
-
 
 	protected void setRowFormatting() {
 		table.setRowFactory(new Callback<TreeTableView<ObservableList<String>>, TreeTableRow<ObservableList<String>>>() {
@@ -213,15 +210,20 @@ public class TreeTableSheetTab extends SheetTab {
 							if (rowData.get(2) != null
 									&& rowData.get(2).toString()
 									.equalsIgnoreCase("comment")) {
-								setStyle("-fx-background-color: "+Constants.commentColor+";");
+								setStyle("-fx-background-color: "
+										+ Constants.commentColor + ";");
 							} else {
 								if (Integer.parseInt((String) rowData.get(1)) % 2 == 0) {
-									setStyle("-fx-background-color: "+Constants.treeTableRowColor+";\n"
+									setStyle("-fx-background-color: "
+											+ Constants.treeTableRowColor
+											+ ";\n"
 											+ "    -fx-background-insets: 0, 0 0 1 0;\n"
 											+ "    -fx-padding: 0.0em; /* 0 */\n"
 											+ "    -fx-text-fill: -fx-text-inner-color;");
 								} else {
-									setStyle("-fx-background-color: "+Constants.treeTableRowAltColor+";\n"
+									setStyle("-fx-background-color: "
+											+ Constants.treeTableRowAltColor
+											+ ";\n"
 											+ "    -fx-background-insets: 0, 0 0 1 0;");
 								}
 							}
@@ -233,12 +235,41 @@ public class TreeTableSheetTab extends SheetTab {
 			}
 		});
 	}
+	public void setColDefaultProperties(TreeTableColumn<ObservableList<String>, String> col,final int i){
+
+		if (i == 0 || i == 1) {
+			col.setMinWidth(35.0);
+			col.setPrefWidth(35.0);
+			// col.setMaxWidth(30.0);
+		} else {
+			col.setMinWidth(75.0);
+			col.setPrefWidth(100.0);
+			col.setOnEditCommit(cellEditEventHandler);
+		}
+
+		col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList<String>, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(
+					CellDataFeatures<ObservableList<String>, String> p) {
+				ObservableList<String> list = p.getValue().getValue();
+
+				if (list != null && i < list.size()) {
+					SimpleStringProperty ssp = new SimpleStringProperty(p
+							.getValue().getValue().get(i));
+					return ssp;
+				} else {
+					return new SimpleStringProperty("");
+				}
+
+			}
+		});
+		col.setSortable(false);
+	}
 
 	protected void addHeaders(List<String> headers) {
 		// for(String header:headers){
 		for (int i = 0; i < headers.size(); i++) {
 			String header = headers.get(i);
-			final int j = i;
+
 			TreeTableColumn<ObservableList<String>, String> col = new TreeTableColumn<>(
 					WordUtils.capitalizeFully(header));
 			if (i == 1) {
@@ -250,8 +281,11 @@ public class TreeTableSheetTab extends SheetTab {
 					|| header.equalsIgnoreCase("Verify")) {
 				setColumnFormattingForActions(col);
 
-			} else if (header.toLowerCase().startsWith("actionarg_")
-					|| header.toLowerCase().startsWith("verifyarg_")) {
+			} else if (header.toLowerCase().startsWith("actionarg_")) {
+				actionArguments++;
+				setColumnFormattingForArgs(col);
+			}else if (header.toLowerCase().startsWith("verifyarg_")) {
+				verifyArguments++;
 				setColumnFormattingForArgs(col);
 			} else if (i == 0) {
 				setColumnFormattingForFirstLine(col);
@@ -259,33 +293,8 @@ public class TreeTableSheetTab extends SheetTab {
 			} else {
 				setColumnFormattingForOthers(col);
 			}
+			setColDefaultProperties(col,i);
 
-			if (i == 0 || i == 1) {
-				col.setMinWidth(35.0);
-				col.setPrefWidth(35.0);
-				// col.setMaxWidth(30.0);
-			} else {
-				col.setMinWidth(75.0);
-				col.setPrefWidth(100.0);
-				col.setOnEditCommit(cellEditEventHandler);
-			}
-
-			col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList<String>, String>, ObservableValue<String>>() {
-				public ObservableValue<String> call(
-						CellDataFeatures<ObservableList<String>, String> p) {
-					ObservableList<String> list = p.getValue().getValue();
-
-					if (list != null && j < list.size()) {
-						SimpleStringProperty ssp = new SimpleStringProperty(p
-								.getValue().getValue().get(j));
-						return ssp;
-					} else {
-						return new SimpleStringProperty("");
-					}
-
-				}
-			});
-			col.setSortable(false);
 			table.getColumns().add(col);
 		}
 	}
@@ -326,8 +335,10 @@ public class TreeTableSheetTab extends SheetTab {
 			@Override
 			public TextFieldTreeTableCell<ObservableList<String>, String> call(
 					final TreeTableColumn<ObservableList<String>, String> p) {
-				return new ArgumentTextFieldTreeTableCell(new MyStringConverter(),autoCompleteArgFilter, argHelper);
-				
+				return new ArgumentTextFieldTreeTableCell(
+						new MyStringConverter(), autoCompleteArgFilter,
+						argHelper);
+
 			}
 		});
 		col.setEditable(true);
@@ -337,44 +348,51 @@ public class TreeTableSheetTab extends SheetTab {
 
 	@Deprecated
 	public String getToolTipForArgs(String item) {
-		if(StringUtils.isBlank(item)){
+		if (StringUtils.isBlank(item)) {
 			return "";
 		}
 		if (item.startsWith("$")) {// &&!item.startsWith("$$")){
-			String tooltip=macroEvaluator.getMacroValue(((SheetTabPane)getTabPane()).getCurrentSpreadSheet(), item);
-			return tooltip.equals(item)?null:tooltip;//getMacroValue(item);
+			String tooltip = macroEvaluator
+					.getMacroValue(((SheetTabPane) getTabPane())
+							.getCurrentSpreadSheet(), item);
+			return tooltip.equals(item) ? null : tooltip;// getMacroValue(item);
 		} else if (item.contains("=") && item.contains("$")) {
 			String[] temp = item.split("=", 2);
-			String arg1=null;
-			String arg2=null;
+			String arg1 = null;
+			String arg2 = null;
 
-			if(temp[1].startsWith("$")){
-				//arg1=getMacroValue(temp[0]);
-				arg1=macroEvaluator.getMacroValue(((SheetTabPane)getTabPane()).getCurrentSpreadSheet(),temp[0]);
+			if (temp[1].startsWith("$")) {
+				// arg1=getMacroValue(temp[0]);
+				arg1 = macroEvaluator.getMacroValue(
+						((SheetTabPane) getTabPane()).getCurrentSpreadSheet(),
+						temp[0]);
 			}
 			if (temp.length == 2) {
 				if (temp[1].startsWith("$")) {
-				//	arg2= getMacroValue(temp[1]);
-					arg2= macroEvaluator.getMacroValue(((SheetTabPane)getTabPane()).getCurrentSpreadSheet(),temp[1]);
+					// arg2= getMacroValue(temp[1]);
+					arg2 = macroEvaluator.getMacroValue(
+							((SheetTabPane) getTabPane())
+							.getCurrentSpreadSheet(), temp[1]);
 
 				}
 			}
 
-			return (arg1!=null && arg2!=null)?arg1+"="+arg2:(arg1==null?arg2:arg1);
+			return (arg1 != null && arg2 != null) ? arg1 + "=" + arg2
+					: (arg1 == null ? arg2 : arg1);
 
 		}
 
 		return null;
 	}
-	
-@Deprecated
+
+	@Deprecated
 	public String getMacroValue(String macro) {
 		SpreadSheet sp = null;
 		String macroSign = macro.startsWith("$$") ? "$$" : "$";
 		if (!macro.contains(".")) {
-			
-			sp = ((SheetTabPane)getTabPane()).getCurrentSpreadSheet();//SpreadSheet.getUniqueSheets().get(getFileName());
-			
+
+			sp = ((SheetTabPane) getTabPane()).getCurrentSpreadSheet();// SpreadSheet.getUniqueSheets().get(getFileName());
+
 		} else {
 			String fileName = macro.substring(1, macro.indexOf("."));
 			macro = macroSign + macro.substring(macro.indexOf(".") + 1);
@@ -393,7 +411,7 @@ public class TreeTableSheetTab extends SheetTab {
 		}
 		if (sp != null) {
 			return sp.getMacroSheet().getMacroValue(macro.toLowerCase());
-		} 
+		}
 
 		return null;
 	}
@@ -412,15 +430,16 @@ public class TreeTableSheetTab extends SheetTab {
 
 	protected void setColumnFormattingForActions(
 			TreeTableColumn<ObservableList<String>, String> col) {
-		// TODO Auto-generated method stub	
-		
+		// TODO Auto-generated method stub
+
 		col.setCellFactory(new Callback<TreeTableColumn<ObservableList<String>, String>, TreeTableCell<ObservableList<String>, String>>() {
 			@Override
 			public TextFieldTreeTableCell<ObservableList<String>, String> call(
 					final TreeTableColumn<ObservableList<String>, String> p) {
-				TextFieldTreeTableCell<ObservableList<String>, String> tx =new AutoCompleteActionTextFieldTreeTableCell(new MyStringConverter(), autoCompleteActionFilter, actionHelper);
-			
-				
+				TextFieldTreeTableCell<ObservableList<String>, String> tx = new AutoCompleteActionTextFieldTreeTableCell(
+						new MyStringConverter(), autoCompleteActionFilter,
+						actionHelper);
+
 				return tx;
 
 			}
@@ -437,31 +456,27 @@ public class TreeTableSheetTab extends SheetTab {
 			return null;
 		}
 		if (item.trim().startsWith("&")) {
-			boolean includeMolecule=true;
+			boolean includeMolecule = true;
 			String moleculeName = item.substring(1);
 			SpreadSheet sp = null;
-			String fileName=null;
+			String fileName = null;
 			if (!moleculeName.contains(".")) {
-				includeMolecule=false;
-				sp = ((SheetTabPane)getTabPane()).getCurrentSpreadSheet();//SpreadSheet.getUniqueSheets().get(getFileName());
+				includeMolecule = false;
+				sp = ((SheetTabPane) getTabPane()).getCurrentSpreadSheet();// SpreadSheet.getUniqueSheets().get(getFileName());
 			} else {
-				fileName = moleculeName.substring(0,
-						moleculeName.indexOf("."));
+				fileName = moleculeName.substring(0, moleculeName.indexOf("."));
 				moleculeName = moleculeName
 						.substring(moleculeName.indexOf(".") + 1);
-				sp=SpreadSheet.findSpreadSheet(fileName);
-				/*Iterator it = SpreadSheet.getUniqueSheets().keySet().iterator();
-				while (it.hasNext()) {
-					String fileUQ = (String) it.next();
-					String file = new File(fileUQ).getName();
-					if (file != null) {
-						if (file.substring(0, file.lastIndexOf("."))
-								.equalsIgnoreCase(fileName)) {
-							sp = SpreadSheet.getUniqueSheets().get(fileUQ);
-							break;
-						}
-					}
-				}*/
+				sp = SpreadSheet.findSpreadSheet(fileName);
+				/*
+				 * Iterator it =
+				 * SpreadSheet.getUniqueSheets().keySet().iterator(); while
+				 * (it.hasNext()) { String fileUQ = (String) it.next(); String
+				 * file = new File(fileUQ).getName(); if (file != null) { if
+				 * (file.substring(0, file.lastIndexOf("."))
+				 * .equalsIgnoreCase(fileName)) { sp =
+				 * SpreadSheet.getUniqueSheets().get(fileUQ); break; } } }
+				 */
 			}
 			if (sp != null) {
 				ActionInfoBean aib = sp.getMoleculesSheet().moleculeExist(
@@ -470,12 +485,14 @@ public class TreeTableSheetTab extends SheetTab {
 					ExistenceMessageBean emb = new ExistenceMessageBean(true,
 							aib.getArguments());
 					return emb;
-				}else{
+				} else {
 					String message;
-					if(includeMolecule){
-						message="could not find "+moleculeName+" in "+fileName +"sheet";
-					}else{
-						message="could not find "+moleculeName+" in this testsuite's molecule sheet";
+					if (includeMolecule) {
+						message = "could not find " + moleculeName + " in "
+								+ fileName + "sheet";
+					} else {
+						message = "could not find " + moleculeName
+								+ " in this testsuite's molecule sheet";
 					}
 					ExistenceMessageBean emb = new ExistenceMessageBean(false,
 							message);
@@ -523,63 +540,314 @@ public class TreeTableSheetTab extends SheetTab {
 
 	}
 
-	public TreeItem<ObservableList<String>> getLastTreeItem(){
-		TreeItem<ObservableList<String>> item=root.getChildren().get(root.getChildren().size()-1);
-		if(item.isLeaf()){
+	public TreeItem<ObservableList<String>> getLastTreeItem() {
+		TreeItem<ObservableList<String>> item = root.getChildren().get(
+				root.getChildren().size() - 1);
+		if (item.isLeaf()) {
 			return item;
-		}else{
-			return item.getChildren().get(item.getChildren().size()-1);
+		} else {
+			return item.getChildren().get(item.getChildren().size() - 1);
 		}
 	}
 
-
-
-	public void addComment(){
-		int m=table.getColumns().size();
-		TreeItem<ObservableList<String>> lastItem=getLastTreeItem();
-		int line=Integer.parseInt(lastItem.getValue().get(1))-1;
-		boolean isEmpty=true;
-		List<String> obList=lastItem.getValue().subList(2, lastItem.getValue().size());
-		for(String item:obList){
-			if(StringUtils.isNotBlank(item)){
-				//System.out.println("item is not empty "+item);
-				isEmpty=false;
-				line++;
-			}
-		}
-		if(isEmpty){
-			lastItem.getParent().getChildren().remove(lastItem);
-		}
-		//root.getChildren().get(root.getChildren().size()-1).getValue().get(1);//table.getRoot().getChildren().get(table.getRoot().getChildren().size()-1).getValue().get(1);
-		ObservableList<ObservableList<String>> commentList=convertDataToObservableList(createEmptyList(1, m,line));
+	public void addComment() {
+		int m = table.getColumns().size();
+		TreeItem<ObservableList<String>> lastItem = getLastTreeItem();
+		int line = Integer.parseInt(lastItem.getValue().get(1)) - 1;
+		line++;
+		/*
+		 * boolean isEmpty=true; List<String>
+		 * obList=lastItem.getValue().subList(2, lastItem.getValue().size());
+		 * for(String item:obList){ if(StringUtils.isNotBlank(item)){
+		 * //System.out.println("item is not empty "+item); isEmpty=false;
+		 * line++; } } if(isEmpty){
+		 * lastItem.getParent().getChildren().remove(lastItem); }
+		 */
+		// root.getChildren().get(root.getChildren().size()-1).getValue().get(1);//table.getRoot().getChildren().get(table.getRoot().getChildren().size()-1).getValue().get(1);
+		ObservableList<ObservableList<String>> commentList = convertDataToObservableList(createEmptyList(
+				1, m, line));
 		commentList.get(0).set(2, "comment");
 		getSheetSaver().addCommentRow(line);
-		TreeItem<ObservableList<String>> comment=new TreeItem<ObservableList<String>>(commentList.get(0));
+		TreeItem<ObservableList<String>> comment = new TreeItem<ObservableList<String>>(
+				commentList.get(0));
 		root.getChildren().add(comment);
-		//table.getRoot().getChildren().add(comment);
-
+		// table.getRoot().getChildren().add(comment);
 
 	}
-	//adding new test case or molecule
-	public void addtestCase(int n){
-		addComment();	
-		int m=table.getColumns().size();
-		String line=getLastTreeItem().getValue().get(1);//root.getChildren().get(root.getChildren().size()-1).getValue().get(1);//table.getRoot().getChildren().get(table.getRoot().getChildren().size()-1).getValue().get(1);
-		ObservableList<ObservableList<String>> list=convertDataToObservableList(createEmptyList(n, m,Integer.parseInt(line)));
+
+	// adding new test case or molecule
+	public void addtestCase(int n) {
+		addComment();
+		int m = table.getColumns().size();
+		String line = getLastTreeItem().getValue().get(1);// root.getChildren().get(root.getChildren().size()-1).getValue().get(1);//table.getRoot().getChildren().get(table.getRoot().getChildren().size()-1).getValue().get(1);
+		ObservableList<ObservableList<String>> list = convertDataToObservableList(createEmptyList(
+				n, m, Integer.parseInt(line)));
 		getSheetSaver().addRows(Integer.parseInt(line), m);
-		TreeItem<ObservableList<String>> root=new TreeItem<ObservableList<String>>(list.get(0));
-		for(int i=1;i<list.size();i++){
-			TreeItem<ObservableList<String>> testStep=new TreeItem<ObservableList<String>>(list.get(i));
+		TreeItem<ObservableList<String>> root = new TreeItem<ObservableList<String>>(
+				list.get(0));
+		for (int i = 1; i < list.size(); i++) {
+			TreeItem<ObservableList<String>> testStep = new TreeItem<ObservableList<String>>(
+					list.get(i));
 			root.getChildren().add(testStep);
 		}
 		this.root.getChildren().add(root);
-		//table.getRoot().getChildren().add(root);
+		// table.getRoot().getChildren().add(root);
 	}
 
-	public void addContextMenu(final String name){
+	public void decreaseTeststep(TreeItem<ObservableList<String>> treeItem) {
+		if (treeItem != null) {
+			ObservableList<String> list = treeItem.getValue();
+			try {
+				int n = Integer.parseInt(list.get(1));
+				n--;
+				list.set(1, String.valueOf(n));
+			} catch (NumberFormatException nfe) {
+
+			}
+			decreaseTeststep(treeItem.nextSibling());
+		}
+	}
+
+	public void decreaseTeststeps(
+			TreeItem<ObservableList<String>> parentTreeItem) {
+
+		if (parentTreeItem != null) {
+			ObservableList<String> list = parentTreeItem.getValue();
+			try {
+				int n = Integer.parseInt(list.get(1));
+				n--;
+				list.set(1, String.valueOf(n));
+				if (parentTreeItem.getChildren().size() > 0) {
+					decreaseTeststep(parentTreeItem.getChildren().get(0));
+				}
+
+			} catch (NumberFormatException nfe) {
+
+			}
+			decreaseTeststeps(parentTreeItem.nextSibling());
+
+		}
+	}
+
+	public void increaseTeststep(TreeItem<ObservableList<String>> treeItem) {
+		if (treeItem != null) {
+			ObservableList<String> list = treeItem.getValue();
+			try {
+				int n = Integer.parseInt(list.get(1));
+				n++;
+				list.set(1, String.valueOf(n));
+			} catch (NumberFormatException nfe) {
+
+			}
+			increaseTeststep(treeItem.nextSibling());
+		}
+	}
+
+	public void increaseTeststeps(
+			TreeItem<ObservableList<String>> parentTreeItem) {
+
+		if (parentTreeItem != null) {
+			ObservableList<String> list = parentTreeItem.getValue();
+			try {
+				int n = Integer.parseInt(list.get(1));
+				n++;
+				list.set(1, String.valueOf(n));
+				if (parentTreeItem.getChildren().size() > 0) {
+					increaseTeststep(parentTreeItem.getChildren().get(0));
+				}
+
+			} catch (NumberFormatException nfe) {
+
+			}
+			increaseTeststeps(parentTreeItem.nextSibling());
+		}
+	}
+
+	public TreeItem<ObservableList<String>> getEmptyTreeItem(){
+		ObservableList<String> list=FXCollections.observableArrayList();
+		for(int i=0;i<table.getColumns().size();i++){
+			list.add("");
+		}
+		return new TreeItem<ObservableList<String>>(list);
+
+	}
+
+	public void deleteTestStep(){
+		TreeItem<ObservableList<String>> treeItem = table
+				.getSelectionModel().getSelectedItem();
+		if(treeItem!=null){
+			if (treeItem.isLeaf()) {
+				int colIndex=Integer.parseInt(treeItem.getValue().get(1));
+				TreeItem<ObservableList<String>> parent = treeItem
+						.getParent();
+				TreeItem<ObservableList<String>> sibling = treeItem
+						.nextSibling();
+				decreaseTeststep(sibling);
+				parent.getChildren().remove(treeItem);
+				decreaseTeststeps(parent.nextSibling());
+				getSheetSaver().deleteRow(colIndex);
+			}else{
+				GuiUtils.showMessage("Cannot delete a test case or molecule(first test step)");
+			}
+		}else{
+			GuiUtils.showMessage("Please select a test step to delete");
+		}
+	}
+
+	public void addTeststep(){
+		TreeItem<ObservableList<String>> treeItem = table
+				.getSelectionModel().getSelectedItem();
+		if(treeItem!=null){
+
+			TreeItem<ObservableList<String>>  newItem=getEmptyTreeItem();
+			int colIndex=Integer.parseInt(treeItem.getValue().get(1))+1;
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					if(getSheetSaver().addRow(colIndex)){
+						newItem.getValue().set(1, String.valueOf(colIndex));
+						if(!treeItem.isLeaf()){
+							int index=0;
+							treeItem.getChildren().add(index, newItem);
+							increaseTeststep(newItem.nextSibling());
+							increaseTeststeps(treeItem.nextSibling());
+						}
+
+						else{
+							TreeItem<ObservableList<String>> parent = treeItem
+									.getParent();
+							int index=parent.getChildren().indexOf(treeItem);
+							parent.getChildren().add(index+1, newItem);
+							increaseTeststep(newItem.nextSibling());
+							increaseTeststeps(parent.nextSibling());
+						}
+					}
+				}
+			});
+		}else{
+			GuiUtils.showMessage("Please select a test step first after which test step will be inserted");
+		}
+	}
+
+	public void addColumn(int position,String columnHeader){
+
+
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				table.setRoot(null);
+				// TODO Auto-generated method stub
+				try{
+					TreeTableColumn<ObservableList<String>, String> col=new TreeTableColumn<>(
+							WordUtils.capitalizeFully(columnHeader));
+
+
+					table.getColumns().add(position, col);
+					Iterator<TreeItem<ObservableList<String>>> it=root.getChildren().iterator();
+					while(it.hasNext()){
+						TreeItem<ObservableList<String>> item=it.next();
+						item.getValue().add(position,"");
+						Iterator<TreeItem<ObservableList<String>>> childIt=item.getChildren().iterator();
+						while(childIt.hasNext()){
+							TreeItem<ObservableList<String>> child=childIt.next();
+							child.getValue().add(position,"");
+
+						}		
+					}
+					setColumnFormattingForArgs(col);
+					setColDefaultProperties(col,position);
+
+				}catch(Exception e){
+
+				}finally{
+					table.setRoot(root);	
+					for(int i=position;i<table.getColumns().size();i++){
+						TreeTableColumn<ObservableList<String>, String> treeCol=(TreeTableColumn<ObservableList<String>, String>) table.getColumns().get(i);
+						setColDefaultProperties(treeCol,i);
+					}
+					table.requestLayout();
+					
+				}
+
+
+			}
+		});
+
+	}
+
+	public void addVerifyColumn(){
+		verifyArguments++;
+		if(getSheetSaver().addColumn(additonalColumns+1+actionArguments+verifyArguments, "Verifyarg_"+verifyArguments)){
+			addColumn(additonalColumns+1+actionArguments+verifyArguments, "Verifyarg_"+verifyArguments);
+		}
+	}
+
+	public void addActionColumn(){
+		actionArguments++;
+		if(getSheetSaver().addActionColumn(additonalColumns+actionArguments, "Actionarg_"+actionArguments)){
+			addColumn(additonalColumns+actionArguments, "Actionarg_"+actionArguments);
+		}
+		/*TreeTableColumn<ObservableList<String>, String> col=new TreeTableColumn<>(
+				WordUtils.capitalizeFully("Actionarg_"+actionArguments));
+		table.getColumns().add(additonalColumns+actionArguments, col);
+		Iterator<TreeItem<ObservableList<String>>> it=root.getChildren().iterator();
+		while(it.hasNext()){
+			TreeItem<ObservableList<String>> item=it.next();
+			item.getValue().add(additonalColumns+actionArguments,"");
+			Iterator<TreeItem<ObservableList<String>>> childIt=item.getChildren().iterator();
+			while(childIt.hasNext()){
+				TreeItem<ObservableList<String>> child=childIt.next();
+				child.getValue().add(additonalColumns+actionArguments,"");
+
+			}		
+		}*/
+	}
+
+
+
+	public void addContextMenu(final String name) {
 		ContextMenu menu = new ContextMenu();
-		MenuItem addMI = new MenuItem("Add "+name);
+		MenuItem addMI = new MenuItem("Add " + name);
+		MenuItem addTestStepMI = new MenuItem("Add Test step");
+		MenuItem deleteTestStepMI = new MenuItem("Remove Test step");
+		MenuItem actionArgMI = new MenuItem("Add action arg column ");
+		MenuItem verifyArgMI = new MenuItem("Add verify arg column ");
 		menu.getItems().add(addMI);
+		menu.getItems().add(addTestStepMI);
+		menu.getItems().add(deleteTestStepMI);
+		menu.getItems().add(actionArgMI);
+		menu.getItems().add(verifyArgMI);
+
+		actionArgMI.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				addActionColumn();
+
+			}
+		});
+		verifyArgMI.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				addVerifyColumn();
+
+			}
+		});
+
+		deleteTestStepMI.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				deleteTestStep();
+
+			}
+		});
+		addTestStepMI.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {				
+				addTeststep();
+
+			}
+		});
 		table.setContextMenu(menu);
 		addMI.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -588,18 +856,18 @@ public class TreeTableSheetTab extends SheetTab {
 				final Stage dialogStage = new Stage();
 				dialogStage.initStyle(StageStyle.UTILITY);
 				dialogStage.initModality(Modality.WINDOW_MODAL);
-				Pane pane=new Pane();
+				Pane pane = new Pane();
 				pane.setPrefHeight(105.0);
 				pane.setPrefWidth(248.0);
 				Label label = new Label("Enter Number of test step");
 				label.setLayoutX(21.0);
 				label.setLayoutY(14.0);
 
-				//                label.setAlignment(Pos.BASELINE_CENTER);
-				final TextField textField=new TextField("2");
-				//  textField.setMinWidth(30);
-				//textField.setMaxWidth(30);
-				textField.setPrefSize(51.0,17.0);
+				// label.setAlignment(Pos.BASELINE_CENTER);
+				final TextField textField = new TextField("2");
+				// textField.setMinWidth(30);
+				// textField.setMaxWidth(30);
+				textField.setPrefSize(51.0, 17.0);
 				textField.setLayoutX(182.0);
 				textField.setLayoutY(11.0);
 
@@ -613,9 +881,9 @@ public class TreeTableSheetTab extends SheetTab {
 					@Override
 					public void handle(ActionEvent arg0) {
 						dialogStage.close();
-						String text=textField.getText();
-						if(StringUtils.isNotBlank(text)){
-							int n=Integer.parseInt(text);
+						String text = textField.getText();
+						if (StringUtils.isNotBlank(text)) {
+							int n = Integer.parseInt(text);
 							addtestCase(n);
 						}
 
@@ -635,7 +903,7 @@ public class TreeTableSheetTab extends SheetTab {
 					}
 				});
 
-				pane.getChildren().addAll(label,textField,yesBtn,noBtn);
+				pane.getChildren().addAll(label, textField, yesBtn, noBtn);
 				pane.effectProperty().set(new Blend());
 				pane.setStyle("-fx-background-color: white;");
 
@@ -647,13 +915,13 @@ public class TreeTableSheetTab extends SheetTab {
 	}
 
 	public void loadTabData(List<String> headers, List<List<String>> data) {
-		
+
 		atomHandler = new AtomHandler(SpreadSheet.getScriptLocations());
-		actionHelper=new ActionHelper(atomHandler,getFileName());
-		autoCompleteActionFilter=new AutoCompleteActionFilter(actionHelper);
-		macroEvaluator=new MacroEvaluator(getFileName());
-		argHelper=new ArgumentHelper(getFileName());
-		autoCompleteArgFilter=new AutoCompleteArgFilter(argHelper);
+		actionHelper = new ActionHelper(atomHandler, getFileName());
+		autoCompleteActionFilter = new AutoCompleteActionFilter(actionHelper);
+		macroEvaluator = new MacroEvaluator(getFileName());
+		argHelper = new ArgumentHelper(getFileName());
+		autoCompleteArgFilter = new AutoCompleteArgFilter(argHelper);
 		addHeaders(headers);
 		ObservableList<ObservableList<String>> list = convertDataToObservableList(data);
 		addData(list);
@@ -665,7 +933,6 @@ public class TreeTableSheetTab extends SheetTab {
 		table.setEditable(true);
 		table.setShowRoot(false);
 		table.setTableMenuButtonVisible(true);
-	
 
 		// table.setTreeColumn(table.getColumns().get(1));
 		setContent(table);
@@ -675,6 +942,7 @@ public class TreeTableSheetTab extends SheetTab {
 	protected void addData(ObservableList<ObservableList<String>> data) {
 
 		root = new TreeItem<ObservableList<String>>();
+
 		TreeItem<ObservableList<String>> comment;
 		if (data.size() > 0) {
 			comment = new TreeItem<>();
@@ -734,7 +1002,11 @@ public class TreeTableSheetTab extends SheetTab {
 	}
 
 	protected void setBreakPoint(String nameSpace, String row) {
-		Spark.setBreakPoint(nameSpace, String.valueOf(row));
+		try {
+			Spark.setBreakPoint(nameSpace, String.valueOf(row));
+		} catch (Exception e) {
+
+		}
 	}
 
 	protected void UnSetBreakPoint(String nameSpace, String row) {
@@ -756,7 +1028,6 @@ public class TreeTableSheetTab extends SheetTab {
 		});
 	}
 
-	
 	protected class BreakPointTreeTableCell extends
 	TreeTableCell<ObservableList<String>, String> {
 
@@ -803,7 +1074,7 @@ public class TreeTableSheetTab extends SheetTab {
 		}
 
 		public void handleBreakPoint() {
-			
+
 			final String nameSpace = FilenameUtils.removeExtension(
 					new File(getFileName()).getName()).toLowerCase();
 			if (breakPointsLineNo.contains(getItem())) {
@@ -903,7 +1174,7 @@ public class TreeTableSheetTab extends SheetTab {
 			@Override
 			public void run() {
 				table.requestFocus();
-				table.scrollTo(n>8?n-8:0);
+				table.scrollTo(n > 8 ? n - 8 : 0);
 				table.getSelectionModel().select(currentExecutionRow,
 						table.getColumns().get(0));
 				table.getFocusModel().focus(currentExecutionRow,

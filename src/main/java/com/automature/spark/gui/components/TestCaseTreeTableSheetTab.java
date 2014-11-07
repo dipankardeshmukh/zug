@@ -155,7 +155,7 @@ public class TestCaseTreeTableSheetTab extends TreeTableSheetTab {
 	
 	public void loadTabData(List<String> headers, List<List<String>> data){
 		  super.loadTabData(headers, data);
-		//  addContextMenu("Test Case");
+		  addContextMenu("Test Case");
          
 	}
 

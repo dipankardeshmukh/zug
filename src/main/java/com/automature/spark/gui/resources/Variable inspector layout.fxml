@@ -24,7 +24,7 @@
   </rowConstraints>
    <children>
       <Label text="Search" GridPane.halignment="RIGHT" />
-                  <Button fx:id="addVariableButton" mnemonicParsing="false" onAction="#addVariable" prefHeight="25.0" prefWidth="46.0" GridPane.columnIndex="5" GridPane.rowIndex="1">
+                  <Button fx:id="addVariableButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#addVariable" prefHeight="25.0" prefWidth="46.0" GridPane.columnIndex="5" GridPane.rowIndex="1">
                      <graphic>
                         <ImageView fx:id="refreshCVListButton">
                            <image>
@@ -36,7 +36,7 @@
                         <Tooltip text="Add to watch list" />
                      </tooltip>
                   </Button>
-            <MenuButton contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
+            <MenuButton contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="46.0" GridPane.columnIndex="4" GridPane.rowIndex="1">
                <items>
                   <RadioMenuItem fx:id="showCVMI" mnemonicParsing="false" onAction="#loadVariables" text="Context Variables">
                      <toggleGroup>

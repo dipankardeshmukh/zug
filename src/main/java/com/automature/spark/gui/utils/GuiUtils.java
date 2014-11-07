@@ -3,13 +3,23 @@ package com.automature.spark.gui.utils;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.controlsfx.dialog.Dialogs;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class GuiUtils {
 	
+	private static Stage stage;
+	
+	
+	
+	public static void setStage(Stage stage) {
+		GuiUtils.stage = stage;
+	}
+
 	public static void addOnlyNumberPropertyInTextField(final TextField field){
 		field.lengthProperty().addListener(new ChangeListener<Number>(){
 
@@ -39,4 +49,32 @@ public class GuiUtils {
 			return fileName.substring(0, fileName.indexOf('.'));
 		}
 	}
+	
+	public static void showMessage(String message){
+		Dialogs.create()
+        .owner(stage)
+        .title("Information Dialog")
+        .masthead(null)
+        .message(message)
+        .showInformation();
+	}
+	
+	public static void showMessage(String message,Exception e){
+		Dialogs.create()
+        .owner(stage)
+        .title("Exception Dialog")
+        .masthead(null)
+        .message("Ooops, there was an exception!")
+        .showException(e);
+	}
+	
+	public static void showMessage(String messageTitle,String message,Exception e){
+		Dialogs.create()
+        .owner(stage)
+        .title("Exception Dialog")
+        .masthead(messageTitle)
+        .message("Ooops, there was an exception!")
+        .showException(e);
+	}
+	
 }

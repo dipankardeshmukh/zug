@@ -6,6 +6,7 @@ import com.automature.spark.engine.Spark;
 import com.automature.spark.gui.controllers.GuiController;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.gui.utils.ApplicationLauncher;
+import com.automature.spark.gui.utils.GuiUtils;
 
 import java.io.InputStream;
 
@@ -73,6 +74,7 @@ public class ZugGui  extends Application {
 		stage.setTitle("SPARK");
 		stage.getIcons().add(new Image(ZugGui.class.getResourceAsStream("/com/automature/spark/gui/resources/icons/Spark.png")));
 		ApplicationLauncher.setHostServices(getHostServices());
+		GuiUtils.setStage(stage);
 		controller.setParams(getParameters().getRaw());
 	}
 
