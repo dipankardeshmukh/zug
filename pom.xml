@@ -214,7 +214,7 @@
         <dependency>
             <groupId>com.automature.davos.api</groupId>
             <artifactId>automature-davosapi</artifactId>
-            <version>1.0</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>jline</groupId>
@@ -241,7 +241,7 @@
             <artifactId>appframework</artifactId>
             <version>1.0.3</version>
         </dependency>
-      <!--   <dependency>
+        <!--   <dependency>
             <groupId>org.swinglabs.swingx</groupId>
             <artifactId>swingx-all</artifactId>
             <version>1.6.4</version>
