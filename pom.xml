@@ -3,36 +3,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+  <parent>
+    <groupId>com.automature</groupId>
+    <artifactId>nexus</artifactId>
+    <version>1</version>
+  </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.automature</groupId>
     <artifactId>spark</artifactId>
-    <packaging>jar</packaging>
     <version>1.0</version>
+    <packaging>jar</packaging>
     <name>Spark Automation Engine</name>
-    <url>http://www.automature.com/products/zug</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
+    
     <repositories>
         <repository>
-            <snapshots>
-                <enabled>true</enabled>
-                <!--updatePolicy>always</updatePolicy-->
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <id>central</id>
-            <name>Central Repository</name>
-            <url>http://repo.maven.apache.org/maven2</url>
-        </repository>
-        <repository>
-            <id>thirdparty-releases</id>
-            <name>JBoss Thirdparty Releases</name>
-            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+            <id>releases</id>
+            <name>Automature Releases Repository</name>
+            <url>http://nexus.automature.com:8081/nexus/content/repositories/releases</url>
         </repository>
     </repositories>
 
