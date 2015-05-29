@@ -32,6 +32,8 @@ import org.apache.commons.lang.StringUtils;
 
 
 
+
+
 import javafx.fxml.Initializable;
 
 
@@ -1202,7 +1204,10 @@ public class TestCase
 
 
 		} finally {
+			if(Spark.guiController!=null)
+			{
 			Spark.guiController.removeTestCase(this);
+			}
 			Spark.message("********************************************************************************");
 
 		}
