@@ -67,7 +67,7 @@ public class Spark extends ZugGui {
 
 	static GuiController guiController;
 	static boolean guiFlag;
-	private static String Version = "SPARK Premium 1.0.0";
+	private static String Version = "SPARK Premium 1.0.1";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -1781,6 +1781,7 @@ public class Spark extends ZugGui {
 				Spark.loadInProcesses();				
 			}catch(IOException ioe){
 				System.err.println("Failed to load the ini.xml file ");
+				ioe.printStackTrace();
 			}
 		}
 
