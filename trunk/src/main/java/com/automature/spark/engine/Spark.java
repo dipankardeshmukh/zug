@@ -1584,7 +1584,6 @@ public class Spark extends ZugGui {
 		for (String arg : args) {
 			if(arg.toLowerCase().contains("-gui")){
 				guiFlag=true;
-				break;
 			}
 		}
 		//	}
@@ -1830,7 +1829,7 @@ public class Spark extends ZugGui {
 		validateLisence();
 
 		fileExtensionSupport = ExtensionInterpreterSupport
-				.ReadFileExtensionXML();
+				.ReadFileExtensionXML(ProgramOptions.getiniFile());
 
 		HiPerfTimer tm = new HiPerfTimer();
 		HiPerfTimer initializationTime = new HiPerfTimer();
