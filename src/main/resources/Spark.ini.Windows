@@ -59,6 +59,7 @@
                     <jar-package>com.automature.zuoz.inprocess.zgui</jar-package>
                     <class-name>GUIOperations</class-name>
                 </inprocesspackage>
+				        
 		<inprocesspackage name="ZMobile" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zmobile</jar-package>
                     <class-name>MobileOperation</class-name>
@@ -106,6 +107,11 @@
                 <inprocesspackage name="ZHTTP" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zhttp</jar-package>
                     <class-name>HTTPOperation</class-name>
+                </inprocesspackage>
+
+                <inprocesspackage name="ZNyon" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.znyon</jar-package>
+                    <class-name>NyonRestClient</class-name>
                 </inprocesspackage>
         </file-path>
     </inprocesspackages>
