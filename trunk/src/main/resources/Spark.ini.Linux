@@ -108,6 +108,11 @@
                     <jar-package>com.automature.zuoz.inprocess.zhttp</jar-package>
                     <class-name>HTTPOperation</class-name>
                 </inprocesspackage>
+
+                <inprocesspackage name="ZNyon" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.znyon</jar-package>
+                    <class-name>NyonRestClient</class-name>
+                </inprocesspackage>
         </file-path>
     </inprocesspackages>
     <configurations>
