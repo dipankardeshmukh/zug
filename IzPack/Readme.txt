@@ -109,11 +109,11 @@ Example:
 	</inprocesspackage>             
 </inprocesspackages>
              
-             http://attic.automature.com/redmine/boards/3/topics/show/82 for ZUG Release Notes
+             http://attic.automature.com/redmine/boards/3/topics/show/6 for ZUG Release Notes
              
 Zug Dependencies:
   
-  • Java(TM) SE Runtime Environment(32bit) 1.6 (update 21). Zug only runs in 32bit version of Java Runtime Enviorment. It does not support the 64bit JRE.
+  • Java(TM) SE Runtime Environment(32bit) 1.6 (update 21). Zug only runs in 32bit version of Java Runtime Enviorment. It dont support the 64bit JRE.
   
   • To work with In-process atoms in Chur. ZugINI.xml must be configured. The xml tags.
       

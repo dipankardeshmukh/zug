@@ -277,6 +277,8 @@ public class Spark extends ZugGui {
 		helpMessagebuf
 		.append("\n\n\n\n\t -LogFileName=[AlphaNumeric] :This is required by Zug to change the logfile names where zug logs the execution messages(error,debug). The logfile name will be created as <logfilename>-Atom.log , <logfilename>-Debug.log.");
 
+		helpMessagebuf
+        .append("\n\n\n\n\t -inifile=[Fully Qualified filename] :This is required by Zug to choose an initialization file other than the default Spark.ini");
 		helpMessagebuf.append("\n\n\n\n\t For example ");
 		helpMessagebuf
 		.append("\n\t------------------------------------------------------------------");
@@ -1584,7 +1586,11 @@ public class Spark extends ZugGui {
 		for (String arg : args) {
 			if(arg.toLowerCase().contains("-gui")){
 				guiFlag=true;
+				break;
 			}
+		}
+		if (ProgramOptions.getiniFile().isEmpty()) {
+			ProgramOptions.setiniFile("Spark.ini");
 		}
 		//	}
 		if(guiFlag){
@@ -1829,7 +1835,7 @@ public class Spark extends ZugGui {
 		validateLisence();
 
 		fileExtensionSupport = ExtensionInterpreterSupport
-				.ReadFileExtensionXML(ProgramOptions.getiniFile());
+				.ReadFileExtensionXML(opts.iniFile);
 
 		HiPerfTimer tm = new HiPerfTimer();
 		HiPerfTimer initializationTime = new HiPerfTimer();

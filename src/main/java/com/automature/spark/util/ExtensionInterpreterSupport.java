@@ -1,9 +1,7 @@
 package com.automature.spark.util;
-
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.io.File;
@@ -12,13 +10,14 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerException;
-import com.automature.spark.engine.ProgramOptions;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.engine.SysEnv;
 import com.automature.spark.util.Log;
@@ -59,13 +58,12 @@ public class ExtensionInterpreterSupport {
 
 	public static String getNode(String path)throws Exception{
 
-		//String filename = "ZugINI.xml";
 		Document document = null;
 		try {
-			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ProgramOptions.getiniFile());
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(filename));
 			document.getDocumentElement().normalize();
 		} catch (Exception FileLoadException) {
-			Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + filename);
 			throw FileLoadException;
 
 		}
@@ -76,15 +74,15 @@ public class ExtensionInterpreterSupport {
 	}
 
 	private static ArrayList<ExtensionInterpreterSupport> readConfigFile() throws Exception {
-		String Pathlist = new String(System.getenv(SysEnv.PATH_CHECK));
+		//String Pathlist = new String(System.getenv(SysEnv.PATH_CHECK));
 		ArrayList<ExtensionInterpreterSupport> extensionList = new ArrayList<ExtensionInterpreterSupport>();
 		//String filename = "ZugINI.xml";
 		Document document = null;
 		try {
-			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ProgramOptions.getiniFile());
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(filename));
 			document.getDocumentElement().normalize();
 		} catch (Exception FileLoadException) {
-			Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Error("Zug/FileExtensionSupport: Failed to load the xml file " + filename);
 			throw FileLoadException;
 
 		}
@@ -178,8 +176,8 @@ public class ExtensionInterpreterSupport {
 		String Path = new String(System.getenv(SysEnv.PATH_CHECK));
 		String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
 		Log.Debug("Environment variable Path + " + Path);
-		//String filename = "ZugINI.xml";
-		File file = new File(inifilename);
+		filename = inifilename;
+		File file = new File(filename);
 		Document document;
 		Hashtable<String, String[]> fileExtensionSupport = new Hashtable<String, String[]>();
 		ArrayList<ExtensionInterpreterSupport> extensionsList = new ArrayList<ExtensionInterpreterSupport>();
@@ -189,7 +187,7 @@ public class ExtensionInterpreterSupport {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
 			document.getDocumentElement().normalize();
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/GetAttribute(): Failed to load the xml file " + inifilename);
+			Log.Debug("XMLPrimitive/GetAttribute(): Failed to load the xml file " + filename);
 			//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
 			throw fileLoadException;
 		}
@@ -279,16 +277,14 @@ public class ExtensionInterpreterSupport {
 
 	public HashMap<String, ArrayList<String>> readExternalJarFileArchitecture(String attributeValue) throws Exception {
 		String Path = new String(System.getenv(SysEnv.PATH_CHECK));
-		String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
 		Log.Debug("Environment variable Path + " + Path);
-		//String filename = "ZugINI.xml";
-		File file = new File(ProgramOptions.getiniFile());
+		File file = new File(filename);
 		Document document;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
 			document.getDocumentElement().normalize();
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + filename);
 			throw fileLoadException;
 		}
 
@@ -359,8 +355,8 @@ public class ExtensionInterpreterSupport {
 
 
 	public String[] reteriveXmlTagAttributeValue(String tagarchitechture, String attributeName) throws Exception {
-		//String filename = "ZugINI.xml";
-		File file = new File(ProgramOptions.getiniFile());
+		
+		File file = new File(filename);
 		Document document;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
@@ -369,7 +365,7 @@ public class ExtensionInterpreterSupport {
 			Log.Debug("XMLPrimitive/reteriveXmlTagAttributeValue(): Failed to load the xml file " + filename);
 			throw ioe;
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/reteriveXmlTagAttributeValue(): Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Debug("XMLPrimitive/reteriveXmlTagAttributeValue(): Failed to load the xml file " + filename);
 			//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
 			throw fileLoadException;
 		}
@@ -391,14 +387,14 @@ public class ExtensionInterpreterSupport {
 	 * as packagename=language
 	 */
 	public HashMap<String,String> reteriveXmlTagAttributeValuesPair(String tagarchitechture) throws Exception {
-		//String filename = "ZugINI.xml";
-		File file = new File(ProgramOptions.getiniFile());
+	
+		File file = new File(filename);
 		Document document;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
 			document.getDocumentElement().normalize();
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/reteriveXmlTagAttributeValue(): Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Debug("XMLPrimitive/reteriveXmlTagAttributeValue(): Failed to load the xml file " + filename);
 			//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
 			throw fileLoadException;
 		}
@@ -428,14 +424,14 @@ public class ExtensionInterpreterSupport {
 		String Path = new String(System.getenv(SysEnv.PATH_CHECK));
 		String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
 		Log.Debug("Environment variable Path + " + Path);
-		// filename = "ZugINI.xml";
-		File file = new File(ProgramOptions.getiniFile());
+		
+		File file = new File(filename);
 		Document document;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
 			document.getDocumentElement().normalize();
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/readConfigurationForCartestisanProduct(): Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Debug("XMLPrimitive/readConfigurationForCartestisanProduct(): Failed to load the xml file " + filename);
 			//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
 			throw fileLoadException;
 		}
@@ -474,14 +470,14 @@ public class ExtensionInterpreterSupport {
 		String Path = new String(System.getenv(SysEnv.PATH_CHECK));
 		String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
 		Log.Debug("Environment variable Path + " + Path);
-		//String filename = "ZugINI.xml";
-		File file = new File(ProgramOptions.getiniFile());
+		
+		File file = new File(filename);
 		Document document;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
 			document.getDocumentElement().normalize();
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + filename);
 			//Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
 			throw fileLoadException;
 		}
@@ -518,15 +514,15 @@ public class ExtensionInterpreterSupport {
 	}
 
 	public HashMap<String,String> reteriveXMLAttributeValuePair(String nodeName,String attributeName) throws Exception {
-		//String filename = "ZugINI.xml";
-		File file = new File(ProgramOptions.getiniFile());
+	
+		File file = new File(filename);
 		Document document;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
 			document.getDocumentElement().normalize();
 
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/reteriveXmlTagAttributeValue(): Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Debug("XMLPrimitive/reteriveXmlTagAttributeValue(): Failed to load the xml file " + filename);
 			//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
 			throw fileLoadException;
 		}
@@ -552,14 +548,13 @@ public class ExtensionInterpreterSupport {
 		String Path = new String(System.getenv(SysEnv.PATH_CHECK));
 		String[] PathList = Path.split(SysEnv.SEPARATOR);//Changed from ";"
 		Log.Debug("Environment variable Path + " + Path);
-		//String filename = "ZugINI.xml";
-		File file = new File(ProgramOptions.getiniFile());
+		File file = new File(filename);
 		Document document;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
 			document.getDocumentElement().normalize();
 		} catch (Exception fileLoadException) {
-			Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + ProgramOptions.getiniFile());
+			Log.Debug("XMLPrimitive/readExternalJarFileArchitecture(): Failed to load the xml file " + filename);
 			//			Log.Error("XMLPrimitive/GetAttribute(): Failed to load the xml file "+ filename);
 			throw fileLoadException;
 		}

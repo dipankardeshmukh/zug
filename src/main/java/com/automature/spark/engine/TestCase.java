@@ -14,8 +14,14 @@ import com.automature.spark.gui.ZugGui;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.util.Log;
 import com.automature.spark.util.Utility;
+import com.automature.zug.api.ZugLib;
 
 import org.apache.commons.lang.StringUtils;
+
+
+
+
+
 
 
 
@@ -100,6 +106,14 @@ public class TestCase
 		this.breakpoints=tc.breakpoints;
 		//this.variables=tc.variables;
 		this.parent=tc.parent;
+		try {
+			ContextVar.setContextVar("ZUG_TESTSUITENAME",this.nameSpace);
+			ContextVar.setContextVar("ZUG_TCID",this.testCaseID);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public static void cleanUP(){
@@ -1142,6 +1156,14 @@ public class TestCase
 			}else{
 				Spark.incrementTestCaseFailCount();
 			}
+			
+			//?
+			ContextVar.setContextVar("ZUG_TESTSUITENAME",Spark.ZUG_LOGFILENAME);
+			ContextVar.setContextVar("ZUG_TCID",Spark.ZUG_LOGFILENAME);
+			
+			
+			//?
+			
 			String failureReason = String
 					.format("Status FAILED FOR Worksheet %s TestCase ID (%s:%s). Exception MESSAGE IS : \n%s .\nCause:%s",
 							this.nameSpace, this.parentTestCaseID,
