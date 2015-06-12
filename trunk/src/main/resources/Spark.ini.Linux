@@ -55,7 +55,12 @@
                     <jar-package>com.automature.zuoz.inprocess.zstring</jar-package>
                     <class-name>StringOperation</class-name>
                 </inprocesspackage>
-				        <inprocesspackage name="ZMobile" language="java">
+		<inprocesspackage name="ZGui" language="java">
+                    <jar-package>com.automature.zuoz.inprocess.zgui</jar-package>
+                    <class-name>GUIOperations</class-name>
+                </inprocesspackage>
+				        
+		<inprocesspackage name="ZMobile" language="java">
                     <jar-package>com.automature.zuoz.inprocess.zmobile</jar-package>
                     <class-name>MobileOperation</class-name>
                 </inprocesspackage>
