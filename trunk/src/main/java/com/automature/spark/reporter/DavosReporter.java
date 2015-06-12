@@ -530,13 +530,8 @@ public void saveTestCaseResults(NavigableMap<String, ExecutedTestCase> executedT
 				return;
 			}
 
-			
-			if (topologySetName.isEmpty()) {
-				topologySetName = topologySetId;
-			}
-			
 			archiveLogLocation = String.format("%s\\%s\\%s\\%s\\%s",
-					archiveLogLocation,testPlanId,testCycleId,testSuiteId,topologySetName);
+					archiveLogLocation,testPlanId,testCycleId,testSuiteId,TOPOSET);
 
 			String exactDateTime = Utility.dateAsString();
 			// Create date time directory.
@@ -598,7 +593,7 @@ public void saveTestCaseResults(NavigableMap<String, ExecutedTestCase> executedT
 			if (Utility.deleteDirectory(new File(zugArchive))) {
 				zugArchivePath.mkdirs();
 			}
-			Utility.copyFile(zipTmpLocation, zugArchive +SysEnv. SLASH + testSuiteName +"_" +exactDateTime
+			Utility.copyFile(zipTmpLocation, zugArchive +SysEnv. SLASH + exactDateTime
 					+ ".zip");
 			System.out.println("Finished creating zip file in : " + zugArchive);
 			Utility.deleteDirectory(new File(zipTmpLocation));

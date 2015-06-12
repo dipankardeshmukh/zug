@@ -56,6 +56,7 @@ public class ProgramOptions {
 	String BuildId=StringUtils.EMPTY;
 	String BuildNo = StringUtils.EMPTY;
 	static String iniFile = StringUtils.EMPTY;
+	
 	String buildName=StringUtils.EMPTY;
 	String testPlanName=StringUtils.EMPTY;
 	static boolean showTime=false;
@@ -63,10 +64,10 @@ public class ProgramOptions {
 	boolean debugger=false;
 
 	public static String filelocation = null;
-	private static Hashtable<String, String> _opts=new Hashtable<String, String>();
+	private Hashtable<String, String> _opts=new Hashtable<String, String>();
 	public ArrayList<String> testCaseIds;
 	protected static String currentPath, workingDirectory;
-	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-inifile","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid","-debugger","-count","-duration"));
+	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid","-debugger","-count","-duration"));
 	/*
 	 * Creates a new instance.
 	 * 
@@ -100,7 +101,6 @@ public class ProgramOptions {
 
 	}
 	
-	
 
     public static String getiniFile() {
         return iniFile;
@@ -109,7 +109,7 @@ public class ProgramOptions {
     public static void setiniFile(String inifile) {
         iniFile = inifile;
     }
-	
+
 	public String getTestPlanPath() {
 		if(TestPlanPath==null)
 			return StringUtils.EMPTY;
@@ -476,7 +476,7 @@ public class ProgramOptions {
 	 * Check if Hash table contains the specified key.
 	 *@return true if the specified option is set else false.
 	 */
-	public static boolean isSet(String opt) {
+	public boolean isSet(String opt) {
 		return _opts.containsKey(opt.toLowerCase());
 	}
 
@@ -496,10 +496,10 @@ public class ProgramOptions {
 	 * @return Gets the current value for the specified option 
 	 * 	the specified default if the option is not set
 	 */
-	public static String getString(String opt, String dflt) throws Exception {
+	public String getString(String opt, String dflt) throws Exception {
 		String val;
 		if (isSet(opt.toLowerCase())) {
-			val =  _opts.get(opt.toLowerCase());
+			val = (String) _opts.get(opt.toLowerCase());
 		//	System.out.println("opt:"+opt+"\toptval"+val);
 			if (!isNullOrEmpty(val)) {
 				return val;
@@ -846,6 +846,14 @@ public class ProgramOptions {
 				Log.Debug("Controller/Getoptions: Include Molecule specified : "
 						+ includeMolecules);
 			}
+			 if ((iniFile = this.getString("inifile", null)) == null) {
+	                // System.out.println("This is the Options\t"+includeMolecules);
+	                Log.Debug("Controller/GetOptions: INI file specified = "
+	                        + iniFile);
+	                iniFile = "Spark.ini";
+	            }
+
+			
 			if ((pwd = this.getString("pwd", null)) == null) {
 				Log.Debug("Controller/Getoptions: Working Directory specified : "
 						+ pwd);
