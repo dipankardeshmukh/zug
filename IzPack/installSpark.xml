@@ -56,14 +56,14 @@
       <variable name="TargetPanel.dir.windows" value="${ENV[programfiles(x86)]}${FILE_SEPARATOR}automature" condition="win32"/>
       <variable name="TargetPanel.dir.windows" value="${ENV[programfiles]}${FILE_SEPARATOR}automature" condition="win64"/>
       <variable name="TargetPanel.dir.unix" value="/usr/lib/automature" condition="izpack.linuxinstall"/>
-      <variable name="TargetPanel.dir.macosx" value="/Applications/Automature" condition="izpack.macinstall"/>
+      <variable name="TargetPanel.dir.mac_osx" value="/Applications/Automature" condition="izpack.macinstall"/>
     </variables>
   
     <variables>
         <variable name="INSTALL_PATH" checkonce="true" condition="izpack.linuxinstall" value="$TargetPanel.dir.unix"/>
         <variable name="INSTALL_PATH" checkonce="true" condition="installonwindows64" value="$TargetPanel.dir.windows"/>
         <variable name="INSTALL_PATH" checkonce="true" condition="installonwindows32" value="$TargetPanel.dir.windows"/>
-        <variable name="INSTALL_PATH" checkonce="true" condition="izpack.macinstall" value="TargetPanel.dir.macosx"/>
+        <variable name="INSTALL_PATH" checkonce="true" condition="izpack.macinstall" value="TargetPanel.dir.mac_osx"/>
     </variables>
 
 <!--
@@ -108,7 +108,11 @@
     <resources>  
         <res id="LicencePanel.licence" src="License.txt"/>
         <res id="InfoPanel.info" src="Readme.txt"/>
-    </resources>
+		<res id="shortcutSpec.xml" src="shortcutSpec.xml"/>
+	    <res id="packsLang.xml" src="packsLang.xml" />
+		<res id="customicons.xml" src="customicons.xml" />
+	</resources>
+    
     
 <!--  
 <dynamicinstallerrequirements>
@@ -127,7 +131,8 @@
         <panel classname="LicencePanel"/>  
         <panel classname="TargetPanel"/>
         <panel classname="PacksPanel"/>
-        <panel classname="InstallPanel"/>             
+        <panel classname="InstallPanel"/>  
+        <panel classname="ShortcutPanel"> <os family="windows"/> </panel>			
         <panel classname="FinishPanel"/>
     </panels>
     

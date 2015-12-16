@@ -1,5 +1,5 @@
 
-This is a text file named "Readme.txt" in the Zug
+This is a text file named "Readme.txt" in the Spark
 installation directory, and can be printed directly from any text
 editor, once the files have been unpacked.
 
@@ -20,7 +20,6 @@ Steps to activate your license.
 System Requirements for Windows, OS X & Linux
 Make sure that your system meets the minimum requirements to run Zug installer:
                 •  Internet Connection.
-                •  An Unzip software.
                 •  0.5 GB of available hard disk space.
                 •  Command Prompt.
 		            •  Java(TM) SE Runtime Environment(32bit) 1.6 (update 21)
@@ -32,42 +31,37 @@ Make sure that your system meets the minimum requirements to run Zug installer:
  Windows
  -------- 
  
-Before you begin the installation, it is strongly recommended that you have the administrator privileges over your machine to run the Zug installer.
-
-
-• To install zug on windows, download the installation file installZug.jar from the company website www.automature.com and save it in a desired location. 
-
-• Download installZug.jar file and save it in a desired location.
+• To install Spark on windows, download the installation file SparkSetup[version].jar from the company website www.automature.com and save it in a desired location. 
 
 • To run the installer, type the following at the command prompt. 
-		 java -jar installZug.jar
+		 java -jar SparkSetup[version].jar
 
-• The installation welcome screen shows up. The installation setup screens will guide you and through the installation. When On clicking Next, the ZUG Setup Installation wizard will guide you step by step through the installation procedure.Once finished, select Done.
+• The installation welcome screen shows up. The installation setup screens will guide you and through the installation. When On clicking Next, the Spark Setup Installation wizard will guide you step by step through the installation procedure.Once finished, select Done.
 
 • The default installation folder is C:\Program Files\Automature.
 
-• Copy and paste the Zug.Licence.Key in Zug folder. 
+• Copy and paste the Spark.Licence.Key in SPARK folder. 
 
-• Launch the Zug GUI by typing zug -gui at the command prompt.   
+• Launch the Spark GUI by double clicking on the Spark icon created on the desktop.   
 
 
 OS X
 ----- 
-For installing ZUG in OS X 
+For installing Spark in OS X 
 
-• Download installZug.jar from Automature website (www.automature.com) and save it in a preferred location. 
+• Download SparkSetup[version].jar from Automature website (www.automature.com) and save it in a preferred location. 
  
 • To run the installer type the following at the command prompt.  
-  sudo java -jar installZug.jar
+         java -jar SparkSetup[version].jar
 
-• The installation welcome screen shows up. The installation setup screens will guide you and through the installation. When On clicking Next, the ZUG Setup Installation wizard will guide you step by step through the installation procedure.Once finished, select Done.
+• The installation welcome screen shows up. The installation setup screens will guide you and through the installation. When On clicking Next, the Spark Setup Installation wizard will guide you step by step through the installation procedure.Once finished, select Done.
 
-• The default installation folder is /Applications/Automature/Zug.
+• The default installation folder is /Applications/Automature.
 
 
-• Copy and paste the Zug.Licence.Key in Zug folder. 
+• Copy and paste the Spark.Licence.Key in SPARK folder. 
 
-• Launch the Zug GUI by typing zug -gui at the command prompt. 
+• Launch the Spark GUI by double clicking on the spark.mac file in the SPARK folder. 
 
 
  Linux
