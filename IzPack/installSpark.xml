@@ -171,7 +171,7 @@
     -->
     <packs>
         <pack name="SPARK" required="yes">
-        <description>Choose this option if this machine is where you will execute your test on</description>         
+        <description> </description>         
         
            <file unpack="true" src="automature-spark-bin-1.0.1.zip" targetdir="$INSTALL_PATH" />
         
