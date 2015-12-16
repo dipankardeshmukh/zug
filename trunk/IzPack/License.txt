@@ -1,5 +1,5 @@
 
-The software included in this product uses, and is dependent copyrighted software that is licensed under the GPLv3. Copies of the applicable licenses can be found at the following sites, viz. 
+The software included in this product is licensed under the GPLv3. Copies of the applicable licenses can be found at the following sites, viz. 
 
 
 

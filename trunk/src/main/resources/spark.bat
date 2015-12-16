@@ -13,7 +13,7 @@ pushd "%~dp0."
 
 set CLASSPATH=.;lib\*
 
-java -cp %CLASSPATH% -jar automature-spark.jar  %* %cwd%
+java -cp %CLASSPATH% -jar automature-spark.jar  %* %cwd% -gui
 
 ::echo %* %cwd%
 :: Deleting the Temporary Files that are created as part of the Execution
