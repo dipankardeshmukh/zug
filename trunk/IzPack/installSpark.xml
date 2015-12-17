@@ -23,6 +23,8 @@
         </authors>
         <url>http://www.automature.com/</url>
         <javaversion>1.8</javaversion>
+		<writeinstallationinformation>false</writeinstallationinformation>
+		<uninstaller name="UninstallSpark.jar" path="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}Uninstaller" write="yes"/>
         <run-privileged condition="izpack.windowsinstall.7|izpack.windowsinstall.vista"/>
 		<summarylogfilepath>$INSTALL_PATH/installinfo/Summary.htm</summarylogfilepath>
 
