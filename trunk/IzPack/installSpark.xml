@@ -145,27 +145,6 @@
     <native type="izpack" name="WinSetupAPI_x64.dll"/>
    </natives>
     
-	
-	<shortcuts>
-    <defaultCurrentUser/>
-    <programGroup defaultName="Spark" location="applications" />
-    <shortcut
-	name="Spark" 
-	target="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}spark.bat" 
-	workingDirectory="$INSTALL_PATH" 
-	iconFile="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}images${FILE_SEPARATOR}spark.ico" 
-	iconIndex="0" 
-	initialState="minimized"
-	programGroup="yes" 
-	desktop="yes" 
-	applications="no" 
-	startMenu="yes" 
-	startup="no">
-	<createForPack name="SPARK"/>
-	<os family="windows"/>
-    </shortcut>
-    </shortcuts>
-
 
     <!-- 
         The packs section.
