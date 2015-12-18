@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
 <shortcuts>
     <defaultCurrentUser/>
-    <programGroup defaultName="Spark" location="applications" />
+    <programGroup defaultName="Spark-1.0.1" location="applications" />
     <shortcut
 	name="Spark" 
 	target="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}spark.bat" 
@@ -17,4 +17,22 @@
 	<createForPack name="SPARK"/>
 	<os family="windows"/>
     </shortcut>
-    </shortcuts>
+	
+	 <shortcut
+     name="Remove Spark"
+	 target="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}Uninstaller${FILE_SEPARATOR}UninstallSpark.jar"
+	 workingDirectory="$INSTALL_PATH"
+	 iconFile="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}Images${FILE_SEPARATOR}Remove_Spark.ico"
+	 iconIndex="0"
+	 initialState="noShow"
+	 programGroup="yes" 
+     desktop="no"
+     applications="no"
+	 startMenu="no"
+     startup="no">
+     <createForPack name="SPARK" />
+	 <os family="windows"/>
+     </shortcut >
+    
+</shortcuts>
+    
