@@ -13,7 +13,8 @@
 	desktop="yes" 
 	applications="no" 
 	startMenu="yes" 
-	startup="no">
+	runAsAdministrator="yes"
+    startup="no">
 	<createForPack name="SPARK"/>
 	<os family="windows"/>
     </shortcut>
