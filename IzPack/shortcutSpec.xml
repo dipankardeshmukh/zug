@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
 <shortcuts>
     <defaultCurrentUser/>
-    <programGroup defaultName="Spark-1.0.1" location="applications" />
+    <programGroup defaultName="Spark-1.0.2" location="applications" />
     <shortcut
 	name="Spark" 
 	target="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}spark.bat" 
@@ -13,8 +13,7 @@
 	desktop="yes" 
 	applications="no" 
 	startMenu="yes" 
-	runAsAdministrator="yes"
-    startup="no">
+	startup="no">
 	<createForPack name="SPARK"/>
 	<os family="windows"/>
     </shortcut>
