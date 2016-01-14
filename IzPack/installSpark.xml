@@ -152,7 +152,7 @@
         <pack name="SPARK" required="yes">
 		
            <description>Automature's software test automation tool.</description> 
-           <file unpack="true" src="automature-spark-bin-1.0.1.zip" targetdir="$INSTALL_PATH" />
+           <file unpack="true" src="automature-spark-bin-1.0.2.zip" targetdir="$INSTALL_PATH" />
            <executable targetfile="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}SetSparkPath.bat" stage="postinstall" keep="true" condition="izpack.windowsinstall">
            </executable>
            <executable targetfile="$INSTALL_PATH${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}InstallSparkLinux.sh" stage="postinstall" keep="true" condition="izpack.linuxinstall">
