@@ -115,9 +115,9 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <!--includes>
-                    <include>zug.bat</include>
-                </includes-->
+                <includes>
+                    <include>Spark.ini.Windows</include>
+                </includes>
                 <targetPath>${project.build.directory}/SPARK</targetPath>
             </resource>
             <resource>
