@@ -117,6 +117,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>Spark.ini.Windows</include>
+					<include>Permissions.cmd</include>
                 </includes>
                 <targetPath>${project.build.directory}/SPARK</targetPath>
             </resource>
