@@ -2,17 +2,28 @@ package com.automature.spark.gui.sheets;
 
 
 import com.automature.spark.beans.MacroColumn;
+import com.automature.spark.beans.TestCaseAndResult;
 import com.automature.spark.engine.BuildInAtom;
 import com.automature.spark.engine.Spark;
+import com.automature.spark.engine.TestCase;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.gui.utils.Excel;
 import com.automature.spark.util.ExtensionInterpreterSupport;
 
 
 
+
+
+
+
+
+
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
@@ -44,6 +55,8 @@ public class SpreadSheet {
 
 	private FileInputStream inputFile;
 
+	public static Hashtable connectionParam=new Hashtable();
+	
 	public String getAbsolutePath() {
 		return absolutePath;
 	}
@@ -99,7 +112,52 @@ public class SpreadSheet {
 	public SpreadSheet() {
 
 	}
+	
+	public void readConfigDbConfigs() throws Exception {
 
+		Iterator<List<String>> it = configSheet.getData().iterator();
+		while (it.hasNext()) {
+
+			List<String> row = null;
+			row = it.next();
+			//System.out.println(row);
+			Iterator<String> cell = row.iterator();
+
+			if (cell.hasNext()) {
+
+					String s=cell.next();
+					
+					String data=cell.next();
+					
+						if (!connectionParam.containsKey(s.toLowerCase())) {
+							
+							if(s.equals("DBHostName"))
+							{
+								if(!data.startsWith("http://"))
+									data="http://"+data;
+								connectionParam.put("dbhostname", data);
+								if(data.equals(""))
+									connectionParam.clear();
+							}
+							else if(s.equals("DBUserName"))
+							{
+								connectionParam.put("dbusername", data);
+								if(data.equals(""))
+									connectionParam.clear();
+							}
+							else if(s.equals("DBUserPassword"))
+							{
+								connectionParam.put("dbuserpassword", data);
+								if(data.equals(""))
+									connectionParam.clear();
+								break;
+							}
+							
+						} 
+				}
+
+			}
+	}
 	public void readConfigIncludeFiles() throws Exception {
 
 		Iterator<List<String>> it = configSheet.getData().iterator();
@@ -132,7 +190,7 @@ public class SpreadSheet {
 							}
 							File f=new File(s);
 							if(!f.exists()){
-								System.err.println(s +"does not exist.");
+								System.err.println(s +" does not exist.");
 								continue;
 							}
 							if (!uniqueSheets.containsKey(s)) {
@@ -240,7 +298,9 @@ public class SpreadSheet {
 	}
 
 	public boolean readSpreadSheet(String filePath) throws Exception {
-
+		
+		Spark.updateExecutionSummaryPanel();
+		
 		if (!new File(filePath).isAbsolute()) {
 			throw new Exception("SpreadSheet/readSpreadSheet expects file paths to be absolute");
 		}
@@ -276,7 +336,7 @@ public class SpreadSheet {
 			}
 		//	configSheet.setTempFilePath(tempFile.getAbsolutePath());			
 						
-
+			readConfigDbConfigs();
 			readConfigIncludeFiles();
 
 			macroSheet = new MacroSheet(wb.getSheet("Macros"), tempFile.getAbsolutePath(),absolutePath);
@@ -288,6 +348,7 @@ public class SpreadSheet {
 			testCasesSheet = new TestCasesSheet(wb.getSheet("TestCases"), tempFile.getAbsolutePath(),absolutePath);
 			testCasesSheet.readHeader();
 			testCasesSheet.readData();
+			ZugguiController.controller.getTestExecutionResults().setVisible(true);
 		//	testCasesSheet.setTempFilePath(tempFile.getAbsolutePath());
 
 			moleculesSheet = new MoleculesSheet(wb.getSheet("Molecules"), tempFile.getAbsolutePath(),absolutePath);

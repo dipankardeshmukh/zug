@@ -57,7 +57,12 @@ public class FloatingStage {
 		if(floaterPane instanceof TitledPane){
 			stage.setTitle("SPARK - "+((TitledPane) floaterPane).getText());
 		}
+		
+		if(((TitledPane) floaterPane).getText().contains("Execution Summary"))
+		stage.setMaxHeight(420);
+		else
 		stage.setMaxHeight(350);
+		
 		stage.setMaximized(false);
 		//((TitledPane)floaterPane).prefHeightProperty().bindBidirectional(pane.prefHeightProperty());
 		//stage.setMaxHeight(((TitledPane)floaterPane).getHeight());
@@ -72,6 +77,9 @@ public class FloatingStage {
 				originalParent.getChildren().remove(floaterPane);
 
 				pane.getChildren().clear();
+				if(floaterPane instanceof TitledPane && ((TitledPane) floaterPane).getText().contains("Execution Summary")){
+					((TitledPane) floaterPane).setMinHeight(400.0);
+				}
 				pane.getChildren().add(floaterPane);
 				if(floaterPane instanceof TitledPane){
 					((TitledPane) floaterPane).setExpanded(true);

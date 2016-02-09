@@ -28,7 +28,7 @@ public class ProgramOptions {
 
 	public  boolean verbose = true;
 	boolean debugMode = true;
-	public  boolean dbReporting = true;
+	public  boolean dbReporting = false;
 	boolean compileMode = false;
 	boolean verificationSwitching = true;
 	boolean doCleanupOnTimeout = false;
@@ -67,7 +67,7 @@ public class ProgramOptions {
 	private Hashtable<String, String> _opts=new Hashtable<String, String>();
 	public ArrayList<String> testCaseIds;
 	protected static String currentPath, workingDirectory;
-	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid","-debugger","-count","-duration"));
+	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-dbreporting","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid","-debugger","-count","-duration"));
 	/*
 	 * Creates a new instance.
 	 * 
@@ -770,7 +770,7 @@ public class ProgramOptions {
 				verbose = false;
 
 			}
-
+            
 			if ((compileModeFlagVal = this.getString("execute", null)) == "true") {
 				Log.Debug("Controller/GetOptions: execute switch found. Compile Mode = false");
 				compileMode = false;
@@ -786,29 +786,28 @@ public class ProgramOptions {
 			}
 
 			String dbReportingVal = null;
-			if ((dbReportingVal = this.getString("dbreporting", null)) == null) {
-				if (compileMode) {
-					Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
-					dbReporting = false;
-
-				} else {
+			if ((dbReportingVal = this.getString("dbreporting", null)) != null) {
+//				if (compileMode) {
+//					Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
+//					dbReporting = false;
+//
+//				} else {
 					// By default DBReporting option is ON and set to TRUE,
 					// unless explicitly switched OFF
 					Log.Debug("Controller/GetOptions: dbReportingVal ON.");
 					dbReporting = true;
-				}
+//				}
 			} else {
-				if (compileMode) {
+//				if (compileMode) {
 					Log.Debug("Controller/GetOptions: dbReportingVal is OFF as CompileMode is ON - Check Syntax mode is true.");
 					dbReporting = false;
-				} else {
-					dbReporting = Boolean.parseBoolean(dbReportingVal);
-
-					Log.Debug("Controller/GetOptions: dbReportingVal Flag is = "
-							+ dbReportingVal);
-				}
+//				} else {
+//					dbReporting = Boolean.parseBoolean(dbReportingVal);
+//
+//					Log.Debug("Controller/GetOptions: dbReportingVal Flag is = "
+//							+ dbReportingVal);
+//				}
 			}
-
 			String verificationSwitchingVal = StringUtils.EMPTY;
 			if ((verificationSwitchingVal = this.getString("verify", null)) == "true") {
 				// verificationSwitching is ON and set to TRUE, unless
@@ -918,7 +917,7 @@ public class ProgramOptions {
 					return false;
 				}
 				else{
-					dbReporting=true;
+//					dbReporting=true;
 					Log.Debug("Controller/GetOptions: testcycleid = " + testCycleId);
 				}
 
@@ -934,7 +933,7 @@ public class ProgramOptions {
 			// if (dbReporting)
 			// {
 
-			dbReporting = false;
+//			dbReporting = false;
 
 			if ((TestPlanId = this.getString("testplanid", null)) == null) {
 				// TODO here put checking for testplanid=product:sprint:
@@ -1127,7 +1126,7 @@ public class ProgramOptions {
 				Log.Debug("Controller/GetOptions: test plan name = "+testPlanName);
 				dbReporting=true;
 			}
-			
+
 			if((this.buildName=this.getString("buildname", null))==null){
 				buildName=StringUtils.EMPTY;
 			}
@@ -1146,7 +1145,6 @@ public class ProgramOptions {
 					+ e.getMessage());
 			e.printStackTrace();
 		}
-
 		return true;
 	}
 

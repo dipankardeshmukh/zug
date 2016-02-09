@@ -63,8 +63,6 @@ public class DavosReporter extends Reporter {
 		testSuiteRole=(String)ht.get("testsuiterole");
 	}
 
-
-
 	/***
 	 * Function will verify if the TestPlan ID, Topology ID and other related
 	 * stuff specified is correct and exists in the Result Database or not.

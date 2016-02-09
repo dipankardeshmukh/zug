@@ -126,7 +126,7 @@ is being used to size a border should also be in pixels.
 
     /* A bright blue for highlighting/accenting objects.  For example: selected
      * text; selected items in menus, lists, trees, and tables; progress bars */
-    -fx-accent: #0096C9;
+    -fx-accent: steel;
     
     /* Default buttons color, this is similar to accent but more subtle */
     -fx-default-button: #4fb6d6;
@@ -2242,6 +2242,7 @@ is being used to size a border should also be in pixels.
     -fx-text-fill: -fx-selection-bar-text;
 }
 /* When the TableView is _not_ focused, we show alternate selection colors */
+
 .table-row-cell:filled:selected:focused, 
 .table-row-cell:filled:selected,
 .tree-table-row-cell:filled:selected:focused, 

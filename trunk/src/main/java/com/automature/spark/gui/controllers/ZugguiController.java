@@ -5,13 +5,20 @@
  */
 package com.automature.spark.gui.controllers;
 
+import com.automature.spacetimeapiclient.SpacetimeClient;
+
+import javafx.scene.control.TableColumn;
+
 import com.automature.spark.beans.ActionInfoBean;
 import com.automature.spark.beans.MacroColumn;
+import com.automature.spark.beans.TestCaseAndResult;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.engine.TestCase;
+import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.Constants;
 import com.automature.spark.gui.Expression;
 import com.automature.spark.gui.ExpressionEvaluator;
+import com.automature.spark.gui.ReporterPaneChildWindow;
 import com.automature.spark.gui.RuntimeOptionBuilder;
 import com.automature.spark.gui.SessionHandler;
 import com.automature.spark.gui.ZugGui;
@@ -26,13 +33,44 @@ import com.automature.spark.gui.utils.ApplicationLauncher;
 import com.automature.spark.gui.utils.GuiUtils;
 import com.automature.spark.gui.utils.ScreenLoader;
 import com.automature.spark.gui.utils.TestSuiteChooser;
+import com.automature.spark.reporter.SpacetimeReporter;
+import com.automature.spark.util.ExtensionInterpreterSupport;
 import com.automature.spark.util.Log;
+import com.automature.spark.util.Styles;
 import com.automature.spark.util.Utility;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -41,10 +79,35 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -52,6 +115,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -66,11 +131,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -79,9 +146,12 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.image.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -92,7 +162,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-
+import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.stage.StageStyle;
+import javafx.collections.*;
 /**
  * FXML Controller class
  *
@@ -229,6 +301,8 @@ public class ZugguiController implements Initializable ,GuiController{
 	@FXML
 	private CheckBox noVerifyCB;
 	@FXML
+	private CheckBox dbReportingCB;
+	@FXML
 	private CheckBox defaultMacroColumnCB;
 	@FXML
 	private CheckBox ignoreCB;
@@ -277,11 +351,14 @@ public class ZugguiController implements Initializable ,GuiController{
 	private AnchorPane variableAPane;
 	@FXML
 	private TitledPane testControlTPane;
+	
+	
 	private SessionHandler sessionHandler;
 	private TestSuiteChooser tsChooser;
 	public static SpreadSheet spreadSheet;
 	private Stage consoleStage;
 	private ConsoleController console;
+	private static ConsoleController zugGuiConsole;
 	private StartuppageController spcController;
 	private Pane startUpPane;
 
@@ -299,10 +376,50 @@ public class ZugguiController implements Initializable ,GuiController{
 	private boolean sheetLoaded=false;
 	private Stage expressionStage;
 	private boolean expressionRefresh;
+	public String productId;
+	public int listElementFinalIndex=10;
+	public int pageNumber=1;
+	public boolean isPopupOpened=false;
+	public static ZugguiController controller;
+	
+	public static SpacetimeReporter reporter;
+
+	public Hashtable connectionParam=new Hashtable();
+	
+	private static String[] switchesToConfigureTest;
+
+	@FXML
+	private TextField product;
+	@FXML
+	private TextField testPlan;
+	@FXML
+	private TextField testCycle;
+	@FXML
+	private TextField topoSet;
+	@FXML
+	private TextField buildTag;
+	@FXML
+	private TableView testExecutionResults;
+	@FXML
+	private TableColumn testCase;
+	@FXML
+	private TableColumn result;
+	@FXML
+	private TableColumn timeOfExecution;
+	@FXML
+	private Button createTestCycleBtn;
+	@FXML
+	private Button createBuildTagBtn;
+	
+	private ReporterPaneChildWindow popup;
+	
+
+    public ObservableList<TestCaseAndResult> rowData = FXCollections.observableArrayList();
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
+		controller=this;
 		try{
 			sessionHandler = new SessionHandler();
 			sessionHandler.retriveSession();
@@ -310,6 +427,7 @@ public class ZugguiController implements Initializable ,GuiController{
 			sheetTabPane = new SheetTabPane();
 			SheetTabPane.setController(this);
 			optionBuilder=new RuntimeOptionBuilder();
+			popup=new ReporterPaneChildWindow();
 			repeatCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 				public void changed(ObservableValue<? extends Boolean> ov,
 						Boolean old_val, Boolean new_val) {
@@ -347,7 +465,6 @@ public class ZugguiController implements Initializable ,GuiController{
 			variableVBox.prefHeightProperty().bind(variableAPane.heightProperty());
 			variableVBox.prefWidthProperty().bind(variableAPane.widthProperty());
 			initializeLisenceValidator();
-			
 		}catch(Exception e){
 			System.err.println("Error : Initializing GUI.\nError message  "+e.getMessage()+"\nError Trace :"+e.getStackTrace());
 			//throw e;
@@ -425,19 +542,141 @@ public class ZugguiController implements Initializable ,GuiController{
 		optionBuilder.registerCheckBox(verboseCB, "-verbose");
 		optionBuilder.registerCheckBox(noAutoRecoveryCB, "-noautorecover");
 		optionBuilder.registerCheckBox(noVerifyCB, "-noverify");
+		optionBuilder.registerDbReportingCheckBox(dbReportingCB , "-dbreporting");
 		optionBuilder.registerCheckBox(ignoreCB, "-ignore");
 		optionBuilder.registerCheckBox(atomExecTimeCB, "-atomexectime");
 		optionBuilder.registerRepeatOptions(repeatCheckBox,repeatCountRadioButton,repeatDurationRadioButton,repeatCountTextBox,repeatDurationTextBox,repeatChoiceBox);
 		optionBuilder.registerEnvironmentOptions(testSuiteCB, environmentCB, useDefaultCB, macroTF);
-
+		optionBuilder.registerReportingOptions(product, testPlan, testCycle, topoSet, buildTag);
+		optionBuilder.registerTestExecutionResults(testExecutionResults,testCase,result,timeOfExecution);
 	}
+	public boolean initReportingConfigurations(){
+		boolean isDbConfigured=true;
+		String tpName="";
+		HashMap<String,String> products=new HashMap<String,String>();
+		
+		ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
+		try {
+			String hostName="",userName="",userPassword="";
+			if(SpreadSheet.connectionParam.size()==0)
+			{
+			hostName=testINI.getNode(Spark.db_host_xml_tag_path);
+		    userName=testINI.getNode(Spark.db_user_xml_tag_path);
+			userPassword=testINI.getNode(Spark.db_password_xml_tag_path);
+			if(!hostName.startsWith("http://"))
+				hostName="http://"+hostName;
+			connectionParam.put("dbhostname", hostName);
+			connectionParam.put("dbusername", userName);
+			connectionParam.put("dbuserpassword", userPassword);
+			isDbConfigured=true;
+			}
+			else if(SpreadSheet.connectionParam.size()!=0)
+			isDbConfigured=true;
+			else
+			{
+				System.err.println("\nPlease check SpaceTime configurations in Spark.ini or specify db configuration credentials in testsuite\n\n");
+				isDbConfigured=false;
+			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		if(isDbConfigured)
+		{
+		if(SpreadSheet.connectionParam.size()!=0)
+		reporter=new SpacetimeReporter(SpreadSheet.connectionParam);	
+		else	
+		reporter=new SpacetimeReporter(connectionParam);
+		
+		try {
+		if(!reporter.connect())
+		{
+			System.err.println("\nPlease check SpaceTime configurations in Spark.ini or specify db configuration credentials in testsuite\n\n");
+			isDbConfigured=false;
+			return isDbConfigured;
+		}
+		} catch (Throwable e1) {
+			e1.printStackTrace();
+		} 
+		
+		ArrayList<String> listOftestPlans=new ArrayList<String>();
+		ArrayList<String> listOftestCycles=new ArrayList<String>();
+		ArrayList<String> listOfTopoSets=new ArrayList<String>();
+		ArrayList<String> listOfBuilds=new ArrayList<String>();
+		product.setOnMouseClicked(event->{
+			if(isPopupOpened)
+				return;
+				popup.displayListView(reporter.getProductList(),product,"Products",reporter,listOftestPlans,null,event);
+				this.testPlan.setDisable(true);
+				this.testPlan.setText("");
+				this.testCycle.setDisable(true);
+				this.testCycle.setText("");
+				this.topoSet.setDisable(true);
+				this.topoSet.setText("");
+				this.buildTag.setDisable(true);
+				this.buildTag.setText("");
+				this.createTestCycleBtn.setDisable(true);
+				this.createBuildTagBtn.setDisable(true);
+		});
 
+		testPlan.setOnMouseClicked(event->{
+			if(isPopupOpened)
+				return;
+			popup.displayListView(listOftestPlans,testPlan,"Testplans",reporter,listOftestCycles,null, event);
+			this.testCycle.setDisable(true);
+			this.testCycle.setText("");
+			this.topoSet.setDisable(true);
+			this.topoSet.setText("");
+			this.buildTag.setDisable(true);
+			this.buildTag.setText("");
+//			this.createTestCycleBtn.setDisable(true);
+		});
+		testCycle.setOnMouseClicked(event->{
+			if(isPopupOpened)
+				return;
+			popup.displayListView(listOftestCycles,testCycle,"TestCycles",reporter,listOfTopoSets,listOfBuilds, event);
+
+    		createTestCycleBtn.setDisable(true);
+        	createBuildTagBtn.setDisable(true);
+			this.topoSet.setDisable(true);
+			
+//			this.topoSet.setText("");
+			this.buildTag.setDisable(true);
+//			this.buildTag.setText("");
+		});
+		topoSet.setOnMouseClicked(event->{
+			if(testCycle.getText().lastIndexOf("(")<=0)
+				return;
+			if(isPopupOpened)
+				return;
+			popup.displayListView(listOfTopoSets,topoSet,"TopologyStets",reporter,null,null, event);
+
+    		createTestCycleBtn.setDisable(true);
+        	createBuildTagBtn.setDisable(true);
+			this.buildTag.setDisable(true);
+//			this.buildTag.setText("");
+		});
+		
+		buildTag.setOnMouseClicked(event->{
+			if(testCycle.getText().lastIndexOf("(")<=0)
+				return;
+			if(isPopupOpened)
+				return;
+			popup.displayListView(listOfBuilds,buildTag,"Builds",reporter,null,null, event);
+
+    		createTestCycleBtn.setDisable(true);
+        	createBuildTagBtn.setDisable(true);
+		});
+		}
+		return isDbConfigured;
+	}
+	
 	public void initializeStartupBehavior() {
 		intializeStartUpPage();
 		initializeConsole();
 		intitializeStartUpComponents();
 	}
 
+	
 	public void intializeStartUpPage() {
 
 		try {
@@ -538,6 +777,9 @@ public class ZugguiController implements Initializable ,GuiController{
 				try {				// TODO Auto-generated method stub
 					ScreenLoader loader=new ScreenLoader("/com/automature/spark/gui/resources/console.fxml");
 					console=(ConsoleController)loader.getController();
+					
+					zugGuiConsole=console;
+					
 					consoleStage=loader.getStage();
 					consoleStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 						@Override
@@ -599,6 +841,106 @@ public class ZugguiController implements Initializable ,GuiController{
 		}
 	}
 
+	public void createTestCycle(){
+		
+		setAllReporterPaneControlsDisabled();
+//		if(ZugguiController.controller.getCreateBuildTagBtn().isDisable())
+//		createBuildTagBtn.setDisable(true);
+//		
+//		createTestCycleBtn.setDisable(true);
+//		testCycle.setDisable(true);
+//		topoSet.setDisable(true);
+//		buildTag.setDisable(true);
+		
+		ScreenLoader loader;
+		try {
+			loader = new ScreenLoader("/com/automature/spark/gui/resources/TestCycleGenerator.fxml");
+			loader.getStage().initOwner(splitPane.getScene().getWindow());
+			loader.getStage().initStyle(StageStyle.UTILITY);
+			loader.getStage().setTitle("Create TestCycle");
+			loader.getStage().setResizable(false);
+			loader.getStage().setAlwaysOnTop(true);
+			TestCycleGeneratorController.setStage(loader.getStage());
+			loader.getStage().setOnCloseRequest(event->{
+				
+				ZugguiController.controller.setAllReporterPaneControlsEnabled();
+				if(!ZugguiController.controller.getTopoSet().getText().equals(""))
+				ZugguiController.controller.getTopoSet().setDisable(false);
+				else
+				ZugguiController.controller.getTopoSet().setDisable(true);	
+				
+				if(!ZugguiController.controller.getBuildTag().getText().equals(""))
+				{
+				ZugguiController.controller.getBuildTag().setDisable(false);
+				ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
+				}
+				else
+				{
+				ZugguiController.controller.getBuildTag().setDisable(true);
+				ZugguiController.controller.getCreateBuildTagBtn().setDisable(true);
+				}
+				
+			});
+			loader.getStage().show();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	public void setAllReporterPaneControlsDisabled() {
+		
+		product.setDisable(true);
+		testPlan.setDisable(true);
+		testCycle.setDisable(true);
+		topoSet.setDisable(true);
+		buildTag.setDisable(true);
+		createBuildTagBtn.setDisable(true);
+		createTestCycleBtn.setDisable(true);
+		
+	}
+	
+	public void setAllReporterPaneControlsEnabled() {
+		
+		product.setDisable(false);
+		testPlan.setDisable(false);
+		testCycle.setDisable(false);
+		topoSet.setDisable(false);
+		buildTag.setDisable(false);
+		createBuildTagBtn.setDisable(false);
+		createTestCycleBtn.setDisable(false);
+		
+	}
+
+	public void createBuildTag() {
+		
+		setAllReporterPaneControlsDisabled();
+		
+		TestCycleGeneratorController.isBuildGeneratorOpenedFromTestCycleGenerator=false;
+		
+		createBuildTagBtn.setDisable(true);
+		buildTag.setDisable(true);
+		ScreenLoader loader;
+		try {
+			loader = new ScreenLoader("/com/automature/spark/gui/resources/BuildGenerator.fxml");
+			loader.getStage().initOwner(splitPane.getScene().getWindow());
+			loader.getStage().initStyle(StageStyle.UTILITY);
+			loader.getStage().setTitle("Create BuildTag");
+			loader.getStage().setResizable(false);
+			loader.getStage().setAlwaysOnTop(true);
+			BuildTagGeneratorController.setStage(loader.getStage());
+			loader.getStage().setOnCloseRequest(event->{
+
+				if(!TestCycleGeneratorController.isBuildGeneratorOpenedFromTestCycleGenerator)
+					ZugguiController.controller.setAllReporterPaneControlsEnabled();
+				
+			});
+			loader.getStage().show();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
 	public void loadTestSuite(String fileName) throws Exception {
 		if (spreadSheet != null) {
 			spreadSheet.releaseResources();
@@ -690,8 +1032,6 @@ public class ZugguiController implements Initializable ,GuiController{
 		setDisableNoTestSuiteLoadComonents(true);
 		ObservableList titlePanes=titlesVBox.getChildren();
 		titlePanes.forEach( p -> new FloatingStage((Parent)p) );
-
-
 	}
 
 	private void setDisableNoTestSuiteLoadComonents(final boolean b){
@@ -722,7 +1062,12 @@ public class ZugguiController implements Initializable ,GuiController{
 				testControlVBox.setDisable(b);
 				environmentPane.setDisable(b);
 				
-				removeBPMI.setDisable(b);
+//				removeBPMI.setDisable(b);
+//				product.setDisable(b);
+//				testPlan.setDisable(b);
+//				testCycle.setDisable(b);
+//				topoSet.setDisable(b);
+//				buildTag.setDisable(b);
 			}
 		});
 	}
@@ -814,9 +1159,6 @@ public class ZugguiController implements Initializable ,GuiController{
 	}
 
 	public void showRunningTestCase(String testCaseID, boolean b) {
-		// throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
-
 		((TreeTableSheetTab)spreadSheet.getTestCasesSheet().getSheetTab()).setAndExpandCurrentTestCase(testCaseID);
 	}
 
@@ -858,9 +1200,7 @@ public class ZugguiController implements Initializable ,GuiController{
 		if(!nameSpace.equals("main")){
 			appendString=nameSpace+".";
 		}
-		
 	}
-
 
 	public void clearSelection(){
 		Platform.runLater(new Runnable() {
@@ -879,11 +1219,13 @@ public class ZugguiController implements Initializable ,GuiController{
 				}
 			}
 		});
-
 	}
 
 	public void launchZug(){
-
+		
+		TestCase.testCaseNumber=1;
+		ZugguiController.getZugGuiConsole().getProgressBar().setProgress(0.0);
+		ZugguiController.getZugGuiConsole().getProgressBar().lookup(".bar").setStyle(Styles.greenBackground);
 		console.clear();
 		consoleStage.setTitle("SPARK Console - "+spreadSheet.getFileName());
 		final List<String> params=new ArrayList<String>();
@@ -896,6 +1238,14 @@ public class ZugguiController implements Initializable ,GuiController{
 		params.add(spreadSheet.getAbsolutePath());
 		params.addAll(optionBuilder.getRuntimeParams());
 		params.add("-debugger");
+		if(switchesToConfigureTest!=null)
+			for (int i = 0; i < switchesToConfigureTest.length; i++) {
+				if(switchesToConfigureTest[i].substring(switchesToConfigureTest[i].indexOf("=")+1).equals(""))
+				{
+					continue;
+				}
+				params.add(switchesToConfigureTest[i]);
+			}
 		clearSelection();
 		//sheetTabPane.clearSelections();
 		setDisableRunTimeOptions(false);
@@ -942,10 +1292,21 @@ public class ZugguiController implements Initializable ,GuiController{
 				nextStepMI.setDisable(b);
 				resumeMI.setDisable(b);
 				stopMI.setDisable(b);
-				//	variableVBox.setDisable(b);
 				exprEvaluatorMI.setDisable(b);
+				dbReportingCB.setDisable(!b);
 				runButton.setDisable(!b);
 				runTestMI.setDisable(!b);
+				
+				if(dbReportingCB.isSelected())
+				{
+				product.setDisable(!b);
+				testPlan.setDisable(!b);
+				testCycle.setDisable(!b);
+				topoSet.setDisable(!b);
+				buildTag.setDisable(!b);
+				createBuildTagBtn.setDisable(!b);
+				createTestCycleBtn.setDisable(!b);
+				}
 				if(b==true){
 					hideExpressionEvaluator();
 				}
@@ -1093,5 +1454,169 @@ public class ZugguiController implements Initializable ,GuiController{
 	
 	public SpreadSheet getCurrentSpreadSheet(){
 		return sheetTabPane.getCurrentSpreadSheet();
+	}
+	public static String[] getSwitches() {
+		return switchesToConfigureTest;
+	}
+	public static void setSwitches(String[] switches) {
+		ZugguiController.switchesToConfigureTest = switches;
+	}
+
+	@Override
+	public String getTestPlanId() {
+		if(testPlan.getText().equals(""))
+			return "";
+		else
+		return testPlan.getText().substring(testPlan.getText().lastIndexOf(" (")+2, testPlan.getText().lastIndexOf(")"));
+	}
+
+	@Override
+	public String getTestCycleId() {
+		if(testCycle.getText().equals(""))
+			return "";
+		else
+		return testCycle.getText().substring(testCycle.getText().lastIndexOf(" (")+2, testCycle.getText().lastIndexOf(")"));
+	}
+    
+	public String getTestCycleDesc() {
+		if(testCycle.getText().equals(""))
+			return "";
+		else
+		try{
+		return testCycle.getText().substring(0, testCycle.getText().lastIndexOf(" ("));
+			}catch (Exception e) {
+				return testCycle.getText();
+			}
+	}
+	
+	public String getBuildTagDesc() {
+		if(buildTag.getText().equals(""))
+			return "";
+		else
+		try{
+		return buildTag.getText().substring(0, buildTag.getText().lastIndexOf(" ("));
+			}catch (Exception e) {
+				return buildTag.getText();
+			}
+	}
+	
+	@Override
+	public String getTopologySetId() {
+		if(topoSet.getText().equals(""))
+			return "";
+		else
+		return topoSet.getText().substring(topoSet.getText().lastIndexOf(" (")+2, topoSet.getText().lastIndexOf(")"));
+	}
+
+	@Override
+	public String getBuildId() {
+		if(buildTag.getText().equals(""))
+			return "";
+		else
+		return buildTag.getText().substring(buildTag.getText().lastIndexOf(" (")+2, buildTag.getText().lastIndexOf(")"));
+	}
+	
+	public TextField getProduct() {
+		return product;
+	}
+	
+	public TextField getTestPlan() {
+		return testPlan;
+	}
+	
+	public TextField getTestCycle() {
+		return testCycle;
+	}
+	
+	public TextField getTopoSet() {
+		return topoSet;
+	}
+	
+	public TextField getBuildTag() {
+		return buildTag;
+	}
+	
+	public Button getCreateTestCycleBtn() {
+		return createTestCycleBtn;
+	}
+	
+	public Button getCreateBuildTagBtn() {
+		return createBuildTagBtn;
+	}
+	
+	public TableView getTestExecutionResults() {
+		return testExecutionResults;
+	}
+	
+	public TableColumn getTestCaseColumn() {
+		return testCase;
+	}
+	
+	public TableColumn getResultColumn() {
+		return result;
+	}
+	public void setTestExecutionResultsDefaultStyle() {
+		Platform.runLater(new Runnable() {
+
+			@Override
+		    public void run() {
+				try{
+					Set<Node> nodes=testExecutionResults.lookupAll("TableRow");
+				for (Node n: nodes) {
+				      if (n instanceof TableRow) {
+				    	  TableRow row = (TableRow) n;
+				    	  try{
+				    	  	row.setStyle(Styles.tableRowDefultStyle);
+				    	  }catch(Exception e){}
+				      }
+				      }
+					}catch(Exception e){}
+		    }
+		});
+	}
+	
+	public void setReportingPaneFieldsDefault(){
+	Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				product.setText("");
+				testPlan.setText("");
+				testCycle.setText("");
+				topoSet.setText("");
+				buildTag.setText("");
+				
+				product.setDisable(true);
+				testPlan.setDisable(true);
+				testCycle.setDisable(true);
+				topoSet.setDisable(true);
+				buildTag.setDisable(true);
+				createBuildTagBtn.setDisable(true);
+				createTestCycleBtn.setDisable(true);
+			}
+		});
+	}
+	
+	public void setReportingPaneFieldsEnable(){
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				product.setDisable(false);
+			}
+		});
+		
+	}
+	
+	public static ConsoleController getZugGuiConsole() {
+		return zugGuiConsole;
+	}
+	
+	public ConsoleController getConsole() {
+		return console;
+	}
+	
+	public RuntimeOptionBuilder getOptionBuilder() {
+		return optionBuilder;
 	}
 }

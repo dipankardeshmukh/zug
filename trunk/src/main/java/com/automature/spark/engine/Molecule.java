@@ -1597,8 +1597,8 @@ public class Molecule extends TestCase {
 		//	System.out.println("Mol run ST"+tempTestCase.stackTrace);
 			tempTestCase.runMolecule();
 		} catch (Exception ex) {
-			Log.Error("Exception while running Abstract Test Case "
-					+ tempTestCase.stackTrace + " is : " + ex.getMessage());
+			Log.Error("\n\t\tException while running Abstract Test Case "
+					+ tempTestCase.stackTrace );
 
 			throw new Exception(ex.getMessage());
 			// }

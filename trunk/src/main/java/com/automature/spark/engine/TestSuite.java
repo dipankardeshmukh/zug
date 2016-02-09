@@ -31,7 +31,7 @@ public class TestSuite {
 	static Boolean _testPlanStopper = false;
 	static Hashtable _testStepStopper = new Hashtable();
 	static String testcasenotran;
-	static NavigableMap<String, ExecutedTestCase> executedTestCaseData = new TreeMap<String, ExecutedTestCase>();
+	public static NavigableMap<String, ExecutedTestCase> executedTestCaseData = new TreeMap<String, ExecutedTestCase>();
 	static boolean implicitTCMolecule=false;
 	static boolean implicitTSMolecule=false;
 	static String implicitTSMoleculeName="Zstep_Verify".toLowerCase();
@@ -104,7 +104,6 @@ public class TestSuite {
 	}
 
 	private void initializeImplicitCallsValues(){
-
 		implicitTCMoleculeName=Excel.mainNameSpace+"."+implicitTCMoleculeName;
 		implicitTSMoleculeName=Excel.mainNameSpace+"."+implicitTSMoleculeName;
 		implicitEnvMoleculeName=Excel.mainNameSpace+"."+implicitEnvMoleculeName;

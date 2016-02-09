@@ -2,6 +2,7 @@ package com.automature.spark.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -9,14 +10,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.automature.spark.beans.TestCaseAndResult;
 import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.ZugGui;
 import com.automature.spark.gui.controllers.ZugguiController;
+import com.automature.spark.gui.sheets.TestCasesSheet;
 import com.automature.spark.util.Log;
 import com.automature.spark.util.Utility;
 import com.automature.zug.api.ZugLib;
 
 import org.apache.commons.lang.StringUtils;
+
+import javafx.application.Platform;
+
+
 
 
 
@@ -41,8 +48,11 @@ import org.apache.commons.lang.StringUtils;
 
 
 import javafx.fxml.Initializable;
-
-
+import javafx.scene.control.TableRow;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 /**
  * Class to represent a test case. A test case contain a number of Actions and these actions can itself contain
  * a number of verifications
@@ -79,6 +89,8 @@ public class TestCase
 	Map <String,String> variables=new HashMap<String,String>();
 	TestCase parent=null;
 	static boolean errorOccured=false;
+	public static int testCaseNumber=1;
+	private static int oldIndex=0;
 
 	public TestCase(){
 
@@ -344,8 +356,8 @@ public class TestCase
 	 */
 	private void runExpandedTestCase() throws
 	ReportingException,Exception,Throwable {
-
-		Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
+		
+Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
 		int testStepTimeout = Integer.parseInt(Spark.ReadContextVariable("ZUG_TESTSTEP_TIMEOUT")) * 1000;
 
@@ -362,9 +374,11 @@ public class TestCase
 				StringUtils.EMPTY);
 		HiPerfTimer tm = new HiPerfTimer();
 		boolean reportingError=false;
+		setStatusOfTestExecution("RUNNING",(int) tm.Duration());
 		try {
 			Log.Debug("TestCase/RunExpandedTestCase : Running TestCase ID "
 					+ this.testCaseID);
+			
 			Spark.message("******************************************************************************** ");
 			Spark.message("\n\nRunning TestCase ID " + this.testCaseID
 					+ " On : " + Utility.getCurrentDateAsString());
@@ -462,6 +476,7 @@ public class TestCase
 			Hashtable<String, String> stepsKeys = new Hashtable<String, String>();
 			// After getting the Actions Store the Steps somewhere...
 			for (int i = 0; i < actions.length; i++) {
+			
 				Action action = actions[i];
 				//System.out.println("Action args"+action.arguments);
 				//message("Actions are coming "+action.actionName+" with argument "+action.actionArguments+" action step "+action.step);
@@ -488,6 +503,7 @@ public class TestCase
 
 			try {
 				for (int i = 0; i < actions.length; i++) {
+
 					final Action action = actions[i];
 					count++;
 					try{
@@ -702,8 +718,10 @@ public class TestCase
 							+ " for TestCase ID : "
 							+ this.testCaseID);
 
-
-
+					Spark.tcNumber++;
+					if(Spark.tcNumber>=TestCasesSheet.noOfTestSteps)
+						TestCasesSheet.noOfTestSteps=Spark.tcNumber+1;
+							ZugguiController.getZugGuiConsole().getProgressBar().setProgress(Double.parseDouble(String.valueOf(Spark.tcNumber))/TestCasesSheet.noOfTestSteps);
 
 				}
 
@@ -1108,7 +1126,8 @@ public class TestCase
 					"\n\nSTATUS : PASS For TestCase ID %s ",
 					this.testCaseID + " On : "
 							+ Utility.getCurrentDateAsString()));
-
+			setStatusOfTestExecution("PASS",(int) tm.Duration());
+			
 			if(Spark.guiFlag){
 
 				Spark.guiController.showRunningTestCase(this.testCaseID, false);
@@ -1117,8 +1136,8 @@ public class TestCase
 
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
-			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
-					.compareToIgnoreCase("init") == 0)) {
+//			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
+//					.compareToIgnoreCase("init") == 0)) {
 				if(!reportingError){
 					ExecutedTestCase tData = new ExecutedTestCase();
 					tData.testCaseCompletetionTime = Utility.dateNow();
@@ -1142,8 +1161,9 @@ public class TestCase
 				}else{
 					System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
 				}
-			}else if(TestSuite.baseTestCaseID.equalsIgnoreCase("init")){
-
+//			}else 
+				if(TestSuite.baseTestCaseID.equalsIgnoreCase("init")){
+				
 				TestSuite.initExecuted = true;
 			}
 
@@ -1165,7 +1185,7 @@ public class TestCase
 			//?
 			
 			String failureReason = String
-					.format("Status FAILED FOR Worksheet %s TestCase ID (%s:%s). Exception MESSAGE IS : \n%s .\nCause:%s",
+					.format("Status FAILED FOR Worksheet %s TestCase ID (%s:%s). Exception MESSAGE IS : %s \nCause:%s",
 							this.nameSpace, this.parentTestCaseID,
 							this.testCaseID, ex.getMessage(), ex.getClass());
 			Spark.	message("\n******************** Error Messages For Test Case "
@@ -1178,7 +1198,8 @@ public class TestCase
 					"\n\nSTATUS : FAIL For TestCase ID %s ",
 					this.testCaseID + " On : "
 							+ Utility.getCurrentDateAsString()));
-
+			setStatusOfTestExecution("FAIL",(int) tm.Duration());
+			Spark.suiteFailed=true;
 			if(Spark.guiFlag){
 
 
@@ -1225,7 +1246,8 @@ public class TestCase
 			}
 
 
-		} finally {
+		}
+		finally {
 			if(Spark.guiController!=null)
 			{
 			Spark.guiController.removeTestCase(this);
@@ -1233,10 +1255,34 @@ public class TestCase
 			Spark.message("********************************************************************************");
 
 		}
+		testCaseNumber++;
+		
 	}
 
+	private void setStatusOfTestExecution(String status,int time) {
 
-
+	    String testCaseID=this.testCaseID;
+		Platform.runLater(new Runnable() {
+			int index;
+			@Override
+		    public void run() {
+				if(status.equalsIgnoreCase("running"))
+				{
+				index=testCaseNumber-1;
+				oldIndex=index;
+				}
+				else
+				{
+					index=oldIndex;
+				}
+				try{
+				ZugguiController.controller.getTestExecutionResults().getItems().remove(index);
+				}
+				catch(Exception e){}
+				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseAndResult( testCaseID , status , time ));
+		    }
+		});
+	}
 
 	/**
 	 * Check the command line Testcase contains ,
@@ -1570,7 +1616,6 @@ public class TestCase
 		Action[] allActions = new Action[this.actions.size()];
 
 		// test.actions.toArray(allActions);
-
 		Log.Debug("TestCase/ExpandTestCase: Number of Actions are : "
 				+ allActions.length + " for testcase : " + this.testCaseID);
 
@@ -2150,6 +2195,7 @@ public class TestCase
 
 	void run() throws
 	ReportingException,Exception,Throwable {
+		
 		Spark.checkDebuggerSignal();
 		if (this.automated == false) {
 			Log.Debug("TestCase/RunTestCase : TestCase ID "
@@ -2157,6 +2203,7 @@ public class TestCase
 					+ " is a MANUAL TestCase. Automation Framework is ignoring this TestCase.");
 			Spark.message("\n\nSTATUS : IGNORING(Not Running) FOR TestCase ID : "
 					+ this.testCaseID + ". This is a Manual TestCase.");
+			setStatusOfTestExecution("IGNORING(Not Running)",0);
 			return;
 		}
 
@@ -2216,9 +2263,7 @@ public class TestCase
 		Log.Debug("TestCase/RunTestCase: After Expansion for TestCase ID is "
 				+ this.testCaseID + " the number of expanded test case is : "
 				+ expandedTestCases.length);
-
 		ArrayList<Thread> ThreadPool = new ArrayList<Thread>();
-
 		for (TestCase test : expandedTestCases) {
 			if(errorOccured){
 				throw new Throwable();

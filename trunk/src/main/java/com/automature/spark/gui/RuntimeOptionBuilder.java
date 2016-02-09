@@ -7,6 +7,18 @@
 package com.automature.spark.gui;
 
 import java.io.File;
+
+
+
+
+
+import javafx.scene.control.cell.PropertyValueFactory;
+
+
+
+
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,15 +26,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
+
+
+
+
+
+
+
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.util.HSSFColor.MAROON;
 
+
+
+
+
+
+
+
+
+
+import com.automature.spacetimeapiclient.SpacetimeClient;
 import com.automature.spark.beans.MacroColumn;
+import com.automature.spark.beans.TestCaseAndResult;
+import com.automature.spark.engine.Spark;
+import com.automature.spark.engine.TestCase;
 import com.automature.spark.gui.components.TestCaseTab;
 import com.automature.spark.gui.components.TestCaseTreeTableSheetTab;
+import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.gui.sheets.SpreadSheet;
 import com.automature.spark.gui.utils.GuiUtils;
+import com.automature.spark.reporter.SpacetimeReporter;
 
+
+
+
+
+
+
+
+import com.automature.spark.util.Styles;
+
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -34,11 +80,19 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.concurrent.Task;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableCell;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
+import javafx.scene.control.Hyperlink;
 
 /**
  *
- * @author skhan
+ * @author sdatta
  */
 public class RuntimeOptionBuilder {
 
@@ -67,7 +121,16 @@ public class RuntimeOptionBuilder {
 	
 	private Map<String,String> macroCols;
 
+	private TextField listProducts;
+	private TextField listTestPlans;
+	private TextField listTestCycles;
+	private TextField listTopoSet;
+	private TextField listBuildTag;
 
+	private TableView testExecutionResults;
+	private TableColumn testCase;
+	private TableColumn result;
+	private TableColumn timeOfExecution;
 
 	public RuntimeOptionBuilder() {
 		super();
@@ -141,6 +204,70 @@ public class RuntimeOptionBuilder {
 		checkBox.setUserData(value);
 		checkBox.setOnAction(checkBoxEvent);
 	}
+	
+	public void registerDbReportingCheckBox(CheckBox dbReportingCB,
+			String value) {
+		// TODO Auto-generated method stub
+		dbReportingCB.setUserData(value);
+		
+		dbReportingCB.setOnAction(event->{
+			if (event.getSource() instanceof CheckBox) {
+				CheckBox chk = (CheckBox) event.getSource();
+				if(chk.isSelected()){
+					checkBoxParams.add((String)chk.getUserData());	
+					
+					Task<Boolean> task = new Task<Boolean>() {
+					    @Override protected Boolean call() throws Exception {
+					    	if(SpacetimeReporter.sessionId!=null)
+					    	{
+					    		System.out.println("\nAlready connected to Spacetime\n\n");
+					    		ZugguiController.controller.setReportingPaneFieldsEnable();
+					    		return true;
+					    	}
+					    	System.out.println("Connecting to Spacetime.\n\nThe Reporter panel will be enabled after the connection is established\n\nPlease Wait .....");
+					    	Boolean b = null;
+					    	if(SpacetimeReporter.sessionId==null)
+					    		try{
+								b=ZugguiController.controller.initReportingConfigurations();
+					    		}catch (Exception e) {
+									// TODO: handle exception
+								}
+						    if(b)
+						    {
+						    	System.out.println("Successfully connected to Spacetime");
+						    	
+						    	ZugguiController.controller.setReportingPaneFieldsEnable();
+						    	
+						    }
+						    else
+						    {
+						    	System.err.println("Connection failed .....\n\nContinuing without reporting .....");
+						    	Platform.runLater(new Runnable() {
+									
+									@Override
+									public void run() {
+										dbReportingCB.setSelected(false);
+										checkBoxParams.remove(chk.getUserData());
+									}
+								});
+						    	ZugguiController.controller.setReportingPaneFieldsDefault();
+						    }
+						    return b;
+					    }
+					};
+					Thread t=new Thread(task);
+					t.start();
+					
+				}else{
+					checkBoxParams.remove(chk.getUserData());
+					if(ZugguiController.controller.getTestPlan().isDisable()||ZugguiController.controller.getTestCycle().isDisable())
+						ZugguiController.controller.setReportingPaneFieldsDefault();
+				}
+			}
+		});
+		
+	}
+	
 	public void registerSpreadSheet(SpreadSheet spreadSheet){
 		this.spreadSheet=spreadSheet;
 		refreshEnvironmentOptions();
@@ -259,6 +386,92 @@ public class RuntimeOptionBuilder {
 		
 	}
 	
+	
+	public void registerReportingOptions(TextField product,TextField testPlan,TextField testCycle,TextField topoSet,TextField buildTag){
+		this.listProducts=product;
+		this.listProducts.setDisable(true);
+		this.listProducts.setEditable(false);
+		this.listTestPlans=testPlan;
+		this.listTestPlans.setDisable(true);
+		this.listTestPlans.setEditable(false);
+		this.listTestCycles=testCycle;
+		this.listTestCycles.setDisable(true);
+		this.listTestCycles.setEditable(false);
+		this.listTopoSet=topoSet;
+		this.listTopoSet.setDisable(true);
+		this.listTopoSet.setEditable(false);
+		this.listBuildTag=buildTag;
+		this.listBuildTag.setDisable(true);
+		this.listBuildTag.setEditable(false);
+	}
+	
+
+	public void registerTestExecutionResults(TableView testExecutionResults, TableColumn testCase, TableColumn result, TableColumn timeOfExecution) {
+		//initialize table view
+		this.testExecutionResults=testExecutionResults;
+		
+		this.testCase=testCase;
+		this.testCase.setCellValueFactory(new PropertyValueFactory<TestCaseAndResult,String>("testCase"));
+		
+		this.result=result;
+		this.result.setCellValueFactory(new PropertyValueFactory<TestCaseAndResult,String>("result"));
+		this.result.setCellFactory(col->{
+			 return new TableCell<TestCaseAndResult,String>(){
+				 
+				  @Override
+				  protected void updateItem(String item,boolean empty) {
+					  super.updateItem(item, empty);
+					  if (item == null || empty) {
+			                setText("");
+			                setStyle("");
+			            } else {
+			            	setText(item);
+			            	if(item.equalsIgnoreCase("running"))
+			            		setTextFill(Color.DARKBLUE);
+			            	else if(item.equalsIgnoreCase("pass"))
+			            	{
+			            		((Hyperlink)testCase.getCellData(getIndex())).setId(item);
+			            		setTextFill(Color.GREEN);
+			            	}
+			            	else
+			            	{
+			            		((Hyperlink)testCase.getCellData(getIndex())).setId(item);
+			            		setTextFill(Color.RED);
+			            	}
+			            }
+				}
+				  
+			 };
+		});
+
+		this.timeOfExecution=timeOfExecution;
+		this.timeOfExecution.setCellValueFactory(new PropertyValueFactory<TestCaseAndResult,String>("time"));
+		this.timeOfExecution.setCellFactory(col->{
+			
+			 return new TableCell<TestCaseAndResult,Long>(){
+				 
+				  @Override
+				  protected void updateItem(Long item,boolean empty) {
+					  super.updateItem(item, empty);
+					  
+					  if (item == null  || empty ) {
+						  setText("");
+			                setStyle("");
+						  return;
+			            } else{
+			            if(getTableRow().getStyle().equals(Styles.tableRowColorOnClick))
+			            	getTableRow().setStyle(Styles.tableRowColorOnClick);
+			            else	
+			            	getTableRow().setStyle(Styles.tableRowDefultStyle);
+			            setText(String.valueOf(item));
+			            	setTextFill(Color.DARKBLUE);
+			            	
+			            }
+				}
+				  
+			 };
+		});
+	}
 	private void initializeEnvironmentOptions(){
 		
 		testSuiteCB.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<MacroColumn>() {
@@ -307,5 +520,9 @@ public class RuntimeOptionBuilder {
 			//environmentCB.getItems().addAll(sp.getMacroColumn().getCols());
 		}
 	}
-
+	
+	public Set<String> getCheckBoxParams() {
+		return checkBoxParams;
+	}
+	
 }
