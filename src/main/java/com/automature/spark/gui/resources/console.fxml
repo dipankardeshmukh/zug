@@ -64,6 +64,11 @@
                   </Button>
           </items>
         </ToolBar>
+        <AnchorPane prefHeight="15.0">
+            <children>
+                  <ProgressBar fx:id="progressBar" prefHeight="15.0" prefWidth="500.0" progress="0.0" AnchorPane.rightAnchor="2.0" />
+           </children>
+    	</AnchorPane>
             <ScrollPane fx:id="scrollPane" prefHeight="365.0" prefWidth="600.0" style="-fx-background-color: white; -fx-fit-to-width: true; -fx-fit-to-height: true;" VBox.vgrow="SOMETIMES">
               <content>
                 <AnchorPane fx:id="consoleHolder" style="-fx-background-color: white; -fx-fit-to-width: true; -fx-fit-to-height: true;">
@@ -73,6 +78,7 @@
                   </AnchorPane>
               </content>
             </ScrollPane>
+            
       </children>
     </VBox>
   </children>

@@ -6,12 +6,17 @@ package com.automature.spark.gui.sheets;
 
 import java.awt.Point;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import org.apache.poi.ss.usermodel.*;
 
+import com.automature.spark.beans.TestCaseAndResult;
 import com.automature.spark.gui.components.SheetTab;
 import com.automature.spark.gui.components.TestCaseTab;
 import com.automature.spark.gui.components.TestCaseTreeTableSheetTab;
 import com.automature.spark.gui.components.TreeTableSheetTab;
+import com.automature.spark.gui.controllers.ZugguiController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +33,7 @@ public class TestCasesSheet extends GenericSheet{
     private	int actionColumn;
     private int verifyColumn;
     private HashMap<Point, String> missingActionMap=new HashMap<Point, String>();
+    public static int noOfTestSteps=0;
     
   
 
@@ -67,9 +73,10 @@ public class TestCasesSheet extends GenericSheet{
         }
         // System.out.println("TestCase header size "+header.size()+"\n headers "+header);
     }
-
     public void readData(){
-
+    	noOfTestSteps=0;
+    	ObservableList<TestCaseAndResult> rowData = ZugguiController.controller.rowData;
+    	rowData.clear();
         data = new ArrayList();
         Iterator it = sheet.rowIterator();
         it.next();
@@ -89,11 +96,20 @@ public class TestCasesSheet extends GenericSheet{
            
 
             Cell cell=myRow.getCell(0); // first column of the actual spreadsheet
-
+            if(myRow.getCell(4)!=null && !myRow.getCell(4).toString().equals(""))
+            {
+            	if(myRow.getCell(2)!=null && myRow.getCell(2).toString().equalsIgnoreCase("rem"))
+            	noOfTestSteps--;
+            	else
+            	noOfTestSteps++;
+            }
             if(cell!=null){
                 String testcaseID=GetCellValueAsString(cell);
                 if(testcaseID!=null && !testcaseID.isEmpty() && !testcaseID.isEmpty() && !testcaseID.equalsIgnoreCase("comment")){
-                    testCaseIDs.add(testcaseID);
+                	{
+                		testCaseIDs.add(testcaseID);
+                	}
+                    rowData.add(new TestCaseAndResult(testcaseID, "",0));
                 }
             }
 
@@ -106,7 +122,8 @@ public class TestCasesSheet extends GenericSheet{
         //      System.out.println("TestCase  "+cellStoreVector.size());
             data.add(cellStoreVector);
         }
-
+        ZugguiController.controller.getTestExecutionResults().setItems(rowData);
+        ZugguiController.controller.setTestExecutionResultsDefaultStyle();
     }
 
   

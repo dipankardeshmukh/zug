@@ -27,4 +27,8 @@ public interface GuiController {
 	public void setCurrentTestCase(TestCase testCase);
 	public void removeTestCase(TestCase testCase);
 	public boolean isExpressionEvaluatorMode();
+	public String getTestPlanId();
+	public String getTestCycleId();
+	public String getTopologySetId();
+	public String getBuildId();
 }

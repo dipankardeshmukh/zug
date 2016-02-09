@@ -5,18 +5,23 @@
 package com.automature.spark.engine;
 
 import com.automature.davos.exceptions.DavosExecutionException;
+import com.automature.spark.beans.TestCaseAndResult;
 import com.automature.spark.businesslogics.TestCaseResult;
 import com.automature.spark.exceptions.MoleculeDefinitionException;
 import com.automature.spark.gui.ZugGui;
 import com.automature.spark.gui.controllers.GuiController;
 import com.automature.spark.gui.controllers.ZugguiController;
+import com.automature.spark.gui.sheets.SpreadSheet;
+import com.automature.spark.gui.sheets.TestCasesSheet;
 import com.automature.spark.gui.utils.ApplicationLauncher;
 import com.automature.spark.reporter.DavosReporter;
 import com.automature.spark.reporter.JiraReporter;
 import com.automature.spark.reporter.Reporter;
+import com.automature.spark.reporter.SpacetimeReporter;
 import com.automature.spark.reporter.TestLinkReporter;
 import com.automature.spark.util.ExtensionInterpreterSupport;
 import com.automature.spark.util.Log;
+import com.automature.spark.util.Styles;
 import com.automature.spark.util.Utility;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +41,8 @@ import java.util.Map.Entry;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -43,9 +50,13 @@ import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
+import javafx.scene.Node;
+import javafx.scene.control.TableRow;
 //Internal package imports
 
 //import DatabaseLayer.Testplan;
@@ -99,6 +110,9 @@ public class Spark extends ZugGui {
 	public static final String reportingXmlTagAttribute="name";
 	public static final String ADAPTERPARAMSPATH="//root//configurations//adapter-param";
 	private static final int MAX_SCREEN_CHAR = 2000;
+	public static final String db_host_xml_tag_path = "//root//configurations//dbhostname";
+	public static final String db_user_xml_tag_path = "//root//configurations//dbusername";
+	public static final String db_password_xml_tag_path = "//root//configurations//dbuserpassword";
 	public static NavigableMap<String, AtomInvoker> invokeAtoms = new TreeMap<String, AtomInvoker>();
 	public static NavigableMap<String, AtomInvoker> invoke_native_atoms = new TreeMap<String, AtomInvoker>(); 
 	private static volatile String builtin_atom_package_name = "";
@@ -121,6 +135,9 @@ public class Spark extends ZugGui {
 	boolean listen=true;
 	ServerSocket sock = null;
 	private static int testCaseFailCount = 0;
+	public static String  productid = null, sessionid = null;
+	public static int tcNumber=0;
+	public static boolean suiteFailed;
 	/*
 	 * Constructor that initializes the program options.
 	 */
@@ -907,7 +924,7 @@ public class Spark extends ZugGui {
 	 * exception if the Database or the user credentials provided is not a valid
 	 * user.
 	 */
-	public static String  productid = null, sessionid = null;
+//	public static int totalTestCases;
 
 
 
@@ -1599,7 +1616,7 @@ public class Spark extends ZugGui {
 			try{
 				loadInProcesses();				
 			}catch(IOException ioe){
-				System.err.println("Failed to load the ini.xml file.Exiting Spark");
+				System.err.println("Failed to load the Spark.ini file.Exiting Spark");
 				System.exit(1);
 			}
 			new Thread(new Runnable() {
@@ -1619,6 +1636,7 @@ public class Spark extends ZugGui {
 		guiController=controller;
 	}
 
+	
 	public static void loadInProcesses()throws Exception{
 		ExtensionInterpreterSupport testINI = new ExtensionInterpreterSupport();
 		Set<Set> errorSet = new HashSet<Set>();
@@ -1728,7 +1746,9 @@ public class Spark extends ZugGui {
 //oldmain method
 	public static void runTests(String[] args) throws InterruptedException,
 	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
-
+		suiteFailed=false;
+		updateExecutionSummaryPanel();
+		
 		ProgramOptions.checkCommandLineArgs(args);
 		if (args.length > 1) {
 			for (String arg : args) {
@@ -1790,7 +1810,6 @@ public class Spark extends ZugGui {
 			}
 		}
 
-
 		try {
 			Log.Debug("Controller/Main : Calling ProgramOptions.parse() to Parse program argument");
 			opts.parse(args);
@@ -1823,6 +1842,9 @@ public class Spark extends ZugGui {
 			//	System.out.println("db reporting "+opts.dbReporting);
 
 			Spark.message("\n\nCommand Line Arguments Validated \n");
+//			try{
+//					((Text)ZugguiController.controller.getConsole().getConsoleLayout().getChildren().get(2)).setFont(Font.font(null, FontWeight.BOLD, 20));
+//			}catch(Exception e){e.printStackTrace();}
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.Error("Failed to Validate Command Line Arguments "
@@ -1929,7 +1951,13 @@ public class Spark extends ZugGui {
 				}else if(controller.dBName.equalsIgnoreCase("jira")){
 					reporter=new JiraReporter(connectionParam);
 					frameWork="Jira";
-				}else{
+				}
+				else if(controller.dBName.equalsIgnoreCase("spacetime")){
+					System.out.println("connecting to spacetime");
+					reporter=new SpacetimeReporter(connectionParam);
+					frameWork="Spacetime";
+				}
+				else{
 					reporter=new DavosReporter(connectionParam);
 					frameWork="Davos";
 				}
@@ -1956,7 +1984,8 @@ public class Spark extends ZugGui {
 
 			// Now run the test-case one by one -
 			controller.testsuite.testcases = controller.readExcel.TestCases();
-
+			Spark.tcNumber=0;
+//			totalTestCases=controller.testsuite.testcases.length;
 			// Read the Abstract Test Cases from the Sheet
 			controller.testsuite.abstractTestCase = controller.readExcel
 					.AbstractTestCases();
@@ -2065,6 +2094,28 @@ public class Spark extends ZugGui {
 			
 			// controller.executionTime = (int)(tm.Duration() / ((double)1000));
 			controller.executionTime = (int) (tm.Duration());
+			//set progress bar to status to end
+			if(Spark.tcNumber+1==TestCasesSheet.noOfTestSteps)
+			{
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						ZugguiController.getZugGuiConsole().getProgressBar().setProgress(1.0);
+						setProgressBarColor();
+					}
+				});
+			}
+			else if((Spark.tcNumber+1!=TestCasesSheet.noOfTestSteps) || suiteFailed)
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						setProgressBarColor();
+					}
+				});
+			
 			// controller.message("the output\t" + controller.executionTime);
 			// In any case, do the reporting
 
@@ -2074,9 +2125,8 @@ public class Spark extends ZugGui {
 					// Now everything is done except storing the TestCase Data
 					// to Result Data..so doing that now...
 					controller.message("\n\nStoring the TestCase Result to "
-							+ controller.dBHostName + "\\" + controller.dBName
-							+ frameWork+".....");
-
+							+ controller.dBHostName.substring(controller.dBHostName.indexOf("//")+2) + " in Database " + controller.dBName
+							+" by "+ frameWork+"API");
 					try {
 						reporter.saveTestCaseResults(controller.testsuite.executedTestCaseData);
 					} catch (Exception de) {
@@ -2091,9 +2141,8 @@ public class Spark extends ZugGui {
 
 					Spark
 					.message("\n\nSUCCESSFULLY Stored the TestCase Result to "
-							+ controller.dBHostName
-							+ "\\"
-							+ controller.dBName + frameWork+".....");
+							+ controller.dBHostName.substring(controller.dBHostName.indexOf("//")+2) + " in Database " + controller.dBName
+							+" by "+ frameWork+"API");
 
 				}
 			} else // / Even if the DB reporting is FALSE, still we should
@@ -2153,7 +2202,49 @@ public class Spark extends ZugGui {
 		System.gc();
 		if(!guiFlag)
 			System.exit(0);
-
+		
+		ZugguiController.controller.setTestExecutionResultsDefaultStyle();
 	}
+	
+private static void setProgressBarColor() {
+	int pct=0;
+	for(Object ob:ZugguiController.controller.getTestExecutionResults().getItems())
+	{
+		if(((TestCaseAndResult)ob).getResult().equals("PASS"))
+			pct++;
+	}
+	double d=(((double)pct/ZugguiController.controller.getTestExecutionResults().getItems().size())*100);
+	if(d==100.0)
+		ZugguiController.getZugGuiConsole().getProgressBar().lookup(".bar").setStyle(Styles.greenBackground);
+	else if(d==0.0)
+		ZugguiController.getZugGuiConsole().getProgressBar().lookup(".bar").setStyle(Styles.redBackground);
+	else 
+		ZugguiController.getZugGuiConsole().getProgressBar().lookup(".bar").setStyle(Styles.coralBackground);
+}
+
+public static void updateExecutionSummaryPanel() {
+	Platform.runLater(new Runnable() {
+
+		@Override
+	    public void run() {
+			ZugguiController.controller.setTestExecutionResultsDefaultStyle();
+			
+				for (int i = 0; i < ZugguiController.controller.rowData.size(); i++) {
+					
+					ZugguiController.controller.rowData.get(i).setResult("");
+					ZugguiController.controller.rowData.get(i).setTime(null);
+					
+				}
+				try{
+					ObservableList<TestCaseAndResult> updatedRowData = FXCollections.observableArrayList(ZugguiController.controller.rowData);
+					ZugguiController.controller.getTestExecutionResults().getItems().clear();
+					ZugguiController.controller.getTestExecutionResults().getItems().addAll(updatedRowData);
+					
+				}catch(Exception e){
+					System.err.println(e);
+				}
+		}
+	});
+}
 
 }

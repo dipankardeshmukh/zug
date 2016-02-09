@@ -258,6 +258,8 @@ public class Excel {
 			Log.Error("Excel/DBHostName:"+e.getMessage());
 		}
 		//System.out.println("dbHostName"+dbHostName);
+		if(!dbHostName.startsWith("http://"))
+			dbHostName="http://"+dbHostName;
 		return dbHostName;
 	}
 

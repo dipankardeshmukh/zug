@@ -565,8 +565,8 @@ public class AtomInvoker {
 			//            }else
 			//            {
 			//               //debugMessage("Comming to else Clause ");
-			if(Spark.opts.verbose)
-				Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
+//			if(Spark.opts.verbose)
+//				Log.Error("Exception while invoking method :: " + method_name + "\nMessage:: " + exception_message);
 
 			throw new Exception(exception_message, e);
 			// }

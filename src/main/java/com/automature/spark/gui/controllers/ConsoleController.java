@@ -36,6 +36,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -85,6 +86,8 @@ public class ConsoleController implements Initializable {
 	private VBox consoleVbox;
 	@FXML
 	private Button copyAllButton;
+	@FXML
+	private ProgressBar progressBar;
 
 	private TextArea textArea;
 
@@ -95,7 +98,6 @@ public class ConsoleController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
 		try {
-
 			redirectSystemStreams();
 			textArea = new TextArea();
 			textArea.setEditable(false);
@@ -165,10 +167,12 @@ public class ConsoleController implements Initializable {
 	}
 
 	private void appendText(Text text) {
+		try{
 		console.getChildren().add(text);
 		if (!format) {
 			textArea.appendText(text.getText());
 		}
+		}catch(Exception ex){}
 	}
 
 	private void formatText(String txt, String subStringToMatch, Color color,
@@ -531,5 +535,17 @@ public class ConsoleController implements Initializable {
 			textArea.selectAll();
 			textArea.copy();
 		}
+	}
+	
+	public ProgressBar getProgressBar() {
+		return progressBar;
+	}
+	
+	public TextFlow getConsoleLayout() {
+		return console;
+	}
+	
+	public ScrollPane getScrollPane() {
+		return scrollPane;
 	}
 }

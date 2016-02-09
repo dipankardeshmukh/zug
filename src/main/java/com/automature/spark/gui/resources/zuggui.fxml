@@ -341,6 +341,7 @@
                                     <CheckBox fx:id="verboseCB" mnemonicParsing="false" text="Verbose" />
                                     <CheckBox fx:id="noAutoRecoveryCB" mnemonicParsing="false" text="No Autorecover" GridPane.columnIndex="1" />
                                     <CheckBox fx:id="noVerifyCB" mnemonicParsing="false" text="No Verify" GridPane.rowIndex="1" />
+                                    <CheckBox fx:id="dbReportingCB" mnemonicParsing="false" text="Reporting" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <CheckBox fx:id="repeatCheckBox" mnemonicParsing="false" text="Repeat" GridPane.rowIndex="3" />
                                     <CheckBox fx:id="ignoreCB" mnemonicParsing="false" text="Ignore" GridPane.rowIndex="2" />
                                     <CheckBox fx:id="atomExecTimeCB" mnemonicParsing="false" text="Atom Exec Time" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -375,6 +376,105 @@
                         </AnchorPane>
                       </content>
                     </TitledPane>
+                    
+                    
+                   
+                    
+                    
+                    <TitledPane collapsible="true" expanded="false" text="Reporting">
+                      <content>
+                        <AnchorPane minHeight="220.0" minWidth="0.0" prefHeight="220.0">
+                          <children>
+                            <Pane fx:id="reportHBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="263.0" prefWidth="250.0">
+         				 <children>
+         				 <Label layoutX="20.0" layoutY="20.0" text="Product">
+                                  <font>
+                                    <Font size="13.0" fx:id="x1" />
+                                  </font>
+                         </Label>
+                         <TextField fx:id="product" editable="true" layoutX="110.0" layoutY="18.0" prefHeight="25.0" prefWidth="170.0" />
+                         
+                         
+         				 <Label layoutX="20.0" layoutY="60.0" text="Test Plan">
+                                  <font>
+                                    <Font size="13.0" fx:id="x1" />
+                                  </font>
+                         </Label>
+                         <TextField fx:id="testPlan" editable="true" layoutX="110.0" layoutY="56.0" prefHeight="25.0" prefWidth="170.0" />
+                         
+                          <Label layoutX="20.0" layoutY="100.0" text="Test Cycle">
+                                  <font>
+                                    <Font size="13.0" fx:id="x1" />
+                                  </font>
+                         </Label>
+                         <TextField fx:id="testCycle" editable="true" layoutX="110.0" layoutY="94.0" prefHeight="25.0" prefWidth="170.0" />
+                         <Button fx:id="createTestCycleBtn"  disable="true" layoutX="290.0" layoutY="94.0" onAction="#createTestCycle" mnemonicParsing="false" >
+                                      <graphic>
+                                        <ImageView fitHeight="16.0" fitWidth="16.0">
+                                          <image>
+                                            <Image url="@icons/black/glyph_square_solid_plus.png" />
+                                          </image>
+                                        </ImageView>
+                                      </graphic>
+                                      <tooltip>
+                                        <Tooltip text="Create Test Cycle" />
+                                      </tooltip>
+                         </Button>
+         				 <Label layoutX="20.0" layoutY="136.0" text="Topology Set">
+                                  <font>
+                                    <Font size="13.0" fx:id="x1" />
+                                  </font>
+                         </Label>
+                         <TextField fx:id="topoSet" editable="true" layoutX="110.0" layoutY="132.0" prefHeight="25.0" prefWidth="170.0" />
+                         
+                         
+         				 <Label layoutX="20.0" layoutY="174.0" text="Build Tag">
+                                  <font>
+                                    <Font size="13.0" fx:id="x1" />
+                                  </font>
+                         </Label>
+                         <TextField fx:id="buildTag" editable="true" layoutX="110.0" layoutY="170.0" prefHeight="25.0" prefWidth="170.0" />
+                        
+                         <Button fx:id="createBuildTagBtn"  disable="true" layoutX="290.0" layoutY="170.0" onAction="#createBuildTag" mnemonicParsing="false" >
+                                      <graphic>
+                                        <ImageView fitHeight="16.0" fitWidth="16.0">
+                                          <image>
+                                            <Image url="@icons/black/glyph_square_solid_plus.png" />
+                                          </image>
+                                        </ImageView>
+                                      </graphic>
+                                      <tooltip>
+                                        <Tooltip text="Create Build Tag" />
+                                      </tooltip>
+                         </Button>
+                         
+		          		</children>
+		     			   </Pane>
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </TitledPane>
+                    
+                              <TitledPane collapsible="true" expanded="false" layoutX="10.0" layoutY="316.0" text="Execution Summary">
+                                 <content>
+                                    <VBox>
+                                       <children>
+                                                <TableView fx:id="testExecutionResults" visible="false" minHeight="350.0" minWidth="0.0" prefHeight="280.0" >
+                                                  <columns>
+                                                    <TableColumn fx:id="testCase" editable="false" prefWidth="160.0" sortable="false" text="TestCase" />
+                                                    <TableColumn fx:id="result" editable="false" prefWidth="80.0" sortable="false" text="Result"  />
+                                                    <TableColumn fx:id="timeOfExecution" editable="false" prefWidth="100.0" sortable="false" text="Duration (ms)"  />
+                                                  </columns>
+                                                </TableView>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                    
+                    
+                    
+                    
+                    
                     <TitledPane collapsible="true" expanded="false" text="Environment">
                       <content>
                         <AnchorPane minHeight="220.0" minWidth="0.0" prefHeight="280.0">
