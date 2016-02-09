@@ -2,7 +2,7 @@ package com.automature.spark.gui.sheets;
 
 
 import com.automature.spark.beans.MacroColumn;
-import com.automature.spark.beans.TestCaseAndResult;
+import com.automature.spark.beans.TestCaseStatus;
 import com.automature.spark.engine.BuildInAtom;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.engine.TestCase;

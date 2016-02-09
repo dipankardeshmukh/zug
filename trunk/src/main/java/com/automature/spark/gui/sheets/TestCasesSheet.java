@@ -11,7 +11,7 @@ import javafx.collections.ObservableList;
 
 import org.apache.poi.ss.usermodel.*;
 
-import com.automature.spark.beans.TestCaseAndResult;
+import com.automature.spark.beans.TestCaseStatus;
 import com.automature.spark.gui.components.SheetTab;
 import com.automature.spark.gui.components.TestCaseTab;
 import com.automature.spark.gui.components.TestCaseTreeTableSheetTab;
@@ -75,7 +75,7 @@ public class TestCasesSheet extends GenericSheet{
     }
     public void readData(){
     	noOfTestSteps=0;
-    	ObservableList<TestCaseAndResult> rowData = ZugguiController.controller.rowData;
+    	ObservableList<TestCaseStatus> rowData = ZugguiController.controller.rowData;
     	rowData.clear();
         data = new ArrayList();
         Iterator it = sheet.rowIterator();
@@ -109,7 +109,7 @@ public class TestCasesSheet extends GenericSheet{
                 	{
                 		testCaseIDs.add(testcaseID);
                 	}
-                    rowData.add(new TestCaseAndResult(testcaseID, "",0));
+                    rowData.add(new TestCaseStatus(testcaseID, "",0));
                 }
             }
 

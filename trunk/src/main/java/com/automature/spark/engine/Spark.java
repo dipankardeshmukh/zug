@@ -5,7 +5,7 @@
 package com.automature.spark.engine;
 
 import com.automature.davos.exceptions.DavosExecutionException;
-import com.automature.spark.beans.TestCaseAndResult;
+import com.automature.spark.beans.TestCaseStatus;
 import com.automature.spark.businesslogics.TestCaseResult;
 import com.automature.spark.exceptions.MoleculeDefinitionException;
 import com.automature.spark.gui.ZugGui;
@@ -2210,7 +2210,7 @@ private static void setProgressBarColor() {
 	int pct=0;
 	for(Object ob:ZugguiController.controller.getTestExecutionResults().getItems())
 	{
-		if(((TestCaseAndResult)ob).getResult().equals("PASS"))
+		if(((TestCaseStatus)ob).getResult().equals("PASS"))
 			pct++;
 	}
 	double d=(((double)pct/ZugguiController.controller.getTestExecutionResults().getItems().size())*100);
@@ -2236,7 +2236,7 @@ public static void updateExecutionSummaryPanel() {
 					
 				}
 				try{
-					ObservableList<TestCaseAndResult> updatedRowData = FXCollections.observableArrayList(ZugguiController.controller.rowData);
+					ObservableList<TestCaseStatus> updatedRowData = FXCollections.observableArrayList(ZugguiController.controller.rowData);
 					ZugguiController.controller.getTestExecutionResults().getItems().clear();
 					ZugguiController.controller.getTestExecutionResults().getItems().addAll(updatedRowData);
 					

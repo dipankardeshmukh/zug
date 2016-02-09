@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import com.automature.spark.beans.TestCaseAndResult;
+import com.automature.spark.beans.TestCaseStatus;
 import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.ZugGui;
 import com.automature.spark.gui.controllers.ZugguiController;
@@ -1279,7 +1279,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				ZugguiController.controller.getTestExecutionResults().getItems().remove(index);
 				}
 				catch(Exception e){}
-				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseAndResult( testCaseID , status , time ));
+				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , time ));
 		    }
 		});
 	}
