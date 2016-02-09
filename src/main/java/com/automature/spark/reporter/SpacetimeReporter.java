@@ -1,7 +1,5 @@
 package com.automature.spark.reporter;
 
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,19 +10,14 @@ import java.util.Set;
 import javafx.application.Platform;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.web.servlet.tags.form.TextareaTag;
 
 import com.automature.ZermattClient;
-import com.automature.davos.exceptions.DavosExecutionException;
 import com.automature.spacetimeapiclient.SpacetimeClient;
-import com.automature.spark.businesslogics.TestCaseResult;
-import com.automature.spark.engine.ContextVar;
 import com.automature.spark.engine.ExecutedTestCase;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.util.Log;
-import com.automature.spark.util.Utility;
 
 public class SpacetimeReporter extends Reporter implements Retriever {
 	private static ZermattClient client;

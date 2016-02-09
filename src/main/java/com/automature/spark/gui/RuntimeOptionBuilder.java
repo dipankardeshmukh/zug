@@ -49,7 +49,7 @@ import org.apache.poi.hssf.util.HSSFColor.MAROON;
 
 import com.automature.spacetimeapiclient.SpacetimeClient;
 import com.automature.spark.beans.MacroColumn;
-import com.automature.spark.beans.TestCaseAndResult;
+import com.automature.spark.beans.TestCaseStatus;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.engine.TestCase;
 import com.automature.spark.gui.components.TestCaseTab;
@@ -411,12 +411,12 @@ public class RuntimeOptionBuilder {
 		this.testExecutionResults=testExecutionResults;
 		
 		this.testCase=testCase;
-		this.testCase.setCellValueFactory(new PropertyValueFactory<TestCaseAndResult,String>("testCase"));
+		this.testCase.setCellValueFactory(new PropertyValueFactory<TestCaseStatus,String>("testCase"));
 		
 		this.result=result;
-		this.result.setCellValueFactory(new PropertyValueFactory<TestCaseAndResult,String>("result"));
+		this.result.setCellValueFactory(new PropertyValueFactory<TestCaseStatus,String>("result"));
 		this.result.setCellFactory(col->{
-			 return new TableCell<TestCaseAndResult,String>(){
+			 return new TableCell<TestCaseStatus,String>(){
 				 
 				  @Override
 				  protected void updateItem(String item,boolean empty) {
@@ -445,10 +445,10 @@ public class RuntimeOptionBuilder {
 		});
 
 		this.timeOfExecution=timeOfExecution;
-		this.timeOfExecution.setCellValueFactory(new PropertyValueFactory<TestCaseAndResult,String>("time"));
+		this.timeOfExecution.setCellValueFactory(new PropertyValueFactory<TestCaseStatus,String>("time"));
 		this.timeOfExecution.setCellFactory(col->{
 			
-			 return new TableCell<TestCaseAndResult,Long>(){
+			 return new TableCell<TestCaseStatus,Long>(){
 				 
 				  @Override
 				  protected void updateItem(Long item,boolean empty) {
