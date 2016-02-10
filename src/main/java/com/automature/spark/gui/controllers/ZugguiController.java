@@ -1388,6 +1388,13 @@ public class ZugguiController implements Initializable ,GuiController{
 	public static void setSwitches(String[] switches) {
 		ZugguiController.switchesToConfigureTest = switches;
 	}
+	@Override
+	public String getProductId() {
+		if(product.getText().equals(""))
+			return "";
+		else
+		return product.getText().substring(product.getText().lastIndexOf(" (")+2, product.getText().lastIndexOf(")"));
+	}
 
 	@Override
 	public String getTestPlanId() {

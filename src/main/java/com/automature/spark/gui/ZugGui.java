@@ -3,6 +3,7 @@ package com.automature.spark.gui;
 
 
 import com.automature.spark.engine.Spark;
+import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.controllers.GuiController;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.gui.utils.ApplicationLauncher;
@@ -68,6 +69,13 @@ public class ZugGui  extends Application {
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
+					try {
+
+						if(Spark.opts.dbReporting)
+						Spark.reporter.testCycleCleanup(ZugguiController.controller.getTestCycleId(),Spark.testsuite.testSuitName,ZugguiController.controller.getProductId());
+					} catch (Exception e) {
+					} 
+					
 				System.exit(0);
 			}
 		});

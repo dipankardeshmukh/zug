@@ -33,6 +33,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	String topologySetId = StringUtils.EMPTY;
 	String buildId=StringUtils.EMPTY;
 	private String TOPOSET;
+	public static ArrayList<String> executedTestCases=new ArrayList<String>(); 
 	public SpacetimeReporter(Hashtable ht) {
 		this.dBHostName=(String)ht.get("dbhostname");
 		this.dbUserName=(String)ht.get("dbusername");
@@ -76,6 +77,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			Exception, Throwable {
 		Log.Debug("Controller/ValidateDatabaseEntries : Start of function");
 		try{
+			
 			heartBeat(sessionId);
 		}
 		catch(ReportingException re){
@@ -109,13 +111,36 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			ReportingException {
 
 		try {
-			client.heartBeat(sessionId);
+			/*System.out.println(*/client.heartBeat(sessionId);//);
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}
 		
 	}
+	
+	@Override
+	public void testCycleCleanup(String tcid,String tsname,String pid) throws InterruptedException,
+			ReportingException {
 
+		try {
+		client.testCycleCleanup(tcid,tsname,pid);
+		} catch (Exception e) {
+			throw new ReportingException(e.getMessage());
+		}
+		
+	}
+	
+	@Override
+	public void testCycleClearTestCases(String tcid,String tsname,String pid) throws InterruptedException,
+	ReportingException {
+
+		try {
+		client.testCycleClearTcs(tcid,tsname,pid);
+		} catch (Exception e) {
+			throw new ReportingException(e.getMessage());
+		}
+	}
+	
 	@Override
 	public void SaveTestCaseResultEveryTime(ExecutedTestCase etc)
 			throws Exception, ReportingException {
@@ -141,10 +166,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			}
 		});
 	}
-	
 	Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : Start of the Function");
 	etc.testCaseCompletetionTime=new Date();
-	client.testExecutionDetails_write(etc.testCaseID, etc.testcasedescription, testCycleId, etc.testCaseStatus, buildId, String.valueOf(etc.timeToExecute), "", etc.testCaseCompletetionTime.toString(), testSuiteName, topologySetId, testSuiteRole, etc.testCaseExecutionComments);//(executedTestCaseData.get(s).testCaseID, executedTestCaseData.get(s).testcasedescription, testCycleId, executedTestCaseData.get(s).testCaseStatus, buildId, String.valueOf(executedTestCaseData.get(s).timeToExecute), "", new SimpleDateFormat("yyyy-MM-dd").format(executedTestCaseData.get(s).testCaseCompletetionTime), testSuiteName, topologySetId, testSuiteRole , executedTestCaseData.get(s).testCaseExecutionComments);
+	String resp=client.testExecutionDetails_write(etc.testCaseID, etc.testcasedescription, testCycleId, etc.testCaseStatus, buildId, String.valueOf(etc.timeToExecute), "", etc.testCaseCompletetionTime.toString(), testSuiteName, topologySetId, testSuiteRole, etc.testCaseExecutionComments);//(executedTestCaseData.get(s).testCaseID, executedTestCaseData.get(s).testcasedescription, testCycleId, executedTestCaseData.get(s).testCaseStatus, buildId, String.valueOf(executedTestCaseData.get(s).timeToExecute), "", new SimpleDateFormat("yyyy-MM-dd").format(executedTestCaseData.get(s).testCaseCompletetionTime), testSuiteName, topologySetId, testSuiteRole , executedTestCaseData.get(s).testCaseExecutionComments);
+	if(!executedTestCases.contains(resp))
+	executedTestCases.add(resp);
 	Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : End of the Function");
 	}
 

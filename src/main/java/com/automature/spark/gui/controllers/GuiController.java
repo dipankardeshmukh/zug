@@ -31,4 +31,5 @@ public interface GuiController {
 	public String getTestCycleId();
 	public String getTopologySetId();
 	public String getBuildId();
+	public String getProductId();
 }

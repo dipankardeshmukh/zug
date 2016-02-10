@@ -117,7 +117,7 @@ public class Spark extends ZugGui {
 	public static NavigableMap<String, AtomInvoker> invoke_native_atoms = new TreeMap<String, AtomInvoker>(); 
 	private static volatile String builtin_atom_package_name = "";
 
-	static Reporter reporter=null;
+	public static Reporter reporter=null;
 	static boolean pause=false;
 	static boolean stepOver=false;
 	static boolean stepInto=false;
@@ -1968,6 +1968,11 @@ public class Spark extends ZugGui {
 					return;
 				}
 				Spark.message("Connection to "+frameWork+" is successful.\n ");
+				
+				if(opts.dbReporting)
+					reporter.testCycleClearTestCases(ZugguiController.controller.getTestCycleId(),testsuite.testSuitName,ZugguiController.controller.getProductId());
+
+				
 				if (!opts.verbose) {
 					System.out.println("Connection to "+frameWork+" is successful.\n ");
 				}
@@ -2067,7 +2072,7 @@ public class Spark extends ZugGui {
 						try {
 							while(controller.listen){
 								reporter.heartBeat(sessionid);
-								Thread.sleep(1000*60*5);
+								Thread.sleep(1000);
 							}
 
 						}catch(Exception e){
@@ -2161,7 +2166,8 @@ public class Spark extends ZugGui {
 				}
 				threadToOpenServerPipe.interrupt();
 				if(stop||Spark.errorOccured){
-
+					if(opts.dbReporting)
+					reporter.testCycleCleanup(ZugguiController.controller.getTestCycleId(),testsuite.testSuitName,ZugguiController.controller.getProductId());
 					controller.DoHarnessCleanup();
 					System.gc();
 					return;
