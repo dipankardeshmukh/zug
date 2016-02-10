@@ -64,4 +64,12 @@ public abstract class Reporter {
 	public abstract void setTestCycleTopologySetValues(String env_list)
 			throws ReportingException;
 
+	public void testCycleCleanup(String tcyclid,String tsname,String pid) throws InterruptedException,
+			ReportingException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void testCycleClearTestCases(String testCycleId,String testSuitName, String productId) throws InterruptedException, ReportingException {}
+
 }

@@ -13,7 +13,7 @@ import com.automature.spark.util.Utility;
 public class TestSuite {
 
 	TestCase[] testcases;
-	static String testSuitName = StringUtils.EMPTY;
+	public static String testSuitName = StringUtils.EMPTY;
 	static	String testSuiteId =  StringUtils.EMPTY;
 	static String testSuitRole = StringUtils.EMPTY;
 
