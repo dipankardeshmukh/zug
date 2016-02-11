@@ -19,6 +19,8 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -71,6 +73,7 @@ import com.automature.spark.beans.MacroColumn;
 import com.automature.spark.beans.TestCaseStatus;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.engine.TestCase;
+import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.Constants;
 import com.automature.spark.gui.ExpressionEvaluator;
 import com.automature.spark.gui.ReporterPaneChildWindow;
@@ -532,6 +535,7 @@ public class ZugguiController implements Initializable ,GuiController{
 		product.setOnMouseClicked(event->{
 			if(isPopupOpened)
 				return;
+			reconnectToDBifConnectionIsLost();
 				popup.displayListView(reporter.getProductList(),product,"Products",reporter,listOftestPlans,null,event);
 				this.testPlan.setDisable(true);
 				this.testPlan.setText("");
@@ -548,6 +552,7 @@ public class ZugguiController implements Initializable ,GuiController{
 		testPlan.setOnMouseClicked(event->{
 			if(isPopupOpened)
 				return;
+			reconnectToDBifConnectionIsLost();
 			popup.displayListView(listOftestPlans,testPlan,"Testplans",reporter,listOftestCycles,null, event);
 			this.testCycle.setDisable(true);
 			this.testCycle.setText("");
@@ -560,6 +565,7 @@ public class ZugguiController implements Initializable ,GuiController{
 		testCycle.setOnMouseClicked(event->{
 			if(isPopupOpened)
 				return;
+			reconnectToDBifConnectionIsLost();
 			popup.displayListView(listOftestCycles,testCycle,"TestCycles",reporter,listOfTopoSets,listOfBuilds, event);
 
     		createTestCycleBtn.setDisable(true);
@@ -575,6 +581,7 @@ public class ZugguiController implements Initializable ,GuiController{
 				return;
 			if(isPopupOpened)
 				return;
+			reconnectToDBifConnectionIsLost();
 			popup.displayListView(listOfTopoSets,topoSet,"TopologyStets",reporter,null,null, event);
 
     		createTestCycleBtn.setDisable(true);
@@ -588,6 +595,7 @@ public class ZugguiController implements Initializable ,GuiController{
 				return;
 			if(isPopupOpened)
 				return;
+			reconnectToDBifConnectionIsLost();
 			popup.displayListView(listOfBuilds,buildTag,"Builds",reporter,null,null, event);
 
     		createTestCycleBtn.setDisable(true);
@@ -597,6 +605,19 @@ public class ZugguiController implements Initializable ,GuiController{
 		return isDbConfigured;
 	}
 	
+	private void reconnectToDBifConnectionIsLost() {
+		if(reporter.sessionid==null)
+			try {
+				reporter.connect();
+			} catch (ReportingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+
 	public void initializeStartupBehavior() {
 		intializeStartUpPage();
 		initializeConsole();
@@ -1150,6 +1171,17 @@ public class ZugguiController implements Initializable ,GuiController{
 
 	public void launchZug(){
 		
+		if(StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
+				StringUtils.isEmpty(ZugguiController.controller.getTestPlan().getText())||
+				StringUtils.isEmpty(ZugguiController.controller.getTestCycle().getText())||
+				StringUtils.isEmpty(ZugguiController.controller.getTopoSet().getText())||
+				StringUtils.isEmpty(ZugguiController.controller.getBuildTag().getText())
+				)
+		{
+			System.err.println("\nPlease check reporting configuration settings from Reporting pane and proceed\n");
+			return;
+			
+		}
 		TestCase.testCaseNumber=1;
 		ZugguiController.getZugGuiConsole().getProgressBar().setProgress(0.0);
 		ZugguiController.getZugGuiConsole().getProgressBar().lookup(".bar").setStyle(Styles.greenBackground);
@@ -1237,7 +1269,7 @@ public class ZugguiController implements Initializable ,GuiController{
 				if(b==true){
 					hideExpressionEvaluator();
 				}
-
+				
 
 			}
 		});

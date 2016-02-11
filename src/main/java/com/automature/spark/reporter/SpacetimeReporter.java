@@ -21,13 +21,14 @@ import com.automature.spark.util.Log;
 
 public class SpacetimeReporter extends Reporter implements Retriever {
 	private static ZermattClient client;
-	public static String sessionId=null;
+	public static String sessionid=null;
 	String dBHostName= StringUtils.EMPTY;
 	String dbUserName = StringUtils.EMPTY;
 	String dbUserPassword = StringUtils.EMPTY;
 	String testSuiteId=StringUtils.EMPTY;
 	String testSuiteName=StringUtils.EMPTY;
 	String testSuiteRole=StringUtils.EMPTY;
+	String productId =StringUtils.EMPTY;
 	String testPlanId = StringUtils.EMPTY;
 	String testCycleId = StringUtils.EMPTY;
 	String topologySetId = StringUtils.EMPTY;
@@ -43,6 +44,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		this.testSuiteRole=(String)ht.get("testsuiterole");
 		if(Spark.getController()!=null)
 		{
+			this.productId=Spark.getController().getProductId();
 			this.testPlanId=Spark.getController().getTestPlanId();
 			
 			try{
@@ -64,7 +66,8 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		Log.Debug("Controller/ConnectToSpacetime : Start of Function ");
 		try{
 		client=new SpacetimeClient(dBHostName,dbUserName,dbUserPassword);
-		sessionId=(client.getSessionId());
+		sessionid=(client.getSessionId());
+		Spark.sessionid=sessionid;
 		return true;
 		}catch(Exception ex)
 		{
@@ -78,31 +81,33 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		Log.Debug("Controller/ValidateDatabaseEntries : Start of function");
 		try{
 			
-			heartBeat(sessionId);
+			heartBeat(sessionid);
 		}
 		catch(ReportingException re){
 			System.err.println("\n\t"+re.getMessage()+"\n");
 			return false;
 		}
-		try{
-		if(StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
-				StringUtils.isEmpty(ZugguiController.controller.getTestPlan().getText())||
-				StringUtils.isEmpty(ZugguiController.controller.getTestCycle().getText())||
-				StringUtils.isEmpty(ZugguiController.controller.getTopoSet().getText())||
-				StringUtils.isEmpty(ZugguiController.controller.getBuildTag().getText())
-				)
-		{
-			System.err.println("\n\tPlease check reporting configuration settings from Reporting pane and proceed\n");
-			return false;
-		}
-		else
-		{
+//		try{
+//		if(StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
+//				StringUtils.isEmpty(ZugguiController.controller.getTestPlan().getText())||
+//				StringUtils.isEmpty(ZugguiController.controller.getTestCycle().getText())||
+//				StringUtils.isEmpty(ZugguiController.controller.getTopoSet().getText())||
+//				StringUtils.isEmpty(ZugguiController.controller.getBuildTag().getText())
+//				)
+//		{
+//			System.err.println("\n\tPlease check reporting configuration settings from Reporting pane and proceed\n");
+//			
+//			return false;
+//		}
+//		else
+//		{
 		return true;
-		}
-		}catch(Exception e){
-			System.err.println("\n\tPlease check reporting configuration settings from Reporting pane and proceed\n");
-			return false;
-		}
+//		}
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			System.err.println("\n\tPlease check reporting configuration settings from Reporting pane and proceed\n");
+//			return false;
+//		}
 		
 	}
 
@@ -111,9 +116,9 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			ReportingException {
 
 		try {
-			/*System.out.println(*/client.heartBeat(sessionId);//);
+			client.heartBeat(sessionid);
 		} catch (Exception e) {
-			throw new ReportingException(e.getMessage());
+			testCycleCleanup(testCycleId,testSuiteName,productId);
 		}
 		
 	}
@@ -121,13 +126,18 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	@Override
 	public void testCycleCleanup(String tcid,String tsname,String pid) throws InterruptedException,
 			ReportingException {
-
+     try {
+		connect();
+	} catch (Throwable e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
 		try {
 		client.testCycleCleanup(tcid,tsname,pid);
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}
-		
+	destroySession(sessionid);
 	}
 	
 	@Override
@@ -191,7 +201,12 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	@Override
 	public void destroySession(String sessionId) throws ReportingException {
 		// TODO Auto-generated method stub
-		
+		try {
+			client.destorySession(sessionId);
+			sessionid=null;
+			} catch (Exception e) {
+				throw new ReportingException(e.getMessage());
+			}
 	}
 
 	@Override
