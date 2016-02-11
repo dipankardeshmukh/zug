@@ -23,8 +23,13 @@ import com.automature.spark.util.Styles;
 
 public class ReporterPaneChildWindow {
 public void displayListView(ArrayList<String> items, TextField text,String type, SpacetimeReporter reporter, ArrayList<String> ob, ArrayList<String> ob1, MouseEvent event2){
-	text.setText("");
 	
+	if(type.equals("Testplans"))
+	{
+
+	ZugguiController.controller.getCreateTestCycleBtn().setDisable(true);
+ 	ZugguiController.controller.getCreateBuildTagBtn().setDisable(true);
+	}
 		VBox contentPane=new VBox();
 		HBox submitPanel=new HBox();
 		
@@ -81,23 +86,14 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	try{
         	text.setText(listView.getSelectionModel().getSelectedItem().toString());
         	}catch(Exception e){
-        		text.setText("");
+        		try{
+        			if(!text.getText().equals(""))
+                	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().indexOf(text)+2).setDisable(false);
+                	}catch(Exception ex){}
         		stage.close();
             	ZugguiController.controller.isPopupOpened=false;
             	text.setDisable(false);
-            	if(type.equals("TestCycles"))
-        		{
-        		
-         		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
-             	
-	         	}
-	        	else if(type.equals("TopologyStets")||type.equals("Builds")){
-	        		
-	        		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
-	         	ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
-	         	
-	         	
-	        	}
+            	closeAction(type, text);
             	return;
         	}
         	text.setDisable(false);
@@ -212,10 +208,18 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         });
         
         cancel.setOnAction(event->{
+        	try{
+    			if(!text.getText().equals(""))
+            	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().indexOf(text)+2).setDisable(false);
+            	}catch(Exception ex){}
         	closeAction(type, text);
         	stage.close();
         });
         stage.setOnCloseRequest(event->{
+        	try{
+    			if(!text.getText().equals(""))
+            	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().indexOf(text)+2).setDisable(false);
+            	}catch(Exception ex){}
         	closeAction(type, text);
         });
         
@@ -227,7 +231,13 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
 	}
 
  private void closeAction(String type,TextField text){
-	 if(type.equals("TestCycles"))
+	 if(type.equals("Testplans"))
+		{
+		if(!text.getText().equals(""))
+		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
+		
+		}
+   else if(type.equals("TestCycles"))
 		{
 		
  		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
