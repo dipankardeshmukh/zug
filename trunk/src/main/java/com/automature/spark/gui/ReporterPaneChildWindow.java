@@ -23,14 +23,15 @@ import com.automature.spark.util.Styles;
 
 public class ReporterPaneChildWindow {
 public void displayListView(ArrayList<String> items, TextField text,String type, SpacetimeReporter reporter, ArrayList<String> ob, ArrayList<String> ob1, MouseEvent event2){
-		
+	text.setText("");
+	
 		VBox contentPane=new VBox();
 		HBox submitPanel=new HBox();
 		
 		submitPanel.setPadding(new Insets(5));
 		submitPanel.setStyle(Styles.submitPanelStyle);
 		submitPanel.setSpacing(5);
-		
+
 		Button submit=new Button("Submit");
 		submitPanel.getChildren().add(submit);
 		
@@ -39,6 +40,10 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
 		
 		Button next=new Button("Next >>>");
 		submitPanel.getChildren().add(next);
+		
+
+		Button cancel=new Button("Cancel");
+		submitPanel.getChildren().add(cancel);
 		
 		text.setDisable(true);
 		ObservableList data = 
@@ -77,6 +82,23 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	text.setText(listView.getSelectionModel().getSelectedItem().toString());
         	}catch(Exception e){
         		text.setText("");
+        		stage.close();
+            	ZugguiController.controller.isPopupOpened=false;
+            	text.setDisable(false);
+            	if(type.equals("TestCycles"))
+        		{
+        		
+         		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
+             	
+	         	}
+	        	else if(type.equals("TopologyStets")||type.equals("Builds")){
+	        		
+	        		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
+	         	ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
+	         	
+	         	
+	        	}
+            	return;
         	}
         	text.setDisable(false);
         	if(ob!=null)
@@ -151,13 +173,14 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
              listView.getItems().clear();
              listView.getItems().addAll(FXCollections.observableArrayList(listOfVisibles));
              ZugguiController.controller.pageNumber++;
-             stage.setTitle("List Of "+type +" [ "+ZugguiController.controller.pageNumber+" of "+num+" ]");
+             stage.setTitle("List Of "+type +" [ List "+ZugguiController.controller.pageNumber+" of "+num+" ]");
         });
         
         prev.setOnAction(event->{
-        	if(stage.getTitle().contains(" [ 1 of"))
+        	if(stage.getTitle().contains(" [ List 1 of"))
         		return;
         	listOfVisibles.clear();
+        	System.out.println();
         	int x=ZugguiController.controller.listElementFinalIndex-(ZugguiController.controller.listElementFinalIndex%10)-1;
         	if ((ZugguiController.controller.listElementFinalIndex%10)==0) {
 				x=x-10;
@@ -185,33 +208,15 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
              Collections.reverse(listOfVisibles);
              listView.getItems().addAll(FXCollections.observableArrayList(listOfVisibles));
              ZugguiController.controller.pageNumber--;
-             stage.setTitle("List Of "+type +" [ "+ZugguiController.controller.pageNumber+" of "+num+" ]");
+             stage.setTitle("List Of "+type +" [ List "+ZugguiController.controller.pageNumber+" of "+num+" ]");
         });
         
+        cancel.setOnAction(event->{
+        	closeAction(type, text);
+        	stage.close();
+        });
         stage.setOnCloseRequest(event->{
-        	if(type.equals("TestCycles"))
-        		{
-        		
-            		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
-            		if(!ZugguiController.controller.getBuildTag().getText().equals(""))
-            			ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
-                	if(!text.getText().equals(""))
-                		ZugguiController.controller.getTopoSet().setDisable(false);
-                	if(!ZugguiController.controller.getBuildTag().getText().equals(""))
-                		ZugguiController.controller.getBuildTag().setDisable(false);
-                	
-            	}
-        	else if(type.equals("TopologyStets")||type.equals("Builds")){
-        		
-        		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
-	        	ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
-	        	
-	        	if(!text.getText().equals(""))
-            		ZugguiController.controller.getBuildTag().setDisable(false);
-	        	
-        	}
-        	ZugguiController.controller.isPopupOpened=false;
-        	text.setDisable(false);	
+        	closeAction(type, text);
         });
         
         stage.setScene(new Scene(contentPane, 400, 300));
@@ -220,4 +225,30 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         stage.show();
         ZugguiController.controller.isPopupOpened=true;
 	}
+
+ private void closeAction(String type,TextField text){
+	 if(type.equals("TestCycles"))
+		{
+		
+ 		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
+ 		if(!ZugguiController.controller.getBuildTag().getText().equals(""))
+ 			ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
+     	if(!text.getText().equals(""))
+     		ZugguiController.controller.getTopoSet().setDisable(false);
+     	if(!ZugguiController.controller.getBuildTag().getText().equals(""))
+     		ZugguiController.controller.getBuildTag().setDisable(false);
+     	
+ 	}
+	else if(type.equals("TopologyStets")||type.equals("Builds")){
+		
+		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
+ 	ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
+ 	
+ 	if(!text.getText().equals(""))
+ 		ZugguiController.controller.getBuildTag().setDisable(false);
+ 	
+	}
+	ZugguiController.controller.isPopupOpened=false;
+	text.setDisable(false);	
+ }
 }

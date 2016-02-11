@@ -70,9 +70,8 @@ public class ZugGui  extends Application {
 			@Override
 			public void handle(WindowEvent event) {
 					try {
-
 						if(Spark.opts.dbReporting)
-						Spark.reporter.testCycleCleanup(ZugguiController.controller.getTestCycleId(),Spark.testsuite.testSuitName,ZugguiController.controller.getProductId());
+						Spark.reporter.heartBeat(Spark.sessionid);
 					} catch (Exception e) {
 					} 
 					

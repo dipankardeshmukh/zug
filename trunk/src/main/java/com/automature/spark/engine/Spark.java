@@ -1342,7 +1342,7 @@ public class Spark extends ZugGui {
 
 	private static void clearStaticMembers(){
 
-		reporter=null;
+//		reporter=null;
 		opts =null;
 		testsuite=null;
 		readExcel=null;
@@ -1969,15 +1969,17 @@ public class Spark extends ZugGui {
 				}
 				Spark.message("Connection to "+frameWork+" is successful.\n ");
 				
+				try{
 				if(opts.dbReporting)
 					reporter.testCycleClearTestCases(ZugguiController.controller.getTestCycleId(),testsuite.testSuitName,ZugguiController.controller.getProductId());
-
+				}catch(Exception e){}
 				
 				if (!opts.verbose) {
 					System.out.println("Connection to "+frameWork+" is successful.\n ");
 				}
 				//	Hashtable reportingParams=controller.getReportingparams();
 				if (!controller.reporter.ValidateDatabaseEntries()) {
+					
 					Spark
 					.message("\nInvalid Entries provided. Controller Exiting Gracefully..... ");
 					controller.DoHarnessCleanup();
@@ -2074,9 +2076,7 @@ public class Spark extends ZugGui {
 								reporter.heartBeat(sessionid);
 								Thread.sleep(1000);
 							}
-
 						}catch(Exception e){
-							//							Controller.errorOccured=true;
 						}
 					}
 				});
@@ -2166,9 +2166,9 @@ public class Spark extends ZugGui {
 				}
 				threadToOpenServerPipe.interrupt();
 				if(stop||Spark.errorOccured){
-					if(opts.dbReporting)
-					reporter.testCycleCleanup(ZugguiController.controller.getTestCycleId(),testsuite.testSuitName,ZugguiController.controller.getProductId());
+					
 					controller.DoHarnessCleanup();
+					reporter.heartBeat(sessionid);
 					System.gc();
 					return;
 				}
