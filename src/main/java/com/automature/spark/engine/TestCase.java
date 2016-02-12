@@ -724,6 +724,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 					Spark.tcNumber++;
 					if(Spark.tcNumber>=TestCasesSheet.noOfTestSteps)
 						TestCasesSheet.noOfTestSteps=Spark.tcNumber+1;
+					 if(Spark.guiFlag)
 							ZugguiController.getZugGuiConsole().getProgressBar().setProgress(Double.parseDouble(String.valueOf(Spark.tcNumber))/TestCasesSheet.noOfTestSteps);
 
 				}
