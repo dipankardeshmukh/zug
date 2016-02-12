@@ -1171,12 +1171,12 @@ public class ZugguiController implements Initializable ,GuiController{
 
 	public void launchZug(){
 		
-		if(StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
+		if((dbReportingCB.isSelected()) && (StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
 				StringUtils.isEmpty(ZugguiController.controller.getTestPlan().getText())||
 				StringUtils.isEmpty(ZugguiController.controller.getTestCycle().getText())||
 				StringUtils.isEmpty(ZugguiController.controller.getTopoSet().getText())||
 				StringUtils.isEmpty(ZugguiController.controller.getBuildTag().getText())
-				)
+				))
 		{
 			System.err.println("\nPlease check reporting configuration settings from Reporting pane and proceed\n");
 			return;
