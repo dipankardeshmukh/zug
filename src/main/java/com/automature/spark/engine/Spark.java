@@ -2168,7 +2168,7 @@ public class Spark extends ZugGui {
 				threadToOpenServerPipe.interrupt();
 				if(stop||Spark.errorOccured){
 					controller.DoHarnessCleanup();
-					if(ZugguiController.controller.getDbReportingCB().isSelected())
+					if(ZugguiController.controller.getDbReportingCB().isSelected() && Spark.guiFlag)
 					reporter.heartBeat(sessionid);
 					System.gc();
 					return;

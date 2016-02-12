@@ -374,6 +374,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				StringUtils.EMPTY);
 		HiPerfTimer tm = new HiPerfTimer();
 		boolean reportingError=false;
+		if(Spark.guiFlag)
 		setStatusOfTestExecution("RUNNING",(int) tm.Duration());
 		try {
 			Log.Debug("TestCase/RunExpandedTestCase : Running TestCase ID "
@@ -1128,6 +1129,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 					"\n\nSTATUS : PASS For TestCase ID %s ",
 					this.testCaseID + " On : "
 							+ Utility.getCurrentDateAsString()));
+			if(Spark.guiFlag)
 			setStatusOfTestExecution("PASS",(int) tm.Duration());
 			
 			if(Spark.guiFlag){
@@ -1200,6 +1202,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 					"\n\nSTATUS : FAIL For TestCase ID %s ",
 					this.testCaseID + " On : "
 							+ Utility.getCurrentDateAsString()));
+			if(Spark.guiFlag)
 			setStatusOfTestExecution("FAIL",(int) tm.Duration());
 			Spark.suiteFailed=true;
 			if(Spark.guiFlag){
@@ -1281,13 +1284,11 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				ZugguiController.controller.getTestExecutionResults().getItems().remove(index);
 				}
 				catch(Exception e){}
-				if(Spark.guiFlag)
-				{
+				
 				if(status.equalsIgnoreCase("running"))
 				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , 0 ));
 				else
 				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , time ));
-				}
 		    }
 		});
 	}
@@ -2211,6 +2212,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 					+ " is a MANUAL TestCase. Automation Framework is ignoring this TestCase.");
 			Spark.message("\n\nSTATUS : IGNORING(Not Running) FOR TestCase ID : "
 					+ this.testCaseID + ". This is a Manual TestCase.");
+			if(Spark.guiFlag)
 			setStatusOfTestExecution("IGNORING(Not Running)",0);
 			return;
 		}
