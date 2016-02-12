@@ -396,8 +396,9 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 			// );
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
-			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || TestSuite.baseTestCaseID
-					.compareToIgnoreCase("init") == 0)) {
+//			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || TestSuite.baseTestCaseID
+//					.compareToIgnoreCase("init") == 0))
+			{
 				ExecutedTestCase tData = new ExecutedTestCase();
 				tData.testCaseID = this.testCaseID;
 				tData.timeToExecute = 0;
@@ -414,8 +415,8 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				if (Spark.opts.dbReporting == true) {
 					// If the testCase is not an Init or Cleanup Step then only
 					// Save the TestCase to the Result Database.
-					if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
-							.compareToIgnoreCase("init") == 0)) {
+//					if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
+//							.compareToIgnoreCase("init") == 0)) {
 						Log.Debug(String
 								.format("TestCase/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result.",
 										this.testCaseID,
@@ -455,17 +456,18 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 						}catch(Exception e){
 							e.printStackTrace();
 						}
-					} else {
-						Log.Debug(String
-								.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
-										this.testCaseID));
-					}
+//					} else {
+//						Log.Debug(String
+//								.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
+//										this.testCaseID));
+//					}
 				}
-			} else {
-				Log.Debug(String
-						.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
-								this.testCaseID));
-			}
+			} 
+//			else {
+//				Log.Debug(String
+//						.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
+//								this.testCaseID));
+//			}
 
 			// Now run each of the Actions mentioned here...and try running it.
 			Action[] actions = new Action[this.actions.size()];

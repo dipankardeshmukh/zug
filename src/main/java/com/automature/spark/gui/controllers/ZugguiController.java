@@ -1585,4 +1585,8 @@ public class ZugguiController implements Initializable ,GuiController{
 	public RuntimeOptionBuilder getOptionBuilder() {
 		return optionBuilder;
 	}
+	
+	public CheckBox getDbReportingCB() {
+		return dbReportingCB;
+	}
 }
