@@ -205,6 +205,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			client.destorySession(sessionId);
 			sessionid=null;
 			} catch (Exception e) {
+				System.err.println(sessionid+"#############################"+sessionId);
 				throw new ReportingException(e.getMessage());
 			}
 	}
