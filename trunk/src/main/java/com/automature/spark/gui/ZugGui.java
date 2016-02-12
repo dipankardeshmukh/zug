@@ -70,7 +70,7 @@ public class ZugGui  extends Application {
 			@Override
 			public void handle(WindowEvent event) {
 					try {
-						if(Spark.opts.dbReporting)
+						if(ZugguiController.controller.getDbReportingCB().isSelected())
 						Spark.reporter.heartBeat(Spark.sessionid);
 					} catch (Exception e) {
 					} 

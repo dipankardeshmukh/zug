@@ -425,7 +425,8 @@ public class RuntimeOptionBuilder {
 			                setText("");
 			                setStyle("");
 			            } else {
-				            	setText(item);
+				            
+			            	setText(item);
 			            	
 			            	if(item.equalsIgnoreCase("running"))
 			            		setTextFill(Color.DARKBLUE);

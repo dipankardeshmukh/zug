@@ -2074,7 +2074,7 @@ public class Spark extends ZugGui {
 						try {
 							while(controller.listen){
 								reporter.heartBeat(sessionid);
-								Thread.sleep(1000);
+								Thread.sleep(1000*60);
 							}
 						}catch(Exception e){
 						}
@@ -2155,7 +2155,6 @@ public class Spark extends ZugGui {
 				// show the statistics.
 			{
 				controller.ShowTestCaseResultONConsole();
-
 			}
 			if(guiFlag){
 				controller.listen=false;
@@ -2166,8 +2165,8 @@ public class Spark extends ZugGui {
 				}
 				threadToOpenServerPipe.interrupt();
 				if(stop||Spark.errorOccured){
-					
 					controller.DoHarnessCleanup();
+					if(ZugguiController.controller.getDbReportingCB().isSelected())
 					reporter.heartBeat(sessionid);
 					System.gc();
 					return;
