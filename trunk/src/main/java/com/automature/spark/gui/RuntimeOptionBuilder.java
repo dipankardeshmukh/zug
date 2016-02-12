@@ -425,7 +425,8 @@ public class RuntimeOptionBuilder {
 			                setText("");
 			                setStyle("");
 			            } else {
-			            	setText(item);
+				            	setText(item);
+			            	
 			            	if(item.equalsIgnoreCase("running"))
 			            		setTextFill(Color.DARKBLUE);
 			            	else if(item.equalsIgnoreCase("pass"))
@@ -453,7 +454,6 @@ public class RuntimeOptionBuilder {
 				  @Override
 				  protected void updateItem(Long item,boolean empty) {
 					  super.updateItem(item, empty);
-					  
 					  if (item == null  || empty ) {
 						  setText("");
 			                setStyle("");
