@@ -2101,6 +2101,7 @@ public class Spark extends ZugGui {
 			// controller.executionTime = (int)(tm.Duration() / ((double)1000));
 			controller.executionTime = (int) (tm.Duration());
 			//set progress bar to status to end
+			if(guiFlag)
 			if(Spark.tcNumber+1==TestCasesSheet.noOfTestSteps)
 			{
 				Platform.runLater(new Runnable() {
@@ -2209,7 +2210,7 @@ public class Spark extends ZugGui {
 		System.gc();
 		if(!guiFlag)
 			System.exit(0);
-		
+		if(guiFlag)
 		ZugguiController.controller.setTestExecutionResultsDefaultStyle();
 	}
 	
