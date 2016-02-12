@@ -239,8 +239,8 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					+ dBHostName + "/" + " through Davos Web Service.");// TODO
 
 			Spark.message("\nTestCase ID \t\t Status \t\t Time Taken(In mili-seconds) \t\t Comments\n ");
-			
 			Set<String> TestCaseKey = executedTestCaseData.keySet();
+			System.err.println(TestCaseKey);
 			for (String s : TestCaseKey) {
 				
 				client.testExecutionDetails_write(executedTestCaseData.get(s).testCaseID, executedTestCaseData.get(s).testcasedescription, testCycleId, executedTestCaseData.get(s).testCaseStatus, buildId, String.valueOf(executedTestCaseData.get(s).timeToExecute), "", executedTestCaseData.get(s).testCaseCompletetionTime.toString(), testSuiteName, topologySetId, testSuiteRole , executedTestCaseData.get(s).testCaseExecutionComments);
