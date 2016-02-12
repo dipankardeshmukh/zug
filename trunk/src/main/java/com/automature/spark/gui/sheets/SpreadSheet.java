@@ -298,7 +298,7 @@ public class SpreadSheet {
 	}
 
 	public boolean readSpreadSheet(String filePath) throws Exception {
-		
+		if(Spark.guiFlag)
 		Spark.updateExecutionSummaryPanel();
 		
 		if (!new File(filePath).isAbsolute()) {

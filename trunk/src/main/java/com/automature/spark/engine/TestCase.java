@@ -1211,8 +1211,8 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
-			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite.baseTestCaseID
-					.compareToIgnoreCase("init") == 0)) {
+//			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite.baseTestCaseID
+//					.compareToIgnoreCase("init") == 0)) {
 				if(!reportingError){
 					ExecutedTestCase tData = new ExecutedTestCase();
 					tData.testCaseCompletetionTime = Utility.dateNow();
@@ -1238,14 +1238,14 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				}else{
 					System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
 				}
-			} else {
-
-				if(TestSuite.baseTestCaseID.equalsIgnoreCase("init"))
-					TestSuite.initExecuted = true;
-
-				TestSuite.initWorkedFine = false;
-
-			}
+//			} else {
+//
+//				if(TestSuite.baseTestCaseID.equalsIgnoreCase("init"))
+//					TestSuite.initExecuted = true;
+//
+//				TestSuite.initWorkedFine = false;
+//
+//			}
 
 
 		}
@@ -1281,10 +1281,13 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				ZugguiController.controller.getTestExecutionResults().getItems().remove(index);
 				}
 				catch(Exception e){}
+				if(Spark.guiFlag)
+				{
 				if(status.equalsIgnoreCase("running"))
 				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , 0 ));
 				else
 				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , time ));
+				}
 		    }
 		});
 	}

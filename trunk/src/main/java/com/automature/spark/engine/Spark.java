@@ -77,7 +77,7 @@ public class Spark extends ZugGui {
 	public static String logfilename="";
 
 	static GuiController guiController;
-	static boolean guiFlag;
+	public static boolean guiFlag;
 	private static String Version = "SPARK Premium 1.0.1";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
@@ -1747,6 +1747,7 @@ public class Spark extends ZugGui {
 	public static void runTests(String[] args) throws InterruptedException,
 	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
 		suiteFailed=false;
+		if(Spark.guiFlag)
 		updateExecutionSummaryPanel();
 		
 		ProgramOptions.checkCommandLineArgs(args);
@@ -2132,6 +2133,7 @@ public class Spark extends ZugGui {
 					controller.message("\n\nStoring the TestCase Result to "
 							+ controller.dBHostName.substring(controller.dBHostName.indexOf("//")+2) + " in Database " + controller.dBName
 							+" by "+ frameWork+"API");
+					System.err.println(controller.testsuite.executedTestCaseData);
 					try {
 						reporter.saveTestCaseResults(controller.testsuite.executedTestCaseData);
 					} catch (Exception de) {
