@@ -2,6 +2,8 @@ package com.automature.spark.gui;
 
 
 
+import br.eti.kinoshita.testlinkjavaapi.model.Platform;
+
 import com.automature.spark.engine.Spark;
 import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.controllers.GuiController;
@@ -69,12 +71,25 @@ public class ZugGui  extends Application {
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
-					try {
-						if(ZugguiController.controller.getDbReportingCB().isSelected())
-						Spark.reporter.heartBeat(Spark.sessionid);
-					} catch (Exception e) {
-					} 
+				Runnable r=new Runnable() {
 					
+					@Override
+					public void run() {
+						try {
+							if(ZugguiController.controller.getDbReportingCB().isSelected())
+							Spark.reporter.heartBeat(null);
+						} catch (Exception e) {
+						} 
+					}
+				};
+					Thread t=new Thread(r);
+					t.start();
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
 				System.exit(0);
 			}
 		});

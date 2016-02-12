@@ -1171,20 +1171,23 @@ public class ZugguiController implements Initializable ,GuiController{
 
 	public void launchZug(){
 		
-		if((dbReportingCB.isSelected()) && (StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
+		if(Spark.guiFlag && ((dbReportingCB.isSelected()) && (StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
 				StringUtils.isEmpty(ZugguiController.controller.getTestPlan().getText())||
 				StringUtils.isEmpty(ZugguiController.controller.getTestCycle().getText())||
 				StringUtils.isEmpty(ZugguiController.controller.getTopoSet().getText())||
 				StringUtils.isEmpty(ZugguiController.controller.getBuildTag().getText())
-				))
+				)))
 		{
 			System.err.println("\nPlease check reporting configuration settings from Reporting pane and proceed\n");
 			return;
 			
 		}
 		TestCase.testCaseNumber=1;
+		if(Spark.guiFlag)
+		{
 		ZugguiController.getZugGuiConsole().getProgressBar().setProgress(0.0);
 		ZugguiController.getZugGuiConsole().getProgressBar().lookup(".bar").setStyle(Styles.greenBackground);
+		}
 		console.clear();
 		consoleStage.setTitle("SPARK Console - "+spreadSheet.getFileName());
 		final List<String> params=new ArrayList<String>();

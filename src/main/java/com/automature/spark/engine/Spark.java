@@ -2134,7 +2134,6 @@ public class Spark extends ZugGui {
 					controller.message("\n\nStoring the TestCase Result to "
 							+ controller.dBHostName.substring(controller.dBHostName.indexOf("//")+2) + " in Database " + controller.dBName
 							+" by "+ frameWork+"API");
-					System.err.println(controller.testsuite.executedTestCaseData);
 					try {
 						reporter.saveTestCaseResults(controller.testsuite.executedTestCaseData);
 					} catch (Exception de) {
