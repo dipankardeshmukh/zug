@@ -412,7 +412,8 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				}
 				TestSuite.	executedTestCaseData.put(tData.testCaseID, tData);
 
-
+				Spark.executedTestCases.add(tData.testCaseID);
+				
 				if (Spark.opts.dbReporting == true) {
 					// If the testCase is not an Init or Cleanup Step then only
 					// Save the TestCase to the Result Database.
@@ -509,6 +510,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
 					final Action action = actions[i];
 					count++;
+					
 					try{
 
 						if(Spark.guiFlag){

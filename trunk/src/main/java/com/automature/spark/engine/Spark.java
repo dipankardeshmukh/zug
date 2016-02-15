@@ -78,7 +78,7 @@ public class Spark extends ZugGui {
 
 	static GuiController guiController;
 	public static boolean guiFlag;
-	private static String Version = "SPARK Premium 1.0.1";
+	private static String Version = "SPARK Premium 1.1.0";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
@@ -116,7 +116,7 @@ public class Spark extends ZugGui {
 	public static NavigableMap<String, AtomInvoker> invokeAtoms = new TreeMap<String, AtomInvoker>();
 	public static NavigableMap<String, AtomInvoker> invoke_native_atoms = new TreeMap<String, AtomInvoker>(); 
 	private static volatile String builtin_atom_package_name = "";
-
+	public static ArrayList<String> executedTestCases=new ArrayList<String>();
 	public static Reporter reporter=null;
 	static boolean pause=false;
 	static boolean stepOver=false;
@@ -1441,6 +1441,7 @@ public class Spark extends ZugGui {
 		ht.put("TestPlanPath".toLowerCase(),opts.getTestPlanPath());
 		ht.put("TopologySetName".toLowerCase(), opts.getTopologySetName());
 		ht.put("topologySetId".toLowerCase(), opts.getTopologySetId());
+		ht.put("productId".toLowerCase(), opts.getProductId());
 		ht.put("TestPlanId".toLowerCase(), opts.getTestPlanId());
 		ht.put("testplanname",opts.getTestPlanName());
 		ht.put("BuildTag".toLowerCase(),opts.getBuildTag());
@@ -1746,6 +1747,7 @@ public class Spark extends ZugGui {
 //oldmain method
 	public static void runTests(String[] args) throws InterruptedException,
 	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
+		Spark.executedTestCases.clear();
 		suiteFailed=false;
 		if(Spark.guiFlag)
 		updateExecutionSummaryPanel();
@@ -1972,8 +1974,12 @@ public class Spark extends ZugGui {
 				
 				try{
 				if(opts.dbReporting)
+					if(Spark.guiFlag)
 					reporter.testCycleClearTestCases(ZugguiController.controller.getTestCycleId(),testsuite.testSuitName,ZugguiController.controller.getProductId());
-				}catch(Exception e){}
+					else
+						reporter.testCycleClearTestCases(opts.getTestCycleId(),testsuite.testSuitName,opts.getProductId());	
+				}catch(Exception e){
+				}
 				
 				if (!opts.verbose) {
 					System.out.println("Connection to "+frameWork+" is successful.\n ");
@@ -2075,7 +2081,7 @@ public class Spark extends ZugGui {
 						try {
 							while(controller.listen){
 								reporter.heartBeat(sessionid);
-								Thread.sleep(1000*60);
+								Thread.sleep(1000*60*5);
 							}
 						}catch(Exception e){
 						}

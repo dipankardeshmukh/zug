@@ -133,7 +133,7 @@ public class Log {
 
 	public static void Cleanup() {
 		HarnessLogFileList.clear();
-		log.shutdown();
+//		log.shutdown();
 	}
 
 	/***

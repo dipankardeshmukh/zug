@@ -48,6 +48,7 @@ public class ProgramOptions {
 	String excludeTestCaseID = StringUtils.EMPTY;
 	String topologySetId = StringUtils.EMPTY;
 	String inputFile = StringUtils.EMPTY;
+	String productId = StringUtils.EMPTY;
 	String TestPlanId = StringUtils.EMPTY;
 	String TestPlanPath = StringUtils.EMPTY;
 	String testCycleId = StringUtils.EMPTY;
@@ -67,7 +68,7 @@ public class ProgramOptions {
 	private Hashtable<String, String> _opts=new Hashtable<String, String>();
 	public ArrayList<String> testCaseIds;
 	protected static String currentPath, workingDirectory;
-	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-dbreporting","-atompath","-include","-execute","-noexecute","-$","-$$","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid","-debugger","-count","-duration"));
+	private static final ArrayList<String> commandLineSwitchList=new ArrayList<String>(Arrays.asList("-testcaseid","-repeat","-norepeat","-autorecover","-noautorecover","-verbose","-debug","-nodebug","-verify","-noverify","-dbreporting","-atompath","-include","-execute","-noexecute","-$","-$$","-productid","-testcycleid","-testplan","-testplanid","-topologyset","-topologysetid","-buildtag","-buildid","-macrofile","-macrocolumn","-logfilename","-help","-pwd","-version","-v","-?","--version","--v","-h","--help","/?","-retrycount","-retrytimeout","-testplanname","-buildname","-ignore","-atomexectime","-excludetestcaseid","-debugger","-count","-duration"));
 	/*
 	 * Creates a new instance.
 	 * 
@@ -135,7 +136,13 @@ public class ProgramOptions {
 			return topologySetId;
 	}
 
-
+	public String getProductId() {
+		// TODO Auto-generated method stub
+		if(productId==null)
+			return StringUtils.EMPTY;
+		else
+			return productId;
+	}
 
 	public String getTestPlanId() {
 		if(TestPlanId==null)
@@ -934,7 +941,14 @@ public class ProgramOptions {
 			// {
 
 //			dbReporting = false;
-
+			
+			if ((productId = this.getString("productid", null)) == null) {
+				Log.Debug("Controller/GetOptions: productid not specified. dbreporting os OFF");
+			} else {
+				ContextVar.setContextVar("ZUG_PRODUCTID", productId);
+				Log.Debug("Controller/GetOptions: ProductId = " + productId);
+			}
+			
 			if ((TestPlanId = this.getString("testplanid", null)) == null) {
 				// TODO here put checking for testplanid=product:sprint:
 				/*
