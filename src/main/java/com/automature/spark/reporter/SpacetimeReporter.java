@@ -42,7 +42,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		this.testSuiteId=(String)ht.get("testsuiteid");
 		this.testSuiteName=(String)ht.get("testsuitename");
 		this.testSuiteRole=(String)ht.get("testsuiterole");
-		if(Spark.getController()!=null)
+		if(Spark.getController()!=null && Spark.guiFlag)
 		{
 			this.productId=Spark.getController().getProductId();
 			this.testPlanId=Spark.getController().getTestPlanId();
@@ -59,6 +59,19 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			}catch(StringIndexOutOfBoundsException ex){
 				this.buildId=null;	
 			}
+		}
+		else
+		{
+			this.productId=(String)ht.get("productId".toLowerCase());
+			
+			this.testPlanId=(String)ht.get("TestPlanId".toLowerCase());
+			
+			this.testCycleId=(String)ht.get("testCycleId".toLowerCase());
+				
+			this.topologySetId=(String)ht.get("topologySetId".toLowerCase());
+			
+			this.buildId=(String)ht.get("BuildId".toLowerCase());
+			
 		}
 	}
 	@Override
@@ -86,6 +99,71 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		catch(ReportingException re){
 			System.err.println("\n\t"+re.getMessage()+"\n");
 			return false;
+		}
+		if(!Spark.guiFlag)
+		{
+			if(productId==StringUtils.EMPTY || testPlanId==StringUtils.EMPTY || testCycleId==StringUtils.EMPTY || topologySetId==StringUtils.EMPTY || buildId==StringUtils.EMPTY)
+			{
+				System.out.println("Parameter missing : the following parameters must be provided for reporting  \n"+"-productid \n -testplanid\n -testcycleid\n -topologysetid\n -buildid\n\n");
+				return false;
+			}
+			try{
+			String testPlanName=null;
+			ArrayList<String> al=(client.getTestPlanListForProduct(productId));
+			for (int i = 0; i < al.size(); i++) {
+				if(al.get(i).contains("("+testPlanId+")"))
+				{
+					testPlanName=al.get(i);
+				}
+			}
+			if(testPlanName==null)
+			{
+				System.out.println("\nInvalid testplanId for product\n");
+				return false;
+			}
+			al=(client.getTestCycleListForProduct(productId,testPlanName));
+			int x=0;
+			for (int i = 0; i < al.size(); i++) {
+				if(al.get(i).contains("("+testCycleId+")"))
+				{
+					x++;
+				}
+			}
+			if(x==0)
+			{
+				System.out.println("\nInvalid testcycleid for product and testplan\n");
+				return false;
+			}
+			al=client.getTopoSetsByTestPlanId(testPlanId);
+			x=0;
+			for (int i = 0; i < al.size(); i++) {
+				if(al.get(i).contains("("+topologySetId+")"))
+				{
+					x++;
+				}
+			}
+			if(x==0)
+			{
+				System.out.println("\nInvalid topologysetid for testplan\n");
+				return false;
+			}
+			al=client.getBuildTagForTestCycle(testCycleId);
+			x=0;
+			for (int i = 0; i < al.size(); i++) {
+				if(al.get(i).contains("("+buildId+")"))
+				{
+					x++;
+				}
+			}
+			if(x==0)
+			{
+				System.out.println("\nInvalid buildid for testplan\n");
+				return false;
+			}
+			}catch(Exception e){
+				return false;
+			}
+		
 		}
 //		try{
 //		if(StringUtils.isEmpty(ZugguiController.controller.getProduct().getText()) || 
@@ -157,6 +235,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	if(testCycleId==null)
 	{
 		//create new testcycle if not exists
+		
 		if(buildId==null)
 		{
 			Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : Creating build tag if not exists");
@@ -218,6 +297,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	@Override
 	public void saveTestCaseResults(NavigableMap<String, ExecutedTestCase> executedTestCaseData)
 			throws  Exception {
+		
 		Log.Debug("Controller/SaveTestCaseResult : Start of the Function");
 		
 		Log.Debug("Controller/SaveTestCaseResult : Saving TestCycle ID "
@@ -236,11 +316,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					+ executedTestCaseData.size());
 			
 			Spark.message("\nFollowing are the Details of the TestCases Result getting added to the "
-					+ dBHostName + "/" + " through Davos Web Service.");// TODO
+					+ dBHostName + "/" + " through Spacetime Web Service.");// TODO
 
 			Spark.message("\nTestCase ID \t\t Status \t\t Time Taken(In mili-seconds) \t\t Comments\n ");
-			Set<String> TestCaseKey = executedTestCaseData.keySet();
-			for (String s : TestCaseKey) {
+//			Set<String> TestCaseKey = executedTestCaseData.keySet();
+			for (String s : Spark.executedTestCases) {
 				
 				client.testExecutionDetails_write(executedTestCaseData.get(s).testCaseID, executedTestCaseData.get(s).testcasedescription, testCycleId, executedTestCaseData.get(s).testCaseStatus, buildId, String.valueOf(executedTestCaseData.get(s).timeToExecute), "", executedTestCaseData.get(s).testCaseCompletetionTime.toString(), testSuiteName, topologySetId, testSuiteRole , executedTestCaseData.get(s).testCaseExecutionComments);
 				
