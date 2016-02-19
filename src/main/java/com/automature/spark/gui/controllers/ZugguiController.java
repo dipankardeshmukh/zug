@@ -582,7 +582,7 @@ public class ZugguiController implements Initializable ,GuiController{
 			if(isPopupOpened)
 				return;
 			reconnectToDBifConnectionIsLost();
-			popup.displayListView(listOfTopoSets,topoSet,"TopologyStets",reporter,null,null, event);
+			popup.displayListView(listOfTopoSets,topoSet,"TopologyStets",reporter,listOfBuilds,null, event);
 
     		createTestCycleBtn.setDisable(true);
         	createBuildTagBtn.setDisable(true);
@@ -917,6 +917,62 @@ public class ZugguiController implements Initializable ,GuiController{
 		//	mi.setOnAction(fileClickEvent);
 		//	recentlyUsedMenu.getItems().add(0, mi);
 		setDisableNoTestSuiteLoadComonents(false);
+		if(sessionHandler.getSession().getRecentlyUsedFiles().keySet().contains(spreadSheet.getAbsolutePath()))
+		{
+			String dbconfig=sessionHandler.dbConfigForTestSuite(spreadSheet.getAbsolutePath());
+			if(!StringUtils.isEmpty(dbconfig))
+			{
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						if(dbReportingCB.isDisable())
+						dbReportingCB.setDisable(false);
+						if(!dbReportingCB.isSelected()/* && SpacetimeReporter.sessionid==null*/)
+						dbReportingCB.fire();
+//						else if(!dbReportingCB.isSelected())
+//						{
+//							dbReportingCB.setSelected(true);
+//						}
+					}
+				});
+			String config[]=dbconfig.split(",");
+			for (int i = 0; i < config.length; i++) {
+			for (String s:config) {
+				if(i==0)
+				{
+					product.setText(config[0].split(" = ")[1].trim());
+					product.setDisable(false);
+				}
+				else if(i==1)
+				{
+					testPlan.setText(config[1].split(" = ")[1].trim());
+					testPlan.setDisable(false);
+				}
+				else if(i==2)
+				{
+					testCycle.setText(config[2].split(" = ")[1].trim());
+					testCycle.setDisable(false);
+				}
+				else if(i==3)
+				{
+					topoSet.setText(config[3].split(" = ")[1].trim());
+					topoSet.setDisable(false);
+				}
+				else if(i==4)
+				{
+					buildTag.setText(config[4].split(" = ")[1].trim());
+					buildTag.setDisable(false);
+				}
+			}
+		  }
+		}
+			else
+			{
+				dbReportingCB.setSelected(false);
+				setReportingPaneFieldsDefault();
+			}
+	  }
 	}
 
 	public boolean showTestSuiteChooser() {
@@ -1216,6 +1272,13 @@ public class ZugguiController implements Initializable ,GuiController{
 			@Override public Void call() {
 				try {
 					Spark.runTests(params.toArray(new String[params.size()]));
+					ArrayList<String> config=new ArrayList<String>();
+					config.add("product = "+getProduct().getText());
+					config.add("testplan = "+getTestPlan().getText());
+					config.add("testcycle = "+getTestCycle().getText());
+					config.add("topologyset = "+getTopoSet().getText());
+					config.add("buildtag = "+getBuildTag().getText());
+					sessionHandler.addTestsuiteWithConfig(spreadSheet.getAbsolutePath(), config);
 					System.out.println("Execution Finished.");
 
 				} catch(Throwable t){

@@ -10,6 +10,7 @@ import java.util.Set;
 import javafx.application.Platform;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 import com.automature.ZermattClient;
 import com.automature.spacetimeapiclient.SpacetimeClient;
@@ -21,6 +22,7 @@ import com.automature.spark.util.Log;
 
 public class SpacetimeReporter extends Reporter implements Retriever {
 	private static ZermattClient client;
+	public static SpacetimeReporter reporter;
 	public static String sessionid=null;
 	String dBHostName= StringUtils.EMPTY;
 	String dbUserName = StringUtils.EMPTY;
@@ -33,12 +35,21 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	String testCycleId = StringUtils.EMPTY;
 	String topologySetId = StringUtils.EMPTY;
 	String buildId=StringUtils.EMPTY;
+	String buildName=StringUtils.EMPTY;
 	private String TOPOSET;
+	private String testCycleDesc;
 	public static ArrayList<String> executedTestCases=new ArrayList<String>(); 
 	public SpacetimeReporter(Hashtable ht) {
 		this.dBHostName=(String)ht.get("dbhostname");
 		this.dbUserName=(String)ht.get("dbusername");
 		this.dbUserPassword=(String)ht.get("dbuserpassword");
+		
+		if(!Spark.guiFlag)
+		try {
+			if(!connect())
+				printMessageAndExit("connection to remote machine could not be established using spacetime");
+		} catch (Throwable e2) {}
+		
 		this.testSuiteId=(String)ht.get("testsuiteid");
 		this.testSuiteName=(String)ht.get("testsuitename");
 		this.testSuiteRole=(String)ht.get("testsuiterole");
@@ -62,17 +73,201 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 		else
 		{
-			this.productId=(String)ht.get("productId".toLowerCase());
+			String testplan=ht.get("testplan").toString();
+			if(ht.get("testplan").toString().contains("(") && ht.get("testplan").toString().contains(")"))
+			{
+				String args[]=StringUtils.substringsBetween(ht.get("testplan").toString(), "(", ")");
+				for (int i = 0; i < args.length; i++) {
+					if(args[i].contains(":"))
+					{
+						testplan=testplan.replace("("+args[i]+")", args[i].replace(":", "$#$$$"));
+					}
+				}
+			}
+			String tpargs[]=testplan.split(":");
+			for (int i = 0; i < tpargs.length; i++) {
+				if(tpargs[i].contains("$#$$$"))
+					tpargs[i]=tpargs[i].replace("$#$$$", ":");
+				if(tpargs[i].startsWith("(") && tpargs[i].endsWith(")"))
+					tpargs[i]=StringUtils.substringBetween(tpargs[i], "(", ")");
+			}
+			if(tpargs.length != 3)
+			{
+				printMessageAndExit("Invalid testplan path");
+			}
 			
-			this.testPlanId=(String)ht.get("TestPlanId".toLowerCase());
-			
-			this.testCycleId=(String)ht.get("testCycleId".toLowerCase());
+			//getting product id from name
+			this.productId=tpargs[0];
+
+			try {
+				if(client==null)
+				connect();
+			} catch (Throwable e) {}
+			try {
+				ArrayList<String> al=client.getProductList();
+				for (int i = 0; i < al.size(); i++) {
+					if(al.get(i).toLowerCase().startsWith(productId.toLowerCase()+" ("))
+						productId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
+				}
+				if(!NumberUtils.isNumber(productId))
+				{
+				printMessageAndExit("The specified product does not exist.");
+				}
 				
-			this.topologySetId=(String)ht.get("topologySetId".toLowerCase());
+			} catch (Exception e) {}
+
+			//getting testplan id from name
+			this.testPlanId=tpargs[1];
+
+			try {
+				if(client==null)
+				connect();
+			} catch (Throwable e) {}
+			try {
+				ArrayList<String> al=client.getTestPlanListForProduct(productId);
+				for (int i = 0; i < al.size(); i++) {
+					if(al.get(i).toLowerCase().startsWith(testPlanId.toLowerCase()+" ("))
+						testPlanId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
+				}
+				if(!NumberUtils.isNumber(testPlanId))
+				{
+				printMessageAndExit("The specified testplan does not exist.");
+				}
+				
+			} catch (Exception e) {}
+
+			//getting testcycle id from name
+			this.testCycleId=tpargs[2];
+				
+			try {
+				if(client==null)
+				connect();
+			} catch (Throwable e) {}
+			try {
+
+				String testPlanName=null;
+				ArrayList<String> al=null;
+				if(testPlanName==null)
+				{
+				al=(client.getTestPlanListForProduct(productId));
+				for (int i = 0; i < al.size(); i++) {
+					if(al.get(i).contains("("+testPlanId+")"))
+					{
+						testPlanName=al.get(i);
+					}
+				}
+				}
+
+				al=client.getTestCycleListForProduct(productId, testPlanName);
+				
+				for (int i = 0; i < al.size(); i++) {
+					if(al.get(i).toLowerCase().startsWith(testCycleId.toLowerCase()+" ("))
+						testCycleId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
+				}
+				if(!NumberUtils.isNumber(testCycleId))
+				{
+				this.testCycleDesc=	this.testCycleId;
+				this.testCycleId=null;
+				}
+				
+			} catch (Exception e) {}
 			
-			this.buildId=(String)ht.get("BuildId".toLowerCase());
-			
+			//getting topology set id from name
+			this.topologySetId=(String)ht.get("topologySet".toLowerCase());
+			if(testCycleId!=null)
+			{
+			try {
+				if(client==null)
+				connect();
+			} catch (Throwable e) {}
+			try {
+				ArrayList<String> al=client.getTestCycleTopologySets(testCycleId);
+				for (int i = 0; i < al.size(); i++) {
+					if(al.get(i).toLowerCase().startsWith(topologySetId.toLowerCase()+" ("))
+						topologySetId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
+				}
+				if(!NumberUtils.isNumber(topologySetId))
+				{
+				printMessageAndExit("The specified topologyset does not exist.");
+				}
+				
+			} catch (Exception e) {}
+			}
+			else
+			{
+				try {
+					ArrayList<String> al=client.getTopoSetsByTestPlanId(testPlanId);
+					for (int i = 0; i < al.size(); i++) {
+						if(al.get(i).toLowerCase().startsWith(topologySetId.toLowerCase()+" ("))
+						{
+							topologySetId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
+						}
+					}
+					if(!NumberUtils.isNumber(topologySetId))
+					{
+					printMessageAndExit("The specified topologyset does not exist.");
+					}
+				} catch (Exception e) {}
+			}
+//			if(testCycleId!=null)
+			try {
+				this.buildId=StringUtils.substringBetween(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId).get(0)," (",")");
+			} catch (Exception e1) {
+				if(StringUtils.isEmpty((String)ht.get("buildname")))
+					printMessageAndExit("Missing required value : buildname for new testcycle"
+							+ "\nUse -help/-h for Usage information");
+					else
+					{
+					try {
+						buildName=(String)ht.get("buildname");
+						ArrayList<String> al=client.getBuildTagForTopologyset(topologySetId);
+						for(String s:al){
+						if(s.toLowerCase().startsWith(buildName.toLowerCase()+" ("))	
+							buildId=StringUtils.substringBetween(s, " (", ")");
+						}
+					} catch (Exception e) {e.printStackTrace();}
+					if(StringUtils.isEmpty(buildId))
+					buildId=null;
+					}
+			}
+//			else
+//			{
+//				if(StringUtils.isEmpty((String)ht.get("buildname")))
+//				printMessageAndExit("Missing required value : buildname for new testcycle"
+//						+ "\nUse -help/-h for Usage information");
+//				else
+//				{
+//				buildId=null;
+//				buildName=(String)ht.get("buildname");
+//				}
+//			}
+//			if(!NumberUtils.isNumber(buildId))
+//			{
+//			try {
+//				if(client==null)
+//				connect();
+//			} catch (Throwable e) {}
+//			try {
+//				ArrayList<String> al=client.getBuildTagForTestCycleAndTopologyset(topologySetId,testCycleId);
+//				for (int i = 0; i < al.size(); i++) {
+//					if(al.get(i).toLowerCase().startsWith(buildId.toLowerCase()+" ("))
+//						buildId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
+//				}
+//				if(!NumberUtils.isNumber(buildId))
+//				{
+//				System.err.println("The specified buildid does not exist.\n\n");
+//				System.err.println("Exiting ZUG");
+//				System.exit(0);
+//				}
+//				
+//			} catch (Exception e) {}
+//			}
 		}
+	}
+	private void printMessageAndExit(String msg) {
+		System.err.println("\n\n"+msg+"\n\n"+"Exiting Zug");
+		
+		System.exit(0);
 	}
 	@Override
 	public boolean connect() throws ReportingException, Throwable {
@@ -81,6 +276,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		client=new SpacetimeClient(dBHostName,dbUserName,dbUserPassword);
 		sessionid=(client.getSessionId());
 		Spark.sessionid=sessionid;
+		reporter=this;
 		return true;
 		}catch(Exception ex)
 		{
@@ -102,40 +298,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 		if(!Spark.guiFlag)
 		{
-			if(productId==StringUtils.EMPTY || testPlanId==StringUtils.EMPTY || testCycleId==StringUtils.EMPTY || topologySetId==StringUtils.EMPTY || buildId==StringUtils.EMPTY)
-			{
-				System.out.println("Parameter missing : the following parameters must be provided for reporting  \n"+"-productid \n -testplanid\n -testcycleid\n -topologysetid\n -buildid\n\n");
-				return false;
-			}
 			try{
 			String testPlanName=null;
-			ArrayList<String> al=(client.getTestPlanListForProduct(productId));
-			for (int i = 0; i < al.size(); i++) {
-				if(al.get(i).contains("("+testPlanId+")"))
-				{
-					testPlanName=al.get(i);
-				}
-			}
-			if(testPlanName==null)
-			{
-				System.out.println("\nInvalid testplanId for product\n");
-				return false;
-			}
-			al=(client.getTestCycleListForProduct(productId,testPlanName));
+			ArrayList<String> al=null;
 			int x=0;
-			for (int i = 0; i < al.size(); i++) {
-				if(al.get(i).contains("("+testCycleId+")"))
-				{
-					x++;
-				}
-			}
-			if(x==0)
-			{
-				System.out.println("\nInvalid testcycleid for product and testplan\n");
-				return false;
-			}
+			if(testCycleId!=null)
+			al=client.getTestCycleTopologySets(testCycleId);
+			else
 			al=client.getTopoSetsByTestPlanId(testPlanId);
-			x=0;
 			for (int i = 0; i < al.size(); i++) {
 				if(al.get(i).contains("("+topologySetId+")"))
 				{
@@ -144,10 +314,15 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			}
 			if(x==0)
 			{
-				System.out.println("\nInvalid topologysetid for testplan\n");
+				System.out.println("\nInvalid topologyset for testplan\n");
 				return false;
 			}
-			al=client.getBuildTagForTestCycle(testCycleId);
+			if(buildId!=null)
+			{
+			if(testCycleId!=null)
+			al=client.getBuildTagForTestCycleAndTopologyset(topologySetId,testCycleId);
+			else
+			al=client.getBuildTagForTopologyset(topologySetId);	
 			x=0;
 			for (int i = 0; i < al.size(); i++) {
 				if(al.get(i).contains("("+buildId+")"))
@@ -157,8 +332,9 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			}
 			if(x==0)
 			{
-				System.out.println("\nInvalid buildid for testplan\n");
+				System.out.println("\nInvalid build tag for testplan\n");
 				return false;
+			}
 			}
 			}catch(Exception e){
 				return false;
@@ -239,7 +415,12 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		if(buildId==null)
 		{
 			Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : Creating build tag if not exists");
+			if(Spark.guiFlag)
 			buildId=client.buildtag_write(testPlanId, ZugguiController.controller.getBuildTagDesc());
+			else
+			buildId=client.buildtag_write(testPlanId,buildName);
+			
+			if(Spark.guiFlag)
 			Platform.runLater(new Runnable() {
 				public void run() {
 					ZugguiController.controller.getBuildTag().setText(ZugguiController.controller.getBuildTag().getText()+" ("+buildId+")");
@@ -247,8 +428,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			});
 		}
 		Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : Creating testcycle if not exists");
+		if(Spark.guiFlag)
 		testCycleId=client.testCycle_write(testPlanId, ZugguiController.controller.getTestCycleDesc(), "", "", "0", "0", buildId);
-		
+		else
+			testCycleId=client.testCycle_write(testPlanId,this.testCycleDesc, "", "", "0", "0", buildId);	
+		if(Spark.guiFlag)
 		Platform.runLater(new Runnable() {
 			public void run() {
 				ZugguiController.controller.getTestCycle().setText(ZugguiController.controller.getTestCycle().getText()+" ("+testCycleId+")");
@@ -380,10 +564,10 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 	}
 	@Override
-	public ArrayList<String> getBuildTagsForTestCycle(String tcid) {
+	public ArrayList<String> getBuildTagsForTestCycleAndTopologyset(String topoid,String tcid) {
 		// TODO Auto-generated method stub
 		try {
-			ArrayList<String> list=client.getBuildTagForTestCycle(tcid);
+			ArrayList<String> list=client.getBuildTagForTestCycleAndTopologyset(topoid, tcid);
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -411,6 +595,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			return null;
+		}
+	}
+	@Override
+	public void testCycleClearTestCases(String testSuitName) throws ReportingException {
+		try {
+			testCycleClearTestCases(testCycleId, testSuitName, productId);
+		} catch (Exception e) {
+			throw new ReportingException(e.getMessage());
 		}
 	}
 }

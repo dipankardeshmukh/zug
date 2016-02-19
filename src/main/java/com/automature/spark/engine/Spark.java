@@ -8,6 +8,7 @@ import com.automature.davos.exceptions.DavosExecutionException;
 import com.automature.spark.beans.TestCaseStatus;
 import com.automature.spark.businesslogics.TestCaseResult;
 import com.automature.spark.exceptions.MoleculeDefinitionException;
+import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.ZugGui;
 import com.automature.spark.gui.controllers.GuiController;
 import com.automature.spark.gui.controllers.ZugguiController;
@@ -273,6 +274,8 @@ public class Spark extends ZugGui {
 		.append("\n\n\n\n\t -Testplan and -Topologyset both have to be set to put the test case execution result to the Framework Database.");
 		helpMessagebuf
 		.append("\n\n\n\n\t -TestPlan=[Fully qualified path name of testplan] : Fully qualified name is a \":\" (colon) delimited string, comprising of the name of the name of product, the release, the sprint, and the testplan - that uniquely identifies the plan, under which the testcycle is to be created. If the release, sprint, or testplan does not already exist in Zermatt, new ones will be automatically created. Note that if any of the object names has spaces, then the entire string must be enclosed in quotes. When using this option, do not use the TestplanId option, as these are mutually exclusive.\n\n\n\n\t Example: -TestPlan=\"ZUG:First Release:rc7 sprint:Smoke test plan\"");
+		helpMessagebuf
+		.append("\n\n\n\n\t -TestPlan=[Fully qualified path name of testcycle] : Fully qualified name is a \":\" (colon) delimited string, comprising the name of the product, the testplan and the testcycle - that uniquely identifies the cycle, under which the report is to be created. If the testcycle does not already exist in Zermatt then running the testsuite with an extra -buildname option will create a new testcycle with the given name. Note that if any of the object names has spaces, then the entire string must be enclosed in quotes and if any of the object names contains \":\", then the entire object must be enclosed in parentheses \"()\". When using this option, do not use the TestplanId option, as these are mutually exclusive.To create a new testcycle -buildname option is must.\n\n\n\n\t Example: -TestPlan=\"ZUG:Smoke test plan:NewTestCycle\" \n\t\t\tor\n\t\t  -TestPlan=\"ZUG:Smoke test plan:(NewTestCycle:1)\"");
 		helpMessagebuf
 		.append("\n\n\n\n\t -TestPlanID=[Test Plan Id] : a numeric identifier for an existing testplan in Zermatt. To find the testplan identifier, use the appropriate icons under the Testsuite listing page to generate the appropriate command line options. When using this option, do not use the Testplan option, as these are mutually exclusive.");
 		helpMessagebuf
@@ -1441,8 +1444,10 @@ public class Spark extends ZugGui {
 		ht.put("TestPlanPath".toLowerCase(),opts.getTestPlanPath());
 		ht.put("TopologySetName".toLowerCase(), opts.getTopologySetName());
 		ht.put("topologySetId".toLowerCase(), opts.getTopologySetId());
+		ht.put("topologySet".toLowerCase(), opts.getTopologySetName());
 		ht.put("productId".toLowerCase(), opts.getProductId());
 		ht.put("TestPlanId".toLowerCase(), opts.getTestPlanId());
+		ht.put("TestPlan".toLowerCase(),opts.getTestPlanPath());
 		ht.put("testplanname",opts.getTestPlanName());
 		ht.put("BuildTag".toLowerCase(),opts.getBuildTag());
 		ht.put("BuildNo".toLowerCase(), opts.getBuildNo());
@@ -1977,7 +1982,7 @@ public class Spark extends ZugGui {
 					if(Spark.guiFlag)
 					reporter.testCycleClearTestCases(ZugguiController.controller.getTestCycleId(),testsuite.testSuitName,ZugguiController.controller.getProductId());
 					else
-						reporter.testCycleClearTestCases(opts.getTestCycleId(),testsuite.testSuitName,opts.getProductId());	
+						reporter.testCycleClearTestCases(testsuite.testSuitName);	
 				}catch(Exception e){
 				}
 				

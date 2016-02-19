@@ -72,4 +72,9 @@ public abstract class Reporter {
 
 	public void testCycleClearTestCases(String testCycleId,String testSuitName, String productId) throws InterruptedException, ReportingException {}
 
+	public void testCycleClearTestCases(String testSuitName)  throws ReportingException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

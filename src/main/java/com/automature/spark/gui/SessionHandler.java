@@ -2,12 +2,28 @@ package com.automature.spark.gui;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.CharBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 public class SessionHandler {
 	/**
@@ -80,8 +96,67 @@ public class SessionHandler {
 	}
 
 	public void addTestsuiteWithConfig(String testsuite,ArrayList<String> config) {
+	    updateInitConfigForTestsuite(testsuite,config);
 		session.addFileWithSetting(testsuite, config);
-
+	}
+	
+	private void updateInitConfigForTestsuite(String testsuite,
+			ArrayList<String> config) {
+		if(testsuite.contains("\\"))
+			testsuite=testsuite.replace("\\", "\\\\");
+		File f=new File(System.getProperty("user.dir")+File.separator+"dbconfig.log");
+		if(!f.exists())
+			try {
+				f.createNewFile();
+			} catch (IOException e) {}
+		String strToWrite="";
+		Scanner sc = null;
+		try {
+			sc = new Scanner(f);
+		} catch (FileNotFoundException e) {}
+		boolean b=false;
+		while(sc.hasNextLine())
+		{
+			String s=sc.nextLine();
+			if(s.startsWith("\""+testsuite+"\""+":"))
+			{
+				s=StringUtils.replace(s, s.split(":\\{")[1], ""+config.toString()+"}");
+				b=true;
+			}
+			strToWrite=strToWrite+s+"\n";
+		}
+		try{
+			FileWriter out = new FileWriter(f.getAbsolutePath());
+			if(b)
+			out.write(strToWrite);
+			else
+			out.write(strToWrite+"\""+testsuite+"\""+":{"+config.toString()+"}\n");
+			out.close();
+		}catch(Exception ex){}
+//System.err.println(dbConfigForTestSuite(testsuite));
+	}
+	public String dbConfigForTestSuite(String testsuite) {
+		String s1="";
+		if(testsuite.contains("\\"))
+			testsuite=testsuite.replace("\\", "\\\\");
+		File f=new File(System.getProperty("user.dir")+File.separator+"dbconfig.log");
+		if(f.exists())
+		{
+			Scanner sc = null;
+			try {
+				sc = new Scanner(f);
+			} catch (FileNotFoundException e) {}
+			while(sc.hasNextLine())
+			{
+				String s=sc.nextLine();
+				if(s.startsWith("\""+testsuite+"\""+":"))
+				{
+					s1 = s.split(":\\{")[1];
+					s1="{"+s1;
+				}
+			}
+		}
+		return StringUtils.substringBetween(s1, "{[","]}");
 	}
 	public void addTestsuite(String testsuite) {
 		session.addFile(testsuite);

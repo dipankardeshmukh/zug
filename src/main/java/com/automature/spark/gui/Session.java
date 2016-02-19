@@ -49,7 +49,6 @@ public class Session implements java.io.Serializable {
 
 	
 	public Set<String> getTestSuiteFiles() {
-		// TODO Auto-generated method stub
 		return recentlyUsedFiles.keySet();
 	}
 	
@@ -63,7 +62,9 @@ public class Session implements java.io.Serializable {
 				+ ", recentlyUsedDirectories=" + recentlyUsedDirectories + "]";
 	}
 	
-	
+	public LinkedHashMap<String, ArrayList<String>> getRecentlyUsedFiles() {
+		return recentlyUsedFiles;
+	}
 
 	
 }
