@@ -395,11 +395,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	}
 	
 	@Override
-	public void testCycleClearTestCases(String tcid,String tsname,String pid) throws InterruptedException,
+	public void testCycleClearTestCases(String pid,String tpsid,String tcid,String tsname) throws InterruptedException,
 	ReportingException {
 
 		try {
-		client.testCycleClearTcs(tcid,tsname,pid);
+		client.testCycleClearTcs(pid,tpsid,tcid,tsname);
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}
@@ -436,6 +436,21 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		Platform.runLater(new Runnable() {
 			public void run() {
 				ZugguiController.controller.getTestCycle().setText(ZugguiController.controller.getTestCycle().getText()+" ("+testCycleId+")");
+			}
+		});
+	}
+	else if(testCycleId!=null && buildId==null)
+	{
+		Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : Creating build tag if not exists");
+		if(Spark.guiFlag)
+		buildId=client.buildtag_write(testPlanId, ZugguiController.controller.getBuildTagDesc());
+		else
+		buildId=client.buildtag_write(testPlanId,buildName);
+		
+		if(Spark.guiFlag)
+		Platform.runLater(new Runnable() {
+			public void run() {
+				ZugguiController.controller.getBuildTag().setText(ZugguiController.controller.getBuildTag().getText()+" ("+buildId+")");
 			}
 		});
 	}
@@ -600,7 +615,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	@Override
 	public void testCycleClearTestCases(String testSuitName) throws ReportingException {
 		try {
-			testCycleClearTestCases(testCycleId, testSuitName, productId);
+			testCycleClearTestCases(productId,topologySetId,testCycleId, testSuitName);
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}

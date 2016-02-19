@@ -966,6 +966,8 @@ public class ZugguiController implements Initializable ,GuiController{
 				}
 			}
 		  }
+			createTestCycleBtn.setDisable(false);
+			createBuildTagBtn.setDisable(false);
 		}
 			else
 			{
