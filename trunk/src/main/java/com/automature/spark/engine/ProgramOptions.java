@@ -94,7 +94,9 @@ public class ProgramOptions {
 				if(!commandLineSwitchList.contains(argarr[0].toLowerCase()))
 				{
 					if(!argarr[0].contains("-$")&&!argarr[0].contains("-$$")){
-						throw new Exception("ProgramOptions/checkCommandLineArgs:: command line switch "+arg+" is not a valid switch. Please refer to Zug User Manual.");
+						System.err.println("ProgramOptions/checkCommandLineArgs:: command line switch "+arg+" is not a valid switch. Please refer to Zug User Manual.");
+						System.err.println("\n\nExiting ZUG");
+						System.exit(0);
 					}	
 				}
 			}

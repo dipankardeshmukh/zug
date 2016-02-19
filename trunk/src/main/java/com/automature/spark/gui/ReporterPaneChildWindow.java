@@ -3,6 +3,8 @@ package com.automature.spark.gui;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.apache.commons.lang.StringUtils;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -23,7 +25,6 @@ import com.automature.spark.util.Styles;
 
 public class ReporterPaneChildWindow {
 public void displayListView(ArrayList<String> items, TextField text,String type, SpacetimeReporter reporter, ArrayList<String> ob, ArrayList<String> ob1, MouseEvent event2){
-	
 	if(type.equals("Testplans"))
 	{
 
@@ -56,6 +57,25 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
 		       
 		Stage stage=new Stage();
 		ZugguiController.controller.pageNumber=1;
+		if(items.size()==0)
+		{
+			if(type.equals("Testplans"))
+        	{
+				items.addAll(reporter.getTestPlanList(getTestInParenthesis(ZugguiController.controller.getProduct())));
+        	}
+        	else if(type.equals("TestCycles"))
+        	{
+        		items.addAll(reporter.getTestCycleList(getTestInParenthesis(ZugguiController.controller.getProduct()),(ZugguiController.controller.getTestPlan().getText())));
+        	}
+        	else if(type.equals("TopologyStets"))
+        	{
+        		items.addAll(reporter.getTestCycleTopologysetList(getTestInParenthesis(ZugguiController.controller.getTestCycle())));
+        	}
+        	else if(type.equals("Builds"))
+        	{
+        		items.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(getTestInParenthesis(ZugguiController.controller.getTopoSet()),getTestInParenthesis(ZugguiController.controller.getTestCycle())));
+        	}
+		}
 		int num=(int)Math.ceil(Double.parseDouble(Double.toString(items.size()))/10);
 		stage.setTitle("List Of "+type +" [ List "+ZugguiController.controller.pageNumber+" of "+num+" ]");        
         
@@ -88,7 +108,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	}catch(Exception e){
         		try{
         			if(!text.getText().equals(""))
-                	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().indexOf(text)+2).setDisable(false);
+                	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().lastIndexOf(text)+2).setDisable(false);
                 	}catch(Exception ex){}
         		stage.close();
             	ZugguiController.controller.isPopupOpened=false;
@@ -105,7 +125,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	try{
         	if(type.equals("Products"))
         	{
-        		ZugguiController.controller.productId=text.getText().substring(text.getText().indexOf("(")+1, text.getText().indexOf(")"));
+        		ZugguiController.controller.productId=text.getText().substring(text.getText().lastIndexOf("(")+1, text.getText().lastIndexOf(")"));
         	ob.addAll(reporter.getTestPlanList(ZugguiController.controller.productId));
         	}
         	else if(type.equals("Testplans"))
@@ -115,12 +135,13 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	}
         	else if(type.equals("TestCycles"))
         	{
-        		ob.addAll(reporter.getTestCycleTopologysetList( text.getText().substring(text.getText().indexOf("(")+1, text.getText().indexOf(")")) ));
-        		ob1.addAll(reporter.getBuildTagsForTestCycle(text.getText().substring(text.getText().indexOf("(")+1, text.getText().indexOf(")"))));
+        		ob.addAll(reporter.getTestCycleTopologysetList( text.getText().substring(text.getText().lastIndexOf("(")+1, text.getText().lastIndexOf(")")) ));
+//        		ob1.addAll(reporter.getBuildTagsForTestCycle(text.getText().substring(text.getText().lastIndexOf("(")+1, text.getText().lastIndexOf(")"))));
         		if(ob.size()>0)
         		{
         		ZugguiController.controller.getTopoSet().setDisable(false);
         		ZugguiController.controller.getTopoSet().setText(ob.get(0));
+        		ob1.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(StringUtils.substringBetween(ob.get(0), " (", ")"),StringUtils.substringBetween(text.getText(), " (", ")")));
 	        		if(ob1.size()>0)
 	        		{
 	        		ZugguiController.controller.getBuildTag().setDisable(false);
@@ -137,18 +158,24 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	}
         	else
         	{
+        		if(type.equals("TopologyStets"))
+    			{
+    				ob.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(StringUtils.substringBetween(text.getText(), " (", ")"),StringUtils.substringBetween(ZugguiController.controller.getTestCycle().getText(), " (", ")")));
+    				ZugguiController.controller.getBuildTag().setText(ob.get(0));
+    			}
         		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
 	        	ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
         	}
         	}catch(Exception e){}
         	try{
-        	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().indexOf(text)+2).setDisable(false);
+        	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().lastIndexOf(text)+2).setDisable(false);
         	}catch(Exception ex){}
         	stage.close();
         	ZugguiController.controller.isPopupOpened=false;
         });
         
         next.setOnAction(event->{
+        	
         	if(ZugguiController.controller.listElementFinalIndex%10!=0)
         		ZugguiController.controller.listElementFinalIndex=ZugguiController.controller.listElementFinalIndex+(10-(ZugguiController.controller.listElementFinalIndex%10));
         	if(ZugguiController.controller.listElementFinalIndex>=items.size())
@@ -176,7 +203,6 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	if(stage.getTitle().contains(" [ List 1 of"))
         		return;
         	listOfVisibles.clear();
-        	System.out.println();
         	int x=ZugguiController.controller.listElementFinalIndex-(ZugguiController.controller.listElementFinalIndex%10)-1;
         	if ((ZugguiController.controller.listElementFinalIndex%10)==0) {
 				x=x-10;
@@ -210,7 +236,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         cancel.setOnAction(event->{
         	try{
     			if(!text.getText().equals(""))
-            	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().indexOf(text)+2).setDisable(false);
+            	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().lastIndexOf(text)+2).setDisable(false);
             	}catch(Exception ex){}
         	closeAction(type, text);
         	stage.close();
@@ -218,7 +244,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         stage.setOnCloseRequest(event->{
         	try{
     			if(!text.getText().equals(""))
-            	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().indexOf(text)+2).setDisable(false);
+            	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().lastIndexOf(text)+2).setDisable(false);
             	}catch(Exception ex){}
         	closeAction(type, text);
         });
@@ -230,7 +256,16 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         ZugguiController.controller.isPopupOpened=true;
 	}
 
- private void closeAction(String type,TextField text){
+ private String getTestInParenthesis(TextField tf) {
+	try{
+	return tf.getText().substring(tf.getText().lastIndexOf(" (")+2, tf.getText().lastIndexOf(")"));
+	}catch(Exception e)
+	{
+		return "";
+	}
+}
+
+private void closeAction(String type,TextField text){
 	 if(type.equals("Testplans"))
 		{
 		if(!text.getText().equals(""))
