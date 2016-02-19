@@ -1980,7 +1980,7 @@ public class Spark extends ZugGui {
 				try{
 				if(opts.dbReporting)
 					if(Spark.guiFlag)
-					reporter.testCycleClearTestCases(ZugguiController.controller.getTestCycleId(),testsuite.testSuitName,ZugguiController.controller.getProductId());
+					reporter.testCycleClearTestCases(ZugguiController.controller.getProductId(),ZugguiController.controller.getTopologySetId(),ZugguiController.controller.getTestCycleId(),testsuite.testSuitName);
 					else
 						reporter.testCycleClearTestCases(testsuite.testSuitName);	
 				}catch(Exception e){
