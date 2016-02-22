@@ -1,5 +1,6 @@
 package com.automature.spark.reporter;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -124,14 +125,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 				connect();
 			} catch (Throwable e) {}
 			try {
-				ArrayList<String> al=client.getTestPlanListForProduct(productId);
+				ArrayList<String> al=client.getTestPlanListForProduct(productId,InetAddress.getLocalHost().getHostAddress());
 				for (int i = 0; i < al.size(); i++) {
 					if(al.get(i).toLowerCase().startsWith(testPlanId.toLowerCase()+" ("))
 						testPlanId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
 				}
 				if(!NumberUtils.isNumber(testPlanId))
 				{
-				printMessageAndExit("The specified testplan does not exist.");
+				printMessageAndExit("Either the specified testplan not exist or the machine is not associated with the topology set for this testplan");
 				}
 				
 			} catch (Exception e) {}
@@ -149,7 +150,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 				ArrayList<String> al=null;
 				if(testPlanName==null)
 				{
-				al=(client.getTestPlanListForProduct(productId));
+				al=(client.getTestPlanListForProduct(productId,InetAddress.getLocalHost().getHostAddress()));
 				for (int i = 0; i < al.size(); i++) {
 					if(al.get(i).contains("("+testPlanId+")"))
 					{
@@ -158,7 +159,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 				}
 				}
 
-				al=client.getTestCycleListForProduct(productId, testPlanName);
+				al=client.getTestCycleListForProduct(productId, testPlanName,InetAddress.getLocalHost().getHostAddress());
 				
 				for (int i = 0; i < al.size(); i++) {
 					if(al.get(i).toLowerCase().startsWith(testCycleId.toLowerCase()+" ("))
@@ -546,10 +547,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 	}
 	@Override
-	public ArrayList<String> getTestPlanList(String pid) {
+	public ArrayList<String> getTestPlanList(String pid,String ip) {
 		// TODO Auto-generated method stub
 		try {
-			ArrayList<String> list=client.getTestPlanListForProduct(pid);
+			ArrayList<String> list=client.getTestPlanListForProduct(pid,ip);
+			for (int i = 0; i < list.size(); i++) {
+				if(list.get(i).equals(""))
+					list.remove(i);
+			}
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -557,10 +562,10 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 	}
 	@Override
-	public ArrayList<String> getTestCycleList(String pid,String testPlanName) {
+	public ArrayList<String> getTestCycleList(String pid,String testPlanName,String ip) {
 		// TODO Auto-generated method stub
 		try {
-			ArrayList<String> list=client.getTestCycleListForProduct(pid, testPlanName);
+			ArrayList<String> list=client.getTestCycleListForProduct(pid, testPlanName,ip);
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
