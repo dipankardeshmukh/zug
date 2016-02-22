@@ -93,7 +93,7 @@ public class ConsoleController implements Initializable {
 
 	private boolean format = true;
 	private int start = 0;
-
+    public static ConsoleController controller;
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
@@ -142,6 +142,7 @@ public class ConsoleController implements Initializable {
 					+ e.getMessage() + "\t\nError Trace :" + e.getStackTrace());
 		}
 		// console = (ConsoleController) fxmlLoader.getController();
+		controller=this;
 	}
 
 	public void searchText() {

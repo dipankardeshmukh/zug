@@ -1,9 +1,8 @@
 package com.automature.spark.gui;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import org.apache.commons.lang.StringUtils;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,10 +18,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.automature.spark.gui.controllers.ConsoleController;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.reporter.SpacetimeReporter;
 import com.automature.spark.util.Styles;
-
 public class ReporterPaneChildWindow {
 public void displayListView(ArrayList<String> items, TextField text,String type, SpacetimeReporter reporter, ArrayList<String> ob, ArrayList<String> ob1, MouseEvent event2){
 	if(type.equals("Testplans"))
@@ -57,15 +58,17 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
 		       
 		Stage stage=new Stage();
 		ZugguiController.controller.pageNumber=1;
+		try{
 		if(items.size()==0)
 		{
 			if(type.equals("Testplans"))
         	{
-				items.addAll(reporter.getTestPlanList(getTestInParenthesis(ZugguiController.controller.getProduct())));
+					items.addAll(reporter.getTestPlanList(getTestInParenthesis(ZugguiController.controller.getProduct()),InetAddress.getLocalHost().getHostAddress()));
+				
         	}
         	else if(type.equals("TestCycles"))
         	{
-        		items.addAll(reporter.getTestCycleList(getTestInParenthesis(ZugguiController.controller.getProduct()),(ZugguiController.controller.getTestPlan().getText())));
+        		items.addAll(reporter.getTestCycleList(getTestInParenthesis(ZugguiController.controller.getProduct()),(ZugguiController.controller.getTestPlan().getText()),InetAddress.getLocalHost().getHostAddress()));
         	}
         	else if(type.equals("TopologyStets"))
         	{
@@ -76,6 +79,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         		items.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(getTestInParenthesis(ZugguiController.controller.getTopoSet()),getTestInParenthesis(ZugguiController.controller.getTestCycle())));
         	}
 		}
+		}catch(Exception e){}
 		int num=(int)Math.ceil(Double.parseDouble(Double.toString(items.size()))/10);
 		stage.setTitle("List Of "+type +" [ List "+ZugguiController.controller.pageNumber+" of "+num+" ]");        
         
@@ -95,7 +99,19 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         data.addAll(
              listOfVisibles
         );
-         
+         if(data.size()==0)
+         {
+//        	 Stage dialogStage = new Stage(StageStyle.UTILITY);
+//        	 dialogStage.initModality(Modality.WINDOW_MODAL);
+//        	 Button b=new Button("OK");
+//        	 dialogStage.setScene(new Scene(VBoxBuilder.create().
+//        	     children(new Text("No "+type+" exist"), b).
+//        	     alignment(Pos.CENTER).padding(new Insets(5)).build()));
+//        	 dialogStage.show();
+        	 ConsoleController.controller.clear();
+        	 System.err.println("\n\tNo "+type+" exist");
+        	 return;
+         }
         listView.setItems(data);
                
         StackPane rootPane = new StackPane();
@@ -126,11 +142,11 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	if(type.equals("Products"))
         	{
         		ZugguiController.controller.productId=text.getText().substring(text.getText().lastIndexOf("(")+1, text.getText().lastIndexOf(")"));
-        	ob.addAll(reporter.getTestPlanList(ZugguiController.controller.productId));
+        	    ob.addAll(reporter.getTestPlanList(ZugguiController.controller.productId,InetAddress.getLocalHost().getHostAddress()));
         	}
         	else if(type.equals("Testplans"))
         	{
-        	ob.addAll(reporter.getTestCycleList(ZugguiController.controller.productId, text.getText()));
+        	ob.addAll(reporter.getTestCycleList(ZugguiController.controller.productId, text.getText(),InetAddress.getLocalHost().getHostAddress()));
         	ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
         	}
         	else if(type.equals("TestCycles"))
@@ -166,7 +182,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
 	        	ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
         	}
-        	}catch(Exception e){}
+        	}catch(Exception e){e.printStackTrace();}
         	try{
         	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().lastIndexOf(text)+2).setDisable(false);
         	}catch(Exception ex){}
