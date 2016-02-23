@@ -182,7 +182,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 				connect();
 			} catch (Throwable e) {}
 			try {
-				ArrayList<String> al=client.getTestCycleTopologySets(testCycleId);
+				ArrayList<String> al=client.getTestCycleTopologySets(testCycleId,InetAddress.getLocalHost().getHostAddress());
 				for (int i = 0; i < al.size(); i++) {
 					if(al.get(i).toLowerCase().startsWith(topologySetId.toLowerCase()+" ("))
 						topologySetId=StringUtils.substringBetween(al.get(i).toLowerCase(), " (", ")");
@@ -212,7 +212,22 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			}
 //			if(testCycleId!=null)
 			try {
-				this.buildId=StringUtils.substringBetween(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId).get(0)," (",")");
+				buildName=(String)ht.get("buildname");
+				ArrayList<String> al=(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId));
+				if(al.size()==1 && StringUtils.isEmpty(buildName))
+				this.buildId=StringUtils.substringBetween(al.get(0)," (",")");
+				else if(al.size()==1 && !StringUtils.isEmpty(buildName))
+				this.buildId=null;
+				else
+				{
+					if(StringUtils.isEmpty(buildName))
+						printMessageAndExit("More than one build tag exists for given testcycle and topologyset.\nPlease provide -buildname option");
+					for(String s:al)
+					{
+						if(s.toLowerCase().startsWith(buildName.toLowerCase()+" ("))
+							this.buildId=StringUtils.substringBetween(s," (",")");
+					}
+				}
 			} catch (Exception e1) {
 				if(StringUtils.isEmpty((String)ht.get("buildname")))
 					printMessageAndExit("Missing required value : buildname for new testcycle"
@@ -304,7 +319,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			ArrayList<String> al=null;
 			int x=0;
 			if(testCycleId!=null)
-			al=client.getTestCycleTopologySets(testCycleId);
+			al=client.getTestCycleTopologySets(testCycleId,InetAddress.getLocalHost().getHostAddress());
 			else
 			al=client.getTopoSetsByTestPlanId(testPlanId);
 			for (int i = 0; i < al.size(); i++) {
@@ -333,8 +348,8 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			}
 			if(x==0)
 			{
-				System.out.println("\nInvalid build tag for testplan\n");
-				return false;
+				buildId=null;
+				return true;
 			}
 			}
 			}catch(Exception e){
@@ -396,11 +411,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	}
 	
 	@Override
-	public void testCycleClearTestCases(String pid,String tpsid,String tcid,String tsname) throws InterruptedException,
+	public void testCycleClearTestCases(String pid,String tpsid,String tcid,String bldid,String tsname) throws InterruptedException,
 	ReportingException {
 
 		try {
-		client.testCycleClearTcs(pid,tpsid,tcid,tsname);
+		client.testCycleClearTcs(pid,tpsid,tcid,bldid,tsname);
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}
@@ -576,7 +591,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	public ArrayList<String> getTestCycleTopologysetList(String tcid) {
 		// TODO Auto-generated method stub
 		try {
-			ArrayList<String> list=client.getTestCycleTopologySets(tcid);
+			ArrayList<String> list=client.getTestCycleTopologySets(tcid,InetAddress.getLocalHost().getHostAddress());
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -620,7 +635,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	@Override
 	public void testCycleClearTestCases(String testSuitName) throws ReportingException {
 		try {
-			testCycleClearTestCases(productId,topologySetId,testCycleId, testSuitName);
+			testCycleClearTestCases(productId,topologySetId,testCycleId,buildId, testSuitName);
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}

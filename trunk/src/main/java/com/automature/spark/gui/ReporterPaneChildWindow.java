@@ -182,7 +182,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
 	        	ZugguiController.controller.getCreateBuildTagBtn().setDisable(false);
         	}
-        	}catch(Exception e){e.printStackTrace();}
+        	}catch(Exception e){}
         	try{
         	text.getParent().getChildrenUnmodifiable().get(text.getParent().getChildrenUnmodifiable().lastIndexOf(text)+2).setDisable(false);
         	}catch(Exception ex){}
