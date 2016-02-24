@@ -1,6 +1,8 @@
 package com.automature.spark.reporter;
 
 import java.net.InetAddress;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,6 +76,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 		else
 		{
+			try {
+				updateMachineIp();
+			} catch (ReportingException e2) {
+				e2.printStackTrace();
+			}
 			String testplan=ht.get("testplan").toString();
 			if(ht.get("testplan").toString().contains("(") && ht.get("testplan").toString().contains(")"))
 			{
@@ -636,6 +643,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	public void testCycleClearTestCases(String testSuitName) throws ReportingException {
 		try {
 			testCycleClearTestCases(productId,topologySetId,testCycleId,buildId, testSuitName);
+		} catch (Exception e) {
+			throw new ReportingException(e.getMessage());
+		}
+	}
+	@Override
+	public void updateMachineIp() throws ReportingException {
+		try {
+			client.updateMachineIp(InetAddress.getLocalHost().getHostName(), InetAddress.getLocalHost().getHostAddress());
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}
