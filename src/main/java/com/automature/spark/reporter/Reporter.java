@@ -76,5 +76,5 @@ public abstract class Reporter {
 		// TODO Auto-generated method stub
 		
 	}
-
+	public void updateMachineIp() throws ReportingException{}
 }

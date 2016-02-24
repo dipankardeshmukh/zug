@@ -527,7 +527,12 @@ public class ZugguiController implements Initializable ,GuiController{
 		} catch (Throwable e1) {
 			e1.printStackTrace();
 		} 
-		
+		try {
+			reporter.updateMachineIp();
+		} catch (ReportingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		ArrayList<String> listOftestPlans=new ArrayList<String>();
 		ArrayList<String> listOftestCycles=new ArrayList<String>();
 		ArrayList<String> listOfTopoSets=new ArrayList<String>();
