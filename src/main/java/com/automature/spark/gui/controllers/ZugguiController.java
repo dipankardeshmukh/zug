@@ -345,6 +345,7 @@ public class ZugguiController implements Initializable ,GuiController{
 	
 
     public ObservableList<TestCaseStatus> rowData = FXCollections.observableArrayList();
+	private String oldFileName="";
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -895,6 +896,13 @@ public class ZugguiController implements Initializable ,GuiController{
 		}
 	}
 	public void loadTestSuite(String fileName) throws Exception {
+		
+		if(!oldFileName.equals(fileName))
+		{
+		ConsoleController.controller.getProgressBar().setProgress(0.0);
+		ConsoleController.controller.clear();
+		oldFileName=fileName;
+		}
 		if (spreadSheet != null) {
 			spreadSheet.releaseResources();
 		}
@@ -922,6 +930,7 @@ public class ZugguiController implements Initializable ,GuiController{
 		//	mi.setOnAction(fileClickEvent);
 		//	recentlyUsedMenu.getItems().add(0, mi);
 		setDisableNoTestSuiteLoadComonents(false);
+		try{
 		if(sessionHandler.getSession().getRecentlyUsedFiles().keySet().contains(spreadSheet.getAbsolutePath()))
 		{
 			String dbconfig=sessionHandler.dbConfigForTestSuite(spreadSheet.getAbsolutePath());
@@ -931,10 +940,6 @@ public class ZugguiController implements Initializable ,GuiController{
 					
 					@Override
 					public void run() {
-						if(dbReportingCB.isDisable())
-						dbReportingCB.setDisable(false);
-						if(!dbReportingCB.isSelected()/* && SpacetimeReporter.sessionid==null*/)
-						dbReportingCB.fire();
 //						else if(!dbReportingCB.isSelected())
 //						{
 //							dbReportingCB.setSelected(true);
@@ -942,6 +947,7 @@ public class ZugguiController implements Initializable ,GuiController{
 					}
 				});
 			String config[]=dbconfig.split(",");
+			
 			for (int i = 0; i < config.length; i++) {
 			for (String s:config) {
 				if(i==0)
@@ -971,15 +977,23 @@ public class ZugguiController implements Initializable ,GuiController{
 				}
 			}
 		  }
+//			if(config.length!=0)
+//			{
+//				if(dbReportingCB.isDisable())
+//					dbReportingCB.setDisable(false);
+//					if(!dbReportingCB.isSelected()/* && SpacetimeReporter.sessionid==null*/)
+//					dbReportingCB.fire();
+//			}
 			createTestCycleBtn.setDisable(false);
 			createBuildTagBtn.setDisable(false);
 		}
-			else
-			{
-				dbReportingCB.setSelected(false);
-				setReportingPaneFieldsDefault();
-			}
+//			else
+//			{
+//				dbReportingCB.setSelected(false);
+//				setReportingPaneFieldsDefault();
+//			}
 	  }
+		}catch(Exception e){}
 	}
 
 	public boolean showTestSuiteChooser() {
