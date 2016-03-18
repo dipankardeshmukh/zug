@@ -1,26 +1,32 @@
 package com.automature.spark.engine;
 
-
 import java.io.File;
 import java.io.FileFilter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NavigableMap;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.automature.spark.beans.ExistenceMessageBean;
 import com.automature.spark.util.Log;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class AtomHandler {
-
+	
 	private String existenseMessage="ok";
 	//String scriptLocation=null;
 	private List<String> scriptLocations;
 	private FileFilter filter;
+	public static ArrayList<String> modifiedCVs=new ArrayList<String>();
+	public static ServerSocket conn;
 	public AtomHandler() {
 		// TODO Auto-generated constructor stub
 	}
@@ -57,18 +63,23 @@ public class AtomHandler {
 	/*public List getAtoms(String packageName){
 		return	Spark.invokeAtoms.get(packageName).getMethods();
 	}*/
-
 	public void handle(GTuple action, String threadID) throws Exception {
 		Log.Debug("AtomHandler/handle : Running Command "
 				+ action.name + " for TestCase ID as : "
 				+ action.testCaseID);
 		if (action.name.startsWith("@")) {
-			OutProcessAtom opa=new OutProcessAtom();
-			try {
-				opa.run(action, threadID);
-			} catch (Exception e) {
-				throw e;
-			}
+					// TODO Auto-generated method stub
+					OutProcessAtom opa=new OutProcessAtom();
+					try {
+						if(conn==null)
+						{
+						Thread t=modifyOrGetCv();
+						t.start();
+						}
+							opa.run(action, threadID);
+					} catch (Exception e) {
+						throw e;
+					}
 		} else if (action.name.trim().contains(".")){
 			//&& !action.actionName.startsWith("&")) {
 			InProcessAtom ipa=new InProcessAtom();		
@@ -264,5 +275,56 @@ public class AtomHandler {
 				return al;
 			}
 		}
+	}
+	public synchronized Thread modifyOrGetCv(){
+		return new Thread(new Runnable() {
+			
+			public void run() {
+				{
+					try{
+						
+					ServerSocket server1 = new ServerSocket(45000+(int)(Spark.harnessPIDValue));
+					conn=server1;
+			        while (true) {
+			            Socket connected1 = server1.accept();
+			            
+			            InputStream is=connected1.getInputStream();
+			            String s="";
+			            int ch=is.read();
+			            while(ch!=-1)
+			            {
+			            	s=s+(char)ch;
+			            	ch=is.read();
+			            }
+		            	ServerSocket server2=new ServerSocket((int)Double.parseDouble(getValueOfKey(s, "port")));
+			            if(getValueOfKey(s, "method").equals("alter"))
+			            {
+			            	ContextVar.alterContextVar(getValueOfKey(s, "name"), getValueOfKey(s, "value"));
+			            }
+			            	Socket connected2=server2.accept();
+			            	
+				            OutputStream os = connected2.getOutputStream();
+				            if(getValueOfKey(s, "method").equals("alter"))
+				            {
+				            os.write(("True").getBytes());
+				            }
+				            else
+				            {
+				            	os.write((ContextVar.getContextVar(getValueOfKey(s, "name"))).getBytes());
+				            }
+				            connected2.close();
+				            server2.close();
+			            	
+				}
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}});
+	}
+	public String getValueOfKey(String JSON_MetadataArray,String key){
+		JsonElement jelement = new JsonParser().parse(JSON_MetadataArray);
+		JsonObject  jobject = jelement.getAsJsonObject();
+		return jobject.get(key).toString().replace("\"", "");
 	}
 }
