@@ -1285,13 +1285,14 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				}
 				try{
 				ZugguiController.controller.getTestExecutionResults().getItems().remove(index);
-				}
-				catch(Exception e){}
+				
 				
 				if(status.equalsIgnoreCase("running"))
 				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , 0 ));
 				else
 				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , time ));
+				}
+				catch(Exception e){}
 		    }
 		});
 	}

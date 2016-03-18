@@ -262,7 +262,6 @@ public class OutProcessAtom implements Atom{
 							command, argument.toString()));
 			//Controller.message("Command to be run "+commandparam.toString());
 			process = pr.start();
-
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
 					process.getInputStream()));
 
@@ -440,7 +439,7 @@ public class OutProcessAtom implements Atom{
 	 * @param threadID
 	 *            User to perform/execute this action.
 	 */
-	public void run(GTuple action, String threadID) throws Exception {
+	public synchronized void run(GTuple action, String threadID) throws Exception {
 		String type = "";
 		String step = "";
 		HiPerfTimer hft=null;
