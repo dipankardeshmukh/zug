@@ -25,8 +25,7 @@ public class AtomHandler {
 	//String scriptLocation=null;
 	private List<String> scriptLocations;
 	private FileFilter filter;
-	public static ArrayList<String> modifiedCVs=new ArrayList<String>();
-	public static ServerSocket conn;
+	public static ServerSocket cvConnection;
 	public AtomHandler() {
 		// TODO Auto-generated constructor stub
 	}
@@ -71,12 +70,13 @@ public class AtomHandler {
 					// TODO Auto-generated method stub
 					OutProcessAtom opa=new OutProcessAtom();
 					try {
-						if(conn==null)
+						if(cvConnection==null)
 						{
-						Thread t=modifyOrGetCv();
+						Thread t=contextVariableHandler();
 						t.start();
 						}
 							opa.run(action, threadID);
+							
 					} catch (Exception e) {
 						throw e;
 					}
@@ -276,44 +276,44 @@ public class AtomHandler {
 			}
 		}
 	}
-	public synchronized Thread modifyOrGetCv(){
+	public synchronized Thread contextVariableHandler(){
 		return new Thread(new Runnable() {
 			
 			public void run() {
 				{
 					try{
 						
-					ServerSocket server1 = new ServerSocket(45000+(int)(Spark.harnessPIDValue));
-					conn=server1;
+					ServerSocket sparkServer = new ServerSocket(45000+(int)(Spark.harnessPIDValue));
+					cvConnection=sparkServer;
 			        while (true) {
-			            Socket connected1 = server1.accept();
+			            Socket requestSocket = sparkServer.accept();
 			            
-			            InputStream is=connected1.getInputStream();
-			            String s="";
+			            InputStream is=requestSocket.getInputStream();
+			            String message="";
 			            int ch=is.read();
 			            while(ch!=-1)
 			            {
-			            	s=s+(char)ch;
+			            	message=message+(char)ch;
 			            	ch=is.read();
 			            }
-		            	ServerSocket server2=new ServerSocket((int)Double.parseDouble(getValueOfKey(s, "port")));
-			            if(getValueOfKey(s, "method").equals("alter"))
+		            	ServerSocket responseServer=new ServerSocket((int)Double.parseDouble(getValueOfKey(message, "port")));
+			            if(getValueOfKey(message, "method").equals("alter"))
 			            {
-			            	ContextVar.alterContextVar(getValueOfKey(s, "name"), getValueOfKey(s, "value"));
+			            	ContextVar.alterContextVar(getValueOfKey(message, "name"), getValueOfKey(message, "value"));
 			            }
-			            	Socket connected2=server2.accept();
+			            	Socket responseSocket=responseServer.accept();
 			            	
-				            OutputStream os = connected2.getOutputStream();
-				            if(getValueOfKey(s, "method").equals("alter"))
+				            OutputStream os = responseSocket.getOutputStream();
+				            if(getValueOfKey(message, "method").equals("alter"))
 				            {
 				            os.write(("True").getBytes());
 				            }
 				            else
 				            {
-				            	os.write((ContextVar.getContextVar(getValueOfKey(s, "name"))).getBytes());
+				            	os.write((ContextVar.getContextVar(getValueOfKey(message, "name"))).getBytes());
 				            }
-				            connected2.close();
-				            server2.close();
+				            responseSocket.close();
+				            responseServer.close();
 			            	
 				}
 				}catch (Exception e) {

@@ -12,7 +12,6 @@ import com.automature.spark.util.Log;
 import com.automature.spark.util.Utility;
 
 public class OutProcessAtom implements Atom{
-	
 	private String FindWorkingDirectory(String command,
 			String workingDirectoryList) {
 		Log.Debug("OutProcessAtomFindWorkingDirectory: Function started with arguments command = "
@@ -246,6 +245,8 @@ public class OutProcessAtom implements Atom{
 //			argument.remove(size-1);
 //			argument.add(tmp);
 //		}
+		
+		argument.add(String.valueOf(Spark.harnessPIDValue));
 		commandparam.addAll(argument);
 
 		try {
