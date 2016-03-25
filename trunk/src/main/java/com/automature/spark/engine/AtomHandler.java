@@ -13,8 +13,11 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.json.JSONObject;
+
 import com.automature.spark.beans.ExistenceMessageBean;
 import com.automature.spark.util.Log;
+import com.automature.zug.exceptions.AtomExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -25,6 +28,7 @@ public class AtomHandler {
 	//String scriptLocation=null;
 	private List<String> scriptLocations;
 	private FileFilter filter;
+//	protected static boolean isOutpRocessAtomException=false;
 	public static ServerSocket cvConnection;
 	public AtomHandler() {
 		// TODO Auto-generated constructor stub
@@ -76,7 +80,11 @@ public class AtomHandler {
 						t.start();
 						}
 							opa.run(action, threadID);
-							
+//							if(isOutpRocessAtomException)
+//							{
+//								isOutpRocessAtomException=false;
+//								throw new AtomExecutionException("Error while running action "+action.name);
+//							}
 					} catch (Exception e) {
 						throw e;
 					}
@@ -297,20 +305,34 @@ public class AtomHandler {
 			            	ch=is.read();
 			            }
 		            	ServerSocket responseServer=new ServerSocket((int)Double.parseDouble(getValueOfKey(message, "port")));
-			            if(getValueOfKey(message, "method").equals("alter"))
+			            boolean altered=false;
+		            	if(getValueOfKey(message, "method").equals("alter"))
 			            {
+			            	if((ContextVar.getContextVar(getValueOfKey(message, "name")))!=null)
+			            	{
 			            	ContextVar.alterContextVar(getValueOfKey(message, "name"), getValueOfKey(message, "value"));
+			            	altered=true;
+			            	}	
 			            }
 			            	Socket responseSocket=responseServer.accept();
 			            	
 				            OutputStream os = responseSocket.getOutputStream();
 				            if(getValueOfKey(message, "method").equals("alter"))
 				            {
-				            os.write(("True").getBytes());
+				            if(altered)
+				            os.write(alterValueOfKey(message, "error", "0").getBytes());
+				            else
+				            os.write(alterValueOfKey(message, "error", "1").getBytes());
+				            
 				            }
 				            else
 				            {
-				            	os.write((ContextVar.getContextVar(getValueOfKey(message, "name"))).getBytes());
+				            	if((ContextVar.getContextVar(getValueOfKey(message, "name")))!=null)
+				            		os.write(alterValueOfKey(alterValueOfKey(message, "value", ContextVar.getContextVar(getValueOfKey(message, "name"))), "error", "0").getBytes());
+				            	else
+				            	{
+				            		os.write(alterValueOfKey(message, "error", "1").getBytes());
+				            	}
 				            }
 				            responseSocket.close();
 				            responseServer.close();
@@ -326,5 +348,14 @@ public class AtomHandler {
 		JsonElement jelement = new JsonParser().parse(JSON_MetadataArray);
 		JsonObject  jobject = jelement.getAsJsonObject();
 		return jobject.get(key).toString().replace("\"", "");
+	}
+	public String alterValueOfKey(String JSON_MetadataArray,String key,String value){
+		String s="";
+		try{
+		JSONObject jobj=new JSONObject(JSON_MetadataArray);
+		jobj.put(key, value);
+		s =  jobj.toString();
+		}catch(Exception e){e.printStackTrace();}
+		return s;
 	}
 }
