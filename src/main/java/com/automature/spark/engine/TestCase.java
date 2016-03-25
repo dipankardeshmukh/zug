@@ -90,7 +90,7 @@ public class TestCase
 	TestCase parent=null;
 	static boolean errorOccured=false;
 	public static int testCaseNumber=1;
-	private static int oldIndex=0;
+	public static int oldIndex=0;
 
 	public TestCase(){
 
@@ -1177,6 +1177,11 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
 
 		} catch (Exception ex) {
+			
+			if(TestSuite.baseTestCaseID.equalsIgnoreCase("init")){
+				
+				TestSuite.initExecuted = true;
+			}
 			//System.out.println("Inside test case exception");
 			if(ex.getClass().getSimpleName().contains("ReportingException")){        		
 				Log.Error("Failed to report failure for "+this.testCaseID +". Exception MESSAGE IS : "+ex.getMessage());
@@ -1210,9 +1215,9 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 			Spark.suiteFailed=true;
 			if(Spark.guiFlag){
 
-
 				Spark.guiController.showRunningTestCase(this.testCaseID, false);
 				Spark.guiController.updateTestCaseStatus(this.testCaseID,false);
+				
 			}
 
 			// If the testCase is not an Init or Cleanup Step then only Save the
@@ -1268,12 +1273,33 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 	}
 
 	private void setStatusOfTestExecution(String status,int time) {
-
-	    String testCaseID=this.testCaseID;
+		
 		Platform.runLater(new Runnable() {
 			int index;
 			@Override
 		    public void run() {
+
+				if(concurrentExecutionOnExpansion)
+				{
+					if(status.equalsIgnoreCase("running"))
+					{
+						index=oldIndex+1;
+						oldIndex+=1;
+					}
+					else
+					{
+						for (int i = 0; i < ZugguiController.controller.getTestExecutionResults().getItems().size(); i++) {
+							if(((TestCaseStatus)ZugguiController.controller.getTestExecutionResults().getItems().get(i)).getTestCase().getText().equals(testCaseID))
+							{
+								index=i;
+							}
+						}
+					}
+					
+//					index=oldIndex+1;
+//					oldIndex+=1;
+				}
+				else
 				if(status.equalsIgnoreCase("running"))
 				{
 				index=testCaseNumber-1;
@@ -1284,8 +1310,9 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 					index=oldIndex;
 				}
 				try{
-				ZugguiController.controller.getTestExecutionResults().getItems().remove(index);
-				
+					try{	
+					ZugguiController.controller.getTestExecutionResults().getItems().remove(index);
+					}catch(IndexOutOfBoundsException e){}
 				
 				if(status.equalsIgnoreCase("running"))
 				ZugguiController.controller.getTestExecutionResults().getItems().add(index, new TestCaseStatus( testCaseID , status , 0 ));

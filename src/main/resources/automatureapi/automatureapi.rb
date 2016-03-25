@@ -20,7 +20,12 @@ def alterContextVar(argv1,argv2)
   sock.close
   
   sock = TCPSocket.new(@host, 45000+@receiveport)
-  sock.read(5000)
+  s = sock.recv(1024)
+  if JSON.parse(s)['error'].eql?"1"
+   sock.close
+   raise 'Error while altering context variable'  
+  end
+  
   sock.close
   
 end
@@ -34,6 +39,12 @@ def getContextVar(argv1)
   
   sock = TCPSocket.new(@host, (45000+@receiveport))
   s = sock.recv(1024)
+
+  if JSON.parse(s)['error'].eql?"1"
+    sock.close
+   raise 'Error while getting context variable'
+  end
+  s=JSON.parse(s)['value']
   sock.close
   return s
 end

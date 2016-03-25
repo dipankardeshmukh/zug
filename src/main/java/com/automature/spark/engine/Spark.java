@@ -1752,6 +1752,8 @@ public class Spark extends ZugGui {
 //oldmain method
 	public static void runTests(String[] args) throws InterruptedException,
 	Exception, DavosExecutionException, MoleculeDefinitionException,Throwable {
+		if(Spark.guiFlag)
+			TestCase.oldIndex=-1;
 		Spark.executedTestCases.clear();
 		suiteFailed=false;
 		if(Spark.guiFlag)
@@ -2077,7 +2079,6 @@ public class Spark extends ZugGui {
 			});
 
 			thread.start();
-
 			long initExecTime = controller.testsuite.waitForInitToComplete(controller.getTestSuiteTimeout());
 
 			if(opts.dbReporting){

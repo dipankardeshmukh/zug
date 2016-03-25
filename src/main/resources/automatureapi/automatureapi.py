@@ -3,6 +3,7 @@ import time
 import threading  
 import os                 
 import platform
+import json
 
 class AutomatureAPI(object):  
   host = ""   
@@ -31,7 +32,10 @@ class AutomatureAPI(object):
     self.s.close()     
     self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.s.connect((self.host,self.receiveport))
-    self.s.recv(1024).decode("utf-8")
+    data=self.s.recv(1024).decode("utf-8") 
+    if json.loads( data)['error']=='1':
+         self.s.close()
+         raise Exception('Error while altering context variable')
     self.s.close()
     
   def getContextVar(self,argv1):
@@ -43,10 +47,12 @@ class AutomatureAPI(object):
     self.s.close()                   
     self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.s.connect((self.host,self.receiveport))
-    data = (self.s.recv(1024).decode("utf-8"))    
+    data = (self.s.recv(1024).decode("utf-8"))  
+    if json.loads( data)['error']=='1':
+         self.s.close()
+         raise Exception('Error while getting context variable')  
     self.s.close()    
-    return data  
-    
+    return json.loads( data)['value']  
     
       
     

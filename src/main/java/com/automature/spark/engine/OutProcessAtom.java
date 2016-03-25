@@ -245,7 +245,6 @@ public class OutProcessAtom implements Atom{
 //			argument.remove(size-1);
 //			argument.add(tmp);
 //		}
-		
 		argument.add(String.valueOf(Spark.harnessPIDValue));
 		commandparam.addAll(argument);
 
