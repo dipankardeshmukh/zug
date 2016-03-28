@@ -80,11 +80,6 @@ public class AtomHandler {
 						t.start();
 						}
 							opa.run(action, threadID);
-//							if(isOutpRocessAtomException)
-//							{
-//								isOutpRocessAtomException=false;
-//								throw new AtomExecutionException("Error while running action "+action.name);
-//							}
 					} catch (Exception e) {
 						throw e;
 					}
