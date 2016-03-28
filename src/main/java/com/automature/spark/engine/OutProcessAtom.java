@@ -203,6 +203,7 @@ public class OutProcessAtom implements Atom{
 
 		ProcessBuilder pr = new ProcessBuilder();
 		String commandValue[];
+		String outProcessException="";
 
 	
 		Process process = null;
@@ -286,6 +287,7 @@ public class OutProcessAtom implements Atom{
 			// The standard error of the command
 
 			while ((primitiveStreams = stdError.readLine()) != null) {
+				outProcessException=outProcessException+primitiveStreams;
 				Log.Debug("OutProcessAtom/ExecuteCommand : [AtomLog/" + FileName
 						+ "] - " + primitiveStreams);
 				Log.Error("[PrimitiveLog/" + FileName + "] - "
@@ -393,7 +395,7 @@ public class OutProcessAtom implements Atom{
 			}
 		} catch (Exception ex) {
 			String error = String
-					.format("Exception in Command %s.\n\tException Message is :\n\tFoot Print:\n %s",
+					.format("Exception in Command %s.\n\tException Message is :"+outProcessException+"\n\tFoot Print:\n %s",
 							command, ex.getMessage());
 			// Log.Error(error);
 
