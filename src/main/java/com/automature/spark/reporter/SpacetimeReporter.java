@@ -79,7 +79,6 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			try {
 				updateMachineIp();
 			} catch (ReportingException e2) {
-				e2.printStackTrace();
 			}
 			String testplan=ht.get("testplan").toString();
 			if(ht.get("testplan").toString().contains("(") && ht.get("testplan").toString().contains(")"))

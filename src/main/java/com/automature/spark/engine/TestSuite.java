@@ -678,6 +678,7 @@ public class TestSuite {
 					}
 
 				} catch (Exception e) {
+					e.printStackTrace();
 					// Log.Error("TestSuite/RunTestCaseForMain : Error occured, Excetion message is : "
 					// + e.getMessage());
 					throw new Exception(
