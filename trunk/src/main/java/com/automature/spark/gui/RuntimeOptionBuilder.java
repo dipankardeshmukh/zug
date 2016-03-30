@@ -234,7 +234,7 @@ public class RuntimeOptionBuilder {
 					    		try{
 								b=ZugguiController.controller.initReportingConfigurations();
 					    		}catch (Exception e) {
-									// TODO: handle exception
+									b=false;
 								}
 						    if(b)
 						    {
@@ -246,6 +246,7 @@ public class RuntimeOptionBuilder {
 						    else
 						    {
 						    	System.err.println("Connection failed .....\n\nContinuing without reporting .....");
+						    	SpacetimeReporter.sessionid=null;
 						    	Platform.runLater(new Runnable() {
 									
 									@Override

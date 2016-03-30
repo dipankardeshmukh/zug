@@ -526,13 +526,12 @@ public class ZugguiController implements Initializable ,GuiController{
 			return isDbConfigured;
 		}
 		} catch (Throwable e1) {
-			e1.printStackTrace();
+			isDbConfigured=false;
 		} 
 		try {
 			reporter.updateMachineIp();
 		} catch (ReportingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			isDbConfigured=false;
 		}
 		ArrayList<String> listOftestPlans=new ArrayList<String>();
 		ArrayList<String> listOftestCycles=new ArrayList<String>();
