@@ -19,9 +19,9 @@ class AutomatureAPI(object):
       port = psutil.Process(os.getpid()).ppid
     else:
       port = os.getppid()
-    self.sendport=45000+port()  
+    self.sendport=45000+(port()%1000) 
     
-    self.receiveport=45000+os.getpid()   
+    self.receiveport=45000+(os.getpid()%1000)   
     
                  
   def alterContextVar(self,argv1,argv2):

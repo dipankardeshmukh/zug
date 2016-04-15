@@ -77,4 +77,5 @@ public abstract class Reporter {
 		
 	}
 	public void updateMachineIp() throws ReportingException{}
+	public abstract void setContextVar(String key,String value) throws Throwable;
 }

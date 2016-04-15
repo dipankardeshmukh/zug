@@ -285,8 +285,7 @@ public class AtomHandler {
 			public void run() {
 				{
 					try{
-						
-					ServerSocket sparkServer = new ServerSocket(45000+(int)(Spark.harnessPIDValue));
+					ServerSocket sparkServer = new ServerSocket(45000+(((int)(Spark.harnessPIDValue))%1000));
 					cvConnection=sparkServer;
 			        while (true) {
 			            Socket requestSocket = sparkServer.accept();
@@ -299,7 +298,9 @@ public class AtomHandler {
 			            	message=message+(char)ch;
 			            	ch=is.read();
 			            }
-		            	ServerSocket responseServer=new ServerSocket((int)Double.parseDouble(getValueOfKey(message, "port")));
+			            int responsePort=((int)Double.parseDouble(getValueOfKey(message, "port")))%1000;
+
+		            	ServerSocket responseServer=new ServerSocket(45000+responsePort);
 			            boolean altered=false;
 		            	if(getValueOfKey(message, "method").equals("alter"))
 			            {

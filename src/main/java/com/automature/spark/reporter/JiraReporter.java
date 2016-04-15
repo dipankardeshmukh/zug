@@ -257,4 +257,10 @@ public class JiraReporter  extends Reporter {
 	public void setTestCycleTopologySetValues(String env_list) throws ReportingException {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+
+	@Override
+	public void setContextVar(String key, String value) throws Throwable {
+		// TODO Auto-generated method stub
+		
+	}
 }

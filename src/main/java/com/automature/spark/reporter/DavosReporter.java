@@ -642,6 +642,11 @@ public void saveTestCaseResults(NavigableMap<String, ExecutedTestCase> executedT
 			throw new ReportingException(e.getMessage());
 		}
 	}
+
+	@Override
+	public void setContextVar(String key, String value) throws Exception {
+	throw new Exception("setContextVar(...,...) is unimplemented");
+	}
 	
 	
 	

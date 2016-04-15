@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 
 
 
+
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ActionOnDuplicate;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
@@ -343,6 +344,12 @@ public class TestLinkReporter extends Reporter{
 
 	@Override
 	public void setTestCycleTopologySetValues(String env_list )throws ReportingException  {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setContextVar(String key, String value) throws Throwable {
 		// TODO Auto-generated method stub
 		
 	}

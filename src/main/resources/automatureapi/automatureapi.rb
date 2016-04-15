@@ -8,8 +8,8 @@ receiveport = 0
 
 def initialize()
         @host =  '127.0.0.1'
-        @sendport = Integer(ARGV[ARGV.length-1])
-        @receiveport = Process.pid()    
+        @sendport = Integer(ARGV[ARGV.length-1])%1000
+        @receiveport = (Process.pid()%1000)    
     end
 def alterContextVar(argv1,argv2)
   jsonarr = {"method" => "alter","name"=>argv1,"value"=>argv2,"port"=>"#{45000+Process.pid()}"}
