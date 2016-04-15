@@ -17,11 +17,13 @@ import org.apache.commons.lang.math.NumberUtils;
 
 import com.automature.ZermattClient;
 import com.automature.spacetimeapiclient.SpacetimeClient;
+import com.automature.spark.engine.ContextVar;
 import com.automature.spark.engine.ExecutedTestCase;
 import com.automature.spark.engine.Spark;
 import com.automature.spark.exceptions.ReportingException;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.util.Log;
+import com.automature.spark.util.Utility;
 
 public class SpacetimeReporter extends Reporter implements Retriever {
 	private static ZermattClient client;
@@ -285,6 +287,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 //			} catch (Exception e) {}
 //			}
 		}
+		
 	}
 	private void printMessageAndExit(String msg) {
 		System.err.println("\n\n"+msg+"\n\n"+"Exiting Zug");
@@ -317,6 +320,21 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		catch(ReportingException re){
 			System.err.println("\n\t"+re.getMessage()+"\n");
 			return false;
+		}
+		try{
+			setContextVar("ZUG_TESTPLANID",testPlanId);
+			setContextVar("ZUG_TOPOLOGYSETID",topologySetId);
+			setContextVar("ZUG_DBSESSIONID",sessionid);
+			setContextVar("ZUG_SESSIONID", sessionid);
+			//setContextVar("ZUG_TCYCLENAME",davosclient.getTestCycleDescriptionByID(testCycleId));
+			//setContextVar("ZUG_TCYCLENAME","TC_" + Utility.dateAsString());
+			setContextVar("ZUG_TCYCID", testCycleId);
+			setContextVar("ZUG_TESTCYCLEID",testCycleId);
+			setContextVar("ZUG_TOPOSET", "" + topologySetId);
+			setContextVar("ZUG_DBHOST", "" + dBHostName);
+		}catch(Exception e){
+			Log.Error("Error while Setting Context Vars : " + e.getMessage());
+			throw new Throwable("Error while Setting Context Vars :" + e.getMessage());
 		}
 		if(!Spark.guiFlag)
 		{
@@ -454,6 +472,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		testCycleId=client.testCycle_write(testPlanId, ZugguiController.controller.getTestCycleDesc(), "", "", "0", "0", buildId);
 		else
 			testCycleId=client.testCycle_write(testPlanId,this.testCycleDesc, "", "", "0", "0", buildId);	
+		
 		if(Spark.guiFlag)
 		Platform.runLater(new Runnable() {
 			public void run() {
@@ -478,9 +497,19 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	}
 	Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : Start of the Function");
 	etc.testCaseCompletetionTime=new Date();
-	String resp=client.testExecutionDetails_write(etc.testCaseID, etc.testcasedescription, testCycleId, etc.testCaseStatus, buildId, String.valueOf(etc.timeToExecute), "", etc.testCaseCompletetionTime.toString(), testSuiteName, topologySetId, testSuiteRole, etc.testCaseExecutionComments);//(executedTestCaseData.get(s).testCaseID, executedTestCaseData.get(s).testcasedescription, testCycleId, executedTestCaseData.get(s).testCaseStatus, buildId, String.valueOf(executedTestCaseData.get(s).timeToExecute), "", new SimpleDateFormat("yyyy-MM-dd").format(executedTestCaseData.get(s).testCaseCompletetionTime), testSuiteName, topologySetId, testSuiteRole , executedTestCaseData.get(s).testCaseExecutionComments);
-	if(!executedTestCases.contains(resp))
-	executedTestCases.add(resp);
+	String testexecutiondetailid=client.testExecutionDetails_write(etc.testCaseID, etc.testcasedescription, testCycleId, etc.testCaseStatus, buildId, String.valueOf(etc.timeToExecute), "", etc.testCaseCompletetionTime.toString(), testSuiteName, topologySetId, testSuiteRole, etc.testCaseExecutionComments);//(executedTestCaseData.get(s).testCaseID, executedTestCaseData.get(s).testcasedescription, testCycleId, executedTestCaseData.get(s).testCaseStatus, buildId, String.valueOf(executedTestCaseData.get(s).timeToExecute), "", new SimpleDateFormat("yyyy-MM-dd").format(executedTestCaseData.get(s).testCaseCompletetionTime), testSuiteName, topologySetId, testSuiteRole , executedTestCaseData.get(s).testCaseExecutionComments);
+	if(!executedTestCases.contains(testexecutiondetailid))
+	executedTestCases.add(testexecutiondetailid);
+	
+		setContextVar("ZUG_TCID", etc.testCaseID);
+
+		setContextVar("ZUG_TSEXDID", testexecutiondetailid);	
+		
+//		if(ContextVar.getContextVar("ZUG_TSEXDIDS")==null)
+//		setContextVar("ZUG_TSEXDIDS", testexecutiondetailid);	
+//		else
+//		setContextVar("ZUG_TSEXDIDS", ContextVar.getContextVar("ZUG_TSEXDIDS")+":"+testexecutiondetailid);
+		
 	Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : End of the Function");
 	}
 
@@ -653,5 +682,9 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		} catch (Exception e) {
 			throw new ReportingException(e.getMessage());
 		}
+	}
+	@Override
+	public void setContextVar(String key,String value) throws Exception {
+			ContextVar.setContextVar(key,value);
 	}
 }
