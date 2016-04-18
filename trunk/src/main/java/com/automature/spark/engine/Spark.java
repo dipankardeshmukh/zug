@@ -151,9 +151,28 @@ public class Spark extends ZugGui {
 	public static void incrementTestCaseFailCount(){
 		testCaseFailCount++;
 	}
+	
+	static {
+		try{
+			Runnable r=new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						SparkServer.startServer();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			};
+			new Thread(r).start();
+		}
+		catch(Exception e){}
+	}
+
 
 	public Spark() {
-
+		
 		StringBuilder helpMessagebuf = new StringBuilder();
 		versionMessage = Version;
 

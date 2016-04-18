@@ -502,7 +502,9 @@ public class ZugguiController implements Initializable ,GuiController{
 			isDbConfigured=true;
 			}
 			else if(SpreadSheet.connectionParam.size()!=0)
+			{
 			isDbConfigured=true;
+			}
 			else
 			{
 				System.err.println("\nPlease check SpaceTime configurations in Spark.ini or specify db configuration credentials in testsuite\n\n");

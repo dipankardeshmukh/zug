@@ -222,15 +222,15 @@ public class RuntimeOptionBuilder {
 					
 					Task<Boolean> task = new Task<Boolean>() {
 					    @Override protected Boolean call() throws Exception {
-					    	if(SpacetimeReporter.sessionid!=null)
-					    	{
-					    		System.out.println("\nAlready connected to Spacetime\n\n");
-					    		ZugguiController.controller.setReportingPaneFieldsEnable();
-					    		return true;
-					    	}
+//					    	if(SpacetimeReporter.sessionid!=null)
+//					    	{
+//					    		System.out.println("\nAlready connected to Spacetime\n\n");
+//					    		ZugguiController.controller.setReportingPaneFieldsEnable();
+//					    		return true;
+//					    	}
 					    	System.out.println("Connecting to Spacetime.\n\nThe Reporter panel will be enabled after the connection is established\n\nPlease Wait .....");
 					    	Boolean b = null;
-					    	if(SpacetimeReporter.sessionid==null)
+//					    	if(SpacetimeReporter.sessionid==null)
 					    		try{
 								b=ZugguiController.controller.initReportingConfigurations();
 					    		}catch (Exception e) {
