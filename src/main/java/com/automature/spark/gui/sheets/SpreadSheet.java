@@ -18,7 +18,9 @@ import com.automature.spark.util.ExtensionInterpreterSupport;
 
 
 
+
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
@@ -129,8 +131,8 @@ public class SpreadSheet {
 					
 					String data=cell.next();
 					
-						if (!connectionParam.containsKey(s.toLowerCase())) {
-							
+//						if (connectionParam.containsKey(s.toLowerCase())) {
+
 							if(s.equals("DBHostName"))
 							{
 								if(!data.startsWith("http://"))
@@ -153,7 +155,7 @@ public class SpreadSheet {
 								break;
 							}
 							
-						} 
+//						} 
 				}
 
 			}
@@ -568,5 +570,4 @@ public class SpreadSheet {
 		}
 		return sp;
 	}
-	
 }

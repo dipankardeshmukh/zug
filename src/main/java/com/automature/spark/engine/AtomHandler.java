@@ -29,7 +29,7 @@ public class AtomHandler {
 	private List<String> scriptLocations;
 	private FileFilter filter;
 //	protected static boolean isOutpRocessAtomException=false;
-	public static ServerSocket cvConnection;
+//	public static ServerSocket cvConnection;
 	public AtomHandler() {
 		// TODO Auto-generated constructor stub
 	}
@@ -74,11 +74,6 @@ public class AtomHandler {
 					// TODO Auto-generated method stub
 					OutProcessAtom opa=new OutProcessAtom();
 					try {
-						if(cvConnection==null)
-						{
-						Thread t=contextVariableHandler();
-						t.start();
-						}
 							opa.run(action, threadID);
 					} catch (Exception e) {
 						throw e;
@@ -278,80 +273,5 @@ public class AtomHandler {
 				return al;
 			}
 		}
-	}
-	public synchronized Thread contextVariableHandler(){
-		return new Thread(new Runnable() {
-			
-			public void run() {
-				{
-					try{
-					ServerSocket sparkServer = new ServerSocket(45000+(((int)(Spark.harnessPIDValue))%1000));
-					cvConnection=sparkServer;
-			        while (true) {
-			            Socket requestSocket = sparkServer.accept();
-			            
-			            InputStream is=requestSocket.getInputStream();
-			            String message="";
-			            int ch=is.read();
-			            while(ch!=-1)
-			            {
-			            	message=message+(char)ch;
-			            	ch=is.read();
-			            }
-			            int responsePort=((int)Double.parseDouble(getValueOfKey(message, "port")))%1000;
-
-		            	ServerSocket responseServer=new ServerSocket(45000+responsePort);
-			            boolean altered=false;
-		            	if(getValueOfKey(message, "method").equals("alter"))
-			            {
-			            	if((ContextVar.getContextVar(getValueOfKey(message, "name")))!=null)
-			            	{
-			            	ContextVar.alterContextVar(getValueOfKey(message, "name"), getValueOfKey(message, "value"));
-			            	altered=true;
-			            	}	
-			            }
-			            	Socket responseSocket=responseServer.accept();
-			            	
-				            OutputStream os = responseSocket.getOutputStream();
-				            if(getValueOfKey(message, "method").equals("alter"))
-				            {
-				            if(altered)
-				            os.write(alterValueOfKey(message, "error", "0").getBytes());
-				            else
-				            os.write(alterValueOfKey(message, "error", "1").getBytes());
-				            
-				            }
-				            else
-				            {
-				            	if((ContextVar.getContextVar(getValueOfKey(message, "name")))!=null)
-				            		os.write(alterValueOfKey(alterValueOfKey(message, "value", ContextVar.getContextVar(getValueOfKey(message, "name"))), "error", "0").getBytes());
-				            	else
-				            	{
-				            		os.write(alterValueOfKey(message, "error", "1").getBytes());
-				            	}
-				            }
-				            responseSocket.close();
-				            responseServer.close();
-			            	
-				}
-				}catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}});
-	}
-	public String getValueOfKey(String JSON_MetadataArray,String key){
-		JsonElement jelement = new JsonParser().parse(JSON_MetadataArray);
-		JsonObject  jobject = jelement.getAsJsonObject();
-		return jobject.get(key).toString().replace("\"", "");
-	}
-	public String alterValueOfKey(String JSON_MetadataArray,String key,String value){
-		String s="";
-		try{
-		JSONObject jobj=new JSONObject(JSON_MetadataArray);
-		jobj.put(key, value);
-		s =  jobj.toString();
-		}catch(Exception e){e.printStackTrace();}
-		return s;
 	}
 }
