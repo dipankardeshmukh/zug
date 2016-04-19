@@ -19,6 +19,8 @@ import com.automature.spark.util.ExtensionInterpreterSupport;
 
 
 
+
+
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -56,7 +58,8 @@ public class SpreadSheet {
 	private static List<String> scriptLocations = new ArrayList<String>();
 
 	private FileInputStream inputFile;
-
+	
+	public static Hashtable oldConnectionParam=new Hashtable();
 	public static Hashtable connectionParam=new Hashtable();
 	
 	public String getAbsolutePath() {
@@ -301,8 +304,9 @@ public class SpreadSheet {
 
 	public boolean readSpreadSheet(String filePath) throws Exception {
 		if(Spark.guiFlag)
+		{
 		Spark.updateExecutionSummaryPanel();
-		
+		}
 		if (!new File(filePath).isAbsolute()) {
 			throw new Exception("SpreadSheet/readSpreadSheet expects file paths to be absolute");
 		}
@@ -339,8 +343,21 @@ public class SpreadSheet {
 		//	configSheet.setTempFilePath(tempFile.getAbsolutePath());			
 						
 			readConfigDbConfigs();
+			
+			if(Spark.guiFlag)
+			{
+				try{
+					if(!connectionParam.get("dbhostname").equals(oldConnectionParam.get("dbhostname")) || !connectionParam.get("dbusername").equals(oldConnectionParam.get("dbusername"))||!connectionParam.get("dbuserpassword").equals(oldConnectionParam.get("dbuserpassword")))
+					ZugguiController.controller.getDbReportingCB().setSelected(false);
+				}
+				catch(Exception e){}
+			}
+			
 			readConfigIncludeFiles();
-
+			
+			if(Spark.guiFlag)
+				oldConnectionParam.putAll(connectionParam);
+			
 			macroSheet = new MacroSheet(wb.getSheet("Macros"), tempFile.getAbsolutePath(),absolutePath);
 
 			macroSheet.readHeader();

@@ -13,7 +13,9 @@ import java.io.File;
 
 
 
+
 import javafx.scene.control.cell.PropertyValueFactory;
+
 
 
 
@@ -38,8 +40,10 @@ import java.util.Set;
 
 
 
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.util.HSSFColor.MAROON;
+
 
 
 
@@ -58,6 +62,7 @@ import com.automature.spark.engine.Spark;
 import com.automature.spark.engine.TestCase;
 import com.automature.spark.gui.components.TestCaseTab;
 import com.automature.spark.gui.components.TestCaseTreeTableSheetTab;
+import com.automature.spark.gui.controllers.ConsoleController;
 import com.automature.spark.gui.controllers.ZugguiController;
 import com.automature.spark.gui.sheets.SpreadSheet;
 import com.automature.spark.gui.utils.GuiUtils;
@@ -71,6 +76,7 @@ import com.automature.spark.reporter.SpacetimeReporter;
 
 
 import com.automature.spark.util.Styles;
+
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -215,6 +221,11 @@ public class RuntimeOptionBuilder {
 		dbReportingCB.setUserData(value);
 		
 		dbReportingCB.setOnAction(event->{
+			try{
+				if(dbReportingCB.isSelected())
+				ConsoleController.controller.clear();
+			}
+			catch(Exception e){}
 			if (event.getSource() instanceof CheckBox) {
 				CheckBox chk = (CheckBox) event.getSource();
 				if(chk.isSelected()){

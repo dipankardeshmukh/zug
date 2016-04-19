@@ -37,10 +37,21 @@ public class SparkServer implements Runnable {
    public void run() {
       try {
     	 InputStream istream=csocket.getInputStream();
+    	 PrintStream pstream = new PrintStream(csocket.getOutputStream());
+    	 
+    	 
     	 byte[] b=new byte[1024];
     	 istream.read(b);
     	 String message = new String(b, "UTF-8");
     	 boolean altered=false;
+    	 if(!message.startsWith("{"))
+    	 {
+    		 pstream.println(Spark.getVersionMessage());
+    		 istream.close();
+             pstream.close();
+             csocket.close();
+    		 return;
+    	 }
     	 if(getValueOfKey(message, "method").equals("alter"))
 	       {
     		 try{
@@ -51,8 +62,7 @@ public class SparkServer implements Runnable {
 	            	}
     		 }catch(Exception e){e.printStackTrace();}
 	       }
-         PrintStream pstream = new PrintStream
-         (csocket.getOutputStream());
+         
          if(getValueOfKey(message, "method").equals("alter"))
          {
          if(altered)
