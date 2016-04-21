@@ -256,7 +256,7 @@ public class RuntimeOptionBuilder {
 						    }
 						    else
 						    {
-						    	System.err.println("Connection failed .....\n\nContinuing without reporting .....");
+						    	System.err.println("Continuing without reporting");
 						    	SpacetimeReporter.sessionid=null;
 						    	Platform.runLater(new Runnable() {
 									

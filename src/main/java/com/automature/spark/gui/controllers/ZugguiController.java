@@ -507,7 +507,7 @@ public class ZugguiController implements Initializable ,GuiController{
 			}
 			else
 			{
-				System.err.println("\nPlease check SpaceTime configurations in Spark.ini or specify db configuration credentials in testsuite\n\n");
+				System.err.println("\nPlease check SpaceTime configurations in Spark.ini or specify db configuration credentials in testsuite\n");
 				isDbConfigured=false;
 			}
 		} catch (Exception e2) {
@@ -516,14 +516,17 @@ public class ZugguiController implements Initializable ,GuiController{
 		if(isDbConfigured)
 		{
 		if(SpreadSheet.connectionParam.size()!=0)
-		reporter=new SpacetimeReporter(SpreadSheet.connectionParam);	
-		else	
+		{
+		reporter=new SpacetimeReporter(SpreadSheet.connectionParam);
+		}
+		else
+		{
 		reporter=new SpacetimeReporter(connectionParam);
-		
+		}
 		try {
 		if(!reporter.connect())
 		{
-			System.err.println("\nPlease check SpaceTime configurations in Spark.ini or specify db configuration credentials in testsuite\n\n");
+			System.err.println("\nPlease check SpaceTime configurations in Spark.ini or specify db configuration credentials in testsuite\n");
 			isDbConfigured=false;
 			return isDbConfigured;
 		}
@@ -533,6 +536,7 @@ public class ZugguiController implements Initializable ,GuiController{
 		try {
 			reporter.updateMachineIp();
 		} catch (ReportingException e) {
+			System.err.println("\nError while updating machine ip in database.This machine may not be registered in the target database\n");
 			isDbConfigured=false;
 		}
 		ArrayList<String> listOftestPlans=new ArrayList<String>();
@@ -839,7 +843,7 @@ public class ZugguiController implements Initializable ,GuiController{
 			loader.getStage().show();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			setAllReporterPaneControlsEnabled();
 		}
 	}
 	

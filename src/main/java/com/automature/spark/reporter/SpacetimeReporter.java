@@ -328,8 +328,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			setContextVar("ZUG_SESSIONID", sessionid);
 			//setContextVar("ZUG_TCYCLENAME",davosclient.getTestCycleDescriptionByID(testCycleId));
 			//setContextVar("ZUG_TCYCLENAME","TC_" + Utility.dateAsString());
+			if(testCycleId!=null)
+			{
 			setContextVar("ZUG_TCYCID", testCycleId);
 			setContextVar("ZUG_TESTCYCLEID",testCycleId);
+			}
 			setContextVar("ZUG_TOPOSET", "" + topologySetId);
 			setContextVar("ZUG_DBHOST", "" + dBHostName);
 		}catch(Exception e){
@@ -605,9 +608,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 				if(list.get(i).equals(""))
 					list.remove(i);
 			}
+			if(list.size()==0)
+				System.err.println("No testplan exists for the selected product");
 			return list;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
 			return null;
 		}
 	}
@@ -616,6 +621,8 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		// TODO Auto-generated method stub
 		try {
 			ArrayList<String> list=client.getTestCycleListForProduct(pid, testPlanName,ip);
+			if(list.size()==0)
+				System.err.println("No testcycle exists for the selected testplan");
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -627,6 +634,8 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		// TODO Auto-generated method stub
 		try {
 			ArrayList<String> list=client.getTestCycleTopologySets(tcid,InetAddress.getLocalHost().getHostAddress());
+			if(list.size()==0)
+				System.err.println("No topologyset is associated with selected testcycle");
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -634,10 +643,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 	}
 	@Override
-	public ArrayList<String> getBuildTagsForTestCycleAndTopologyset(String topoid,String tcid) {
+	public ArrayList<String> getBuildTagsForTestCycleAndTopologyset(String pid,String topoid,String tcid) {
 		// TODO Auto-generated method stub
 		try {
 			ArrayList<String> list=client.getBuildTagForTestCycleAndTopologyset(topoid, tcid);
+			if(list.size()==0)
+				list=getBuildsByProductId(pid);
+			if(list.size()==0)
+				System.err.println("No build tag is associated with selected testcycle");
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
