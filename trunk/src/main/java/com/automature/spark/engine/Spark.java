@@ -153,6 +153,7 @@ public class Spark extends ZugGui {
 	}
 	
 	static {
+		
 		try{
 			Runnable r=new Runnable() {
 				
@@ -1739,9 +1740,8 @@ public class Spark extends ZugGui {
 					System.exit(-1);
 				}
 			}
-			Spark.message("Zug is Valid "
-					+ licenseValid.userInfo.companyName);
-
+			Spark.message("Spark is Valid "
+					+ licenseValid.userInfo.companyName.replace("Zug", "Spark"));
 		} catch (Exception e) {
 			Log.Error("Failed to validate your License copy");
 			Log.Error("Message : " + e.getMessage() + "\n");
@@ -1982,7 +1982,7 @@ public class Spark extends ZugGui {
 					frameWork="Jira";
 				}
 				else if(controller.dBName.equalsIgnoreCase("spacetime")){
-					System.out.println("connecting to spacetime");
+					//System.out.println("connecting to spacetime");
 					reporter=new SpacetimeReporter(connectionParam);
 					frameWork="Spacetime";
 				}
@@ -2017,6 +2017,10 @@ public class Spark extends ZugGui {
 					.message("\nInvalid Entries provided. Controller Exiting Gracefully..... ");
 					controller.DoHarnessCleanup();
 					return;
+				}
+				else
+				{
+					Spark.message("\nDatabase entries are validated.");
 				}
 				// First task is to insert the test suite to the Database.
 				// controller.SaveTestSuite();

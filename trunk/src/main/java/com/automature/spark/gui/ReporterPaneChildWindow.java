@@ -26,6 +26,7 @@ import com.automature.spark.reporter.SpacetimeReporter;
 import com.automature.spark.util.Styles;
 public class ReporterPaneChildWindow {
 public void displayListView(ArrayList<String> items, TextField text,String type, SpacetimeReporter reporter, ArrayList<String> ob, ArrayList<String> ob1, MouseEvent event2){
+	ConsoleController.controller.clear();
 	if(type.equals("Testplans"))
 	{
 
@@ -76,7 +77,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	}
         	else if(type.equals("Builds"))
         	{
-        		items.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(getTestInParenthesis(ZugguiController.controller.getTopoSet()),getTestInParenthesis(ZugguiController.controller.getTestCycle())));
+        		items.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(ZugguiController.controller.getProductId(),getTestInParenthesis(ZugguiController.controller.getTopoSet()),getTestInParenthesis(ZugguiController.controller.getTestCycle())));
         	}
 		}
 		}catch(Exception e){}
@@ -101,15 +102,8 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         );
          if(data.size()==0)
          {
-//        	 Stage dialogStage = new Stage(StageStyle.UTILITY);
-//        	 dialogStage.initModality(Modality.WINDOW_MODAL);
-//        	 Button b=new Button("OK");
-//        	 dialogStage.setScene(new Scene(VBoxBuilder.create().
-//        	     children(new Text("No "+type+" exist"), b).
-//        	     alignment(Pos.CENTER).padding(new Insets(5)).build()));
-//        	 dialogStage.show();
-        	 ConsoleController.controller.clear();
-        	 System.err.println("\n\tNo "+type+" exist");
+//        	 ConsoleController.controller.clear();
+//        	 System.err.println("\nNo "+type+" exist");
         	 return;
          }
         listView.setItems(data);
@@ -157,7 +151,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         		{
         		ZugguiController.controller.getTopoSet().setDisable(false);
         		ZugguiController.controller.getTopoSet().setText(ob.get(0));
-        		ob1.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(StringUtils.substringBetween(ob.get(0), " (", ")"),StringUtils.substringBetween(text.getText(), " (", ")")));
+        		ob1.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(ZugguiController.controller.getProductId(),StringUtils.substringBetween(ob.get(0), " (", ")"),StringUtils.substringBetween(text.getText(), " (", ")")));
 	        		if(ob1.size()>0)
 	        		{
 	        		ZugguiController.controller.getBuildTag().setDisable(false);
@@ -176,7 +170,7 @@ public void displayListView(ArrayList<String> items, TextField text,String type,
         	{
         		if(type.equals("TopologyStets"))
     			{
-    				ob.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(StringUtils.substringBetween(text.getText(), " (", ")"),StringUtils.substringBetween(ZugguiController.controller.getTestCycle().getText(), " (", ")")));
+    				ob.addAll(reporter.getBuildTagsForTestCycleAndTopologyset(ZugguiController.controller.getProductId(),StringUtils.substringBetween(text.getText(), " (", ")"),StringUtils.substringBetween(ZugguiController.controller.getTestCycle().getText(), " (", ")")));
     				ZugguiController.controller.getBuildTag().setText(ob.get(0));
     			}
         		ZugguiController.controller.getCreateTestCycleBtn().setDisable(false);
