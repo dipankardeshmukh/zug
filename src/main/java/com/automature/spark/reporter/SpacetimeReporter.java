@@ -476,6 +476,12 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		else
 			testCycleId=client.testCycle_write(testPlanId,this.testCycleDesc, "", "", "0", "0", buildId);	
 		
+		if(testCycleId!=null)
+		{
+		setContextVar("ZUG_TCYCID", testCycleId);
+		setContextVar("ZUG_TESTCYCLEID",testCycleId);
+		}
+		
 		if(Spark.guiFlag)
 		Platform.runLater(new Runnable() {
 			public void run() {
@@ -609,7 +615,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					list.remove(i);
 			}
 			if(list.size()==0)
-				System.err.println("No testplan exists for the selected product");
+				System.err.println("No testplan exists for the selected product.");
 			return list;
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -622,7 +628,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		try {
 			ArrayList<String> list=client.getTestCycleListForProduct(pid, testPlanName,ip);
 			if(list.size()==0)
-				System.err.println("No testcycle exists for the selected testplan");
+				System.err.println("No testcycle exists for the selected testplan.");
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -635,7 +641,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		try {
 			ArrayList<String> list=client.getTestCycleTopologySets(tcid,InetAddress.getLocalHost().getHostAddress());
 			if(list.size()==0)
-				System.err.println("No topologyset is associated with selected testcycle");
+				System.err.println("No topologyset is associated with selected testcycle.");
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -650,7 +656,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			if(list.size()==0)
 				list=getBuildsByProductId(pid);
 			if(list.size()==0)
-				System.err.println("No build tag is associated with selected testcycle");
+				System.err.println("No buildtag is associated with selected testcycle.");
 			return list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

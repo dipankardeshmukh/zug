@@ -36,7 +36,7 @@ public class ScreenLoader {
 			stage = new Stage();
 			stage.setScene(scene);
 		}catch (IOException ex) {
-			ex.printStackTrace();;
+			ex.printStackTrace();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

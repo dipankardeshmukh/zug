@@ -67,8 +67,13 @@ public void initialize(URL arg0, ResourceBundle arg1) {
 		}
 		
 	});
-	topoSetDropDown.getItems().addAll(FXCollections.observableList(ZugguiController.reporter.getTopoSetsByTestPlanId(	ZugguiController.controller.getTestPlan().getText().substring(ZugguiController.controller.getTestPlan().getText().lastIndexOf('(')+1, ZugguiController.controller.getTestPlan().getText().lastIndexOf(')')))));
+	try{
+	ZugguiController.reporter.connect();
+	topoSetDropDown.getItems().addAll(FXCollections.observableList(ZugguiController.reporter.getTopoSetsByTestPlanId(ZugguiController.controller.getTestPlan().getText().substring(ZugguiController.controller.getTestPlan().getText().lastIndexOf('(')+1, ZugguiController.controller.getTestPlan().getText().lastIndexOf(')')))));
 	buildTagDropDown.getItems().addAll(FXCollections.observableList(ZugguiController.reporter.getBuildsByProductId(	ZugguiController.controller.getProduct().getText().substring(ZugguiController.controller.getProduct().getText().lastIndexOf('(')+1, ZugguiController.controller.getProduct().getText().lastIndexOf(')')))));
+	}catch(Throwable e){
+		System.err.println("There is a problem while reconnecting spacetime.");
+	}
 	submit.setOnAction(event->{
 		if(name.getText().equals("")||topoSetDropDown.getSelectionModel().getSelectedItem()==null)
 		{

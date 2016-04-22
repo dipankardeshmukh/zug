@@ -71,6 +71,7 @@ public class ZugGui  extends Application {
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
+				try{
 				Runnable r=new Runnable() {
 					
 					@Override
@@ -84,12 +85,8 @@ public class ZugGui  extends Application {
 				};
 					Thread t=new Thread(r);
 					t.start();
-				try {
 					t.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}	
+				}catch(Exception e){}
 				System.exit(0);
 			}
 		});

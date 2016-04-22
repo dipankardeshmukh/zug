@@ -239,7 +239,7 @@ public class RuntimeOptionBuilder {
 //					    		ZugguiController.controller.setReportingPaneFieldsEnable();
 //					    		return true;
 //					    	}
-					    	System.out.println("Connecting to Spacetime.\n\nThe Reporter panel will be enabled after the connection is established\n\nPlease Wait .....");
+					    	System.out.println("\nThe Reporting panel will be enabled after the connection is established.\n\nConnecting to Spacetime.\n\nPlease Wait...");
 					    	Boolean b = null;
 //					    	if(SpacetimeReporter.sessionid==null)
 					    		try{
@@ -256,7 +256,7 @@ public class RuntimeOptionBuilder {
 						    }
 						    else
 						    {
-						    	System.err.println("Continuing without reporting");
+						    	System.err.println("Continue without reporting...");
 						    	SpacetimeReporter.sessionid=null;
 						    	Platform.runLater(new Runnable() {
 									
