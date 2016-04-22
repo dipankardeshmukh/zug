@@ -397,8 +397,8 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 			// );
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
-//			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || TestSuite.baseTestCaseID
-//					.compareToIgnoreCase("init") == 0))
+			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 || TestSuite.baseTestCaseID
+					.compareToIgnoreCase("init") == 0))
 			{
 				ExecutedTestCase tData = new ExecutedTestCase();
 				tData.testCaseID = this.testCaseID;
@@ -415,10 +415,10 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				Spark.executedTestCases.add(tData.testCaseID);
 				
 				if (Spark.opts.dbReporting == true) {
-					// If the testCase is not an Init or Cleanup Step then only
-					// Save the TestCase to the Result Database.
-//					if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
-//							.compareToIgnoreCase("init") == 0)) {
+//					 If the testCase is not an Init or Cleanup Step then only
+//					 Save the TestCase to the Result Database.
+					if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
+							.compareToIgnoreCase("init") == 0)) {
 						Log.Debug(String
 								.format("TestCase/RunExpandedTestCase : Saving Expanded Testcase ID %s with Description %s to Result.",
 										this.testCaseID,
@@ -458,18 +458,18 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 						}catch(Exception e){
 							e.printStackTrace();
 						}
-//					} else {
-//						Log.Debug(String
-//								.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
-//										this.testCaseID));
-//					}
+					} else {
+						Log.Debug(String
+								.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
+										this.testCaseID));
+					}
 				}
 			} 
-//			else {
-//				Log.Debug(String
-//						.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
-//								this.testCaseID));
-//			}
+			else {
+				Log.Debug(String
+						.format("TestCase/RunExpandedTestCase : Testcase ID %s is of type Initialization/Cleanup",
+								this.testCaseID));
+			}
 
 			// Now run each of the Actions mentioned here...and try running it.
 			Action[] actions = new Action[this.actions.size()];
@@ -1143,8 +1143,8 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
-//			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
-//					.compareToIgnoreCase("init") == 0)) {
+			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite. baseTestCaseID
+					.compareToIgnoreCase("init") == 0)) {
 				if(!reportingError){
 					ExecutedTestCase tData = new ExecutedTestCase();
 					tData.testCaseCompletetionTime = Utility.dateNow();
@@ -1168,7 +1168,7 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				}else{
 					System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
 				}
-//			}else 
+			}else 
 				if(TestSuite.baseTestCaseID.equalsIgnoreCase("init")){
 				
 				TestSuite.initExecuted = true;
@@ -1222,8 +1222,8 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 
 			// If the testCase is not an Init or Cleanup Step then only Save the
 			// TestCase Result to the Framework Database.
-//			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite.baseTestCaseID
-//					.compareToIgnoreCase("init") == 0)) {
+			if (!(TestSuite.baseTestCaseID.compareToIgnoreCase("cleanup") == 0 ||TestSuite.baseTestCaseID
+					.compareToIgnoreCase("init") == 0)) {
 				if(!reportingError){
 					ExecutedTestCase tData = new ExecutedTestCase();
 					tData.testCaseCompletetionTime = Utility.dateNow();
@@ -1249,14 +1249,14 @@ Log.Debug("TestCase/RunExpandedTestCase : Start of Function.");
 				}else{
 					System.err.println("Skipping reporting of test case "+this.testCaseID+" as there was an error earlier while reporting it");
 				}
-//			} else {
-//
-//				if(TestSuite.baseTestCaseID.equalsIgnoreCase("init"))
-//					TestSuite.initExecuted = true;
-//
-//				TestSuite.initWorkedFine = false;
-//
-//			}
+			} else {
+
+				if(TestSuite.baseTestCaseID.equalsIgnoreCase("init"))
+					TestSuite.initExecuted = true;
+
+				TestSuite.initWorkedFine = false;
+
+			}
 
 
 		}

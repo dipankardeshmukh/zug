@@ -206,7 +206,7 @@
         <dependency>
             <groupId>com.automature.davos.api</groupId>
             <artifactId>automature-davosapi</artifactId>
-            <version>2.1.6</version>
+            <version>2.1.7</version>
         </dependency>
         <dependency>
             <groupId>jline</groupId>
