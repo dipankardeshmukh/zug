@@ -78,6 +78,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 		else
 		{
+			if(!ht.get("testplan").toString().isEmpty()){
 			try {
 				updateMachineIp();
 			} catch (ReportingException e2) {
@@ -286,6 +287,30 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 //				
 //			} catch (Exception e) {}
 //			}
+		}
+			else
+			{
+
+				testPlanId=ht.get("testplanid").toString();
+				testCycleId=ht.get("testcycleid").toString();
+				topologySetId=ht.get("topologysetid").toString();
+				
+				if(testPlanId.isEmpty() || testCycleId.isEmpty() || topologySetId.isEmpty())
+				{
+					printMessageAndExit("Command Line switch testPlanId with testCycleId and topologySetId is mandatory");
+				}
+				if(!ht.get("buildid").toString().isEmpty())
+					buildId=ht.get("buildid").toString();
+				else
+				try {
+					buildId=StringUtils.substringBetween(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId).get(1), " (", ")");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					printMessageAndExit("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
+				}
+				if(buildId.isEmpty())
+					printMessageAndExit("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId);
+			}
 		}
 		
 	}
