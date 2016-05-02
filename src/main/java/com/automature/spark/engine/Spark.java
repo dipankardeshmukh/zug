@@ -862,6 +862,7 @@ public class Spark extends ZugGui {
 		if (opts.dbReporting) {
 			dBHostName = readExcel.DBHostName();
 			ContextVar.setContextVar("ZUG_DBHOSTNAME",dBHostName);
+			ContextVar.setContextVar("ZUG_DBHOST", "" + dBHostName);
 			// message("The DBHOST NAME "+dBHostName);
 			Log.Debug("Controller/InitializeVariables : DBHostName = "
 					+ dBHostName);
