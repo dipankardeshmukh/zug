@@ -316,8 +316,8 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					buildId=StringUtils.substringBetween(buildIds.get(0), " (", ")");
 					else
 					{
-						System.err.println("No buildTag exists for testcycleId : "+testCycleId+" and topologySetId : "+topologySetId);
-						System.err.println("Creating new buildTag");	
+						System.out.println("No buildTag exists for testcycleId : "+testCycleId+" and topologySetId : "+topologySetId);
+						System.out.println("Creating new buildTag");	
 						buildName="Build : "+new Date();
 						buildId=client.buildtag_write(testPlanId, buildName);
 					}
