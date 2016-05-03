@@ -295,7 +295,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 				testPlanId=ht.get("testplanid").toString();
 				testCycleId=ht.get("testcycleid").toString();
 				topologySetId=ht.get("topologysetid").toString();
-				
+				if(topologySetId.isEmpty())
+				{
+					try {
+						topologySetId=client.getTopoSetsByTestPlanId(testPlanId).get(0);
+					} catch (Exception e) {
+						printMessageAndExit("Error while getting topologySetId for testPlanId "+testPlanId);
+					}
+				}
 				if(testPlanId.isEmpty() || testCycleId.isEmpty() || topologySetId.isEmpty())
 				{
 					printMessageAndExit("Command Line switch testPlanId with testCycleId and topologySetId is mandatory");
