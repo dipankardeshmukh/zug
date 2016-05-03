@@ -304,13 +304,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					buildId=ht.get("buildid").toString();
 				else
 				try {
-					buildId=StringUtils.substringBetween(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId).get(1), " (", ")");
+					buildId=StringUtils.substringBetween(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId).get(0), " (", ")");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					System.err.println("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
 					System.err.println("Creating new buildTag");
 					try {
-						buildId=client.buildtag_write(testPlanId, "Build : "+new Date());
+						buildName="Build : "+new Date();
+						buildId=client.buildtag_write(testPlanId, buildName);
 					} catch (DavosExecutionException | InterruptedException e1) {
 						// TODO Auto-generated catch block
 						printMessageAndExit("Error while creating buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
