@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 import com.automature.ZermattClient;
+import com.automature.davos.exceptions.DavosExecutionException;
 import com.automature.spacetimeapiclient.SpacetimeClient;
 import com.automature.spark.engine.ContextVar;
 import com.automature.spark.engine.ExecutedTestCase;
@@ -306,7 +307,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					buildId=StringUtils.substringBetween(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId).get(1), " (", ")");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					printMessageAndExit("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
+					System.err.println("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
+					System.err.println("Creating new buildTag");
+					try {
+						buildId=client.buildtag_write(testPlanId, "Build : "+new Date());
+					} catch (DavosExecutionException | InterruptedException e1) {
+						// TODO Auto-generated catch block
+						printMessageAndExit("Error while creating buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
+					}
 				}
 				if(buildId.isEmpty())
 					printMessageAndExit("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId);
@@ -374,6 +382,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			al=client.getTestCycleTopologySets(testCycleId,InetAddress.getLocalHost().getHostAddress());
 			else
 			al=client.getTopoSetsByTestPlanId(testPlanId);
+			
 			for (int i = 0; i < al.size(); i++) {
 				if(al.get(i).contains("("+topologySetId+")"))
 				{
