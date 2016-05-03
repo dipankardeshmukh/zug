@@ -311,21 +311,29 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					buildId=ht.get("buildid").toString();
 				else
 				try {
-					buildId=StringUtils.substringBetween(client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId).get(0), " (", ")");
+					ArrayList<String> buildIds=client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId);
+					if(buildIds.size()>0)
+					buildId=StringUtils.substringBetween(buildIds.get(0), " (", ")");
+					else
+					{
+						System.err.println("No buildTag exists for testcycleId : "+testCycleId+" and topologySetId : "+topologySetId);
+						System.err.println("Creating new buildTag");	
+						buildId=client.buildtag_write(testPlanId, buildName);
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					System.err.println("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
-					System.err.println("Creating new buildTag");
-					try {
-						buildName="Build : "+new Date();
-						buildId=client.buildtag_write(testPlanId, buildName);
-					} catch (DavosExecutionException | InterruptedException e1) {
-						// TODO Auto-generated catch block
+//					System.err.println("Error while getting buildId for testcycleId : "+testCycleId+" and topologySetId : "+topologySetId+" : "+e.getMessage());
+//					System.err.println("Creating new buildTag");
+//					try {
+//						buildName="Build : "+new Date();
+//						buildId=client.buildtag_write(testPlanId, buildName);
+//					} catch (DavosExecutionException | InterruptedException e1) {
+//						// TODO Auto-generated catch block
 						printMessageAndExit("Error while creating buildId for testcycleId "+testCycleId+" and "+topologySetId+" : "+e.getMessage());
-					}
+//					}
 				}
 				if(buildId.isEmpty())
-					printMessageAndExit("Error while getting buildId for testcycleId "+testCycleId+" and "+topologySetId);
+					printMessageAndExit("Error while getting buildId for testcycleId "+testCycleId+" and  and topologySetId : "+topologySetId);
 			}
 		}
 		
