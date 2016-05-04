@@ -42,10 +42,12 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	String topologySetId = StringUtils.EMPTY;
 	String buildId=StringUtils.EMPTY;
 	String buildName=StringUtils.EMPTY;
+	Boolean dbArgsAreIds=false;
 	private String TOPOSET;
 	private String testCycleDesc;
 	public static ArrayList<String> executedTestCases=new ArrayList<String>(); 
 	public SpacetimeReporter(Hashtable ht) {
+		dbArgsAreIds=false;
 		this.dBHostName=(String)ht.get("dbhostname");
 		this.dbUserName=(String)ht.get("dbusername");
 		this.dbUserPassword=(String)ht.get("dbuserpassword");
@@ -291,7 +293,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		}
 			else
 			{
-
+				dbArgsAreIds=true;
 				testPlanId=ht.get("testplanid").toString();
 				testCycleId=ht.get("testcycleid").toString();
 				topologySetId=ht.get("topologysetid").toString();
@@ -312,6 +314,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 				else
 				try {
 					ArrayList<String> buildIds=client.getBuildTagForTestCycleAndTopologyset(topologySetId, testCycleId);
+					
 					if(buildIds.size()>0)
 					buildId=StringUtils.substringBetween(buildIds.get(0), " (", ")");
 					else
@@ -395,10 +398,16 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			String testPlanName=null;
 			ArrayList<String> al=null;
 			int x=0;
+			if(!dbArgsAreIds){
 			if(testCycleId!=null)
 			al=client.getTestCycleTopologySets(testCycleId,InetAddress.getLocalHost().getHostAddress());
 			else
 			al=client.getTopoSetsByTestPlanId(testPlanId);
+			}
+			else
+			{
+				al=client.getTopoSetsByTestPlanId(testPlanId);
+			}
 			
 			for (int i = 0; i < al.size(); i++) {
 				if(al.get(i).contains("("+topologySetId+")"))
@@ -466,6 +475,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		try {
 			client.heartBeat(sessionid);
 		} catch (Exception e) {
+			if(!dbArgsAreIds)
 			testCycleCleanup(testCycleId,testSuiteName,productId);
 		}
 		
@@ -483,6 +493,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 		try {
 		client.testCycleCleanup(tcid,tsname,pid);
 		} catch (Exception e) {
+//			System.err.println(""+e.getMessage());
 			throw new ReportingException(e.getMessage());
 		}
 	destroySession(sessionid);
@@ -491,10 +502,11 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	@Override
 	public void testCycleClearTestCases(String pid,String tpsid,String tcid,String bldid,String tsname) throws InterruptedException,
 	ReportingException {
-
+		if(!dbArgsAreIds)
 		try {
 		client.testCycleClearTcs(pid,tpsid,tcid,bldid,tsname);
 		} catch (Exception e) {
+//			System.err.println(e.getMessage());
 			throw new ReportingException(e.getMessage());
 		}
 	}
