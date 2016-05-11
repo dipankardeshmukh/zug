@@ -121,10 +121,10 @@
                 <mvm-configuration jvm-max-memorysize="247">2500</mvm-configuration>
                 <mvm-configuration jvm-max-memorysize="122">1500</mvm-configuration>
                 <scriptlocation></scriptlocation>
-                <dbhostname>192.168.0.55:4567</dbhostname>
-                <dbname>Framework</dbname>
-                <dbusername>davosuser</dbusername>
-                <dbuserpassword>user</dbuserpassword>
+                <dbhostname></dbhostname>
+                <dbname></dbname>
+                <dbusername></dbusername>
+                <dbuserpassword></dbuserpassword>
     </configurations>
               
 

@@ -10,7 +10,7 @@ pwd=$PWD
 #Starting to call the main automature-zug.jar
 #echo  "The Zug install directory "$ZUG_HOME
 cd /usr/lib/automature/SPARK
-java -jar /usr/lib/automature/SPARK/automature-spark.jar $*  -pwd=$pwd
+sudo java -jar /usr/lib/automature/SPARK/automature-spark.jar $*  -pwd=$pwd -gui
 
 
 

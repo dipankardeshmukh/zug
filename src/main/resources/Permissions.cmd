@@ -4,7 +4,7 @@ echo %1
 echo %2
 
 :: Set SPARK path
-set spark_path=$INSTALL_PATH
+set spark_path=C:\Program Files\automature
 cd %spark_path%
 set spark_path=%spark_path:"=%
 
