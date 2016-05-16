@@ -1,9 +1,7 @@
 
 The software included in this product is licensed under the GPLv3. Copies of the applicable licenses can be found at the following sites, viz. 
 
-
-
-My SQL:
+My SQL
 
 The licensing agreement for MySql can be found at the following location:
 
@@ -23,7 +21,6 @@ http://twiki.org/cgi-bin/view/Codev/DownloadTWiki
 The source code for the product is located at:
 
 http://twiki.org/cgi-bin/view/Codev/DownloadTWiki
-
 
 
 Apache
