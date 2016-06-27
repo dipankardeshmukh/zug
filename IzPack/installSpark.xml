@@ -17,7 +17,7 @@
     -->
     <info>
         <appname>Automature-SPARK</appname>
-        <appversion>1.3.0</appversion>
+        <appversion>1.3.1</appversion>
         <authors>
         <author name="Automature LLC" email="info@automature.com"/>
         </authors>
@@ -152,7 +152,8 @@
         <pack name="SPARK" required="yes">
 		
            <description>Automature's software test automation tool.</description> 
-           <file unpack="true" src="automature-spark-bin-1.3.0.zip" targetdir="$INSTALL_PATH" />
+           <file unpack="true" src="automature-spark-bin-1.3.1.zip" targetdir="$INSTALL_PATH" />
+		   <file src="Spark.ini" targetdir="$INSTALL_PATH${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}" override="false" />
            <executable targetfile="${INSTALL_PATH}${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}SetSparkPath.bat" stage="postinstall" keep="true" condition="izpack.windowsinstall">
            </executable>
            <executable targetfile="$INSTALL_PATH${FILE_SEPARATOR}SPARK${FILE_SEPARATOR}InstallSparkLinux.sh" stage="postinstall" keep="true" condition="izpack.linuxinstall">
