@@ -119,7 +119,6 @@ public class SpreadSheet {
 	}
 	
 	public void readConfigDbConfigs() throws Exception {
-
 		Iterator<List<String>> it = configSheet.getData().iterator();
 		while (it.hasNext()) {
 
@@ -133,10 +132,9 @@ public class SpreadSheet {
 					String s=cell.next();
 					
 					String data=cell.next();
-					
 //						if (connectionParam.containsKey(s.toLowerCase())) {
-
-							if(s.equals("DBHostName"))
+					try{
+							if(s.equals("DBHostName") && !data.equals(""))
 							{
 								if(!data.startsWith("http://"))
 									data="http://"+data;
@@ -144,20 +142,20 @@ public class SpreadSheet {
 								if(data.equals(""))
 									connectionParam.clear();
 							}
-							else if(s.equals("DBUserName"))
+							else if(s.equals("DBUserName") && !data.equals(""))
 							{
 								connectionParam.put("dbusername", data);
 								if(data.equals(""))
 									connectionParam.clear();
 							}
-							else if(s.equals("DBUserPassword"))
+							else if(s.equals("DBUserPassword") && !data.equals(""))
 							{
 								connectionParam.put("dbuserpassword", data);
 								if(data.equals(""))
 									connectionParam.clear();
 								break;
 							}
-							
+					}catch(Exception ex){ex.printStackTrace();}
 //						} 
 				}
 
