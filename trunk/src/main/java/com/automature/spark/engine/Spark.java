@@ -79,7 +79,7 @@ public class Spark extends ZugGui {
 
 	static GuiController guiController;
 	public static boolean guiFlag;
-	private static String Version = "SPARK Premium 1.2.0";
+	private static String Version = "SPARK Premium 1.3.1";
 	static Hashtable<String, String[]> fileExtensionSupport;
 
 	public static HashMap<String, String> macrocommandlineinputs = new HashMap<String, String>();
