@@ -13,7 +13,7 @@ pushd "%~dp0."
 
 set CLASSPATH=.;lib\*
 
-java -cp %CLASSPATH% -jar automature-spark.jar  %* %cwd% -gui
+java -cp %CLASSPATH% -jar automature-spark.jar  %* %cwd%
 
 ::echo %* %cwd%
 :: Deleting the Temporary Files that are created as part of the Execution
@@ -23,6 +23,4 @@ popd
 
 :: restoring the environment changes.
 endlocal
-set /p delBuild=press ENTER to close the window
-
-ren C:\Program Files\Automature\SPARK\Spark.ini.Windows Spark.ini
+:: set /p delBuild=press ENTER to close the window
