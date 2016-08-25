@@ -319,10 +319,14 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 					buildId=StringUtils.substringBetween(buildIds.get(0), " (", ")");
 					else
 					{
+						buildId = client.getBuildTagForTestCycle(testCycleId);
+						if(buildId.trim().equals(""))
+						{
 						System.out.println("No buildTag exists for testcycleId : "+testCycleId+" and topologySetId : "+topologySetId);
 						System.out.println("Creating new buildTag");	
 						buildName="Build : "+new Date();
 						buildId=client.buildtag_write(testPlanId, buildName);
+						}
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -435,7 +439,6 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 			}
 			if(x==0)
 			{
-				buildId=null;
 				return true;
 			}
 			}
@@ -569,6 +572,7 @@ public class SpacetimeReporter extends Reporter implements Retriever {
 	}
 	Log.Debug("ExecutedTestCaseData/SaveTestCaseResultEveryTime : Start of the Function");
 	etc.testCaseCompletetionTime=new Date();
+	
 	String testexecutiondetailid=client.testExecutionDetails_write(etc.testCaseID, etc.testcasedescription, testCycleId, etc.testCaseStatus, buildId, String.valueOf(etc.timeToExecute), "", etc.testCaseCompletetionTime.toString(), testSuiteName, topologySetId, testSuiteRole, etc.testCaseExecutionComments);//(executedTestCaseData.get(s).testCaseID, executedTestCaseData.get(s).testcasedescription, testCycleId, executedTestCaseData.get(s).testCaseStatus, buildId, String.valueOf(executedTestCaseData.get(s).timeToExecute), "", new SimpleDateFormat("yyyy-MM-dd").format(executedTestCaseData.get(s).testCaseCompletetionTime), testSuiteName, topologySetId, testSuiteRole , executedTestCaseData.get(s).testCaseExecutionComments);
 	if(!executedTestCases.contains(testexecutiondetailid))
 	executedTestCases.add(testexecutiondetailid);
