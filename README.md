@@ -7,6 +7,6 @@ The CHUR test specification language is organized as a spreadsheet, and can be t
 
 BASEL is a testcase generation tool for CHUR, that specializes in click-n-create type of automated testsuite creation for complex web applications. Testsuites created with BASEL can be executed using the SPARK execution environment.
 
-There is a rich collection of documentation and tutorials under the Documentation folder. To install Spark, visit  ftp://trial:trialVersionOnly@attic.automature.com:33621/SPARK/ to download the latest installer. SPARK is supported on Windows, Linux and MacOS.
+There is a rich collection of documentation and tutorials under the Documentation folder. To install Spark, visit  http://www.automature.com/spark-engine.html to download the latest installer. SPARK is supported on Windows, Linux and MacOS.
 
 To take advantage of the out-of-the-box rich set of atoms, you will need to install Zuoz.
